@@ -1,0 +1,10 @@
+PKG_CFLAGS= -std=c99 -Icorpus/src
+
+# For development only (GNU/GCC specific not allowed on CRAN):
+MAINS = corpus/src/main.o corpus/src/main_get.o corpus/src/main_scan.o \
+    corpus/src/main_tokens.o
+SOURCES = $(wildcard corpus/src/*.c corpus/lib/*.c *.c)
+
+OBJECTS = $(filter-out $(MAINS), $(SOURCES:.c=.o))
+
+all: $(OBJECTS)
