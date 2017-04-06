@@ -1,0 +1,3 @@
+useDynLib(corpus, .registration = TRUE, .fixes = "C_")
+
+exportPattern("^[^\\.]")

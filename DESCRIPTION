@@ -1,0 +1,15 @@
+Package:     corpus
+Version:     0.1
+Date:        2017-04-06
+Title:       Text corpus analysis
+Author:      Patrick O. Perry
+Maintainer:  Patrick O. Perry <pperry@stern.nyu.edu>
+Description:
+    Text corpus data analysis, with full support for UTF8-encoded
+    unicode text. The package provides the ability to seamlessly
+    read and process text from large JSON files without holding
+    all of the data in RAM simultaneously.
+Suggests:    testthat
+LazyData:    Yes
+License:     Apache License (== 2.0) | file LICENSE
+Encoding:    UTF-8
