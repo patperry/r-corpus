@@ -4,8 +4,6 @@ Corpus (R package)
 Text corpus analysis in R. Heavy lifting is done by the
 [Corpus C library][corpus].
 
-[corpus]: https://github.com/patperry/corpus
-
 
 Installing
 ----------
@@ -32,4 +30,13 @@ the submodule with the following command:
 There are no dependencies, but to build and run the tests, you will need
 to install the [Check Unit Testing][check] library.
 
+
+Windows support
+---------------
+
+Nonexistent. There are some notes about this in the [TODO file][windows] for
+the [Corpus C library][corpus] project.
+
 [check]:https://libcheck.github.io/check/
+[corpus]: https://github.com/patperry/corpus
+[windows]: https://github.com/patperry/corpus/blob/master/TODO.md
