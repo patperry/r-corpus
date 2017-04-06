@@ -1,8 +1,7 @@
-RCorpus
-=======
+Corpus (R package)
+==================
 
-An R interface to the [Corpus library][corpus] for analyzing
-text data.
-
+Text corpus analysis in R. Heavy lifting is done by the
+[Corpus C library][corpus].
 
 [corpus]: https://github.com/patperry/corpus
