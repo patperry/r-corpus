@@ -19,11 +19,16 @@
 #include <syslog.h>
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
+#include "rcorpus.h"
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 
 static const R_CallMethodDef CallEntries[] = {
+	CALLDEF(read_json, 1),
+	CALLDEF(dim_dataset, 1),
+	CALLDEF(length_dataset, 1),
+	CALLDEF(names_dataset, 1),
         {NULL, NULL, 0}
 };
 

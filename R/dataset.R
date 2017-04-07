@@ -12,7 +12,30 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-read_json <- function(file)
+dim.dataset <- function(x)
 {
-    .Call(C_read_json, file)
+    .Call(C_dim_dataset, x)
+}
+
+
+length.dataset <- function(x)
+{
+    .Call(C_length_dataset, x)
+}
+
+
+names.dataset <- function(x)
+{
+    .Call(C_names_dataset, x)
+}
+
+
+dimnames.datset <- function(x)
+{
+    cn <- names(x)
+    if (is.null(cn)) {
+        NULL
+    } else {
+        list(NULL, cn)
+    }
 }
