@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <Rdefines.h>
+#include "corpus/src/render.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
 #include "corpus/src/token.h"
@@ -164,15 +165,100 @@ SEXP names_dataset(SEXP sdata)
 
 SEXP datatype_dataset(SEXP sdata)
 {
+	SEXP str, ans;
 	const struct dataset *d = as_dataset(sdata);
-	(void)d;
-	return R_NilValue;
+	struct render r;
+
+	if (render_init(&r, ESCAPE_NONE) != 0) {
+		error("memory allocation failure");
+	}
+	render_set_tab(&r, "");
+	render_set_newline(&r, " ");
+
+	render_datatype(&r, d->schema, d->type_id);
+	if (r.error) {
+		render_destroy(&r);
+		error("memory allocation failure");
+	}
+
+	PROTECT(ans = allocVector(STRSXP, 1));
+	str = mkCharLenCE(r.string, r.length, CE_UTF8);
+	SET_STRING_ELT(ans, 0, str);
+
+	render_destroy(&r);
+	UNPROTECT(1);
+	return ans;
 }
 
 
 SEXP datatypes_dataset(SEXP sdata)
 {
+	SEXP types, str, names;
 	const struct dataset *d = as_dataset(sdata);
-	(void)d;
-	return R_NilValue;
+	const struct datatype *t;
+	const struct datatype_record *rec;
+	struct render r;
+	int i;
+
+	if (d->kind != DATATYPE_RECORD) {
+		return R_NilValue;
+	}
+
+	PROTECT(names = names_dataset(sdata));
+
+	t = &d->schema->types[d->type_id];
+	rec = &t->meta.record;
+
+	if (render_init(&r, ESCAPE_NONE) != 0) {
+		error("memory allocation failure");
+	}
+	render_set_tab(&r, "");
+	render_set_newline(&r, " ");
+
+	PROTECT(types = allocVector(STRSXP, rec->nfield));
+	for (i = 0; i < rec->nfield; i++) {
+		render_datatype(&r, d->schema, rec->type_ids[i]);
+		if (r.error) {
+			render_destroy(&r);
+			error("memory allocation failure");
+		}
+		str = mkCharLenCE(r.string, r.length, CE_UTF8);
+		SET_STRING_ELT(types, i, str);
+		render_clear(&r);
+	}
+	setAttrib(types, R_NamesSymbol, names);
+
+	render_destroy(&r);
+	UNPROTECT(2);
+	return types;
+}
+
+
+SEXP print_dataset(SEXP sdata)
+{
+	SEXP str, ans;
+	const struct dataset *d = as_dataset(sdata);
+	struct render r;
+
+	if (render_init(&r, ESCAPE_CONTROL) != 0) {
+		error("memory allocation failure");
+	}
+
+	render_datatype(&r, d->schema, d->type_id);
+	if (r.error) {
+		render_destroy(&r);
+		error("memory allocation failure");
+	}
+
+	if (d->kind == DATATYPE_RECORD) {
+		Rprintf("JSON dataset with %"PRIu64" rows"
+			" of the following type:\n%s\n",
+			(uint64_t)d->nrow, r.string);
+	} else {
+		Rprintf("JSON dataset with %"PRIu64" rows"
+			" of type %s\n", (uint64_t)d->nrow, r.string);
+	}
+
+	render_destroy(&r);
+	return sdata;
 }

@@ -51,3 +51,9 @@ datatypes.dataset <- function(x, ...)
 {
     .Call(C_datatypes_dataset, x)
 }
+
+
+print.dataset <- function(x, ...)
+{
+    invisible(.Call(C_print_dataset, x))
+}
