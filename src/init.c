@@ -29,6 +29,8 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(dim_dataset, 1),
 	CALLDEF(length_dataset, 1),
 	CALLDEF(names_dataset, 1),
+	CALLDEF(datatype_dataset, 1),
+	CALLDEF(datatypes_dataset, 1),
         {NULL, NULL, 0}
 };
 

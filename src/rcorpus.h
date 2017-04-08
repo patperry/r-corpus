@@ -46,6 +46,8 @@ struct dataset *as_dataset(SEXP data);
 SEXP dim_dataset(SEXP data);
 SEXP length_dataset(SEXP data);
 SEXP names_dataset(SEXP data);
+SEXP datatype_dataset(SEXP data);
+SEXP datatypes_dataset(SEXP data);
 
 // memory map
 SEXP alloc_mmap(SEXP file);

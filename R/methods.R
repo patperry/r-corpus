@@ -12,42 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-dim.dataset <- function(x)
-{
-    .Call(C_dim_dataset, x)
-}
+datatype <- function(x, ...) UseMethod("datatype")
 
-
-length.dataset <- function(x)
-{
-    .Call(C_length_dataset, x)
-}
-
-
-names.dataset <- function(x)
-{
-    .Call(C_names_dataset, x)
-}
-
-
-dimnames.dataset <- function(x)
-{
-    cn <- names(x)
-    if (is.null(cn)) {
-        NULL
-    } else {
-        list(NULL, cn)
-    }
-}
-
-
-datatype.dataset <- function(x, ...)
-{
-    .Call(C_datatype_dataset, x)
-}
-
-
-datatypes.dataset <- function(x, ...)
-{
-    .Call(C_datatypes_dataset, x)
-}
+datatypes <- function(x, ...) UseMethod("datatypes")

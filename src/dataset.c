@@ -160,3 +160,19 @@ SEXP names_dataset(SEXP sdata)
 	UNPROTECT(1);
 	return names;
 }
+
+
+SEXP datatype_dataset(SEXP sdata)
+{
+	const struct dataset *d = as_dataset(sdata);
+	(void)d;
+	return R_NilValue;
+}
+
+
+SEXP datatypes_dataset(SEXP sdata)
+{
+	const struct dataset *d = as_dataset(sdata);
+	(void)d;
+	return R_NilValue;
+}
