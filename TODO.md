@@ -1,15 +1,21 @@
 Todo
 ====
 
-`read_json()` for reading JSON Lines, returning a `dataset` object.
+`as.integer.dataset`
 
-`dataset.$` for extracting record fields. Arrays de-serialized as lists.
+`as.double.dataset`
 
-`dataset.[` for subsetting.
+`as.text.dataset`
 
 `text` data type.
 
-`as.character.text()` for type conversion.
+`[.text`
+
+`[[.text`
+
+`length.text`
+
+`as.character.text` for type conversion.
 
 `tokens()` for word tokens.
 

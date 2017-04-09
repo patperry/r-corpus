@@ -24,7 +24,7 @@ struct data;
 struct schema;
 
 struct dataset {
-	struct schema *schema;
+	const struct schema *schema;
 	struct data *rows;
 	R_xlen_t nrow;
 	int type_id;
@@ -38,7 +38,7 @@ struct mmap {
 };
 
 // data set
-SEXP alloc_dataset(struct schema *schema, int type_id, struct data *rows,
+SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 		   R_xlen_t nrow, SEXP prot);
 int is_dataset(SEXP data);
 struct dataset *as_dataset(SEXP data);
@@ -49,6 +49,8 @@ SEXP names_dataset(SEXP data);
 SEXP print_dataset(SEXP data);
 SEXP datatype_dataset(SEXP data);
 SEXP datatypes_dataset(SEXP data);
+SEXP subscript_dataset(SEXP data, SEXP i);
+SEXP subset_dataset(SEXP data, SEXP i, SEXP j);
 
 // memory map
 SEXP alloc_mmap(SEXP file);

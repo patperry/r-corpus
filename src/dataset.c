@@ -42,7 +42,7 @@ static void free_dataset(SEXP sdataset)
 }
 
 
-SEXP alloc_dataset(struct schema *schema, int type_id, struct data *rows,
+SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 		   R_xlen_t nrow, SEXP prot)
 {
 	SEXP sdata, sclass;
@@ -122,9 +122,13 @@ SEXP dim_dataset(SEXP sdata)
 SEXP length_dataset(SEXP sdata)
 {
 	const struct dataset *d = as_dataset(sdata);
+	const struct datatype *t;
+	const struct datatype_record *r;
 
 	if (d->kind == DATATYPE_RECORD) {
-		return R_NilValue;
+		t = &d->schema->types[d->type_id];
+		r = &t->meta.record;
+		return ScalarInteger(r->nfield);
 	}
 
 	if (d->nrow > INT_MAX) {
@@ -261,4 +265,137 @@ SEXP print_dataset(SEXP sdata)
 
 	render_destroy(&r);
 	return sdata;
+}
+
+
+SEXP subscript_dataset(SEXP sdata, SEXP si)
+{
+	SEXP ans, prot;
+	const struct dataset *d = as_dataset(sdata);
+	const struct schema *s = d->schema;
+	const struct datatype *t;
+	const struct datatype_record *r;
+	struct data *rows;
+	double i = REAL(si)[0];
+	int name_id, type_id;
+	R_xlen_t index;
+
+	prot = R_ExternalPtrProtected(sdata);
+
+	if (d->kind != DATATYPE_RECORD) {
+		if (!(1 <= i && i <= (double)d->nrow)) {
+			error("invalid subscript");
+		}
+		index = (R_xlen_t)(i - 1);
+
+		if (!(rows = malloc(sizeof(*rows)))) {
+			error("failed allocating %zu bytes", sizeof(*rows));
+		}
+		rows[0] = d->rows[index];
+		ans = alloc_dataset(s, rows[0].type_id, rows, 1, prot);
+	} else {
+		t = &d->schema->types[d->type_id];
+		r = &t->meta.record;
+
+		if (!(1 <= i && i <= r->nfield)) {
+			error("invalid subscript: %g", i);
+		}
+		name_id = r->name_ids[(int)(i - 1)];
+		type_id = r->type_ids[(int)(i - 1)];
+
+		if (!(rows = malloc(d->nrow * sizeof(*rows)))) {
+			error("failed allocating %zu bytes",
+			      d->nrow * sizeof(*rows));
+		}
+
+		for (index = 0; index < d->nrow; index++) {
+			data_field(&d->rows[index], s, name_id, &rows[index]);
+		}
+
+		ans = alloc_dataset(s, type_id, rows, d->nrow, prot);
+	}
+
+	return ans;
+}
+
+
+SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
+{
+	SEXP ans, prot;
+	const struct dataset *d = as_dataset(sdata);
+	struct schema *s = (struct schema *)d->schema;
+	const struct datatype *t;
+	const struct datatype_record *r;
+	struct data *rows;
+	const double *index;
+	R_xlen_t i, n;
+	double j;
+	int name_id, type_id;
+
+	if (si == R_NilValue) {
+		if (sj == R_NilValue) {
+			return sdata;
+		} else {
+			return subscript_dataset(sdata, sj);
+		}
+	}
+
+	n = XLENGTH(si);
+	index = REAL(si);
+
+	if (!(rows = malloc(n * sizeof(*rows))) && n > 0) {
+		error("failed allocating %zu bytes", n * sizeof(*rows));
+	}
+
+	if (sj == R_NilValue) {
+		type_id = DATATYPE_NULL;
+		for (i = 0; i < n; i++) {
+			if (!(1 <= index[i] && index[i] <= (double)d->nrow)) {
+				free(rows);
+				error("invalid index: %g", index[i]);
+			}
+
+			rows[i] = d->rows[(R_xlen_t)(index[i] - 1)];
+			if (schema_union(s, type_id, rows[i].type_id,
+						&type_id) != 0) {
+				free(rows);
+				error("memory allocation failure");
+			}
+		}
+	} else {
+		if (d->kind != DATATYPE_RECORD) {
+			error("incorrect number of dimensions");
+		}
+
+		t = &d->schema->types[d->type_id];
+		r = &t->meta.record;
+		j = REAL(sj)[0];
+
+		if (!(1 <= j && j <= r->nfield)) {
+			error("invalid subscript: %g", j);
+		}
+
+		name_id = r->name_ids[(int)(j - 1)];
+
+		type_id = DATATYPE_NULL;
+		for (i = 0; i < n; i++) {
+			if (!(1 <= index[i] && index[i] <= (double)d->nrow)) {
+				free(rows);
+				error("invalid index: %g", index[i]);
+			}
+
+			data_field(&d->rows[(R_xlen_t)(index[i] - 1)], s,
+				   name_id, &rows[i]);
+			if (schema_union(s, type_id, rows[i].type_id,
+						&type_id) != 0) {
+				free(rows);
+				error("memory allocation failure");
+			}
+		}
+	}
+
+	prot = R_ExternalPtrProtected(sdata);
+	ans = alloc_dataset(s, type_id, rows, n, prot);
+
+	return ans;
 }

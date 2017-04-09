@@ -57,3 +57,99 @@ print.dataset <- function(x, ...)
 {
     invisible(.Call(C_print_dataset, x))
 }
+
+
+`$.dataset` <- function(x, name)
+{
+    if (is.null(dim(x))) {
+        stop("$ operator is invalid for scalar datasets")
+    }
+    x[[name]]
+}
+
+
+`[[.dataset` <- function(x, i)
+{
+    if (length(i) == 0) {
+        stop("subscript of length 0 is not allowed")
+    } else if (length(i) > 1) {
+        stop("subscript of length >1 is not allowed")
+    }
+
+    if (!is.null(dim(x))) {
+        if (is.character(i)) {
+            name <- i
+            i <- match(name, names(x))
+            if (is.na(i)) {
+                stop(paste0("invalid column name: \"", name, "\""))
+
+            }
+        }
+    }
+
+    i <- floor(as.double(i))
+    .Call(C_subscript_dataset, x, i)
+}
+
+
+`[.dataset` <- function(x, ...)
+{
+    if (!all(names(sys.call()[-1] == ""))) {
+        stop("named arguments are not allowed")
+    }
+
+    ni <- nargs() - 1
+
+    if (is.null(dim(x))) {
+        # scalar dataset
+
+        if (ni > 1) {
+            stop("incorrect number of dimensions")
+	    }
+
+        if (ni < 1 || missing(..1)) {
+	        i <- NULL
+	    } else {
+            i <- seq_len(NROW(x))[..1]
+            i <- as.double(i)
+        }
+	    j <- NULL
+    } else {
+        # record dataset
+
+        if (ni > 2) {
+            stop("incorrect number of dimensions")
+	    }
+
+        if (ni < 1 || missing(..1)) {
+            i <- NULL
+	    } else {
+            i <- seq_len(NROW(x))[..1]
+            i <- as.double(i)
+        }
+
+
+        if (ni < 2 || missing(..2)) {
+            j <- NULL
+        } else {
+            j <- ..2
+            if (length(j) == 0) {
+                stop("second subscript of length 0 is not allowed")
+            } else if (length(j) > 1) {
+                stop("second subscript of length >1 is not allowed")
+            }
+
+            if (is.character(j)) {
+                name <- j
+                j <- match(name, names(x))
+                if (is.na(j)) {
+                    stop(paste0("invalid column name: \"", name, "\""))
+                }
+            }
+
+            j <- as.double(j)
+        }
+    }
+
+    .Call(C_subset_dataset, x, i, j)
+}
