@@ -24,14 +24,16 @@
 #include "unicode.h"
 #include "rcorpus.h"
 
+#define TEXT_TAG install("corpus::text")
+
+
 struct rtext {
 	R_xlen_t length;
 	struct text items[];
 };
 
-static void free_text(SEXP text);
 
-#define TEXT_TAG install("corpus::text")
+static void free_text(SEXP text);
 
 
 SEXP alloc_text(R_xlen_t n, SEXP prot)
