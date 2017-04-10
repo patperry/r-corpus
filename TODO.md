@@ -17,6 +17,10 @@ Todo
 
 `as.character.text` for type conversion.
 
+`format.text`
+
+`print.text`
+
 `tokens()` for word tokens.
 
 `sentences()` for sentences.

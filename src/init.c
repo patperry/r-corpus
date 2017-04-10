@@ -25,15 +25,22 @@
 
 
 static const R_CallMethodDef CallEntries[] = {
+	CALLDEF(anyNA_text, 1),
+	CALLDEF(as_character_text, 1),
+	CALLDEF(as_text_dataset, 1),
+	CALLDEF(coerce_text, 1),
 	CALLDEF(datatype_dataset, 1),
 	CALLDEF(datatypes_dataset, 1),
 	CALLDEF(dim_dataset, 1),
+	CALLDEF(is_na_text, 1),
 	CALLDEF(length_dataset, 1),
+	CALLDEF(length_text, 1),
 	CALLDEF(names_dataset, 1),
 	CALLDEF(print_dataset, 1),
 	CALLDEF(read_json, 1),
 	CALLDEF(subscript_dataset, 2),
 	CALLDEF(subset_dataset, 3),
+	CALLDEF(subset_text, 2),
         {NULL, NULL, 0}
 };
 

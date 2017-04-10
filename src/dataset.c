@@ -16,10 +16,12 @@
 
 #include <assert.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <Rdefines.h>
+#include "corpus/src/errcode.h"
 #include "corpus/src/render.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
@@ -399,3 +401,156 @@ SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
 
 	return ans;
 }
+
+
+SEXP as_double_dataset(SEXP sdata)
+{
+	SEXP ans;
+	const struct dataset *d = as_dataset(sdata);
+	double *val;
+	R_xlen_t i, n = d->nrow;
+	int err, overflow;
+
+	PROTECT(ans = allocVector(REALSXP, n));
+	val = REAL(ans);
+	overflow = 0;
+
+	for (i = 0; i < n; i++) {
+		err = data_double(&d->rows[i], &val[i]);
+		if (err == ERROR_INVAL) {
+			val[i] = NA_REAL;
+		} else if (err == ERROR_OVERFLOW) {
+			overflow = 1;
+		}
+	}
+
+	if (overflow) {
+		warning("NAs introduced by coercion to double range");
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
+static SEXP as_integer_dataset_check(SEXP sdata, int *overflowptr)
+{
+	SEXP ans;
+	const struct dataset *d = as_dataset(sdata);
+	int *val;
+	R_xlen_t i, n = d->nrow;
+	int err, overflow;
+
+	PROTECT(ans = allocVector(INTSXP, n));
+	val = INTEGER(ans);
+	overflow = 0;
+
+	for (i = 0; i < n; i++) {
+		err = data_int(&d->rows[i], &val[i]);
+		if (err == ERROR_INVAL) {
+			val[i] = NA_INTEGER;
+		} else {
+			if (err == ERROR_OVERFLOW) {
+				overflow = 1;
+			}
+			assert(NA_INTEGER == INT_MIN);
+			if (val[i] == NA_INTEGER) {
+				val[i] = NA_INTEGER + 1;
+			}
+		}
+	}
+
+	if (overflowptr) {
+		*overflowptr = overflow;
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
+SEXP as_integer_dataset(SEXP sdata)
+{
+	SEXP ans;
+	int overflow;
+
+	PROTECT(ans = as_integer_dataset_check(sdata, &overflow));
+	if (overflow) {
+		warning("NAs introduced by coercion to integer range");
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
+SEXP as_logical_dataset(SEXP sdata)
+{
+	SEXP ans;
+	const struct dataset *d = as_dataset(sdata);
+	R_xlen_t i, n = d->nrow;
+	int *val;
+	int b, err;
+
+	PROTECT(ans = allocVector(LGLSXP, n));
+	val = LOGICAL(ans);
+
+	for (i = 0; i < n; i++) {
+		err = data_bool(&d->rows[i], &b);
+		if (err == ERROR_INVAL) {
+			val[i] = NA_LOGICAL;
+		} else {
+			val[i] = b ? TRUE : FALSE;
+		}
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
+SEXP as_text_dataset(SEXP sdata)
+{
+	SEXP ans, prot;
+	const struct dataset *d = as_dataset(sdata);
+	struct text *text;
+	R_xlen_t i, n;
+
+	prot = R_ExternalPtrProtected(sdata);
+	PROTECT(ans = alloc_text(d->nrow, prot));
+	text = as_text(ans, &n);
+
+	for (i = 0; i < n; i++) {
+		if (data_text(&d->rows[i], &text[i]) != 0) {
+			text[i].ptr = NULL;
+			text[i].attr = 0;
+		}
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
+/*
+static SEXP alloc_dataset_array(const struct schema *schema,
+				const struct data *array, SEXP prot)
+{
+}
+
+
+SEXP as_list_dataset(SEXP sdata)
+{
+	SEXP ans, prot;
+	const struct dataset *d = as_dataset(sdata);
+
+	prot = R_ExternalPtrProtected(sdata);
+	PROTECT(ans = allocVector(VECSXP, n));
+
+	for (i = 0; i < n; i++) {
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+*/
