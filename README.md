@@ -20,10 +20,13 @@ Performance
 
 Here are some performance comparisons for some basic operations.
 
-### Extracting text from a JSON File
+### Extracting text from a JSON Lines file
 
 The following benchmark reads in a 286 MB JSON lines data file,
 `yelp-review.json`, and extracts the text field from each row.
+The raw data comes from the first round of the
+[Yelp Dataset Challence][yelp]; it is stored in
+[JSON Lines format][jsonl].
 
     # Using the corpus library:
 
@@ -167,7 +170,9 @@ the [Corpus C library][corpus] project.
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 [check]:https://libcheck.github.io/check/
 [corpus]: https://github.com/patperry/corpus
+[jsonl]: http://jsonlines.org/
 [nfkd]: http://unicode.org/reports/tr15/
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries
 [windows]: https://github.com/patperry/corpus/blob/master/TODO.md
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries
+[yelp]: https://www.yelp.com/dataset_challenge
