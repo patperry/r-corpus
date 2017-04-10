@@ -20,8 +20,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <Rdefines.h>
-#include "text.h"
-#include "unicode.h"
+#include "corpus/src/text.h"
+#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 #define TEXT_TAG install("corpus::text")

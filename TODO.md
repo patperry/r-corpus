@@ -7,8 +7,6 @@ To Do
 
 `tokens()` for word tokens. Returns character()
 
-`sentences()` for sentences. Returns text()
-
 `blocks()` for fixed-length chunks of words. Read up on time series block
 bootstrap to get inspiration for interface.
 

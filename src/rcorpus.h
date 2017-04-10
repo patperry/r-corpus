@@ -59,7 +59,7 @@ SEXP simplify_dataset(SEXP data);
 SEXP subscript_dataset(SEXP data, SEXP i);
 SEXP subset_dataset(SEXP data, SEXP i, SEXP j);
 
-/* text */
+/* text (core) */
 SEXP alloc_text(R_xlen_t n, SEXP prot);
 int is_text(SEXP text);
 struct text *as_text(SEXP text, R_xlen_t *lenptr);
@@ -70,6 +70,9 @@ SEXP subset_text(SEXP text, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
+
+/* text processing */
+SEXP sentences_text(SEXP x);
 
 /* memory map */
 SEXP alloc_mmap(SEXP file);
