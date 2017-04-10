@@ -69,9 +69,27 @@ format.text <- function(x, nchar_max = 60, suffix = "\u2026", ...)
     format(str, ...)
 }
 
-print.text <- function(x, justify = "none", ...)
+print.text <- function(x, justify = "none", print_max = 6L, ...)
 {
-    print(format(x, justify = justify, na.encode = FALSE, ...))
+    if (is.null(print_max) || is.na(print_max) || length(x) <= print_max) {
+        xsub <- x
+        nextra <- 0
+    } else {
+        xsub <- head(x, n = print_max)
+        nextra <- length(x) - print_max
+    }
+
+    if (print_max > 0) {
+        print(format(xsub, justify = justify, na.encode = FALSE, ...))
+        if (nextra > 0) {
+            cat(paste0(paste0(rep(" ", ceiling(log10(print_max + 1))),
+                              collapse=""),
+                       "\u22ee\n(", length(x), " rows total)\n"))
+        }
+    } else {
+        cat(paste0("(", length(x), " rows total)\n"))
+    }
+
     invisible(x)
 }
 

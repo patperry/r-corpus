@@ -1,29 +1,13 @@
-Todo
-====
+To Do
+=====
 
-`as.integer.dataset`
+`summary.text`
 
-`as.double.dataset`
+`vocab()` for type/token frequencies
 
-`as.text.dataset`
+`tokens()` for word tokens. Returns character()
 
-`text` data type.
-
-`[.text`
-
-`[[.text`
-
-`length.text`
-
-`as.character.text` for type conversion.
-
-`format.text`
-
-`print.text`
-
-`tokens()` for word tokens.
-
-`sentences()` for sentences.
+`sentences()` for sentences. Returns text()
 
 `blocks()` for fixed-length chunks of words. Read up on time series block
 bootstrap to get inspiration for interface.
