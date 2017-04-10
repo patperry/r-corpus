@@ -563,6 +563,66 @@ static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 }
 
 
+static SEXP as_list_dataset_record(SEXP sdata)
+{
+	SEXP ans, ans_j, prot, val;
+	const struct dataset *d = as_dataset(sdata);
+	const struct schema *s = d->schema;
+	const struct datatype_record *r;
+	struct data_fields it;
+	R_xlen_t i, n = d->nrow;
+	int err, j, nfield;
+	struct data **rows;
+	int *cols;
+
+	if (d->kind != DATATYPE_RECORD) {
+		return R_NilValue;
+	}
+
+	r = &s->types[d->type_id].meta.record;
+	nfield = r->nfield;
+
+	prot = R_ExternalPtrProtected(sdata);
+	PROTECT(ans = allocVector(VECSXP, r->nfield));
+	setAttrib(ans, R_NamesSymbol, names_dataset(sdata));
+	rows = (struct data **)R_alloc(nfield, sizeof(*rows));
+	cols = (int *)R_alloc(s->names.ntype, sizeof(*cols));
+
+	for (j = 0; j < nfield; j++) {
+		// use calloc so that all items are initialized to null
+		rows[j] = calloc(n, sizeof(*rows[j]));
+		if (!rows[j] && n) {
+			error("failed allocating memory (%zu bytes)",
+			      n * sizeof(*rows[j]));
+		}
+		cols[r->name_ids[j]] = j;
+
+		ans_j = alloc_dataset(s, r->type_ids[j], rows[j], n, prot);
+		SET_VECTOR_ELT(ans, j, ans_j);
+	}
+
+	for (i = 0; i < n; i++) {
+		if ((err = data_fields(&d->rows[i], s, &it))) {
+			continue;
+		}
+
+		while (data_fields_advance(&it)) {
+			j = cols[it.name_id];
+			rows[j][i] = it.current;
+		}
+	}
+
+	for (j = 0; j < nfield; j++) {
+		ans_j = VECTOR_ELT(ans, j);
+		ans_j = simplify_dataset(ans_j);
+		SET_VECTOR_ELT(ans, j, ans_j);
+	}
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
 SEXP as_list_dataset(SEXP sdata)
 {
 	SEXP ans, prot, val;
@@ -571,7 +631,9 @@ SEXP as_list_dataset(SEXP sdata)
 	R_xlen_t i, n = d->nrow;
 	int type_id;
 
-	if (d->kind != DATATYPE_ARRAY) {
+	if (d->kind == DATATYPE_RECORD) {
+		return as_list_dataset_record(sdata);
+	} else if (d->kind != DATATYPE_ARRAY) {
 		return R_NilValue;
 	}
 
