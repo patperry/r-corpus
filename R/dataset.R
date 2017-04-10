@@ -88,7 +88,9 @@ print.dataset <- function(x, ...)
     }
 
     i <- floor(as.double(i))
-    .Call(C_subscript_dataset, x, i)
+    ans <- .Call(C_subscript_dataset, x, i)
+    ans <- .Call(C_simplify_dataset, ans)
+    ans
 }
 
 
@@ -152,4 +154,34 @@ print.dataset <- function(x, ...)
     }
 
     .Call(C_subset_dataset, x, i, j)
+}
+
+
+as.character.dataset <- function(x, ...)
+{
+    as.character(as.text.dataset(x, ...))
+}
+
+
+as.integer.dataset <- function(x, ...)
+{
+    .Call(C_as_integer_dataset, x)
+}
+
+
+as.double.dataset <- function(x, ...)
+{
+    .Call(C_as_double_dataset, x)
+}
+
+
+as.list.dataset <- function(x, ...)
+{
+    .Call(C_as_list_dataset, x)
+}
+
+
+as.text.dataset <- function(x, ...)
+{
+    .Call(C_as_text_dataset, x)
 }

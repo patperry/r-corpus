@@ -12,7 +12,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-read_json <- function(file)
+read_json <- function(file, simplify = FALSE)
 {
-    .Call(C_read_json, file)
+    ans <- .Call(C_read_json, file)
+    if (simplify) {
+        ans <- .Call(C_simplify_dataset, ans)
+    }
+    ans
 }

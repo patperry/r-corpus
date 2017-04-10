@@ -44,6 +44,10 @@ SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 int is_dataset(SEXP data);
 struct dataset *as_dataset(SEXP data);
 
+SEXP as_integer_dataset(SEXP data);
+SEXP as_double_dataset(SEXP data);
+SEXP as_list_dataset(SEXP data);
+SEXP as_logical_dataset(SEXP data);
 SEXP as_text_dataset(SEXP data);
 SEXP dim_dataset(SEXP data);
 SEXP length_dataset(SEXP data);
@@ -51,6 +55,7 @@ SEXP names_dataset(SEXP data);
 SEXP print_dataset(SEXP data);
 SEXP datatype_dataset(SEXP data);
 SEXP datatypes_dataset(SEXP data);
+SEXP simplify_dataset(SEXP data);
 SEXP subscript_dataset(SEXP data, SEXP i);
 SEXP subset_dataset(SEXP data, SEXP i, SEXP j);
 

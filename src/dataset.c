@@ -532,25 +532,99 @@ SEXP as_text_dataset(SEXP sdata)
 }
 
 
-/*
-static SEXP alloc_dataset_array(const struct schema *schema,
+static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 				const struct data *array, SEXP prot)
 {
+	SEXP ans;
+	struct data *rows;
+	struct data_items it;
+	int err, i, n;
+
+	if ((err = data_nitem(array, schema, &n))
+			|| ((err = data_items(array, schema, &it)))) {
+		n = 0;
+		rows = NULL;
+	} else {
+		rows = malloc(n * sizeof(*rows));
+		if (!rows) {
+			error("failed allocating memory (%zu bytes)",
+			      n * sizeof(*rows));
+		}
+
+		i = 0;
+		while (data_items_advance(&it)) {
+			rows[i] = it.current;
+			i++;
+		}
+	}
+
+	ans = alloc_dataset(schema, type_id, rows, n, prot);
+	return ans;
 }
 
 
 SEXP as_list_dataset(SEXP sdata)
 {
-	SEXP ans, prot;
+	SEXP ans, prot, val;
 	const struct dataset *d = as_dataset(sdata);
+	const struct schema *s = d->schema;
+	R_xlen_t i, n = d->nrow;
+	int type_id;
+
+	if (d->kind != DATATYPE_ARRAY) {
+		return R_NilValue;
+	}
+
+	type_id = s->types[d->type_id].meta.array.type_id;
 
 	prot = R_ExternalPtrProtected(sdata);
 	PROTECT(ans = allocVector(VECSXP, n));
 
 	for (i = 0; i < n; i++) {
+		val = alloc_dataset_array(s, type_id, &d->rows[i], prot);
+		SET_VECTOR_ELT(ans, i, val);
 	}
 
 	UNPROTECT(1);
 	return ans;
 }
-*/
+
+
+SEXP simplify_dataset(SEXP sdata)
+{
+	SEXP ans;
+	const struct dataset *d = as_dataset(sdata);
+	int overflow;
+
+	switch (d->kind) {
+	case DATATYPE_NULL:
+	case DATATYPE_BOOLEAN:
+		ans = as_logical_dataset(sdata);
+		break;
+
+	case DATATYPE_INTEGER:
+		ans = as_integer_dataset_check(sdata, &overflow);
+		if (overflow) {
+			ans = as_double_dataset(sdata);
+		}
+		break;
+
+	case DATATYPE_REAL:
+		ans = as_double_dataset(sdata);
+		break;
+
+	case DATATYPE_TEXT:
+		ans = as_text_dataset(sdata);
+		break;
+
+	case DATATYPE_ARRAY:
+		ans = as_list_dataset(sdata);
+		break;
+
+	default:
+		ans = sdata;
+		break;
+	}
+
+	return ans;
+}
