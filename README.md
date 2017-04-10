@@ -116,8 +116,8 @@ it started out as white space), then we discard it.
 
 With `stringi`, it is more efficient to transform to NFKC normal form instead
 of NFKD, and it is more efficient to do the word segmentation after the
-normalization. The `stringi` package handles punctuation and white space
-differently.
+normalization. Futher, the `stringi` package handles punctuation and
+white space differently, so it gives slightly different results.
 
     system.time({
         ntext <- stringi::stri_trans_nfkc_casefold(text)
