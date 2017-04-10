@@ -22,7 +22,7 @@
 
 SEXP sentences_text(SEXP sx)
 {
-	SEXP ans, ans_i, prot, stext;
+	SEXP ans, ans_i, prot, names, stext;
 	const struct text *text;
 	struct text *buf, *text_i;
 	struct sentscan scan;
@@ -34,6 +34,8 @@ SEXP sentences_text(SEXP sx)
 	text = as_text(stext, &n);
 
 	PROTECT(ans = allocVector(VECSXP, n));
+	names = getAttrib(sx, R_NamesSymbol);
+	setAttrib(ans, R_NamesSymbol, names);
 
 	buf = NULL;
 	nbuf_max = 0;
@@ -70,4 +72,20 @@ SEXP sentences_text(SEXP sx)
 
 	UNPROTECT(2);
 	return ans;
+}
+
+
+SEXP tokens_text(SEXP sx, SEXP sfilter)
+{
+	(void)sx;
+	(void)sfilter;
+	return R_NilValue;
+}
+
+
+SEXP word_counts_text(SEXP sx, SEXP sfilter)
+{
+	(void)sx;
+	(void)sfilter;
+	return R_NilValue;
 }

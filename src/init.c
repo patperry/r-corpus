@@ -47,6 +47,8 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(subscript_dataset, 2),
 	CALLDEF(subset_dataset, 3),
 	CALLDEF(subset_text, 2),
+	CALLDEF(tokens_text, 2),
+	CALLDEF(word_counts_text, 2),
         {NULL, NULL, 0}
 };
 
