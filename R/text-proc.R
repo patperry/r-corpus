@@ -15,7 +15,7 @@
 text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         map_compatible = TRUE, remove_control = TRUE,
                         remove_ignorable = TRUE, remove_whitespace = TRUE,
-                        drop_empty = TRUE, ...)
+                        drop_empty = TRUE)
 {
     if (!is.logical(fold_case) || is.na(fold_case)) {
         stop("invalid 'fold_case' value:", fold_case)
