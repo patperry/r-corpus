@@ -74,7 +74,7 @@ SEXP anyNA_text(SEXP text);
 /* text filter */
 int is_text_filter(SEXP filter);
 int text_filter_type_kind(SEXP filter);
-int text_filter_keep_empty(SEXP filter);
+int text_filter_drop_empty(SEXP filter);
 
 /* text processing */
 SEXP sentences_text(SEXP x);

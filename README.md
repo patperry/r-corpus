@@ -18,7 +18,9 @@ This package uses a git submodule, so you cannot use
 Performance
 -----------
 
-Here are some performance comparisons for some basic operations.
+Here are some performance comparisons for some basic operations. We
+compare against `jsonlite` version 1.3 and `stringi` version 1.1.3.
+
 
 ### Extracting text from a JSON Lines file
 
@@ -57,7 +59,7 @@ first round of the [Yelp Dataset Challence][yelp]; it is stored in
     ## 335 MB
 
 We are about 30 times faster than `jsonlite`, and we use less than 10%
-of the RAM.  How are we reading the file in only 24.5 MB?  We memory-map
+of the RAM.  How are we reading a 286 MB file in only 24.5 MB?  We memory-map
 the file, letting the operating system move data from the file to RAM
 whenever necessary. We store the addresses of the text strings, but we
 do not load values into RAM until they are needed.
@@ -77,6 +79,7 @@ defined by [Unicode Standard Annex #29, Section 5][sentbreak].
     ##   user  system elapsed
     ##  2.877   0.065   2.947
 
+    rm("data", "text")
     pryr::mem_used()
     ## 135 MB
 
@@ -89,11 +92,16 @@ defined by [Unicode Standard Annex #29, Section 5][sentbreak].
     ##   user  system elapsed
     ##  8.010   0.147   8.191
 
+    rm("data", "text")
     pryr::mem_used()
 
-    ## 843 MB
+    ## 536 MB
 
-We are about 2.7 times faster than `stringi`, and we use 16% of the RAM.
+In the `corpus` benchmark, the text object is the array of memory-mapped
+values returned by the call to `read_json`; in the `stringi` benchmark, the
+text object is an in-memory array returned by `jsonlite`. The `stringi` package
+can read the values directly from RAM instead of from the hard drive. Despite
+this advantage, `corpus` is about 2.7 times faster than `stringi`.
 
 
 
@@ -106,30 +114,48 @@ into word tokens using the boundaries defined by
 text into [Unicode NFKD normal form][nfkd], and we [case fold][casefold]
 the text (for most languages, replacing uppercase with lowercase). Then,
 we remove non-white-space [control characters][cc], default ignorable
-characters like zero-width spaces, and white space. We also "dash fold,"
-replacing Unicode dashes with an ASCII dash (-), and we "quote fold,"
-replacing Unicode quotes (single, double, apostrophe) with ASCII single
-quote ('). If, after normalization, the token is empty (for example if
-it started out as white space), then we discard it.
+characters like zero-width spaces, and we remove white space. We also
+"dash fold," replacing Unicode dashes with an ASCII dash (-), and we
+"quote fold," replacing Unicode quotes (single, double, apostrophe) with
+ASCII single quote ('). If, after normalization, the token is empty (for
+example if it started out as white space), then we discard it.
 
-    ## TODO: Add Demo
+    system.time({
+        toks <- tokens(text)
+    })
+
+    ##   user  system elapsed
+    ##  7.910   0.162   8.085
+
+    rm("data", "text")
+    pryr::mem_used()
+
+    ## 450 MB
+
 
 With `stringi`, it is more efficient to transform to NFKC normal form instead
 of NFKD, and it is more efficient to do the word segmentation after the
-normalization. Futher, the `stringi` package handles punctuation and
+normalization. Further, the `stringi` package handles punctuation and
 white space differently, so it gives slightly different results.
 
     system.time({
         ntext <- stringi::stri_trans_nfkc_casefold(text)
-        tokens <- stringi::stri_extract_all_words(ntext)
+        toks <- stringi::stri_extract_all_words(ntext)
     })
 
     ##   user  system elapsed
-    ## 14.759   0.507  15.445
+    ## 13.565   0.272  13.864
 
+    rm("data", "text", "ntext")
     pryr::mem_used()
 
-    ## 958 MB
+    ## 400 MB
+
+Both `corpus` and `stringi` produce the same type of output: lists of
+character arrays.  As in the previous benchmark, `corpus` takes as input a
+memory-mapped text object, while `stringi` takes as input in in-memory
+character vector. We are 1.7 times faster than `stringi`. We use slightly more
+RAM, but only because we do not throw away punctuation-only tokens.
 
 
 
@@ -140,6 +166,7 @@ each text, and we store them in a sparse matrix (a "document-by-term" count
 matrix).
 
     ## TODO: Add Demo
+
 
 
 Building from source

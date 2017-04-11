@@ -15,7 +15,7 @@
 text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         map_compatible = TRUE, remove_control = TRUE,
                         remove_ignorable = TRUE, remove_whitespace = TRUE,
-                        keep_empty = FALSE, ...)
+                        drop_empty = TRUE, ...)
 {
     if (!is.logical(fold_case) || is.na(fold_case)) {
         stop("invalid 'fold_case' value:", fold_case)
@@ -31,8 +31,8 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
         stop("invalid 'remove_ignorable' value:", remove_ignorable)
     } else if (!is.logical(remove_whitespace || is.na(remove_whitespace))) {
         stop("invalid 'remove_whitespace' value:", remove_whitespace)
-    } else if (!is.logical(keep_empty || is.na(keep_empty))) {
-        stop("invalid 'keep_empty' value:", keep_empty)
+    } else if (!is.logical(drop_empty || is.na(drop_empty))) {
+        stop("invalid 'drop_empty' value:", drop_empty)
     }
 
     ans <- list(fold_case = fold_case, fold_dash = fold_dash,
@@ -40,7 +40,7 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                 remove_control = remove_control,
                 remove_ignorable = remove_ignorable,
                 remove_whitespace = remove_whitespace,
-                keep_empty = keep_empty)
+                drop_empty = drop_empty)
     class(ans) <- "text_filter"
     ans
 }

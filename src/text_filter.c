@@ -100,9 +100,9 @@ static int text_filter_logical(SEXP filter, const char *key, int nullval)
 }
 
 
-int text_filter_keep_empty(SEXP filter)
+int text_filter_drop_empty(SEXP filter)
 {
-	return text_filter_logical(filter, "keep_empty", 1);
+	return text_filter_logical(filter, "drop_empty", 0);
 }
 
 
