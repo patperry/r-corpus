@@ -1,6 +1,6 @@
 Package:     corpus
-Version:     0.1
-Date:        2017-04-06
+Version:     0.1-0
+Date:        2017-04-11
 Title:       Text corpus analysis
 Author:      Patrick O. Perry
 Maintainer:  Patrick O. Perry <pperry@stern.nyu.edu>

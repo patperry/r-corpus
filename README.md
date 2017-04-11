@@ -5,6 +5,30 @@ Text corpus analysis in R. Heavy lifting is done by the
 [Corpus C library][corpus].
 
 
+Overview
+--------
+
+This is an R text processing package that currently does very little. It
+exports three main functions:
+
+ + `read_json()` for reading in data in JSON Lines format;
+
+ + `sentences()` for segmenting text into sentences;
+
+ + `tokens()` for segmenting text into tokens, each of which is an instance
+    of a particular word type (normalized token).
+
+The package also provides two new data types:
+
+ + `dataset` for storing JSON-encoded data
+
+ + `text` for storing text
+
+That's it. There are no n-grams, no term-by-document matrix, no part-of-speech
+tagging, no topic models, and no word vectors.  Some of these features are
+planned for future releases.
+
+
 Installing
 ----------
 
@@ -156,17 +180,6 @@ character arrays.  As in the previous benchmark, `corpus` takes as input a
 memory-mapped text object, while `stringi` takes as input in in-memory
 character vector. We are 1.7 times faster than `stringi`. We use slightly more
 RAM, but only because we do not throw away punctuation-only tokens.
-
-
-
-### Word usage statistics
-
-In the final benchmark, we compute the word type occurrence frequencies for
-each text, and we store them in a sparse matrix (a "document-by-term" count
-matrix).
-
-    ## TODO: Add Demo
-
 
 
 Building from source
