@@ -191,5 +191,6 @@ SEXP word_counts_text(SEXP sx, SEXP sfilter)
 {
 	(void)sx;
 	(void)sfilter;
+	error("not implemented");
 	return R_NilValue;
 }

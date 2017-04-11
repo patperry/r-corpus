@@ -72,21 +72,13 @@ tokens <- function(x, filter = text_filter(), ...)
 }
 
 
-vocab <- function(x, filter = text_filter(), ...)
-{
-    if (!is.null(filter) && !inherits(filter, "text_filter")) {
-        stop("invalid 'filter' argument")
-    }
-
-    .Call(C_vocab_text, x, filter)
-}
-
-
 word_counts <- function(x, filter = text_filter(), ...)
 {
     if (!is.null(filter) && !inherits(filter, "text_filter")) {
         stop("invalid 'filter' argument")
     }
+
+    stop("not implemented")
 
     .Call(C_word_counts_text, x, filter)
 }
