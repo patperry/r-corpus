@@ -177,24 +177,22 @@ To build the library from source, clone the repo and the submodules:
     git clone --recursive git://github.com/patperry/r-corpus.git
 
 The `--recursive` flag is to make sure that the corpus library also gets
-cloned. If you forget the `--recursive` flag, you can manually cloan
+cloned. If you forget the `--recursive` flag, you can manually clone
 the submodule with the following command:
 
     git submodule update --init
 
-There are no dependencies, but to build and run the tests, you will need
-to install the [Check Unit Testing][check] library.
+There are no other dependencies.
 
 
 Windows support
 ---------------
 
-Nonexistent. There are some notes about this in the [TODO file][windows] for
-the [Corpus C library][corpus] project.
+Nonexistent, but not far away. There are some notes about this in the
+[TODO file][windows] for the [Corpus C library][corpus] project.
 
 [casefold]: https://www.w3.org/International/wiki/Case_folding
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes
-[check]:https://libcheck.github.io/check/
 [corpus]: https://github.com/patperry/corpus
 [jsonl]: http://jsonlines.org/
 [nfkd]: http://unicode.org/reports/tr15/
