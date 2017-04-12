@@ -20,9 +20,9 @@ exports three main functions:
 
 The package also provides two new data types:
 
- + `dataset` for storing JSON-encoded data
+ + `dataset` for storing JSON-encoded data;
 
- + `text` for storing text
+ + `text` for storing text.
 
 That's it. There are no n-grams, no term-by-document matrix, no part-of-speech
 tagging, no topic models, and no word vectors.  Some of these features are
