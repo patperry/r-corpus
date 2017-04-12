@@ -33,10 +33,21 @@ Installing
 ----------
 
 This package uses a git submodule, so you cannot use
-`devtools::install_github` to install it. Instead, use the following command:
+`devtools::install_github` to install it. Instead, use the following sequence
+of commands in R:
 
-    devtools::install_git("git://github.com/patperry/r-corpus.git", args="--recursive")
+    local({
+        dir <- tempfile()
+        cmd <- paste("git clone --recursive",
+                     "git@github.com:patperry/r-corpus.git",
+                     dir)
+        system(cmd)
+        devtools::install(dir)
+        unlink(dir, recursive=TRUE)
+    })
 
+(It used to be possible to use `devtools::install_git`, but unfortunately
+that command no longer allows you to specify `--recursive`.)
 
 
 Performance
