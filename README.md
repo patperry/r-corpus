@@ -40,7 +40,7 @@ of commands in R:
         dir <- tempfile()
         cmd <- paste("git clone --recursive",
                      "git@github.com:patperry/r-corpus.git",
-                     dir)
+                     shQuote(dir))
         system(cmd)
         devtools::install(dir)
         unlink(dir, recursive=TRUE)
