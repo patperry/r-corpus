@@ -5,8 +5,6 @@ To Do
 
 `vocab()` for type/token frequencies
 
-`tokens()` for word tokens. Returns character()
-
 `blocks()` for fixed-length chunks of words. Read up on time series block
 bootstrap to get inspiration for interface.
 
