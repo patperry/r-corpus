@@ -42,7 +42,7 @@ of commands in R:
                      "git@github.com:patperry/r-corpus.git",
                      shQuote(dir))
         system(cmd)
-        devtools::install(dir)
+        devtools::install(dir) # fails on Windows, see below
         unlink(dir, recursive=TRUE)
     })
 
