@@ -215,6 +215,14 @@ Windows support
 Nonexistent, but not far away. There are some notes about this in the
 [TODO file][windows] for the [Corpus C library][corpus] project.
 
+
+License
+-------
+
+Corpus is released under the [Apache Licence, Version 2.0][apache].
+
+
+[apache]: https://www.apache.org/licenses/LICENSE-2.0.html
 [casefold]: https://www.w3.org/International/wiki/Case_folding
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 [corpus]: https://github.com/patperry/corpus
