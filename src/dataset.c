@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <Rdefines.h>
-#include "corpus/src/errcode.h"
+#include "corpus/src/error.h"
 #include "corpus/src/render.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
