@@ -29,6 +29,11 @@ as.text.text <- function(x, ...)
 
 is.text <- function(x)
 {
+    UseMethod("is.text")
+}
+
+is.text.default <- function(x)
+{
     inherits(x, "text")
 }
 

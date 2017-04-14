@@ -1,6 +1,10 @@
 To Do
 =====
 
+as.text should drop attributes
+
+names()<- should work for text, dataset (?)
+
 `summary.text`
 
 `vocab()` for type/token frequencies
