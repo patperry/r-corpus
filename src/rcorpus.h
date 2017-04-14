@@ -33,12 +33,6 @@ struct dataset {
 	int kind;
 };
 
-struct mmap {
-	int fd;
-	void *addr;
-	size_t size;
-};
-
 /* data set */
 SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 		   R_xlen_t nrow, SEXP prot);
@@ -86,11 +80,6 @@ int text_filter_drop_empty(SEXP filter);
 SEXP sentences_text(SEXP x);
 SEXP tokens_text(SEXP x, SEXP filter);
 SEXP word_counts_text(SEXP x, SEXP filter);
-
-/* memory map */
-SEXP alloc_mmap(SEXP file);
-int is_mmap(SEXP sbuf);
-struct mmap *as_mmap(SEXP sbuf);
 
 /* data schema */
 SEXP alloc_schema(void);

@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <Rdefines.h>
+#include "corpus/src/filebuf.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
 #include "corpus/src/token.h"
@@ -69,42 +70,36 @@ static void grow_rows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
 SEXP read_json(SEXP sfile)
 {
 	SEXP sbuf, sschema, prot, res;
-	const struct mmap *buf;
+	const struct filebuf *buf;
+	struct filebuf_iter it;
 	struct schema *schema;
-	const uint8_t *begin, *ptr, *end;
+	const uint8_t *ptr;
 	size_t size;
 	struct data *rows;
 	R_xlen_t nrow, nrow_max;
 	int err, type_id;
 
-	PROTECT(sbuf = alloc_mmap(sfile));
-	buf = as_mmap(sbuf);
+	PROTECT(sbuf = alloc_filebuf(sfile));
+	buf = as_filebuf(sbuf);
 
 	PROTECT(sschema = alloc_schema());
 	schema = as_schema(sschema);
-
-	begin = (uint8_t *)buf->addr;
-	ptr = begin;
-	end = begin + buf->size;
 
 	type_id = DATATYPE_NULL;
 	nrow = 0;
 	nrow_max = 0;
 	rows = NULL;
 
-	while (begin != end) {
-		if (ptr < end && *ptr++ != '\n') {
-			// only break at newlines and EOF
-			continue;
-		}
-
+	filebuf_iter_make(&it, buf);
+	while (filebuf_iter_advance(&it)) {
 		if (nrow == nrow_max) {
 			grow_rows(&rows, &nrow_max);
 		}
 
-		size = ptr - begin;
+		ptr = it.current.ptr;
+		size = it.current.size;
 
-		if ((err = data_assign(&rows[nrow], schema, begin, size))) {
+		if ((err = data_assign(&rows[nrow], schema, ptr, size))) {
 			free(rows);
 			error("error parsing row %"PRIu64" of JSON file",
 				(uint64_t)(nrow + 1));
@@ -118,7 +113,6 @@ SEXP read_json(SEXP sfile)
 			      (uint64_t)(nrow + 1));
 		}
 		nrow++;
-		begin = ptr;
 	}
 
 	// free excess memory
