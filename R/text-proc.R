@@ -56,7 +56,7 @@ print.text_filter <- function(x, ...)
 }
 
 
-sentences <- function(x, ...)
+sentences <- function(x)
 {
     .Call(C_sentences_text, x)
 }
