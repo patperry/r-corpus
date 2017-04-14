@@ -39,7 +39,7 @@ of commands in R:
     local({
         dir <- tempfile()
         cmd <- paste("git clone --recursive",
-                     "git@github.com:patperry/r-corpus.git",
+                     shQuote("https://github.com/patperry/r-corpus.git"),
                      shQuote(dir))
         system(cmd)
         devtools::install(dir)
@@ -196,9 +196,9 @@ RAM, but only because we do not throw away punctuation-only tokens.
 Building from source
 --------------------
 
-To build the library from source, clone the repo and the submodules:
+To build the library from source, clone the repository and the submodules:
 
-    git clone --recursive git://github.com/patperry/r-corpus.git
+    git clone --recursive https://github.com/patperry/r-corpus.git
 
 The `--recursive` flag is to make sure that the corpus library also gets
 cloned. If you forget the `--recursive` flag, you can manually clone
