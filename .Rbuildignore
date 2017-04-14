@@ -1,0 +1,10 @@
+.*.a$
+.*.o$
+.*.so$
+^.git
+^Makefile$
+^NEWS.md$
+^README.md$
+^TODO.md$
+^shell.sh$
+^src/corpus/.git

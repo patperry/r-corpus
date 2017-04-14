@@ -54,10 +54,10 @@ names.text <- function(x)
     as.character(x[i])
 }
 
-format.text <- function(x, nchar_max = 60, suffix = "\u2026", ...)
+format.text <- function(x, nchar_max = 65, suffix = "\u2026", ...)
 {
     if (length(x) == 0) {
-        str <- "text(0)"
+        str <- character()
     } else if (is.null(nchar_max)) {
         str <- as.character(x)
     } else {
@@ -75,11 +75,13 @@ print.text <- function(x, justify = "none", print_max = 6L, ...)
         xsub <- x
         nextra <- 0
     } else {
-        xsub <- head(x, n = print_max)
+        xsub <- x[seq_len(print_max)]
         nextra <- length(x) - print_max
     }
 
-    if (print_max > 0) {
+    if (length(xsub) == 0) {
+        cat("text(0)\n")
+    } else if (print_max > 0) {
         print(format(xsub, justify = justify, na.encode = FALSE, ...))
         if (nextra > 0) {
             cat(paste0(paste0(rep(" ", ceiling(log10(print_max + 1))),
@@ -163,9 +165,4 @@ Ops.text <- function(e1, e2)
     e1 <- as.character(e1)
     e2 <- as.character(e2)
     NextMethod(.Generic)
-}
-
-text_split <- function(x, size = 1, unit = "word")
-{
-    .Call(C_text_split, x, size, unit)
 }
