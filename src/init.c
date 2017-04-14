@@ -16,7 +16,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <syslog.h>
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
 #include "rcorpus.h"
@@ -55,11 +54,6 @@ static const R_CallMethodDef CallEntries[] = {
 
 void R_init_corpus(DllInfo *dll)
 {
-	openlog("corpus", LOG_CONS | LOG_PERROR | LOG_PID, LOG_USER);
-	setlogmask(LOG_UPTO(LOG_INFO));
-	//setlogmask(LOG_UPTO(LOG_DEBUG));
-
-        syslog(LOG_DEBUG, "loading corpus module");
 	R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
 }
 
@@ -67,6 +61,4 @@ void R_init_corpus(DllInfo *dll)
 void R_unload_corpus(DllInfo *dll)
 {
 	(void)dll;
-	syslog(LOG_DEBUG, "unloading corpus module");
-        closelog();
 }
