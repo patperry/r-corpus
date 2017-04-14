@@ -31,8 +31,8 @@ static struct filebuf *filebuf_new(const char *filename)
 	if (filebuf_init(&buf, filename) == 0) {
 		if (!(obj = malloc(sizeof(*obj)))) {
 			filebuf_destroy(&buf);
-			error("failed allocating memory (%zu bytes)",
-			      sizeof(*obj));
+			error("failed allocating memory (%u bytes)",
+			      (unsigned)sizeof(*obj));
 		}
 		*obj = buf;
 	}

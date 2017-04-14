@@ -52,7 +52,8 @@ SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 
 	if (!(obj = malloc(sizeof(*obj)))) {
 		free(rows);
-		error("failed allocating memory (%zu bytes)", sizeof(*obj));
+		error("failed allocating memory (%u bytes)",
+			(unsigned)sizeof(*obj));
 	}
 	obj->schema = schema;
 	obj->rows = rows;
@@ -290,7 +291,8 @@ SEXP subscript_dataset(SEXP sdata, SEXP si)
 		index = (R_xlen_t)(i - 1);
 
 		if (!(rows = malloc(sizeof(*rows)))) {
-			error("failed allocating %zu bytes", sizeof(*rows));
+			error("failed allocating %u bytes",
+				(unsigned)sizeof(*rows));
 		}
 		rows[0] = d->rows[index];
 		ans = alloc_dataset(s, rows[0].type_id, rows, 1, prot);
@@ -305,8 +307,8 @@ SEXP subscript_dataset(SEXP sdata, SEXP si)
 		type_id = r->type_ids[(int)(i - 1)];
 
 		if (!(rows = malloc(d->nrow * sizeof(*rows)))) {
-			error("failed allocating %zu bytes",
-			      d->nrow * sizeof(*rows));
+			error("failed allocating %"PRIu64" bytes",
+			      (uint64_t)d->nrow * sizeof(*rows));
 		}
 
 		for (index = 0; index < d->nrow; index++) {
@@ -345,7 +347,7 @@ SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
 	index = REAL(si);
 
 	if (!(rows = malloc(n * sizeof(*rows))) && n > 0) {
-		error("failed allocating %zu bytes", n * sizeof(*rows));
+		error("failed allocating %"PRIu64" bytes", n * sizeof(*rows));
 	}
 
 	if (sj == R_NilValue) {
@@ -546,8 +548,8 @@ static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 	} else {
 		rows = malloc(n * sizeof(*rows));
 		if (!rows) {
-			error("failed allocating memory (%zu bytes)",
-			      n * sizeof(*rows));
+			error("failed allocating memory (%"PRIu64" bytes)",
+			      (uint64_t)n * sizeof(*rows));
 		}
 
 		i = 0;
@@ -591,8 +593,8 @@ static SEXP as_list_dataset_record(SEXP sdata)
 		// use calloc so that all items are initialized to null
 		rows[j] = calloc(n, sizeof(*rows[j]));
 		if (!rows[j] && n) {
-			error("failed allocating memory (%zu bytes)",
-			      n * sizeof(*rows[j]));
+			error("failed allocating memory (%"PRIu64" bytes)",
+			      (uint64_t)n * sizeof(*rows[j]));
 		}
 		cols[r->name_ids[j]] = j;
 

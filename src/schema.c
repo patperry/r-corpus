@@ -37,8 +37,8 @@ static struct schema *schema_new(void)
 	if (schema_init(&s) == 0) {
 		if (!(obj = malloc(sizeof(*obj)))) {
 			schema_destroy(&s);
-			error("failed allocating memory (%zu bytes)",
-			      sizeof(*obj));
+			error("failed allocating memory (%u bytes)",
+			      (unsigned)sizeof(*obj));
 		}
 		*obj = s;
 	} else {

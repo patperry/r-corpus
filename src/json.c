@@ -47,19 +47,21 @@ static void grow_rows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
 
 	if (size1 > SIZE_MAX / width) {
 		free(base);
-		error("number of rows (%zu) exceeds maximum (%zu)",
-			size1, (size_t)SIZE_MAX / width);
+		error("number of rows (%"PRIu64")"
+			" exceeds maximum (%"PRIu64")",
+			(uint64_t)size1, (uint64_t)SIZE_MAX / width);
 	}
 	if (size1 > R_XLEN_T_MAX) {
 		free(base);
-		error("number of rows (%zu) exceeds maximum (%"PRIu64")",
-			size1, (uint64_t)R_XLEN_T_MAX);
+		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
+			(uint64_t)size1, (uint64_t)R_XLEN_T_MAX);
 	}
 
 	base1 = realloc(base, size1 * width);
 	if (size1 > 0 && base1 == NULL) {
 		free(base);
-		error("failed allocating %zu bytes", size1 * width);
+		error("failed allocating %"PRIu64" bytes",
+			(uint64_t)size1 * width);
 	}
 
 	*rowsptr = base1;
