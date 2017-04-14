@@ -18,7 +18,7 @@
 \details{
     The \code{text} type is a new datatype provided by the \code{corpus}
     package suitable for processing Unicode text. Text vectors behave
-    similarly to character vectors (and can be converted with the
+    like character vectors (and can be converted with the
     \code{as.character} function). They can be created using the
     \code{\link{read_json}} function or the \code{as.text} function.
 

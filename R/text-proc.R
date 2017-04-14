@@ -62,7 +62,7 @@ sentences <- function(x)
 }
 
 
-tokens <- function(x, filter = text_filter(), ...)
+tokens <- function(x, filter = text_filter())
 {
     if (!is.null(filter) && !inherits(filter, "text_filter")) {
         stop("invalid 'filter' argument")
