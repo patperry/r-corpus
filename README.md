@@ -42,7 +42,7 @@ of commands in R:
                      "git@github.com:patperry/r-corpus.git",
                      shQuote(dir))
         system(cmd)
-        devtools::install(dir) # fails on Windows, see below
+        devtools::install(dir)
         unlink(dir, recursive=TRUE)
     })
 
@@ -207,13 +207,6 @@ the submodule with the following command:
     git submodule update --init
 
 There are no other dependencies.
-
-
-Windows support
----------------
-
-Nonexistent, but not far away. There are some notes about this in the
-[TODO file][windows] for the [Corpus C library][corpus] project.
 
 
 License
