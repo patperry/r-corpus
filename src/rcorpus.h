@@ -21,6 +21,7 @@
 #include <Rdefines.h>
 
 struct data;
+struct filebuf;
 struct schema;
 struct text;
 
@@ -58,6 +59,11 @@ SEXP datatypes_dataset(SEXP data);
 SEXP simplify_dataset(SEXP data);
 SEXP subscript_dataset(SEXP data, SEXP i);
 SEXP subset_dataset(SEXP data, SEXP i, SEXP j);
+
+/* file buffer */
+SEXP alloc_filebuf(SEXP file);
+int is_filebuf(SEXP sbuf);
+struct filebuf *as_filebuf(SEXP sbuf);
 
 /* text (core) */
 SEXP alloc_text(R_xlen_t n, SEXP prot);
