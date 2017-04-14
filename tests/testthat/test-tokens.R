@@ -14,7 +14,7 @@ test_that("'tokens' splits according to UAX #29", {
 })
 
 
-test_that("'tokens' normalizes token by default", {
+test_that("'tokens' normalizes tokens by default", {
     text <- paste0("The quick (\u201cbrown\u201d) fox can\u2019t",
                    " jump 32.3 feet, right?")
 
