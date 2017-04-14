@@ -1,4 +1,4 @@
-PKG_CFLAGS= -std=c99 -Icorpus/src
+PKG_CFLAGS= -std=c99 -Icorpus/src -Wall -Wextra -pedantic
 
 # For development only (GNU/GCC specific not allowed on CRAN):
 MAINS = corpus/src/main.o corpus/src/main_get.o corpus/src/main_scan.o \

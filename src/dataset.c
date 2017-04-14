@@ -242,7 +242,6 @@ SEXP datatypes_dataset(SEXP sdata)
 
 SEXP print_dataset(SEXP sdata)
 {
-	SEXP str, ans;
 	const struct dataset *d = as_dataset(sdata);
 	struct render r;
 
@@ -565,7 +564,7 @@ static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 
 static SEXP as_list_dataset_record(SEXP sdata)
 {
-	SEXP ans, ans_j, prot, val;
+	SEXP ans, ans_j, prot;
 	const struct dataset *d = as_dataset(sdata);
 	const struct schema *s = d->schema;
 	const struct datatype_record *r;

@@ -42,10 +42,10 @@ SEXP alloc_text(R_xlen_t n, SEXP prot)
 	struct rtext *text;
 	size_t size;
 
-	if (n > (1ull << DBL_MANT_DIG)) {
+	if ((uint64_t)n > (1ull << DBL_MANT_DIG)) {
 		error("length (%"PRIu64") exceeds maximum (2^%d)",
 			(uint64_t)n, DBL_MANT_DIG);
-	} else if (n > (SIZE_MAX - sizeof(struct rtext))
+	} else if ((size_t)n > (SIZE_MAX - sizeof(struct rtext))
 			/ sizeof(struct text)) {
 		error("cannot allocate 'text' array of length %"PRIu64,
 			(uint64_t)n);
@@ -72,7 +72,8 @@ SEXP coerce_text(SEXP sx)
 	SEXP stext, str;
 	struct text *text;
 	const char *ptr;
-	R_xlen_t len, i, n;
+	R_xlen_t i, n;
+	uint64_t len;
 	bool duped = false;
 
 	if (is_text(sx)) {
@@ -104,11 +105,11 @@ SEXP coerce_text(SEXP sx)
 				SET_STRING_ELT(sx, i, str);
 				ptr = CHAR(str);
 			}
-			len = XLENGTH(str);
-			if (len > TEXT_SIZE_MAX) {
-				error("text size (%zu bytes)"
-				      " exceeds maximum (%zu bytes)",
-				      len, TEXT_SIZE_MAX);
+			len = (uint64_t)XLENGTH(str);
+			if (len > (uint64_t)TEXT_SIZE_MAX) {
+				error("text size (%"PRIu64" bytes)"
+				      " exceeds maximum (%"PRIu64" bytes)",
+				      len, (uint64_t)TEXT_SIZE_MAX);
 			}
 			if (text_assign(&text[i], (uint8_t *)ptr, (size_t)len,
 					TEXT_NOESCAPE) != 0) {
@@ -173,7 +174,6 @@ SEXP as_character_text(SEXP stext)
 	uint8_t *buf, *end;
 	size_t buf_len, len;
 	R_xlen_t i, n;
-	double rnchar_max;
 
 	text = as_text(stext, &n);
 
@@ -243,8 +243,8 @@ SEXP subset_text(SEXP stext, SEXP si)
 	for (s = 0; s < ns; s++) {
 		ri = subset[s] - 1;
 		if (!(0 <= ri && ri < rn)) {
-			error("invalid index (%g) at position %zu",
-			      subset[s], s + 1);
+			error("invalid index (%g) at position %"PRIu64,
+			      subset[s], (uint64_t)(s + 1));
 		}
 		i = (R_xlen_t)ri;
 		dst[s] = src[i];
