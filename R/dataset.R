@@ -163,6 +163,12 @@ as.character.dataset <- function(x, ...)
 }
 
 
+as.logical.dataset <- function(x, ...)
+{
+    .Call(C_as_logical_dataset, x)
+}
+
+
 as.integer.dataset <- function(x, ...)
 {
     .Call(C_as_integer_dataset, x)

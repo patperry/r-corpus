@@ -22,6 +22,11 @@ as.text.default <- function(x, ...)
     .Call(C_coerce_text, x)
 }
 
+as.text.text <- function(x, ...)
+{
+    x
+}
+
 is.text <- function(x)
 {
     inherits(x, "text")
