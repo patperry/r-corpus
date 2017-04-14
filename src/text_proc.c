@@ -46,7 +46,7 @@ SEXP sentences_text(SEXP sx)
 
 	for (i = 0; i < n; i++) {
 		if (!text[i].ptr) {
-			SET_VECTOR_ELT(ans, i, R_NilValue);
+			SET_VECTOR_ELT(ans, i, ScalarString(NA_STRING));
 			continue;
 		}
 
