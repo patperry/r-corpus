@@ -12,7 +12,7 @@ test_that("reading integer works", {
     expect_equal(names(ds), NULL)
     expect_equal(as.integer(ds), x)
 
-    rm("ds")
+    rm("ds"); gc()
     file.remove(file)
 })
 
@@ -30,7 +30,7 @@ test_that("subscripting and subsetting integer works", {
     expect_equal(as.integer(ds[c(1, 7, 3)]), x[c(1, 7, 3)])
     expect_equal(as.integer(ds[c()]), x[c()])
 
-    rm("ds")
+    rm("ds"); gc()
     file.remove(file)
 })
 
@@ -46,7 +46,7 @@ test_that("reading double works", {
     expect_equal(names(ds), NULL)
     expect_equal(as.numeric(ds), x)
 
-    rm("ds")
+    rm("ds"); gc()
     file.remove(file)
 })
 
@@ -63,7 +63,7 @@ test_that("subscripting and subsetting double works", {
 
     expect_equal(as.numeric(ds[c(2, 4)]), x[c(2, 4)])
 
-    rm("ds")
+    rm("ds"); gc()
     file.remove(file)
 })
 
@@ -89,7 +89,7 @@ test_that("reading text works", {
     expect_equal(as.text(ds), as.text(x))
     expect_equal(as.character(ds), x)
 
-    rm("ds")
+    rm("ds"); gc()
     file.remove(file)
 })
 
@@ -106,6 +106,6 @@ test_that("reading boolean works", {
     expect_equal(names(ds), NULL)
     expect_equal(as.logical(ds), x)
 
-    rm("ds")
+    rm("ds"); gc()
     file.remove(file)
 })
