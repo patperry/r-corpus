@@ -30,6 +30,12 @@ names.dataset <- function(x)
 }
 
 
+`names<-.dataset` <- function(x, value)
+{
+    stop("setting names on a dataset object is not allowed")
+}
+
+
 dimnames.dataset <- function(x)
 {
     cn <- names(x)
@@ -68,6 +74,12 @@ print.dataset <- function(x, ...)
 }
 
 
+`$<-.dataset` <- function(x, name, value)
+{
+    stop("$<- operator is invalid for dataset objects")
+}
+
+
 `[[.dataset` <- function(x, i)
 {
     if (length(i) == 0) {
@@ -92,6 +104,13 @@ print.dataset <- function(x, ...)
     ans <- .Call(C_simplify_dataset, ans)
     ans
 }
+
+
+`[[<-.dataset` <- function(x, i, value)
+{
+    stop("[[<- operator is invalid for dataset objects")
+}
+
 
 
 `[.dataset` <- function(x, ...)
@@ -154,6 +173,12 @@ print.dataset <- function(x, ...)
     }
 
     .Call(C_subset_dataset, x, i, j)
+}
+
+
+`[<-.dataset` <- function(x, ...)
+{
+    stop("[<- operator is invalid for dataset objects")
 }
 
 

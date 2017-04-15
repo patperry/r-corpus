@@ -35,7 +35,7 @@ as.text.default <- function(x, ...)
 
 as.text.text <- function(x, ...)
 {
-    x <- list(handle=x$handle)
+    x <- list(handle=unclass(x)$handle)
     class(x) <- "text"
     x
 }
@@ -62,23 +62,28 @@ dim.text <- function(x)
 
 names.text <- function(x)
 {
-    x$names
+    unclass(x)$names
 }
 
 `names<-.text` <- function(x, value)
 {
-    if (is.null(value)) {
-        x$names <- NULL
-    } else {
+    if (!is.null(value)) {
         value <- as.character(value)
         if (length(value) != length(x)) {
             stop(paste0("names attribute [", length(value), "]",
                         " must be the same length as the text object [",
                         length(x), "]"))
         }
-        x$names <- value
     }
-    x
+    y <- list(handle=unclass(x)$handle, names=value)
+    attrs <- attributes(x)
+    attrs[["names"]] <- NULL
+
+    for (a in names(attrs)) {
+        attr(y, a) <- attrs[[a]]
+    }
+
+    y
 }
 
 `[.text` <- function(x, i)
@@ -88,12 +93,37 @@ names.text <- function(x)
     .Call(C_subset_text, x, ind[i])
 }
 
+`$.text` <- function(x, name)
+{
+    stop("$ operator is invalid for text objects")
+}
+
+
+`$<-.text` <- function(x, name, value)
+{
+    stop("$<- operator is invalid for text objects")
+}
+
+
+`[<-.text` <- function(x, i, value)
+{
+    stop("[<- operator is invalid for text objects")
+}
+
+
 `[[.text` <- function(x, i)
 {
     ind <- seq_along(x)
     names(ind) <- names(x)
     as.character(x[ind[[i]]])
 }
+
+
+`[<-.text` <- function(x, i, value)
+{
+    stop("[[<- operator is invalid for text objects")
+}
+
 
 format.text <- function(x, nchar_max = 65, suffix = "\u2026", ...)
 {
