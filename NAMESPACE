@@ -7,7 +7,7 @@ export(is.text)
 export(is.text.default)
 export(read_json)
 export(sentences)
-export(text)
+## export(text) # don't export, clashes with graphics::text
 export(text_filter)
 export(tokens)
 
