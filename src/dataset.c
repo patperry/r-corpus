@@ -47,7 +47,7 @@ static void free_dataset(SEXP sdataset)
 SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 		   R_xlen_t nrow, SEXP prot)
 {
-	SEXP sdata, sclass;
+	SEXP ans, sclass, shandle, snames;
 	struct dataset *obj;
 
 	if (!(obj = malloc(sizeof(*obj)))) {
@@ -66,30 +66,53 @@ SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 		obj->kind = schema->types[type_id].kind;
 	}
 
-	PROTECT(sdata = R_MakeExternalPtr(obj, DATASET_TAG, prot));
-	R_RegisterCFinalizerEx(sdata, free_dataset, TRUE);
+	PROTECT(shandle = R_MakeExternalPtr(obj, DATASET_TAG, prot));
+	R_RegisterCFinalizerEx(shandle, free_dataset, TRUE);
+
+	PROTECT(ans = allocVector(VECSXP, 1));
+	SET_VECTOR_ELT(ans, 0, shandle);
+
+	PROTECT(snames = allocVector(STRSXP, 1));
+	SET_STRING_ELT(snames, 0, mkChar("handle"));
+	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
 	SET_STRING_ELT(sclass, 0, mkChar("dataset"));
-	setAttrib(sdata, R_ClassSymbol, sclass);
+	setAttrib(ans, R_ClassSymbol, sclass);
 
-	UNPROTECT(2);
-	return sdata;
+	UNPROTECT(4);
+	return ans;
 }
 
 
 int is_dataset(SEXP sdata)
 {
-	return ((TYPEOF(sdata) == EXTPTRSXP)
-		&& (R_ExternalPtrTag(sdata) == DATASET_TAG));
+	SEXP handle;
+
+	if (!isVectorList(sdata)) {
+		return 0;
+	}
+
+	handle = getListElement(sdata, "handle");
+	if (handle == R_NilValue) {
+		return 0;
+	}
+
+	return ((TYPEOF(handle) == EXTPTRSXP)
+		&& (R_ExternalPtrTag(handle) == DATASET_TAG));
 }
 
 
 struct dataset *as_dataset(SEXP sdata)
 {
-	if (!is_dataset(sdata))
+	SEXP handle;
+
+	if (!is_dataset(sdata)) {
 		error("invalid 'dataset' object");
-	return R_ExternalPtrAddr(sdata);
+	}
+
+	handle = getListElement(sdata, "handle");
+	return R_ExternalPtrAddr(handle);
 }
 
 

@@ -97,30 +97,6 @@ void free_text(SEXP stext)
         Free(text);
 }
 
-/* modified from R-Exts Section 5.9.6 "handling lists" */
-static int findListElement(SEXP list, const char *str)
-{
-	SEXP names = getAttrib(list, R_NamesSymbol);
-	int i, n;
-
-	n = LENGTH(list);
-	for (i = 0; i < n; i++) {
-		if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-static SEXP getListElement(SEXP list, const char *str)
-{
-	int i = findListElement(list, str);
-	if (i < 0) {
-		return R_NilValue;
-	}
-	return VECTOR_ELT(list, i);
-}
-
 
 int is_text(SEXP stext)
 {

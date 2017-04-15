@@ -95,4 +95,8 @@ struct schema *as_schema(SEXP schema);
 /* json values */
 SEXP read_json(SEXP file);
 
+/* internal utility functions */
+int findListElement(SEXP list, const char *str);
+SEXP getListElement(SEXP list, const char *str);
+
 #endif /* RCORPUS_H */
