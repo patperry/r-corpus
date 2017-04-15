@@ -52,6 +52,7 @@
     data$c$nested
 
     rm("data")
+    gc() # force the garbage collector to release the memory-map
     file.remove(file)
 }
 \keyword{file}
