@@ -176,7 +176,7 @@ print.dataset <- function(x, ...)
 }
 
 
-`[<-.dataset` <- function(x, ...)
+`[<-.dataset` <- function(x, ..., value)
 {
     stop("[<- operator is invalid for dataset objects")
 }
