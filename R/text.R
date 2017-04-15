@@ -90,7 +90,10 @@ names.text <- function(x)
 {
     ind <- seq_along(x)
     names(ind) <- names(x)
-    .Call(C_subset_text, x, ind[i])
+    sub <- ind[i]
+    y <- .Call(C_subset_text, x, sub)
+    names(y) <- names(sub)
+    y
 }
 
 `$.text` <- function(x, name)
@@ -125,7 +128,7 @@ names.text <- function(x)
 }
 
 
-format.text <- function(x, nchar_max = 65, suffix = "\u2026", ...)
+format.text <- function(x, nchar_max = 66, suffix = "\u2026", ...)
 {
     if (length(x) == 0) {
         str <- character()
@@ -142,8 +145,15 @@ format.text <- function(x, nchar_max = 65, suffix = "\u2026", ...)
     format(str, ...)
 }
 
-print.text <- function(x, justify = "none", print_max = 6L, ...)
+
+print.text <- function(x, justify = "none", print_max = 6L,
+                       nchar_max = ifelse(is.null(names(x)), 66, 50), ...)
 {
+    if (length(x) == 0) {
+        cat("text(0)\n")
+        return(invisible(x))
+    }
+
     if (is.null(print_max) || is.na(print_max) || length(x) <= print_max) {
         xsub <- x
         nextra <- 0
@@ -152,21 +162,27 @@ print.text <- function(x, justify = "none", print_max = 6L, ...)
         nextra <- length(x) - print_max
     }
 
-    if (length(xsub) == 0) {
-        cat("text(0)\n")
-    } else if (print_max > 0) {
-        print(format(xsub, justify = justify, na.encode = FALSE, ...))
-        if (nextra > 0) {
-            cat(paste0(paste0(rep(" ", ceiling(log10(print_max + 1))),
-                              collapse=""),
-                       "\u22ee\n(", length(x), " rows total)\n"))
-        }
+    str <- format(xsub, nchar_max = nchar_max, justify = justify,
+                  na.encode = FALSE, ...)
+    nm <- names(str)
+
+    if (is.null(nm)) {
+        lab <- format(paste0("[", seq_along(str), "]"), justify="right")
     } else {
-        cat(paste0("(", length(x), " rows total)\n"))
+        lab <- format(nm, justify="left")
+    }
+    for (i in seq_along(str)) {
+        cat(lab[[i]], " ", encodeString(str[[i]]), "\n", sep="")
+    }
+
+    if (nextra > 0) {
+        cat(paste0(paste0(rep(" ", max(nchar(lab))), collapse=""), "\u22ee\n"))
+        cat("(", length(x), " rows total)\n", sep="")
     }
 
     invisible(x)
 }
+
 
 summary.text <- function(object, ...)
 {
