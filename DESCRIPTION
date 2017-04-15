@@ -1,6 +1,6 @@
 Package:     corpus
 Version:     0.2-0
-Date:        2017-04-14
+Date:        2017-04-15
 Title:       Text Corpus Analysis
 Author:      Patrick O. Perry
 Maintainer:  Patrick O. Perry <pperry@stern.nyu.edu>
@@ -9,4 +9,6 @@ Description:
 Suggests:    testthat
 LazyData:    Yes
 License:     Apache License (== 2.0) | file LICENSE
+URL:         https://github.com/patperry/r-corpus
+BugReports:  https://github.com/patperry/r-corpus/issues
 Encoding:    UTF-8
