@@ -29,6 +29,8 @@ static struct filebuf *filebuf_new(const char *filename)
 	struct filebuf *obj = NULL;
 	struct filebuf buf;
 
+	errno = 0;
+
 	if (filebuf_init(&buf, filename) == 0) {
 		if (!(obj = malloc(sizeof(*obj)))) {
 			filebuf_destroy(&buf);
@@ -36,7 +38,15 @@ static struct filebuf *filebuf_new(const char *filename)
 			      (unsigned)sizeof(*obj));
 		}
 		*obj = buf;
+	} else {
+		if (errno) {
+			error("cannot open file '%s': %s",
+				filename, strerror(errno));
+		} else {
+			error("cannot open file '%s'", filename);
+		}
 	}
+
 	return obj;
 }
 
@@ -68,17 +78,7 @@ SEXP alloc_filebuf(SEXP sfile)
         }
         file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
 
-	errno = 0;
 	buf = filebuf_new(file);
-	if (buf == NULL) {
-		if (errno) {
-			error("cannot open file '%s': %s",
-				file, strerror(errno));
-		} else {
-			error("cannot open file '%s'");
-		}
-	}
-
 	PROTECT(sbuf = R_MakeExternalPtr(buf, FILEBUF_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(sbuf, free_filebuf, TRUE);
 
