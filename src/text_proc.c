@@ -38,7 +38,7 @@ SEXP sentences_text(SEXP sx)
 	prot = R_ExternalPtrProtected(stext);
 
 	PROTECT(ans = allocVector(VECSXP, n));
-	names = getAttrib(sx, R_NamesSymbol);
+	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
 	buf = NULL;
@@ -46,7 +46,7 @@ SEXP sentences_text(SEXP sx)
 
 	for (i = 0; i < n; i++) {
 		if (!text[i].ptr) {
-			SET_VECTOR_ELT(ans, i, ScalarString(NA_STRING));
+			SET_VECTOR_ELT(ans, i, alloc_na_text());
 			continue;
 		}
 
@@ -97,7 +97,7 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 	drop_empty = text_filter_drop_empty(sfilter);
 
 	PROTECT(ans = allocVector(VECSXP, n));
-	names = getAttrib(sx, R_NamesSymbol);
+	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
 	if (symtab_init(&symtab, kind) != 0) {

@@ -12,6 +12,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+text <- function(...)
+{
+    x <- c(...)
+    nm <- names(x)
+    x <- as.text(x)
+    names(x) <- nm
+    x
+}
+
 as.text <- function(x, ...)
 {
     UseMethod("as.text")
@@ -19,11 +28,15 @@ as.text <- function(x, ...)
 
 as.text.default <- function(x, ...)
 {
-    .Call(C_coerce_text, x)
+    x <- .Call(C_coerce_text, x)
+    names(x) <- NULL
+    x
 }
 
 as.text.text <- function(x, ...)
 {
+    x <- list(handle=x$handle)
+    class(x) <- "text"
     x
 }
 
@@ -49,19 +62,37 @@ dim.text <- function(x)
 
 names.text <- function(x)
 {
-    NULL
+    x$names
+}
+
+`names<-.text` <- function(x, value)
+{
+    if (is.null(value)) {
+        x$names <- NULL
+    } else {
+        value <- as.character(value)
+        if (length(value) != length(x)) {
+            stop(paste0("names attribute [", length(value), "]",
+                        " must be the same length as the text object [",
+                        length(x), "]"))
+        }
+        x$names <- value
+    }
+    x
 }
 
 `[.text` <- function(x, i)
 {
-    .Call(C_subset_text, x, seq_along(x)[i])
+    ind <- seq_along(x)
+    names(ind) <- names(x)
+    .Call(C_subset_text, x, ind[i])
 }
 
 `[[.text` <- function(x, i)
 {
-    if (length(i) > 1)
-        stop("attempt to select more than one element")
-    as.character(x[i])
+    ind <- seq_along(x)
+    names(ind) <- names(x)
+    as.character(x[ind[[i]]])
 }
 
 format.text <- function(x, nchar_max = 65, suffix = "\u2026", ...)
@@ -70,8 +101,10 @@ format.text <- function(x, nchar_max = 65, suffix = "\u2026", ...)
         str <- character()
     } else if (is.null(nchar_max)) {
         str <- as.character(x)
+        names(str) <- names(x)
     } else {
         str <- as.character(x)
+        names(str) <- names(x)
         len <- nchar(str)
         long <- len >= nchar_max + 1
         str[long] <- paste0(substr(str[long], 1, nchar_max), suffix)
@@ -149,7 +182,20 @@ is.character.text <- function(x)
 
 all.equal.text <- function(target, current, ...)
 {
-    all.equal(as.character(target), as.character(current), ...)
+    if (!is.text(current)) {
+        return(c(paste("Modes: text,", mode(current)),
+                 paste("target is text, current is", mode(current))))
+    }
+
+    nt <- names(target)
+    target <- as.character(target)
+    names(target) <- nt
+
+    nc <- names(current)
+    current <- as.character(current)
+    names(current) <- nc
+
+    all.equal(target, current, ...)
 }
 
 is.na.text <- function(x)

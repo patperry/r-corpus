@@ -6,8 +6,8 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
               "'Are you going?' John asked")
 
     expect_equal(sentences(text), list(
-        c("He said, 'Are you going?' ", "John Shook his head."),
-        c("'Are you going?' ", "John asked")))
+        text("He said, 'Are you going?' ", "John Shook his head."),
+        text("'Are you going?' ", "John asked")))
 })
 
 
@@ -16,7 +16,8 @@ test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
               "etc.)' '(the")
 
     expect_equal(sentences(text), list(
-        "c.d", "3.4", "U.S.", "the resp. leaders are", "etc.)' '(the"))
+        text("c.d"), text("3.4"), text("U.S."),
+        text("the resp. leaders are"), text("etc.)' '(the")))
 })
 
 
@@ -26,14 +27,14 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
               "\u7406\u6570\u5b57.\u5b83\u4eec\u6307")
 
     expect_equal(sentences(text), list(
-        c("She said 'See spot run.'  ", "John shook his head."),
-        c("etc.", "\u5b83\u4eec\u6307"),
-        c("\u7406\u6570\u5b57.", "\u5b83\u4eec\u6307")))
+        text("She said 'See spot run.'  ", "John shook his head."),
+        text("etc.", "\u5b83\u4eec\u6307"),
+        text("\u7406\u6570\u5b57.", "\u5b83\u4eec\u6307")))
 })
 
 
 test_that("'sentences' cannot handle abbreviations", {
-    expect_equal(sentences("Mr. Jones"), list(c("Mr. ", "Jones")))
+    expect_equal(sentences("Mr. Jones"), list(text("Mr. ", "Jones")))
 })
 
 
@@ -44,15 +45,21 @@ test_that("'sentences' works on length-0 arguments values", {
 
 test_that("'sentences' works on empty and missing values", {
     expect_equal(sentences(c("1", "2", NA, "", "5")),
-                 list("1", "2", NA_character_, character(), "5"))
+                 list(text("1"), text("2"), text(NA), text(), text("5")))
 })
 
 
 test_that("'sentences' propagates names if its argument has them", {
-    text <- c(a="First sentence.", b="Second sentence!")
+    text <- text(a="First sentence.", b="Second sentence!")
+    ctext <- c(a="First sentence.", b="Second sentence!")
 
+    # character
     sents <- sentences(text)
+    expect_equal(sents, list(a=text("First sentence."),
+                             b=text("Second sentence!")))
 
-    expect_equal(sents, list( a="First sentence.", b="Second sentence!"))
+    csents <- sentences(ctext)
+    expect_equal(csents, list(a=text("First sentence."),
+                              b=text("Second sentence!")))
 })
 

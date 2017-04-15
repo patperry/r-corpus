@@ -27,11 +27,16 @@ test_that("'tokens' normalizes tokens by default", {
 
 
 test_that("'tokens' propagates names if its argument has them", {
-    text <- c(a="First sentence.", b="Second sentence!")
+    text <- text(a="First sentence.", b="Second sentence!")
+    ctext <- c(a="First sentence.", b="Second sentence!")
 
     toks <- tokens(text)
-
     expect_equal(toks, list(
+        a=c("first", "sentence", "."),
+        b=c("second", "sentence", "!")))
+
+    ctoks <- tokens(ctext)
+    expect_equal(ctoks, list(
         a=c("first", "sentence", "."),
         b=c("second", "sentence", "!")))
 })

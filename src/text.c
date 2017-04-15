@@ -38,7 +38,7 @@ static void free_text(SEXP text);
 
 SEXP alloc_text(R_xlen_t n, SEXP prot)
 {
-	SEXP stext, sclass;
+	SEXP ans, shandle, sclass, snames;
 	struct rtext *text;
 	size_t size;
 
@@ -55,15 +55,137 @@ SEXP alloc_text(R_xlen_t n, SEXP prot)
 	text = (struct rtext *)Calloc(size, char);
 	text->length = n;
 
-	PROTECT(stext = R_MakeExternalPtr(text, TEXT_TAG, prot));
-	R_RegisterCFinalizerEx(stext, free_text, TRUE);
+	PROTECT(shandle = R_MakeExternalPtr(text, TEXT_TAG, prot));
+	R_RegisterCFinalizerEx(shandle, free_text, TRUE);
+
+	PROTECT(ans = allocVector(VECSXP, 2));
+	SET_VECTOR_ELT(ans, 0, shandle);
+	SET_VECTOR_ELT(ans, 1, R_NilValue);
+
+	PROTECT(snames = allocVector(STRSXP, 2));
+	SET_STRING_ELT(snames, 0, mkChar("handle"));
+	SET_STRING_ELT(snames, 1, mkChar("names"));
+	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
 	SET_STRING_ELT(sclass, 0, mkChar("text"));
-	setAttrib(stext, R_ClassSymbol, sclass);
+	setAttrib(ans, R_ClassSymbol, sclass);
 
-	UNPROTECT(2);
-	return stext;;
+	UNPROTECT(4);
+	return ans;
+}
+
+
+SEXP alloc_na_text(void)
+{
+	SEXP ans;
+	struct text *text;
+
+	PROTECT(ans = alloc_text(1, R_NilValue));
+	text = as_text(ans, NULL);
+	text[0].ptr = NULL;
+	text[0].attr = 0;
+	UNPROTECT(1);
+
+	return ans;
+}
+
+
+void free_text(SEXP stext)
+{
+        struct rtext *text = R_ExternalPtrAddr(stext);
+        Free(text);
+}
+
+/* modified from R-Exts Section 5.9.6 "handling lists" */
+static int findListElement(SEXP list, const char *str)
+{
+	SEXP names = getAttrib(list, R_NamesSymbol);
+	int i, n;
+
+	n = LENGTH(list);
+	for (i = 0; i < n; i++) {
+		if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+static SEXP getListElement(SEXP list, const char *str)
+{
+	int i = findListElement(list, str);
+	if (i < 0) {
+		return R_NilValue;
+	}
+	return VECTOR_ELT(list, i);
+}
+
+
+int is_text(SEXP stext)
+{
+	SEXP handle;
+
+	if (!isVectorList(stext)) {
+		return 0;
+	}
+
+	handle = getListElement(stext, "handle");
+	if (handle == R_NilValue) {
+		return 0;
+	}
+
+	return ((TYPEOF(handle) == EXTPTRSXP)
+		&& (R_ExternalPtrTag(handle) == TEXT_TAG));
+}
+
+
+struct text *as_text(SEXP stext, R_xlen_t *lenptr)
+{
+	SEXP handle;
+	struct rtext *text;
+
+	if (!is_text(stext)) {
+		error("invalid 'text' object");
+	}
+
+	handle = getListElement(stext, "handle");
+	text = R_ExternalPtrAddr(handle);
+
+	if (lenptr) {
+		*lenptr = text->length;
+	}
+
+	return &text->items[0];
+}
+
+
+SEXP names_text(SEXP stext)
+{
+	if (!is_text(stext)) {
+		error("invalid 'text' object");
+	}
+
+	return getListElement(stext, "names");
+}
+
+
+// this is only for internal use; it modifies the argument, rather
+// than making a copy
+static SEXP setnames_text(SEXP stext, SEXP svalue)
+{
+	int i;
+
+	if (!is_text(stext)) {
+		error("invalid 'text' object");
+	}
+	i = findListElement(stext, "names");
+	if (i < 0) {
+		error("invalid 'text' object (no 'names' field)");
+	}
+	SET_VECTOR_ELT(stext, i, svalue);
+
+	return stext;
 }
 
 
@@ -86,6 +208,8 @@ SEXP coerce_text(SEXP sx)
 	n = XLENGTH(sx);
 
 	PROTECT(stext = alloc_text(n, sx));
+	PROTECT(stext = setnames_text(stext, getAttrib(sx, R_NamesSymbol)));
+
 	text = as_text(stext, NULL);
 
 	for (i = 0; i < n; i++) {
@@ -120,41 +244,13 @@ SEXP coerce_text(SEXP sx)
 		}
 	}
 
-	UNPROTECT(2);
+	UNPROTECT(3);
 	if (duped) {
 		UNPROTECT(1);
 	}
 	return stext;
 }
 
-
-void free_text(SEXP stext)
-{
-        struct rtext *text = R_ExternalPtrAddr(stext);
-        Free(text);
-}
-
-
-int is_text(SEXP stext)
-{
-	return ((TYPEOF(stext) == EXTPTRSXP)
-		&& (R_ExternalPtrTag(stext) == TEXT_TAG));
-}
-
-
-struct text *as_text(SEXP stext, R_xlen_t *lenptr)
-{
-	struct rtext *text;
-
-	if (!is_text(stext))
-		error("invalid 'text' object");
-
-	text = R_ExternalPtrAddr(stext);
-	if (lenptr) {
-		*lenptr = text->length;
-	}
-	return &text->items[0];
-}
 
 
 SEXP length_text(SEXP stext)
