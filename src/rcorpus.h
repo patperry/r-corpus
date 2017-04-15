@@ -33,6 +33,10 @@ struct dataset {
 	int kind;
 };
 
+/* logging */
+SEXP logging_off(void);
+SEXP logging_on(void);
+
 /* data set */
 SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 		   R_xlen_t nrow, SEXP prot);

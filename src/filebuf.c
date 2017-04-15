@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <errno.h>
 #include <stdlib.h>
 #include "corpus/src/filebuf.h"
 #include <Rdefines.h>
@@ -67,7 +68,17 @@ SEXP alloc_filebuf(SEXP sfile)
         }
         file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
 
+	errno = 0;
 	buf = filebuf_new(file);
+	if (buf == NULL) {
+		if (errno) {
+			error("cannot open file '%s': %s",
+				file, strerror(errno));
+		} else {
+			error("cannot open file '%s'");
+		}
+	}
+
 	PROTECT(sbuf = R_MakeExternalPtr(buf, FILEBUF_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(sbuf, free_filebuf, TRUE);
 
