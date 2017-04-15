@@ -34,8 +34,9 @@
     after calling \code{read_json} but before processing the data, then
     the results will be undefined, and your computer may crash. (On
     POSIX-compliant systems like Mac OS and Linux, there should be no
-    ill effects to deleting the file, but on Windows, the results are
-    undefined.)
+    ill effects to deleting the file. On recent versions of Windows,
+    the system will not allow you to delete the file as long as the data
+    is active; on older versions, the behavior is undefined.)
 }
 \examples{
     lines <- c('{ "a": 1, "b": true }',
