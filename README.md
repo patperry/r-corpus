@@ -1,4 +1,4 @@
-Corpus (R package)
+Corpus (R Package)
 ==================
 
 Text corpus analysis in R. Heavy lifting is done by the
@@ -32,26 +32,17 @@ planned for future releases.
 Installing
 ----------
 
-This package uses a git submodule, so you cannot use
-`devtools::install_github` to install it. Instead, use the following sequence
-of commands in R:
+Corpus is [available on CRAN][cran]. To install the latest released
+version, run the following command in R:
 
-    local({
-        dir <- tempfile()
-        cmd <- paste("git clone --recursive",
-                     shQuote("https://github.com/patperry/r-corpus.git"),
-                     shQuote(dir))
-        system(cmd)
-        devtools::install(dir)
-        unlink(dir, recursive=TRUE)
-    })
+    install.packages("corpus")
 
-(It used to be possible to use `devtools::install_git`, but unfortunately
-that command no longer allows you to specify `--recursive`.)
+Alternatively, use any other other installation method supported by your
+R development environment.
 
 
-Performance
------------
+Demonstration
+-------------
 
 Here are some performance comparisons for some basic operations. We
 compare against `jsonlite` version 1.3 and `stringi` version 1.1.3.
@@ -139,7 +130,6 @@ can read the values directly from RAM instead of from the hard drive. Despite
 this advantage, `corpus` is about 2.7 times faster than `stringi`.
 
 
-
 ### Tokenizing and normalizing text
 
 The next benchmark performs a series of operations to transform each text into
@@ -196,7 +186,25 @@ RAM, but only because we do not throw away punctuation-only tokens.
 Building from source
 --------------------
 
-To build the library from source, clone the repository and the submodules:
+To install the latest development version of the package, run the following
+sequence of commands in R:
+
+    local({
+        dir <- tempfile()
+        cmd <- paste("git clone --recursive",
+                     shQuote("https://github.com/patperry/r-corpus.git"),
+                     shQuote(dir))
+        system(cmd)
+        devtools::test(dir) # run the tests (optional)
+        devtools::install(dir)
+        unlink(dir, recursive=TRUE)
+    })
+
+Note that the package uses a git submodule, so you cannot use
+`devtools::install_github` to install it.
+
+
+To obtain the source code, clone the repository and the submodules:
 
     git clone --recursive https://github.com/patperry/r-corpus.git
 
@@ -219,6 +227,7 @@ Corpus is released under the [Apache Licence, Version 2.0][apache].
 [casefold]: https://www.w3.org/International/wiki/Case_folding
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 [corpus]: https://github.com/patperry/corpus
+[cran]: https://cran.r-project.org/package=corpus
 [jsonl]: http://jsonlines.org/
 [nfkd]: http://unicode.org/reports/tr15/
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries
