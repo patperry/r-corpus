@@ -1,9 +1,9 @@
 To Do
 =====
 
-as.text should drop attributes
+Setting names on datasets is currently not allowed. Should it be?
 
-names()<- should work for text, dataset (?)
+The concat operator `c()` does not work on text or dataset. Should it?
 
 `summary.text`
 
