@@ -188,6 +188,13 @@ as.character.dataset <- function(x, ...)
 }
 
 
+as.data.frame.dataset <- function(x, ...)
+{
+    l <- as.list(x)
+    as.data.frame(l, row.names=rownames(x), ...)
+}
+
+
 as.logical.dataset <- function(x, ...)
 {
     .Call(C_as_logical_dataset, x)

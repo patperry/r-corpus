@@ -207,6 +207,41 @@ as.complex.text <- function(x, ...)
     as.complex(as.character(x, ...))
 }
 
+as.data.frame.text <- function(x, row.names = NULL, optional = FALSE, ...)
+{
+    nm <- deparse(substitute(x), width.cutoff = 500L)
+
+    nrows <- length(x)
+
+    # get row names
+    if (!is.null(row.names)) {
+        if (!(is.character(row.names) && length(row.names) == nrows)) {
+            stop("'row.names' is not a character vector of length %d", nrows)
+        }
+    } else if (is.null(row.names)) {
+        if (nrows == 0L) {
+            row.names <- character()
+        } else {
+            row.names <- names(x)
+
+            if (is.null(row.names)) {
+                row.names <- .set_row_names(nrows)
+            }
+        }
+    }
+
+    if (!is.null(names(x))) {
+        names(x) <- NULL
+    }
+
+    value <- list(x)
+    if (!optional)  {
+        names(value) <- nm
+    }
+
+    structure(value, row.names = row.names, class = "data.frame")
+}
+
 as.double.text <- function(x, ...)
 {
     as.double(as.character(x, ...))
