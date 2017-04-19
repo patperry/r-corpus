@@ -73,14 +73,20 @@ names.text <- function(x)
             stop(paste0("names attribute [", length(value), "]",
                         " must be the same length as the text object [",
                         length(x), "]"))
+        } else if (anyNA(value)) {
+            stop("names attribute cannot contain missing values")
+        } else if (anyDuplicated(value)) {
+            stop("names attribute cannot contain duplicate values")
         }
     }
+
     y <- list(handle=unclass(x)$handle, names=value)
     attrs <- attributes(x)
-    attrs[["names"]] <- NULL
 
     for (a in names(attrs)) {
-        attr(y, a) <- attrs[[a]]
+        if (!(a %in% c("handle", "names"))) {
+            attr(y, a) <- attrs[[a]]
+        }
     }
 
     y
