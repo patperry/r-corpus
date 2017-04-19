@@ -139,7 +139,7 @@ format.text <- function(x, nchar_max = 66, suffix = "\u2026", ...)
         str <- as.character(x)
         names(str) <- names(x)
         len <- nchar(str)
-        long <- len >= nchar_max + 1
+        long <- !is.na(len) & (len >= nchar_max + 1)
         str[long] <- paste0(substr(str[long], 1, nchar_max), suffix)
     }
     format(str, ...)
