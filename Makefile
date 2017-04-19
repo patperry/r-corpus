@@ -12,4 +12,7 @@ clean:
 check: $(CORPUS_LIB)
 	Rscript -e 'devtools::test(".")'
 
+install: $(CORPUS_LIB)
+	Rscript -e 'devtools::install(".")'
+
 .PHONY: all clean check
