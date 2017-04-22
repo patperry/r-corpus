@@ -69,34 +69,87 @@ static void free_filebuf(SEXP sbuf)
 
 SEXP alloc_filebuf(SEXP sfile)
 {
-	SEXP sbuf;
+	SEXP ans, sclass, shandle, snames;
 	struct filebuf *buf;
 	const char *file;
 
 	if (!(isString(sfile) && LENGTH(sfile) == 1)) {
                 error("invalid 'file' argument");
         }
-        file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
+
+	file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
+	PROTECT(sfile = mkString(file));
 
 	buf = filebuf_new(file);
-	PROTECT(sbuf = R_MakeExternalPtr(buf, FILEBUF_TAG, R_NilValue));
-	R_RegisterCFinalizerEx(sbuf, free_filebuf, TRUE);
+	PROTECT(shandle = R_MakeExternalPtr(buf, FILEBUF_TAG, R_NilValue));
+	R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
 
-	UNPROTECT(1);
-	return sbuf;
+	PROTECT(ans = allocVector(VECSXP, 2));
+	SET_VECTOR_ELT(ans, 0, shandle);
+	SET_VECTOR_ELT(ans, 1, sfile);
+
+	PROTECT(snames = allocVector(STRSXP, 2));
+	SET_STRING_ELT(snames, 0, mkChar("handle"));
+	SET_STRING_ELT(snames, 1, mkChar("file"));
+	setAttrib(ans, R_NamesSymbol, snames);
+
+	PROTECT(sclass = allocVector(STRSXP, 1));
+	SET_STRING_ELT(sclass, 0, mkChar("filebuf"));
+	setAttrib(ans, R_ClassSymbol, sclass);
+
+	UNPROTECT(5);
+	return ans;
 }
 
 
 int is_filebuf(SEXP sbuf)
 {
-	return ((TYPEOF(sbuf) == EXTPTRSXP)
-		&& (R_ExternalPtrTag(sbuf) == FILEBUF_TAG));
+	SEXP handle, file;
+
+	if (!isVectorList(sbuf)) {
+		return 0;
+	}
+
+	handle = getListElement(sbuf, "handle");
+	if (handle == R_NilValue) {
+		return 0;
+	}
+
+	file = getListElement(sbuf, "file");
+	if (file == R_NilValue) {
+		return 0;
+	}
+
+	return ((TYPEOF(handle) == EXTPTRSXP)
+		&& (R_ExternalPtrTag(handle) == FILEBUF_TAG));
 }
 
 
 struct filebuf *as_filebuf(SEXP sbuf)
 {
-	if (!is_filebuf(sbuf))
+	SEXP shandle, sfile;
+	struct filebuf *buf;
+	const char *file;
+
+	if (!is_filebuf(sbuf)) {
 		error("invalid 'filebuf' object");
-	return R_ExternalPtrAddr(sbuf);
+	}
+
+	shandle = getListElement(sbuf, "handle");
+	buf = R_ExternalPtrAddr(shandle);
+
+	if (buf == NULL) {
+		sfile = getListElement(sbuf, "file");
+		file = CHAR(STRING_ELT(sfile, 0));
+		buf = filebuf_new(file);
+
+		if (buf == NULL) {
+			error("failed opening file '%s'", file);
+		}
+
+		R_SetExternalPtrAddr(shandle, buf);
+		R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
+	}
+
+	return buf;
 }
