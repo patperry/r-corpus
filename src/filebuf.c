@@ -78,11 +78,13 @@ SEXP alloc_filebuf(SEXP sfile)
         }
 
 	file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
-	PROTECT(sfile = mkString(file));
+	PROTECT(sfile = mkString(file)); // TODO: encoding??
+
+	PROTECT(shandle = R_MakeExternalPtr(NULL, FILEBUF_TAG, R_NilValue));
+	R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
 
 	buf = filebuf_new(file);
-	PROTECT(shandle = R_MakeExternalPtr(buf, FILEBUF_TAG, R_NilValue));
-	R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
+	R_SetExternalPtrAddr(shandle, buf);
 
 	PROTECT(ans = allocVector(VECSXP, 2));
 	SET_VECTOR_ELT(ans, 0, shandle);
@@ -139,16 +141,22 @@ struct filebuf *as_filebuf(SEXP sbuf)
 	buf = R_ExternalPtrAddr(shandle);
 
 	if (buf == NULL) {
+		R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
+
 		sfile = getListElement(sbuf, "file");
 		file = CHAR(STRING_ELT(sfile, 0));
 		buf = filebuf_new(file);
 
 		if (buf == NULL) {
-			error("failed opening file '%s'", file);
+			if (errno) {
+				error("cannot open file '%s': %s", file,
+				      strerror(errno));
+			} else {
+				error("cannot open file '%s'", file);
+			}
 		}
 
 		R_SetExternalPtrAddr(shandle, buf);
-		R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
 	}
 
 	return buf;

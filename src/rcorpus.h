@@ -20,13 +20,17 @@
 #include <stddef.h>
 #include <Rdefines.h>
 
+#include "corpus/src/table.h"
+#include "corpus/src/text.h"
+#include "corpus/src/token.h"
+#include "corpus/src/symtab.h"
+#include "corpus/src/datatype.h"
+
 struct data;
 struct filebuf;
-struct schema;
-struct text;
 
 struct dataset {
-	const struct schema *schema;
+	struct schema schema;
 	struct data *rows;
 	R_xlen_t nrow;
 	int type_id;
@@ -38,8 +42,7 @@ SEXP logging_off(void);
 SEXP logging_on(void);
 
 /* data set */
-SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
-		   R_xlen_t nrow, SEXP prot);
+SEXP alloc_dataset(SEXP sfilebuf, SEXP sfield, SEXP srows);
 int is_dataset(SEXP data);
 struct dataset *as_dataset(SEXP data);
 

@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <Rdefines.h>
 #include "corpus/src/error.h"
+#include "corpus/src/filebuf.h"
 #include "corpus/src/render.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
@@ -34,6 +35,10 @@
 #define DATASET_TAG install("corpus::dataset")
 
 
+static SEXP subrows_dataset(SEXP sdata, SEXP si);
+static SEXP subfield_dataset(SEXP sdata, SEXP sname);
+
+
 static void free_dataset(SEXP sdataset)
 {
         struct dataset *d = R_ExternalPtrAddr(sdataset);
@@ -44,36 +49,42 @@ static void free_dataset(SEXP sdataset)
 }
 
 
-SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
-		   R_xlen_t nrow, SEXP prot)
+SEXP alloc_dataset(SEXP sfilebuf, SEXP sfield, SEXP srows)
 {
 	SEXP ans, sclass, shandle, snames;
 	struct dataset *obj;
+	int err;
+
+	PROTECT(shandle = R_MakeExternalPtr(NULL, DATASET_TAG, R_NilValue));
+	R_RegisterCFinalizerEx(shandle, free_dataset, TRUE);
 
 	if (!(obj = malloc(sizeof(*obj)))) {
-		free(rows);
 		error("failed allocating memory (%u bytes)",
 			(unsigned)sizeof(*obj));
 	}
-	obj->schema = schema;
-	obj->rows = rows;
-	obj->nrow = nrow;
-	obj->type_id = type_id;
-
-	if (type_id < 0) {
-		obj->kind = DATATYPE_ANY;
-	} else {
-		obj->kind = schema->types[type_id].kind;
+	if ((err = schema_init(&obj->schema))) {
+		free(obj);
+		error("failed allocating memory");
 	}
 
-	PROTECT(shandle = R_MakeExternalPtr(obj, DATASET_TAG, prot));
-	R_RegisterCFinalizerEx(shandle, free_dataset, TRUE);
+	obj->rows = NULL;
+	obj->nrow = 0;
+	obj->type_id = DATATYPE_NULL;
+	obj->kind = DATATYPE_NULL;
 
-	PROTECT(ans = allocVector(VECSXP, 1));
+	R_SetExternalPtrAddr(shandle, obj);
+
+	PROTECT(ans = allocVector(VECSXP, 4));
 	SET_VECTOR_ELT(ans, 0, shandle);
+	SET_VECTOR_ELT(ans, 1, sfilebuf);
+	SET_VECTOR_ELT(ans, 2, sfield);
+	SET_VECTOR_ELT(ans, 3, srows);
 
-	PROTECT(snames = allocVector(STRSXP, 1));
+	PROTECT(snames = allocVector(STRSXP, 4));
 	SET_STRING_ELT(snames, 0, mkChar("handle"));
+	SET_STRING_ELT(snames, 1, mkChar("filebuf"));
+	SET_STRING_ELT(snames, 2, mkChar("field"));
+	SET_STRING_ELT(snames, 3, mkChar("rows"));
 	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
@@ -85,9 +96,153 @@ SEXP alloc_dataset(const struct schema *schema, int type_id, struct data *rows,
 }
 
 
+static void grow_datarows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
+{
+	void *base1, *base = *rowsptr;
+	size_t size1, size = (size_t)*nrow_maxptr;
+	size_t width = sizeof(**rowsptr);
+
+	if (size == 0) {
+		size1 = 1;
+	} else {
+		size1 = 1.618 * size + 1; // (golden ratio)
+	}
+
+	if (size1 < size) { // overflow
+		size1 = SIZE_MAX;
+	}
+
+	if (size1 > SIZE_MAX / width) {
+		free(base);
+		error("number of rows (%"PRIu64")"
+			" exceeds maximum (%"PRIu64")",
+			(uint64_t)size1, (uint64_t)SIZE_MAX / width);
+	}
+	if (size1 > R_XLEN_T_MAX) {
+		free(base);
+		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
+			(uint64_t)size1, (uint64_t)R_XLEN_T_MAX);
+	}
+
+	base1 = realloc(base, size1 * width);
+	if (size1 > 0 && base1 == NULL) {
+		free(base);
+		error("failed allocating %"PRIu64" bytes",
+			(uint64_t)size1 * width);
+	}
+
+	*rowsptr = base1;
+	*nrow_maxptr = size1;
+}
+
+
+static void dataset_load(SEXP sdata)
+{
+	SEXP shandle, sfilebuf;
+	struct dataset *obj;
+	struct data *datarows;
+	struct filebuf *buf;
+	struct filebuf_iter it;
+	const uint8_t *ptr;
+	size_t size;
+	R_xlen_t nrow, nrow_max;
+	int err, type_id;
+
+	shandle = getListElement(sdata, "handle");
+
+	obj = R_ExternalPtrAddr(shandle);
+	if (obj == NULL) {
+		if (!(obj = malloc(sizeof(*obj)))) {
+			error("failed allocating memory (%u bytes)",
+			      (unsigned)sizeof(*obj));
+		}
+		if ((err = schema_init(&obj->schema))) {
+			free(obj);
+			error("failed allocating memory");
+		}
+
+		obj->rows = NULL;
+		obj->nrow = 0;
+		obj->type_id = DATATYPE_NULL;
+		obj->kind = DATATYPE_NULL;
+
+		R_SetExternalPtrAddr(shandle, obj);
+		R_RegisterCFinalizerEx(shandle, free_dataset, TRUE);
+	}
+
+	if (obj->rows != NULL) {
+		// already loaded
+		return;
+	}
+
+	sfilebuf = getListElement(sdata, "filebuf");
+	buf = as_filebuf(sfilebuf);
+
+	type_id = DATATYPE_NULL;
+	nrow = 0;
+	nrow_max = 0;
+	datarows = NULL;
+
+	filebuf_iter_make(&it, buf);
+	while (filebuf_iter_advance(&it)) {
+		if (nrow == nrow_max) {
+			grow_datarows(&datarows, &nrow_max);
+		}
+
+		ptr = it.current.ptr;
+		size = it.current.size;
+
+		if ((err = data_assign(&datarows[nrow], &obj->schema, ptr,
+						size))) {
+			free(datarows);
+			free(obj);
+			error("error parsing row %"PRIu64
+			      " of JSON file", (uint64_t)(nrow + 1));
+		}
+
+		if ((err = schema_union(&obj->schema, type_id,
+					datarows[nrow].type_id,
+					&type_id))) {
+			free(datarows);
+			free(obj);
+			error("memory allocation failure"
+			      " after parsing row %"PRIu64
+			      " of JSON file", (uint64_t)(nrow + 1));
+		}
+		nrow++;
+	}
+
+	// free excess memory
+	datarows = realloc(datarows, nrow * sizeof(*datarows));
+
+	// ensure datarows is non-NULL even if nrow == 0
+	if (datarows == NULL) {
+		datarows = malloc(sizeof(*datarows));
+		if (!datarows) {
+			error("failed allocating memory (%u bytes)",
+				sizeof(*datarows));
+		}
+	}
+
+	// set the fields
+	obj->rows = datarows;
+	obj->nrow = nrow;
+	obj->type_id = type_id;
+
+	if (type_id < 0) {
+		obj->kind = DATATYPE_ANY;
+	} else {
+		obj->kind = obj->schema.types[type_id].kind;
+	}
+
+
+	// TODO: extract subfield, rows
+}
+
+
 int is_dataset(SEXP sdata)
 {
-	SEXP handle;
+	SEXP handle, filebuf;
 
 	if (!isVectorList(sdata)) {
 		return 0;
@@ -98,6 +253,11 @@ int is_dataset(SEXP sdata)
 		return 0;
 	}
 
+	filebuf = getListElement(sdata, "filebuf");
+	if (!is_filebuf(filebuf)) {
+		return 0;
+	}
+
 	return ((TYPEOF(handle) == EXTPTRSXP)
 		&& (R_ExternalPtrTag(handle) == DATASET_TAG));
 }
@@ -105,14 +265,19 @@ int is_dataset(SEXP sdata)
 
 struct dataset *as_dataset(SEXP sdata)
 {
-	SEXP handle;
+	SEXP shandle;
+	struct dataset *obj;
 
 	if (!is_dataset(sdata)) {
 		error("invalid 'dataset' object");
 	}
 
-	handle = getListElement(sdata, "handle");
-	return R_ExternalPtrAddr(handle);
+	dataset_load(sdata);
+
+	shandle = getListElement(sdata, "handle");
+	obj = R_ExternalPtrAddr(shandle);
+
+	return obj;
 }
 
 
@@ -127,7 +292,7 @@ SEXP dim_dataset(SEXP sdata)
 		return R_NilValue;
 	}
 
-	t = &d->schema->types[d->type_id];
+	t = &d->schema.types[d->type_id];
 	r = &t->meta.record;
 
 	if (d->nrow > INT_MAX) {
@@ -152,7 +317,7 @@ SEXP length_dataset(SEXP sdata)
 	const struct datatype_record *r;
 
 	if (d->kind == DATATYPE_RECORD) {
-		t = &d->schema->types[d->type_id];
+		t = &d->schema.types[d->type_id];
 		r = &t->meta.record;
 		return ScalarInteger(r->nfield);
 	}
@@ -178,12 +343,12 @@ SEXP names_dataset(SEXP sdata)
 		return R_NilValue;
 	}
 
-	t = &d->schema->types[d->type_id];
+	t = &d->schema.types[d->type_id];
 	r = &t->meta.record;
 
 	PROTECT(names = allocVector(STRSXP, r->nfield));
 	for (i = 0; i < r->nfield; i++) {
-		name = &d->schema->names.types[r->name_ids[i]].text;
+		name = &d->schema.names.types[r->name_ids[i]].text;
 		str = mkCharLenCE((char *)name->ptr, TEXT_SIZE(name), CE_UTF8);
 		SET_STRING_ELT(names, i, str);
 	}
@@ -205,7 +370,7 @@ SEXP datatype_dataset(SEXP sdata)
 	render_set_tab(&r, "");
 	render_set_newline(&r, " ");
 
-	render_datatype(&r, d->schema, d->type_id);
+	render_datatype(&r, &d->schema, d->type_id);
 	if (r.error) {
 		render_destroy(&r);
 		error("memory allocation failure");
@@ -236,7 +401,7 @@ SEXP datatypes_dataset(SEXP sdata)
 
 	PROTECT(names = names_dataset(sdata));
 
-	t = &d->schema->types[d->type_id];
+	t = &d->schema.types[d->type_id];
 	rec = &t->meta.record;
 
 	if (render_init(&r, ESCAPE_NONE) != 0) {
@@ -247,7 +412,7 @@ SEXP datatypes_dataset(SEXP sdata)
 
 	PROTECT(types = allocVector(STRSXP, rec->nfield));
 	for (i = 0; i < rec->nfield; i++) {
-		render_datatype(&r, d->schema, rec->type_ids[i]);
+		render_datatype(&r, &d->schema, rec->type_ids[i]);
 		if (r.error) {
 			render_destroy(&r);
 			error("memory allocation failure");
@@ -273,7 +438,7 @@ SEXP print_dataset(SEXP sdata)
 		error("memory allocation failure");
 	}
 
-	render_datatype(&r, d->schema, d->type_id);
+	render_datatype(&r, &d->schema, d->type_id);
 	if (r.error) {
 		render_destroy(&r);
 		error("memory allocation failure");
@@ -295,68 +460,218 @@ SEXP print_dataset(SEXP sdata)
 
 SEXP subscript_dataset(SEXP sdata, SEXP si)
 {
-	SEXP ans, prot;
+	SEXP ans, sname;
 	const struct dataset *d = as_dataset(sdata);
-	const struct schema *s = d->schema;
+	const struct schema *s = &d->schema;
 	const struct datatype *t;
 	const struct datatype_record *r;
-	struct data *rows;
-	double i = REAL(si)[0];
-	int name_id, type_id;
-	R_xlen_t index;
+	const struct text *name;
+	double i;
+	int name_id;
 
-	prot = R_ExternalPtrProtected(sdata);
+	if (!(isReal(si) && LENGTH(si) == 1)) {
+		error("invalid 'i' argument");
+	}
+	i = REAL(si)[0];
 
 	if (d->kind != DATATYPE_RECORD) {
-		if (!(1 <= i && i <= (double)d->nrow)) {
-			error("invalid subscript");
-		}
-		index = (R_xlen_t)(i - 1);
-
-		if (!(rows = malloc(sizeof(*rows)))) {
-			error("failed allocating %u bytes",
-				(unsigned)sizeof(*rows));
-		}
-		rows[0] = d->rows[index];
-		ans = alloc_dataset(s, rows[0].type_id, rows, 1, prot);
+		ans = subrows_dataset(sdata, si);
 	} else {
-		t = &d->schema->types[d->type_id];
+		t = &d->schema.types[d->type_id];
 		r = &t->meta.record;
 
 		if (!(1 <= i && i <= r->nfield)) {
 			error("invalid subscript: %g", i);
 		}
 		name_id = r->name_ids[(int)(i - 1)];
-		type_id = r->type_ids[(int)(i - 1)];
+		name = &s->names.types[name_id].text;
 
-		if (!(rows = malloc(d->nrow * sizeof(*rows)))) {
-			error("failed allocating %"PRIu64" bytes",
-			      (uint64_t)d->nrow * sizeof(*rows));
-		}
-
-		for (index = 0; index < d->nrow; index++) {
-			data_field(&d->rows[index], s, name_id, &rows[index]);
-		}
-
-		ans = alloc_dataset(s, type_id, rows, d->nrow, prot);
+		PROTECT(sname = allocVector(STRSXP, 1));
+		SET_STRING_ELT(sname, 0,
+				mkCharLenCE((const char *)name->ptr,
+					    (int)TEXT_SIZE(name), CE_UTF8));
+		PROTECT(ans = subfield_dataset(sdata, sname));
+		UNPROTECT(2);
 	}
 
 	return ans;
 }
 
 
+SEXP subrows_dataset(SEXP sdata, SEXP si)
+{
+	SEXP ans, shandle, sfilebuf, sfield, srows, srows2;
+	const struct dataset *obj = as_dataset(sdata);
+	struct dataset *obj2;
+	struct data *rows;
+	const struct data *src;
+	const double *index;
+	double *irows;
+	R_xlen_t i, n, ind;
+	int type_id;
+	int err;
+
+	if (si == R_NilValue) {
+		return sdata;
+	}
+
+	index = REAL(si);
+	n = XLENGTH(si);
+
+	sfilebuf = getListElement(sdata, "filebuf");
+	sfield = getListElement(sdata, "field");
+	srows = getListElement(sdata, "rows");
+
+	PROTECT(srows2 = allocVector(REALSXP, n));
+	irows = REAL(srows2);
+
+	PROTECT(ans = alloc_dataset(sfilebuf, sfield, srows2));
+	shandle = getListElement(ans, "handle");
+	obj2 = R_ExternalPtrAddr(shandle);
+
+	rows = malloc(n * sizeof(*rows));
+	obj2->rows = rows;
+
+	if (n > 0 && !rows) {
+		error("failed allocating %"PRIu64" bytes",
+		      (uint64_t)n * sizeof(*rows));
+	}
+
+	type_id = DATATYPE_NULL;
+
+	for (i = 0; i < n; i++) {
+		if (!(1 <= index[i] && index[i] <= (double)obj->nrow)) {
+			free(rows);
+			error("invalid index: %g", index[i]);
+		}
+
+		ind = (R_xlen_t)(index[i] - 1);
+		if (srows == R_NilValue) {
+			irows[i] = index[i];
+		} else {
+			irows[i] = REAL(srows)[ind];
+		}
+		src = &obj->rows[ind];
+
+		// TODO: what about null?
+		if ((err = data_assign(&rows[i], &obj2->schema, src->ptr,
+				       src->size))) {
+			error("error parsing row %"PRIu64
+			      " of JSON file", (uint64_t)(irows[i] + 1));
+		}
+
+		if ((err = schema_union(&obj2->schema, type_id,
+					rows[i].type_id, &type_id))) {
+			error("memory allocation failure"
+			      " after parsing row %"PRIu64
+			      " of JSON file", (uint64_t)(irows[i] + 1));
+		}
+
+	}
+
+	// set the fields
+	obj2->nrow = n;
+	obj2->type_id = type_id;
+
+	if (type_id < 0) {
+		obj2->kind = DATATYPE_ANY;
+	} else {
+		obj2->kind = obj2->schema.types[type_id].kind;
+	}
+
+	UNPROTECT(2);
+	return ans;
+}
+
+
+SEXP subfield_dataset(SEXP sdata, SEXP sname)
+{
+	SEXP ans, sfilebuf, sfield, sfield2, shandle, srows;
+	const struct dataset *obj = as_dataset(sdata);
+	struct text name;
+	struct data *rows;
+	struct data field;
+	const char *name_ptr;
+	size_t name_len;
+	struct dataset *obj2;
+	R_xlen_t i, n;
+	int err, j, m, name_id, type_id;
+
+	if (sname == R_NilValue) {
+		return sdata;
+	} else if (!(isString(sname) && LENGTH(sname) == 1)) {
+                error("invalid 'name' argument");
+        }
+	name_ptr = translateCharUTF8(STRING_ELT(sname, 0));
+	name_len = strlen(name_ptr);
+	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8));
+	if ((err = text_assign(&name, (uint8_t *)name_ptr, name_len,
+					TEXT_NOESCAPE))) {
+		error("invalid UTF-8 in 'name' argument");
+	}
+	if (!symtab_has_type(&obj->schema.names, &name, &name_id)) {
+		UNPROTECT(1);
+		return R_NilValue;
+	}
+
+	sfilebuf = getListElement(sdata, "filebuf");
+	sfield = getListElement(sdata, "field");
+	srows = getListElement(sdata, "rows");
+
+	if (sfield == R_NilValue) {
+		m = 0;
+	} else {
+		m = LENGTH(sfield);
+	}
+
+	PROTECT(sfield2 = allocVector(STRSXP, m + 1));
+	for (j = 0; j < m; j++) {
+		SET_STRING_ELT(sfield2, j, STRING_ELT(sfield, j));
+	}
+	SET_STRING_ELT(sfield2, m, sname);
+
+	PROTECT(ans = alloc_dataset(sfilebuf, sfield2, srows));
+	shandle = getListElement(ans, "handle");
+	obj2 = R_ExternalPtrAddr(shandle);
+
+	n = obj->nrow;
+	rows = malloc(n * sizeof(*rows));
+
+	if (n > 0 && !rows) {
+		error("failed allocating %"PRIu64" bytes",
+		      (uint64_t)n * sizeof(*rows));
+	}
+	obj2->rows = rows;
+
+	type_id = DATATYPE_NULL;
+	for (i = 0; i < n; i++) {
+		data_field(&obj->rows[i], &obj->schema, name_id, &field);
+		data_assign(&rows[i], &obj2->schema, field.ptr,
+			    field.size);
+		if (schema_union(&obj2->schema, type_id, rows[i].type_id,
+				 &type_id) != 0) {
+			error("memory allocation failure");
+		}
+	}
+
+	obj2->nrow = n;
+	obj2->type_id = type_id;
+
+	if (type_id < 0) {
+		obj2->kind = DATATYPE_ANY;
+	} else {
+		obj2->kind = obj2->schema.types[type_id].kind;
+	}
+
+	UNPROTECT(3);
+	return ans;
+}
+
+
 SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
 {
-	SEXP ans, prot;
+	SEXP ans;
 	const struct dataset *d = as_dataset(sdata);
-	struct schema *s = (struct schema *)d->schema;
-	const struct datatype *t;
-	const struct datatype_record *r;
-	struct data *rows;
-	const double *index;
-	R_xlen_t i, n;
-	double j;
-	int name_id, type_id;
 
 	if (si == R_NilValue) {
 		if (sj == R_NilValue) {
@@ -364,66 +679,18 @@ SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
 		} else {
 			return subscript_dataset(sdata, sj);
 		}
-	}
-
-	n = XLENGTH(si);
-	index = REAL(si);
-
-	if (!(rows = malloc(n * sizeof(*rows))) && n > 0) {
-		error("failed allocating %"PRIu64" bytes", n * sizeof(*rows));
-	}
-
-	if (sj == R_NilValue) {
-		type_id = DATATYPE_NULL;
-		for (i = 0; i < n; i++) {
-			if (!(1 <= index[i] && index[i] <= (double)d->nrow)) {
-				free(rows);
-				error("invalid index: %g", index[i]);
-			}
-
-			rows[i] = d->rows[(R_xlen_t)(index[i] - 1)];
-			if (schema_union(s, type_id, rows[i].type_id,
-						&type_id) != 0) {
-				free(rows);
-				error("memory allocation failure");
-			}
-		}
+	} else if (sj == R_NilValue) {
+		return subrows_dataset(sdata, si);
 	} else {
 		if (d->kind != DATATYPE_RECORD) {
 			error("incorrect number of dimensions");
 		}
 
-		t = &d->schema->types[d->type_id];
-		r = &t->meta.record;
-		j = REAL(sj)[0];
-
-		if (!(1 <= j && j <= r->nfield)) {
-			error("invalid subscript: %g", j);
-		}
-
-		name_id = r->name_ids[(int)(j - 1)];
-
-		type_id = DATATYPE_NULL;
-		for (i = 0; i < n; i++) {
-			if (!(1 <= index[i] && index[i] <= (double)d->nrow)) {
-				free(rows);
-				error("invalid index: %g", index[i]);
-			}
-
-			data_field(&d->rows[(R_xlen_t)(index[i] - 1)], s,
-				   name_id, &rows[i]);
-			if (schema_union(s, type_id, rows[i].type_id,
-						&type_id) != 0) {
-				free(rows);
-				error("memory allocation failure");
-			}
-		}
+		PROTECT(sdata = subrows_dataset(sdata, si));
+		ans = subscript_dataset(sdata, sj);
+		UNPROTECT(1);
+		return ans;
 	}
-
-	prot = R_ExternalPtrProtected(sdata);
-	ans = alloc_dataset(s, type_id, rows, n, prot);
-
-	return ans;
 }
 
 
@@ -559,6 +826,13 @@ SEXP as_text_dataset(SEXP sdata)
 static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 				const struct data *array, SEXP prot)
 {
+	// TODO implement
+	(void)schema;
+	(void)type_id;
+	(void)array;
+	(void)prot;
+	return R_NilValue;
+	/*
 	SEXP ans;
 	struct data *rows;
 	struct data_items it;
@@ -584,14 +858,20 @@ static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 
 	ans = alloc_dataset(schema, type_id, rows, n, prot);
 	return ans;
+	*/
 }
 
 
 static SEXP as_list_dataset_record(SEXP sdata)
 {
+	// TODO implement
+	(void)sdata;
+	return R_NilValue;
+}
+/*
 	SEXP ans, ans_j, prot;
 	const struct dataset *d = as_dataset(sdata);
-	const struct schema *s = d->schema;
+	const struct schema *s = &d->schema;
 	const struct datatype_record *r;
 	struct data_fields it;
 	R_xlen_t i, n = d->nrow;
@@ -645,13 +925,14 @@ static SEXP as_list_dataset_record(SEXP sdata)
 	UNPROTECT(1);
 	return ans;
 }
+*/
 
 
 SEXP as_list_dataset(SEXP sdata)
 {
 	SEXP ans, prot, val;
 	const struct dataset *d = as_dataset(sdata);
-	const struct schema *s = d->schema;
+	const struct schema *s = &d->schema;
 	R_xlen_t i, n = d->nrow;
 	int type_id;
 

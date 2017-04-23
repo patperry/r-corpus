@@ -88,18 +88,18 @@ print.dataset <- function(x, ...)
         stop("subscript of length >1 is not allowed")
     }
 
-    if (!is.null(dim(x))) {
-        if (is.character(i)) {
-            name <- i
-            i <- match(name, names(x))
-            if (is.na(i)) {
-                stop(paste0("invalid column name: \"", name, "\""))
+    if (is.null(dim(x))) { # scalar dataset
+        i <- floor(as.double(i))
+    } else { # record dataset
+        if (!is.character(i)) {
+            i <- names(x)[[i]]
+        }
 
-            }
+        if (!(i %in% names(x))) {
+            stop(paste0("invalid column name: \"", i, "\""))
         }
     }
 
-    i <- floor(as.double(i))
     ans <- .Call(C_subscript_dataset, x, i)
     ans <- .Call(C_simplify_dataset, ans)
     ans
@@ -160,15 +160,13 @@ print.dataset <- function(x, ...)
                 stop("second subscript of length >1 is not allowed")
             }
 
-            if (is.character(j)) {
-                name <- j
-                j <- match(name, names(x))
-                if (is.na(j)) {
-                    stop(paste0("invalid column name: \"", name, "\""))
-                }
+            if (!is.character(j)) {
+                j <- names(x)[[j]]
             }
 
-            j <- as.double(j)
+            if (!(j %in% names(x))) {
+                stop(paste0("invalid column name: \"", j, "\""))
+            }
         }
     }
 
