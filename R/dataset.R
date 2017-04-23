@@ -88,16 +88,30 @@ print.dataset <- function(x, ...)
         stop("subscript of length >1 is not allowed")
     }
 
+    # For scalar datasets, i is the index.
+    #
+    # For record datasets, i can either be the column index, or
+    # the column name; in the latter case convert i to the column
+    # index.
+    #
+    # In both cases, convert i to a whole number double.
+
     if (is.null(dim(x))) { # scalar dataset
+        if (!is.numeric(i) || is.na(i)) {
+            stop(paste0("invalid subscript: \"", i, "\""))
+        }
         i <- floor(as.double(i))
     } else { # record dataset
-        if (!is.character(i)) {
-            i <- names(x)[[i]]
+        if (is.character(i)) {
+            if (!(i %in% names(x))) {
+                stop(paste0("invalid column name: \"", i, "\""))
+            }
+            i <- match(i, names(x))
         }
-
-        if (!(i %in% names(x))) {
-            stop(paste0("invalid column name: \"", i, "\""))
+        if (!is.numeric(i) || is.na(i)) {
+            stop(paste0("invalid subscript: \"", i, "\""))
         }
+        i <- floor(as.double(i))
     }
 
     ans <- .Call(C_subscript_dataset, x, i)
@@ -122,7 +136,9 @@ print.dataset <- function(x, ...)
     ni <- nargs() - 1
 
     if (is.null(dim(x))) {
-        # scalar dataset
+        # Scalar dataset:
+        # If non-NULL, convert i to a double() vector of indices;
+        # set j to NULL.
 
         if (ni > 1) {
             stop("incorrect number of dimensions")
@@ -136,7 +152,9 @@ print.dataset <- function(x, ...)
         }
 	    j <- NULL
     } else {
-        # record dataset
+        # Record dataset:
+        # If non-NULL, convert i to a double() vector of indices;
+        # if non-NULL convert j to a column index
 
         if (ni > 2) {
             stop("incorrect number of dimensions")
@@ -160,13 +178,16 @@ print.dataset <- function(x, ...)
                 stop("second subscript of length >1 is not allowed")
             }
 
-            if (!is.character(j)) {
-                j <- names(x)[[j]]
+            if (is.character(j)) {
+                if (!(j %in% names(x))) {
+                    stop(paste0("invalid column name: \"", j, "\""))
+                }
+                j <- match(j, names(x))
             }
-
-            if (!(j %in% names(x))) {
-                stop(paste0("invalid column name: \"", j, "\""))
+            if (!is.numeric(j) || is.na(j)) {
+                stop(paste0("invalid column subscript: \"", j, "\""))
             }
+            j <- floor(as.double(j))
         }
     }
 

@@ -677,6 +677,9 @@ SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
 		if (sj == R_NilValue) {
 			return sdata;
 		} else {
+			if (d->kind != DATATYPE_RECORD) {
+				error("incorrect number of dimensions");
+			}
 			return subscript_dataset(sdata, sj);
 		}
 	} else if (sj == R_NilValue) {
