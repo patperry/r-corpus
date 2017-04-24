@@ -876,18 +876,16 @@ static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
 
 static SEXP as_list_dataset_record(SEXP sdata)
 {
-	// TODO implement
-	(void)sdata;
-	return R_NilValue;
-}
-/*
-	SEXP ans, ans_j, prot;
+	SEXP ans, ans_j, names, sfilebuf, sfield, sfield2, srows,
+	     shandle, sname;
 	const struct dataset *d = as_dataset(sdata);
-	const struct schema *s = &d->schema;
+	struct dataset *d_j;
+	struct schema **schema;
 	const struct datatype_record *r;
 	struct data_fields it;
-	R_xlen_t i, n = d->nrow;
+	R_xlen_t i, n = d->nrow, k, m;
 	int err, j, nfield;
+	int *type_id;
 	struct data **rows;
 	int *cols;
 
@@ -895,14 +893,20 @@ static SEXP as_list_dataset_record(SEXP sdata)
 		return R_NilValue;
 	}
 
-	r = &s->types[d->type_id].meta.record;
+	r = &d->schema.types[d->type_id].meta.record;
 	nfield = r->nfield;
 
-	prot = R_ExternalPtrProtected(sdata);
+	sfilebuf = getListElement(sdata, "filebuf");
+	sfield = getListElement(sdata, "field");
+	srows = getListElement(sdata, "rows");
+	PROTECT(names = names_dataset(sdata));
+
 	PROTECT(ans = allocVector(VECSXP, r->nfield));
-	setAttrib(ans, R_NamesSymbol, names_dataset(sdata));
+	setAttrib(ans, R_NamesSymbol, names);
 	rows = (struct data **)R_alloc(nfield, sizeof(*rows));
-	cols = (int *)R_alloc(s->names.ntype, sizeof(*cols));
+	cols = (int *)R_alloc(d->schema.names.ntype, sizeof(*cols));
+	schema = (struct schema **)R_alloc(nfield, sizeof(*schema));
+	type_id = (int *)R_alloc(nfield, sizeof(type_id));
 
 	for (j = 0; j < nfield; j++) {
 		// use calloc so that all items are initialized to null
@@ -913,31 +917,65 @@ static SEXP as_list_dataset_record(SEXP sdata)
 		}
 		cols[r->name_ids[j]] = j;
 
-		ans_j = alloc_dataset(s, r->type_ids[j], rows[j], n, prot);
+		sname = STRING_ELT(names, j);
+		m = (sfield == R_NilValue) ? 0 : XLENGTH(sfield);
+
+		PROTECT(sfield2 = allocVector(STRSXP, m + 1));
+		for (k = 0; k < m; k++) {
+			SET_STRING_ELT(sfield2, k, STRING_ELT(sfield, k));
+		}
+		SET_STRING_ELT(sfield2, m, sname);
+		ans_j = alloc_dataset(sfilebuf, sfield2, srows);
 		SET_VECTOR_ELT(ans, j, ans_j);
+		UNPROTECT(1); // sfield2 protected by ans_j, protected by ans
+
+		shandle = getListElement(sdata, "handle");
+		d_j = R_ExternalPtrAddr(shandle);
+		d_j->rows = rows[j];
+		d_j->nrow = n;
+		schema[j] = &d_j->schema;
+		type_id[j] = DATATYPE_NULL;
 	}
 
 	for (i = 0; i < n; i++) {
-		if ((err = data_fields(&d->rows[i], s, &it))) {
+		if ((err = data_fields(&d->rows[i], &d->schema, &it))) {
 			continue;
 		}
 
 		while (data_fields_advance(&it)) {
 			j = cols[it.name_id];
-			rows[j][i] = it.current;
+			if ((err = data_assign(&rows[j][i], schema[j],
+						it.current.ptr,
+						it.current.size))) {
+				error("failed parsing field value");
+			}
+
+			if ((err = schema_union(schema[j], rows[j][i].type_id,
+							type_id[j],
+							&type_id[j]))) {
+				error("memory allocation failure");
+			}
 		}
 	}
 
 	for (j = 0; j < nfield; j++) {
 		ans_j = VECTOR_ELT(ans, j);
+		shandle = getListElement(sdata, "handle");
+		d_j = R_ExternalPtrAddr(shandle);
+		d_j->type_id = type_id[j];
+		if (type_id[j] < 0) {
+			d_j->kind = DATATYPE_ANY;
+		} else {
+			d_j->kind = schema[j]->types[type_id[j]].kind;
+		}
+
 		ans_j = simplify_dataset(ans_j);
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
 
-	UNPROTECT(1);
+	UNPROTECT(2);
 	return ans;
 }
-*/
 
 
 SEXP as_list_dataset(SEXP sdata)
