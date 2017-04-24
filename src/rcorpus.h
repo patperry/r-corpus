@@ -18,6 +18,7 @@
 #define RCORPUS_H
 
 #include <stddef.h>
+#include <stdint.h>
 #include <Rdefines.h>
 
 #include "corpus/src/table.h"
@@ -36,6 +37,33 @@ struct dataset {
 	int type_id;
 	int kind;
 };
+
+struct mkchar {
+	uint8_t *buf;
+	int size;
+};
+
+struct decode {
+	struct mkchar mkchar;
+	int overflow;
+};
+
+/* converting text to CHARSXP */
+void mkchar_init(struct mkchar *mk);
+void mkchar_destroy(struct mkchar *mk);
+SEXP mkchar_get(struct mkchar *mk, const struct text *text);
+
+/* converting data to R values */
+void decode_init(struct decode *d);
+void decode_clear(struct decode *d);
+void decode_destroy(struct decode *d);
+
+int decode_logical(struct decode *d, const struct data *val);
+int decode_integer(struct decode *d, const struct data *val);
+double decode_real(struct decode *d, const struct data *val);
+SEXP decode_charsxp(struct decode *d, const struct data *val);
+SEXP decode_sexp(struct decode *d, const struct data *val,
+		 const struct schema *s);
 
 /* logging */
 SEXP logging_off(void);
@@ -60,6 +88,10 @@ SEXP datatypes_dataset(SEXP data);
 SEXP simplify_dataset(SEXP data);
 SEXP subscript_dataset(SEXP data, SEXP i);
 SEXP subset_dataset(SEXP data, SEXP i, SEXP j);
+
+/* data */
+SEXP scalar_data(const struct data *d, const struct schema *s,
+		 int *overflowptr);
 
 /* file buffer */
 SEXP alloc_filebuf(SEXP file);

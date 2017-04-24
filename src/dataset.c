@@ -753,12 +753,9 @@ static SEXP as_integer_dataset_check(SEXP sdata, int *overflowptr)
 		if (err == ERROR_INVAL) {
 			val[i] = NA_INTEGER;
 		} else {
-			if (err == ERROR_OVERFLOW) {
+			if (err == ERROR_OVERFLOW || val[i] == NA_INTEGER) {
 				overflow = 1;
-			}
-			assert(NA_INTEGER == INT_MIN);
-			if (val[i] == NA_INTEGER) {
-				val[i] = NA_INTEGER + 1;
+				val[i] = NA_INTEGER;
 			}
 		}
 	}
@@ -832,45 +829,6 @@ SEXP as_text_dataset(SEXP sdata)
 
 	UNPROTECT(1);
 	return ans;
-}
-
-
-static SEXP alloc_dataset_array(const struct schema *schema, int type_id,
-				const struct data *array, SEXP prot)
-{
-	// TODO implement
-	(void)schema;
-	(void)type_id;
-	(void)array;
-	(void)prot;
-	return R_NilValue;
-	/*
-	SEXP ans;
-	struct data *rows;
-	struct data_items it;
-	int err, i, n;
-
-	if ((err = data_nitem(array, schema, &n))
-			|| ((err = data_items(array, schema, &it)))) {
-		n = 0;
-		rows = NULL;
-	} else {
-		rows = malloc(n * sizeof(*rows));
-		if (!rows) {
-			error("failed allocating memory (%"PRIu64" bytes)",
-			      (uint64_t)n * sizeof(*rows));
-		}
-
-		i = 0;
-		while (data_items_advance(&it)) {
-			rows[i] = it.current;
-			i++;
-		}
-	}
-
-	ans = alloc_dataset(schema, type_id, rows, n, prot);
-	return ans;
-	*/
 }
 
 
@@ -980,28 +938,35 @@ static SEXP as_list_dataset_record(SEXP sdata)
 
 SEXP as_list_dataset(SEXP sdata)
 {
-	SEXP ans, prot, val;
+	SEXP ans, val;
 	const struct dataset *d = as_dataset(sdata);
-	const struct schema *s = &d->schema;
+	struct decode decode;
+	struct data data;
 	R_xlen_t i, n = d->nrow;
-	int type_id;
 
 	if (d->kind == DATATYPE_RECORD) {
 		return as_list_dataset_record(sdata);
-	} else if (d->kind != DATATYPE_ARRAY) {
-		return R_NilValue;
 	}
 
-	type_id = s->types[d->type_id].meta.array.type_id;
 
-	prot = R_ExternalPtrProtected(sdata);
 	PROTECT(ans = allocVector(VECSXP, n));
 
+	decode_init(&decode);
+
 	for (i = 0; i < n; i++) {
-		val = alloc_dataset_array(s, type_id, &d->rows[i], prot);
+		data = d->rows[i];
+		if (d->type_id != DATATYPE_ANY) {
+			data.type_id = d->type_id;
+		}
+		val = decode_sexp(&decode, &data, &d->schema);
 		SET_VECTOR_ELT(ans, i, val);
 	}
 
+	if (decode.overflow) {
+		warning("Inf introduced by coercion to double-precision range");
+	}
+
+	decode_destroy(&decode);
 	UNPROTECT(1);
 	return ans;
 }
