@@ -47,7 +47,7 @@ test_that("serializing dataset should use relative, not absolute path", {
 
     # set the working directory to dir
     setwd(dir)
-    unlink(file.path(dir, "a"))
+    unlink(file.path(dir, "a"), recursive=TRUE)
 
     # read obj.rds
     ds2 <- readRDS("obj.rds")
