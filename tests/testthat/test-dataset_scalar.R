@@ -109,3 +109,17 @@ test_that("reading boolean works", {
     rm("ds"); gc()
     file.remove(file)
 })
+
+
+test_that("reading empty works", {
+    file <- tempfile()
+    writeLines(character(), file)
+    ds <- read_json(file)
+
+    expect_equal(length(ds), 0)
+    expect_equal(dim(ds), NULL)
+    expect_equal(names(ds), NULL)
+
+    rm("ds"); gc()
+    file.remove(file)
+})

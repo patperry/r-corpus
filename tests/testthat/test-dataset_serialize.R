@@ -19,6 +19,46 @@ test_that("serializing dataset works", {
 })
 
 
+test_that("serializing dataset should use relative, not absolute path", {
+    wd <- getwd()
+    on.exit(setwd(wd))
+
+    x <- c("S", "P", "Q", "R")
+
+    # create and change directory to dir/a
+    dir <- tempfile()
+    dir.create(dir)
+    setwd(dir)
+    dir.create("a")
+    setwd("a")
+
+    # save dir/a/data.json
+    # save dir/a/obj.rds
+    writeLines(paste0('{"x": "', x, '"}'), "data.json")
+    ds <- read_json("data.json")
+    saveRDS(ds, "obj.rds")
+    rm("ds"); gc()
+
+    # move the files to
+    # dir/data.json
+    # dir/obj.rds
+    file.rename(file.path(dir, "a", "data.json"), file.path(dir, "data.json"))
+    file.rename(file.path(dir, "a", "obj.rds"), file.path(dir, "obj.rds"))
+
+    # set the working directory to dir
+    setwd(dir)
+    unlink(file.path(dir, "a"))
+
+    # read obj.rds
+    ds2 <- readRDS("obj.rds")
+    expect_equal(as.character(ds2$x), x)
+
+    rm("ds2"); gc()
+    file.remove(file.path(dir, "data.json"))
+    file.remove(file.path(dir, "obj.rds"))
+})
+
+
 test_that("serializing dataset subset works", {
     x <- LETTERS
     file <- tempfile()
