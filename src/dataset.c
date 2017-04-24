@@ -138,73 +138,56 @@ static void grow_datarows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
 
 static void dataset_load(SEXP sdata)
 {
-	SEXP shandle, sfilebuf;
+	SEXP shandle, sparent_handle, sfilebuf, sfield, sfield_path,
+	     srows, sparent, sparent2;
 	struct dataset *obj;
-	struct data *datarows;
+	struct data *rows;
 	struct filebuf *buf;
 	struct filebuf_iter it;
 	const uint8_t *ptr;
 	size_t size;
-	R_xlen_t nrow, nrow_max;
+	R_xlen_t nrow, nrow_max, j, m;
 	int err, type_id;
 
 	shandle = getListElement(sdata, "handle");
-
 	obj = R_ExternalPtrAddr(shandle);
-	if (obj == NULL) {
-		if (!(obj = malloc(sizeof(*obj)))) {
-			error("failed allocating memory (%u bytes)",
-			      (unsigned)sizeof(*obj));
-		}
-		if ((err = schema_init(&obj->schema))) {
-			free(obj);
-			error("failed allocating memory");
-		}
-
-		obj->rows = NULL;
-		obj->nrow = 0;
-		obj->type_id = DATATYPE_NULL;
-		obj->kind = DATATYPE_NULL;
-
-		R_SetExternalPtrAddr(shandle, obj);
-		R_RegisterCFinalizerEx(shandle, free_dataset, TRUE);
-	}
-
-	if (obj->rows != NULL) {
-		// already loaded
+	if (obj && obj->rows) {
 		return;
 	}
 
 	sfilebuf = getListElement(sdata, "filebuf");
-	buf = as_filebuf(sfilebuf);
+	PROTECT(sparent = alloc_dataset(sfilebuf, R_NilValue, R_NilValue));
+	sparent_handle = getListElement(sparent, "handle");
+	obj = R_ExternalPtrAddr(sparent_handle);
 
 	type_id = DATATYPE_NULL;
 	nrow = 0;
 	nrow_max = 0;
-	datarows = NULL;
+	rows = NULL;
 
+	buf = as_filebuf(sfilebuf);
 	filebuf_iter_make(&it, buf);
+
 	while (filebuf_iter_advance(&it)) {
 		if (nrow == nrow_max) {
-			grow_datarows(&datarows, &nrow_max);
+			grow_datarows(&rows, &nrow_max);
 		}
 
 		ptr = it.current.ptr;
 		size = it.current.size;
 
-		if ((err = data_assign(&datarows[nrow], &obj->schema, ptr,
-						size))) {
-			free(datarows);
-			free(obj);
+		// TODO what about null?
+		if ((err = data_assign(&rows[nrow], &obj->schema,
+						ptr, size))) {
+			free(rows);
 			error("error parsing row %"PRIu64
 			      " of JSON file", (uint64_t)(nrow + 1));
 		}
 
 		if ((err = schema_union(&obj->schema, type_id,
-					datarows[nrow].type_id,
+					rows[nrow].type_id,
 					&type_id))) {
-			free(datarows);
-			free(obj);
+			free(rows);
 			error("memory allocation failure"
 			      " after parsing row %"PRIu64
 			      " of JSON file", (uint64_t)(nrow + 1));
@@ -213,30 +196,58 @@ static void dataset_load(SEXP sdata)
 	}
 
 	// free excess memory
-	datarows = realloc(datarows, nrow * sizeof(*datarows));
+	rows = realloc(rows, nrow * sizeof(*rows));
 
-	// ensure datarows is non-NULL even if nrow == 0
-	if (datarows == NULL) {
-		datarows = malloc(sizeof(*datarows));
-		if (!datarows) {
+	// ensure rows is non-NULL even if nrow == 0
+	if (rows == NULL) {
+		rows = malloc(sizeof(*rows));
+		if (!rows) {
 			error("failed allocating memory (%u bytes)",
-				sizeof(*datarows));
+				sizeof(*rows));
 		}
 	}
 
 	// set the fields
-	obj->rows = datarows;
+	obj->rows = rows;
 	obj->nrow = nrow;
 	obj->type_id = type_id;
-
 	if (type_id < 0) {
 		obj->kind = DATATYPE_ANY;
 	} else {
 		obj->kind = obj->schema.types[type_id].kind;
 	}
 
+	// first extract the rows from the parent...
+	srows = getListElement(sdata, "rows");
+	if (srows != R_NilValue) {
+		PROTECT(sparent2 = subrows_dataset(sparent, srows));
+		free_dataset(sparent_handle);
+		R_SetExternalPtrAddr(sparent_handle, NULL);
+		UNPROTECT(2);
+		PROTECT(sparent = sparent2);
+		sparent_handle = getListElement(sparent, "handle");
+	}
 
-	// TODO: extract subfield, rows
+	// ...then extract the field
+	sfield_path = getListElement(sdata, "field");
+	if (sfield_path != R_NilValue) {
+		m = XLENGTH(sfield_path);
+		for (j = 0; j < m; j++) {
+			sfield = STRING_ELT(sfield_path, j);
+			PROTECT(sparent2 = subfield_dataset(sparent, sfield));
+			free_dataset(sparent_handle);
+			R_SetExternalPtrAddr(sparent_handle, NULL);
+			UNPROTECT(2);
+			PROTECT(sparent = sparent2);
+			sparent_handle = getListElement(sparent, "handle");
+		}
+	}
+
+	// steal the handle from the parent
+	free_dataset(shandle);
+	R_SetExternalPtrAddr(shandle, R_ExternalPtrAddr(sparent_handle));
+	R_SetExternalPtrAddr(sparent_handle, NULL);
+	UNPROTECT(1);
 }
 
 
@@ -486,9 +497,7 @@ SEXP subscript_dataset(SEXP sdata, SEXP si)
 		name_id = r->name_ids[(int)(i - 1)];
 		name = &s->names.types[name_id].text;
 
-		PROTECT(sname = allocVector(STRSXP, 1));
-		SET_STRING_ELT(sname, 0,
-				mkCharLenCE((const char *)name->ptr,
+		PROTECT(sname = mkCharLenCE((const char *)name->ptr,
 					    (int)TEXT_SIZE(name), CE_UTF8));
 		PROTECT(ans = subfield_dataset(sdata, sname));
 		UNPROTECT(2);
@@ -599,10 +608,10 @@ SEXP subfield_dataset(SEXP sdata, SEXP sname)
 
 	if (sname == R_NilValue) {
 		return sdata;
-	} else if (!(isString(sname) && LENGTH(sname) == 1)) {
+	} else if (TYPEOF(sname) != CHARSXP) {
                 error("invalid 'name' argument");
         }
-	name_ptr = translateCharUTF8(STRING_ELT(sname, 0));
+	name_ptr = translateCharUTF8(sname);
 	name_len = strlen(name_ptr);
 	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8));
 	if ((err = text_assign(&name, (uint8_t *)name_ptr, name_len,
