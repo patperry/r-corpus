@@ -78,7 +78,6 @@ SEXP alloc_filebuf(SEXP sfile)
         }
 
 	file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
-	PROTECT(sfile = mkString(file)); // TODO: encoding??
 
 	PROTECT(shandle = R_MakeExternalPtr(NULL, FILEBUF_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
@@ -99,7 +98,7 @@ SEXP alloc_filebuf(SEXP sfile)
 	SET_STRING_ELT(sclass, 0, mkChar("filebuf"));
 	setAttrib(ans, R_ClassSymbol, sclass);
 
-	UNPROTECT(5);
+	UNPROTECT(4);
 	return ans;
 }
 
@@ -144,7 +143,7 @@ struct filebuf *as_filebuf(SEXP sbuf)
 		R_RegisterCFinalizerEx(shandle, free_filebuf, TRUE);
 
 		sfile = getListElement(sbuf, "file");
-		file = CHAR(STRING_ELT(sfile, 0));
+		file = R_ExpandFileName(CHAR(STRING_ELT(sfile, 0)));
 		buf = filebuf_new(file);
 
 		if (buf == NULL) {
