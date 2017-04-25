@@ -1,8 +1,6 @@
 To Do
 =====
 
-Setting names on datasets is currently not allowed. Should it be?
-
 The concat operator `c()` does not work on text or dataset. Should it?
 
 `summary.text`
