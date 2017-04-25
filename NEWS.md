@@ -1,4 +1,11 @@
 
+# corpus 0.3.0
+
+* Support for serializing dataset objects (readRDS/saveRDS)
+
+* More convenient interface for accessing JSON arrays.
+
+
 # corpus 0.2.0
 
 * First CRAN release.
