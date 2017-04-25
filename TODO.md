@@ -1,16 +1,27 @@
 To Do
 =====
 
-The concat operator `c()` does not work on text or dataset. Should it?
 
-`summary.text`
+Bugs
+----
 
-`vocab()` for type/token frequencies
+ * Serializing text objects (`saveRDS`) is currently broken.
 
-`blocks()` for fixed-length chunks of words. Read up on time series block
-bootstrap to get inspiration for interface.
 
-`word_counts()` for word count matrix; groups argument for collapsing rows.
+Features
+--------
 
-Bootstrapping. Not sure what the interface should look like, but should
-support sentence-level, word-level, block-level.
+ * The concat operator `c()` does not work on text or dataset. Should it?
+
+ * `summary.text`
+
+ * `vocab()` for type/token frequencies
+
+ * `blocks()` for fixed-length chunks of words. Read up on time series block
+   bootstrap to get inspiration for interface.
+
+ * `word_counts()` (or `type_counts()`) for word count matrix; groups
+   argument for collapsing rows.
+
+ * Bootstrapping. Not sure what the interface should look like, but should
+   support sentence-level, word-level, block-level.
