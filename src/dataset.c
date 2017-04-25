@@ -176,7 +176,6 @@ static void dataset_load(SEXP sdata)
 		ptr = it.current.ptr;
 		size = it.current.size;
 
-		// TODO what about null?
 		if ((err = data_assign(&rows[nrow], &obj->schema,
 						ptr, size))) {
 			free(rows);
@@ -562,7 +561,6 @@ SEXP subrows_dataset(SEXP sdata, SEXP si)
 		}
 		src = &obj->rows[ind];
 
-		// TODO: what about null?
 		if ((err = data_assign(&rows[i], &obj2->schema, src->ptr,
 				       src->size))) {
 			error("error parsing row %"PRIu64
