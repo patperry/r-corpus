@@ -955,9 +955,6 @@ SEXP as_list_dataset(SEXP sdata)
 
 	for (i = 0; i < n; i++) {
 		data = d->rows[i];
-		if (d->type_id != DATATYPE_ANY) {
-			data.type_id = d->type_id;
-		}
 		val = decode_sexp(&decode, &data, &d->schema);
 		SET_VECTOR_ELT(ans, i, val);
 	}

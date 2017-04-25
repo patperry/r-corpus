@@ -270,6 +270,11 @@ SEXP decode_array(struct decode *d, const struct data *val,
 		break;
 
 	default:
+		if (n == 0) {
+			ans = R_NilValue;
+			goto out;
+		}
+
 		PROTECT(ans = allocVector(VECSXP, n));
 		while (data_items_advance(&it)) {
 			SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));
@@ -305,7 +310,10 @@ SEXP decode_record(struct decode *d, const struct data *val,
 
 	PROTECT(ans = allocVector(VECSXP, n));
 	PROTECT(names = allocVector(STRSXP, n));
-	setAttrib(ans, R_NamesSymbol, names);
+
+	if (n > 0) {
+		setAttrib(ans, R_NamesSymbol, names);
+	}
 
 	i = 0;
 	while (data_fields_advance(&it)) {
