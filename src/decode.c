@@ -122,6 +122,10 @@ SEXP decode_sexp(struct decode *d, const struct data *val,
 	case DATATYPE_RECORD:
 		ans = decode_record(d, val, s);
 		break;
+
+	default:
+		ans = R_NilValue; // impossible, but silence warning anyway
+		break;
 	}
 
 	if (overflow) {
@@ -169,7 +173,7 @@ int integer_data(const struct data *d, int *overflowptr)
 		*overflowptr = overflow;
 	}
 
-	return i;
+	return ans;
 }
 
 
@@ -297,10 +301,7 @@ SEXP decode_record(struct decode *d, const struct data *val,
 	SEXP ans, names;
 	const struct text *name;
 	struct data_fields it;
-	int overflow;
 	int err, i, n;
-
-	overflow = 0;
 
 	if ((err = data_nfield(val, s, &n))) {
 		ans = R_NilValue;
