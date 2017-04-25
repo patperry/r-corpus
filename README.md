@@ -195,8 +195,8 @@ sequence of commands in R:
                      shQuote("https://github.com/patperry/r-corpus.git"),
                      shQuote(dir))
         system(cmd)
-        devtools::test(dir) # run the tests (optional)
         devtools::install(dir)
+        devtools::test(dir) # run the tests (optional)
         unlink(dir, recursive=TRUE)
     })
 
