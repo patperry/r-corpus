@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <float.h>
 #include <inttypes.h>
 #include <limits.h>
 #include <stddef.h>
@@ -122,6 +123,10 @@ static void grow_datarows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
 		free(base);
 		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
 			(uint64_t)size1, (uint64_t)R_XLEN_T_MAX);
+	}
+	if (size1 > (((uint64_t)1) << DBL_MANT_DIG)) {
+		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
+			(uint64_t)size1, ((uint64_t)1) << DBL_MANT_DIG);
 	}
 
 	base1 = realloc(base, size1 * width);
@@ -799,29 +804,6 @@ SEXP as_logical_dataset(SEXP sdata)
 			val[i] = NA_LOGICAL;
 		} else {
 			val[i] = b ? TRUE : FALSE;
-		}
-	}
-
-	UNPROTECT(1);
-	return ans;
-}
-
-
-SEXP as_text_dataset(SEXP sdata)
-{
-	SEXP ans, prot;
-	const struct dataset *d = as_dataset(sdata);
-	struct text *text;
-	R_xlen_t i, n;
-
-	prot = R_ExternalPtrProtected(sdata);
-	PROTECT(ans = alloc_text(d->nrow, prot));
-	text = as_text(ans, &n);
-
-	for (i = 0; i < n; i++) {
-		if (data_text(&d->rows[i], &text[i]) != 0) {
-			text[i].ptr = NULL;
-			text[i].attr = 0;
 		}
 	}
 

@@ -21,10 +21,12 @@ text <- function(...)
     x
 }
 
+
 as.text <- function(x, ...)
 {
     UseMethod("as.text")
 }
+
 
 as.text.default <- function(x, ...)
 {
@@ -33,37 +35,43 @@ as.text.default <- function(x, ...)
     x
 }
 
+
 as.text.text <- function(x, ...)
 {
-    x <- list(handle=unclass(x)$handle)
-    class(x) <- "text"
+    names(x) <- NULL
     x
 }
+
 
 is.text <- function(x)
 {
     UseMethod("is.text")
 }
 
+
 is.text.default <- function(x)
 {
     inherits(x, "text")
 }
+
 
 length.text <- function(x)
 {
     .Call(C_length_text, x)
 }
 
+
 dim.text <- function(x)
 {
     NULL
 }
 
+
 names.text <- function(x)
 {
     unclass(x)$names
 }
+
 
 `names<-.text` <- function(x, value)
 {
@@ -73,34 +81,37 @@ names.text <- function(x)
             stop(paste0("names attribute [", length(value), "]",
                         " must be the same length as the text object [",
                         length(x), "]"))
-        } else if (anyNA(value)) {
-            stop("names attribute cannot contain missing values")
-        } else if (anyDuplicated(value)) {
-            stop("names attribute cannot contain duplicate values")
         }
     }
 
-    y <- list(handle=unclass(x)$handle, names=value)
-    attrs <- attributes(x)
-
-    for (a in names(attrs)) {
-        if (!(a %in% c("handle", "names"))) {
-            attr(y, a) <- attrs[[a]]
-        }
-    }
-
+    y <- unclass(x)
+    y$names <- value
+    class(y) <- class(x)
     y
 }
+
 
 `[.text` <- function(x, i)
 {
-    ind <- seq_along(x)
-    names(ind) <- names(x)
-    sub <- ind[i]
-    y <- .Call(C_subset_text, x, sub)
-    names(y) <- names(sub)
+    index <- seq_along(x)
+    names(index) <- names(x)
+    i <- index[i]
+
+    y <- unclass(x)
+    y$table <- y$table[i,]
+    class(y) <- class(x)
     y
 }
+
+
+`[[.text` <- function(x, i)
+{
+    index <- seq_along(x)
+    names(index) <- names(x)
+    i <- index[[i]]
+    as.character(x[i])
+}
+
 
 `$.text` <- function(x, name)
 {
@@ -120,15 +131,7 @@ names.text <- function(x)
 }
 
 
-`[[.text` <- function(x, i)
-{
-    ind <- seq_along(x)
-    names(ind) <- names(x)
-    as.character(x[ind[[i]]])
-}
-
-
-`[<-.text` <- function(x, i, value)
+`[[<-.text` <- function(x, i, value)
 {
     stop("[[<- operator is invalid for text objects")
 }

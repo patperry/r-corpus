@@ -14,99 +14,155 @@
  * limitations under the License.
  */
 
-#include <inttypes.h>
 #include <float.h>
-#include <limits.h>
-#include <stdbool.h>
+#include <inttypes.h>
 #include <stdint.h>
-#include <Rdefines.h>
-#include "corpus/src/text.h"
-#include "corpus/src/unicode.h"
+#include <stdlib.h>
 #include "rcorpus.h"
 
 #define TEXT_TAG install("corpus::text")
 
 
-struct rtext {
-	R_xlen_t length;
-	struct text items[];
+enum source_type {
+	SOURCE_NONE = 0,
+	SOURCE_CHAR,
+	SOURCE_DATASET
 };
 
 
-static void free_text(SEXP text);
+struct source {
+	int type;
+	union {
+		const struct dataset *set;
+		SEXP chars;
+	} data;
+	R_xlen_t nrow;
+};
 
 
-SEXP alloc_text(R_xlen_t n, SEXP prot)
+static void load_text(SEXP x);
+
+
+static int is_source(SEXP x)
 {
-	SEXP ans, shandle, sclass, snames;
-	struct rtext *text;
-	size_t size;
+	return (x == R_NilValue || TYPEOF(x) == STRSXP || is_dataset(x));
+}
 
-	if ((uint64_t)n > (1ull << DBL_MANT_DIG)) {
-		error("length (%"PRIu64") exceeds maximum (2^%d)",
-			(uint64_t)n, DBL_MANT_DIG);
-	} else if ((size_t)n > (SIZE_MAX - sizeof(struct rtext))
-			/ sizeof(struct text)) {
-		error("cannot allocate 'text' array of length %"PRIu64,
-			(uint64_t)n);
+
+static void source_assign(struct source *source, SEXP value)
+{
+	if (value == R_NilValue) {
+		source->type = SOURCE_NONE;
+		source->nrow = 0;
+	} else if (TYPEOF(value) == STRSXP) {
+		source->type = SOURCE_CHAR;
+		source->data.chars = value;
+		source->nrow = XLENGTH(value);
+	} else if (is_dataset(value)) {
+		source->type = SOURCE_DATASET;
+		source->data.set = as_dataset(value);
+		source->nrow = source->data.set->nrow;
+	} else {
+		error("invalid text source;"
+		      " should be 'character', 'dataset', or NULL");
+	}
+}
+
+
+static void free_text(SEXP stext)
+{
+        struct text *text = R_ExternalPtrAddr(stext);
+        free(text);
+}
+
+
+SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
+{
+	SEXP ans, handle, names, sclass, src, row_names, table;
+	R_xlen_t n;
+	int s, nsrc;
+
+	PROTECT(handle = R_MakeExternalPtr(NULL, TEXT_TAG, R_NilValue));
+	R_RegisterCFinalizerEx(handle, free_text, TRUE);
+
+	n = XLENGTH(source);
+
+	if (TYPEOF(sources) != VECSXP) {
+		error("invalid 'sources' argument");
+	} else if (XLENGTH(sources) > INT_MAX) {
+		error("'sources' length exceeds maximum (%d)", INT_MAX);
+	} else if (TYPEOF(source) != INTSXP) {
+		error("invalid 'source' argument");
+	} else if (XLENGTH(row) != n || TYPEOF(row) != REALSXP) {
+		error("invalid 'row' argument");
+	} else if (XLENGTH(start) != n || TYPEOF(start) != INTSXP) {
+		error("invalid 'start' argument");
+	} else if (XLENGTH(stop) != n || TYPEOF(stop) != INTSXP) {
+		error("invalid 'stop' argument");
 	}
 
-	size = sizeof(struct rtext) + n * sizeof(struct text);
-	text = (struct rtext *)Calloc(size, char);
-	text->length = n;
+	nsrc = (int)XLENGTH(sources);
+	for (s = 0; s < nsrc; s++) {
+		src = VECTOR_ELT(sources, s);
+		if (!is_source(src)) {
+			error("'sources' element at index %d is invalid;"
+			      "should be a 'character' or 'dataset'", s + 1);
+		}
+	}
 
-	PROTECT(shandle = R_MakeExternalPtr(text, TEXT_TAG, prot));
-	R_RegisterCFinalizerEx(shandle, free_text, TRUE);
+	PROTECT(table = allocVector(VECSXP, 4));
+	SET_VECTOR_ELT(table, 0, source);
+	SET_VECTOR_ELT(table, 1, row);
+	SET_VECTOR_ELT(table, 2, start);
+	SET_VECTOR_ELT(table, 3, stop);
 
-	PROTECT(ans = allocVector(VECSXP, 2));
-	SET_VECTOR_ELT(ans, 0, shandle);
-	SET_VECTOR_ELT(ans, 1, R_NilValue);
+	PROTECT(names = allocVector(STRSXP, 4));
+        SET_STRING_ELT(names, 0, mkChar("source"));
+        SET_STRING_ELT(names, 1, mkChar("row"));
+        SET_STRING_ELT(names, 2, mkChar("start"));
+        SET_STRING_ELT(names, 3, mkChar("stop"));
+        setAttrib(table, R_NamesSymbol, names);
 
-	PROTECT(snames = allocVector(STRSXP, 2));
-	SET_STRING_ELT(snames, 0, mkChar("handle"));
-	SET_STRING_ELT(snames, 1, mkChar("names"));
-	setAttrib(ans, R_NamesSymbol, snames);
+	PROTECT(row_names = allocVector(REALSXP, 2));
+	REAL(row_names)[0] = NA_REAL;
+	REAL(row_names)[1] = (double)n;
+	setAttrib(table, R_RowNamesSymbol, row_names);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
-	SET_STRING_ELT(sclass, 0, mkChar("text"));
-	setAttrib(ans, R_ClassSymbol, sclass);
+        SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
+        setAttrib(table, R_ClassSymbol, sclass);
 
-	UNPROTECT(4);
+	PROTECT(ans = allocVector(VECSXP, 4));
+	SET_VECTOR_ELT(ans, 0, handle);
+	SET_VECTOR_ELT(ans, 1, sources);
+	SET_VECTOR_ELT(ans, 2, table);
+	SET_VECTOR_ELT(ans, 3, R_NilValue);
+
+	PROTECT(names = allocVector(STRSXP, 4));
+        SET_STRING_ELT(names, 0, mkChar("handle"));
+        SET_STRING_ELT(names, 1, mkChar("sources"));
+        SET_STRING_ELT(names, 2, mkChar("table"));
+        SET_STRING_ELT(names, 3, mkChar("names"));
+        setAttrib(ans, R_NamesSymbol, names);
+
+	PROTECT(sclass = allocVector(STRSXP, 1));
+        SET_STRING_ELT(sclass, 0, mkChar("text"));
+        setAttrib(ans, R_ClassSymbol, sclass);
+
+	UNPROTECT(8);
 	return ans;
 }
 
 
-SEXP alloc_na_text(void)
-{
-	SEXP ans;
-	struct text *text;
-
-	PROTECT(ans = alloc_text(1, R_NilValue));
-	text = as_text(ans, NULL);
-	text[0].ptr = NULL;
-	text[0].attr = 0;
-	UNPROTECT(1);
-
-	return ans;
-}
-
-
-void free_text(SEXP stext)
-{
-        struct rtext *text = R_ExternalPtrAddr(stext);
-        Free(text);
-}
-
-
-int is_text(SEXP stext)
+int is_text(SEXP x)
 {
 	SEXP handle;
 
-	if (!isVectorList(stext)) {
+	if (!isVectorList(x)) {
 		return 0;
 	}
 
-	handle = getListElement(stext, "handle");
+	handle = getListElement(x, "handle");
 	if (handle == R_NilValue) {
 		return 0;
 	}
@@ -118,8 +174,8 @@ int is_text(SEXP stext)
 
 struct text *as_text(SEXP stext, R_xlen_t *lenptr)
 {
-	SEXP handle;
-	struct rtext *text;
+	SEXP handle, source, table;
+	struct text *text;
 
 	if (!is_text(stext)) {
 		error("invalid 'text' object");
@@ -127,52 +183,188 @@ struct text *as_text(SEXP stext, R_xlen_t *lenptr)
 
 	handle = getListElement(stext, "handle");
 	text = R_ExternalPtrAddr(handle);
+	if (!text) {
+		load_text(stext);
+		handle = getListElement(stext, "handle");
+		text = R_ExternalPtrAddr(handle);
+	}
 
 	if (lenptr) {
-		*lenptr = text->length;
+		table = getListElement(stext, "table");
+		if (table == R_NilValue) {
+			*lenptr = 0;
+		} else {
+			source = getListElement(table, "source");
+			if (source == R_NilValue) {
+				*lenptr = 0;
+			} else {
+				*lenptr = XLENGTH(source);
+			}
+		}
 	}
 
-	return &text->items[0];
+	return text;
 }
 
 
-SEXP names_text(SEXP stext)
+SEXP as_text_dataset(SEXP sdata)
 {
-	if (!is_text(stext)) {
-		error("invalid 'text' object");
+	SEXP ans, handle, sources, source, row, start, stop;
+	const struct dataset *d = as_dataset(sdata);
+	struct text *text;
+	R_xlen_t i, nrow = d->nrow;
+	int err;
+
+	PROTECT(sources = allocVector(VECSXP, 1));
+	SET_VECTOR_ELT(sources, 0, sdata);
+
+	PROTECT(source = allocVector(INTSXP, nrow));
+	for (i = 0; i < nrow; i++) {
+		INTEGER(source)[i] = 1;
 	}
 
-	return getListElement(stext, "names");
+	PROTECT(row = allocVector(REALSXP, nrow));
+	for (i = 0; i < nrow; i++) {
+		REAL(row)[i] = (double)(i + 1);
+	}
+
+	PROTECT(start = allocVector(INTSXP, nrow));
+	PROTECT(stop = allocVector(INTSXP, nrow));
+	PROTECT(ans = alloc_text(sources, source, row, start, stop));
+	handle = getListElement(ans, "handle");
+
+	text = calloc(nrow, sizeof(*text));
+	if (nrow > 0 && !text) {
+		error("failed allocating memory (%"PRIu64" objects"
+		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
+	}
+	R_SetExternalPtrAddr(handle, text);
+
+	for (i = 0; i < nrow; i++) {
+		if ((err = data_text(&d->rows[i], &text[i]))) {
+			text[i].ptr = NULL;
+			text[i].attr = 0;
+			INTEGER(start)[i] = NA_INTEGER;
+			INTEGER(stop)[i] = NA_INTEGER;
+		} else {
+			if (TEXT_SIZE(&text[i]) > INT_MAX) {
+				error("text size (%"PRIu64 "bytes)"
+				      "exceeds maximum (%d bytes)",
+				      (uint64_t)TEXT_SIZE(&text[i]),
+				      INT_MAX);
+			}
+			INTEGER(start)[i] = 1;
+			INTEGER(stop)[i] = (int)TEXT_SIZE(&text[i]);
+		}
+	}
+
+	UNPROTECT(6);
+	return ans;
 }
 
 
-// this is only for internal use; it modifies the argument, rather
-// than making a copy
-static SEXP setnames_text(SEXP stext, SEXP svalue)
+SEXP as_text_character(SEXP x)
 {
-	int i;
+	SEXP ans, handle, sources, source, row, start, stop, str;
+	struct text *text;
+	const char *ptr;
+	R_xlen_t i, nrow, len;
+	int err, duped = 0;
 
-	if (!is_text(stext)) {
-		error("invalid 'text' object");
+	if (TYPEOF(x) != STRSXP) {
+	       error("invalid 'character' object");
 	}
-	i = findListElement(stext, "names");
-	if (i < 0) {
-		error("invalid 'text' object (no 'names' field)");
-	}
-	SET_VECTOR_ELT(stext, i, svalue);
 
-	return stext;
+	nrow = XLENGTH(x);
+	if ((uint64_t)nrow > (((uint64_t)1) << DBL_MANT_DIG)) {
+		error("text vector length (%"PRIu64")"
+		      " exceeds maximum (%"PRIu64")",
+		      (uint64_t)nrow, ((uint64_t)1) << DBL_MANT_DIG);
+	}
+
+	PROTECT(sources = allocVector(VECSXP, 1));
+	SET_VECTOR_ELT(sources, 0, x);
+
+	PROTECT(source = allocVector(INTSXP, nrow));
+	for (i = 0; i < nrow; i++) {
+		INTEGER(source)[i] = 1;
+	}
+
+	PROTECT(row = allocVector(REALSXP, nrow));
+	for (i = 0; i < nrow; i++) {
+		REAL(row)[i] = (double)(i + 1);
+	}
+
+	PROTECT(start = allocVector(INTSXP, nrow));
+	PROTECT(stop = allocVector(INTSXP, nrow));
+	PROTECT(ans = alloc_text(sources, source, row, start, stop));
+	handle = getListElement(ans, "handle");
+
+	text = calloc(nrow, sizeof(*text));
+	if (nrow > 0 && !text) {
+		error("failed allocating memory (%"PRIu64" objects"
+		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
+	}
+	R_SetExternalPtrAddr(handle, text);
+
+	for (i = 0; i < nrow; i++) {
+		str = STRING_ELT(x, i);
+
+		// handle NA
+		if (str == NA_STRING) {
+			text[i].ptr = NULL;
+			text[i].attr = 0;
+			INTEGER(start)[i] = NA_INTEGER;
+			INTEGER(stop)[i] = NA_INTEGER;
+			continue;
+		}
+
+		// convert to UTF-8
+		ptr = translateCharUTF8(str);
+		if (ptr != CHAR(str)) {
+			if (!duped) {
+				SET_VECTOR_ELT(sources, 0, (x = duplicate(x)));
+				duped = 1;
+			}
+			str = mkCharCE(ptr, CE_UTF8);
+			SET_STRING_ELT(x, i, str);
+			ptr = CHAR(str);
+		}
+
+		// convert to char to text
+		len = XLENGTH(str);
+		if ((uint64_t)len > (uint64_t)TEXT_SIZE_MAX) {
+			error("size of character object at index %"PRIu64
+			      " (%"PRIu64" bytes)"
+			      " exceeds maximum (%"PRIu64" bytes)",
+			      (uint64_t)(i + 1), (uint64_t)len,
+			      (uint64_t)TEXT_SIZE_MAX);
+		}
+		if (len > INT_MAX) {
+			error("size of character object at index %"PRIu64
+			      " (%"PRIu64" bytes)"
+			      " exceeds maximum (%d bytes)",
+			      (uint64_t)(i + 1), (uint64_t)len, INT_MAX);
+		}
+		if ((err = text_assign(&text[i], (uint8_t *)ptr, (size_t)len,
+					TEXT_NOESCAPE))) {
+			error("character object at index %"PRIu64
+			      " contains invalid UTF-8", (uint64_t)(i + 1));
+		}
+
+		INTEGER(start)[i] = 1;
+		INTEGER(stop)[i] = (int)TEXT_SIZE(&text[i]);
+	}
+
+	UNPROTECT(6);
+	return ans;
 }
 
 
 SEXP coerce_text(SEXP sx)
 {
-	SEXP stext, str;
-	struct text *text;
-	const char *ptr;
-	R_xlen_t i, n;
-	uint64_t len;
-	bool duped = false;
+	SEXP ans;
+	int i;
 
 	if (is_text(sx)) {
 		return sx;
@@ -181,191 +373,140 @@ SEXP coerce_text(SEXP sx)
 	}
 
 	PROTECT(sx = coerceVector(sx, STRSXP));
-	n = XLENGTH(sx);
+	ans = as_text_character(sx);
 
-	PROTECT(stext = alloc_text(n, sx));
-	PROTECT(stext = setnames_text(stext, getAttrib(sx, R_NamesSymbol)));
+	i = findListElement(ans, "names");
+	SET_VECTOR_ELT(ans, i, getAttrib(sx, R_NamesSymbol));
 
-	text = as_text(stext, NULL);
-
-	for (i = 0; i < n; i++) {
-		str = STRING_ELT(sx, i);
-		if (str == NA_STRING) {
-			text[i].ptr = NULL;
-			text[i].attr = 0;
-		} else {
-			ptr = translateCharUTF8(str);
-			if (ptr != CHAR(str)) {
-				if (!duped) {
-					PROTECT(sx = duplicate(sx));
-					R_SetExternalPtrProtected(stext, sx);
-					duped = true;
-				}
-				str = mkCharCE(ptr, CE_UTF8);
-				SET_STRING_ELT(sx, i, str);
-				ptr = CHAR(str);
-			}
-			len = (uint64_t)XLENGTH(str);
-			if (len > (uint64_t)TEXT_SIZE_MAX) {
-				error("text size (%"PRIu64" bytes)"
-				      " exceeds maximum (%"PRIu64" bytes)",
-				      len, (uint64_t)TEXT_SIZE_MAX);
-			}
-			if (text_assign(&text[i], (uint8_t *)ptr, (size_t)len,
-					TEXT_NOESCAPE) != 0) {
-				warning("invalid UTF-8 in character object");
-				text[i].ptr = NULL;
-				text[i].attr = 0;
-			}
-		}
-	}
-
-	UNPROTECT(3);
-	if (duped) {
-		UNPROTECT(1);
-	}
-	return stext;
+	UNPROTECT(1);
+	return ans;
 }
 
 
-
-SEXP length_text(SEXP stext)
+static void load_text(SEXP x)
 {
-	R_xlen_t len;
-	as_text(stext, &len);
-	return ScalarReal((double)len);
-}
-
-
-SEXP as_character_text(SEXP stext)
-{
-	SEXP ans, str;
+	SEXP shandle, srow, ssource, sstart, sstop, ssources, src, str, stable;
+	const double *row;
+	const int *source, *start, *stop;
 	struct text *text;
-	struct text_iter it;
+	struct text txt;
+	struct source *sources;
 	const uint8_t *ptr;
-	uint8_t *buf, *end;
-	size_t buf_len, len;
-	R_xlen_t i, n;
+	double r;
+	R_xlen_t i, j, len, nrow;
+	int s, nsrc, err, begin, end, flags;
 
-	text = as_text(stext, &n);
+	shandle = getListElement(x, "handle");
 
-	// allocate temporary buffer for decoding
-	buf = NULL;
-	buf_len = 0;
+	text = R_ExternalPtrAddr(shandle);
+	if (text) {
+		return;
+	}
 
-	PROTECT(ans = allocVector(STRSXP, n));
+	ssources = getListElement(x, "sources");
+	if (TYPEOF(ssources) != VECSXP) {
+		error("invalid 'sources' argument");
+	} else if (XLENGTH(ssources) > INT_MAX) {
+		error("'sources' length exceeds maximum (%d)", INT_MAX);
+	}
 
-	for (i = 0; i < n; i++) {
-		ptr = text[i].ptr;
-		len = TEXT_SIZE(&text[i]);
+	nsrc = (int)XLENGTH(ssources);
+	sources = (struct source *)R_alloc(nsrc, sizeof(*sources));
 
-		if (ptr == NULL) {
-			str = NA_STRING;
-		} else {
-			if (TEXT_HAS_ESC(&text[i])) {
-				// grow buffer if necessary
-				if (buf_len < len) {
-					buf_len = len;
-					buf = (uint8_t *)R_alloc(buf_len, 1);
-				}
+	for (s = 0; s < nsrc; s++) {
+		src = VECTOR_ELT(ssources, s);
+		source_assign(&sources[s], src);
+	}
 
-				text_iter_make(&it, &text[i]);
-				end = buf;
+	stable = getListElement(x, "table");
+	ssource = getListElement(stable, "source");
+	srow = getListElement(stable, "row");
+	sstart = getListElement(stable, "start");
+	sstop = getListElement(stable, "stop");
 
-				while (text_iter_advance(&it)) {
-					encode_utf8(it.current, &end);
-				}
+	nrow = XLENGTH(ssource);
 
-				ptr = buf;
-				len = end - ptr;
-			} else {
-				len = TEXT_SIZE(&text[i]);
+	if (TYPEOF(ssource) != INTSXP) {
+		error("invalid 'source' argument");
+	} else if (XLENGTH(srow) != nrow || TYPEOF(srow) != REALSXP) {
+		error("invalid 'row' argument");
+	} else if (XLENGTH(sstart) != nrow || TYPEOF(sstart) != INTSXP) {
+		error("invalid 'start' argument");
+	} else if (XLENGTH(sstop) != nrow || TYPEOF(sstop) != INTSXP) {
+		error("invalid 'stop' argument");
+	}
+
+	source = INTEGER(ssource);
+	row = REAL(srow);
+	start = INTEGER(sstart);
+	stop = INTEGER(sstop);
+
+	text = calloc(nrow, sizeof(*text));
+	if (nrow > 0 && !text) {
+		error("failed allocating memory (%"PRIu64" objects"
+		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
+	}
+	R_SetExternalPtrAddr(shandle, text);
+
+	for (i = 0; i < nrow; i++) {
+		s = source[i];
+		if (!(1 <= s && s <= nsrc)) {
+			error("source[[%"PRIu64"]] (%d) is out of range",
+				(uint64_t)i + 1, s);
+		}
+		s--; // switch to 0-based index;:w
+
+		r = row[i];
+		if (!(1 <= r && r <= sources[s].nrow)) {
+			error("row[[%"PRIu64"]] (%g) is out of range",
+				(uint64_t)i + 1, r);
+		}
+		j = (R_xlen_t)(r - 1);
+
+		switch (sources[s].type) {
+		case SOURCE_CHAR:
+			str = STRING_ELT(sources[s].data.chars, j);
+			ptr = (const uint8_t *)CHAR(str);
+			len = XLENGTH(str);
+			flags = TEXT_NOESCAPE;
+			err = text_assign(&txt, ptr, len, flags);
+			if (err) {
+				error("character object in source %d"
+				      " at index %"PRIu64
+				      " contains invalid UTF-8",
+				      s + 1, (uint64_t)(j + 1));
 			}
-			str = mkCharLenCE((char *)ptr, len, CE_UTF8);
-		}
-		SET_STRING_ELT(ans, i, str);
-	}
+			break;
 
-	UNPROTECT(1);
-	return ans;
-}
+		case SOURCE_DATASET:
+			// no need to validate input (handled by dataset)
+			data_text(&sources[s].data.set->rows[j], &txt);
+			flags = 0;
+			break;
 
-
-SEXP subset_text(SEXP stext, SEXP si)
-{
-	SEXP ans, prot;
-	const double *subset;
-	const struct text *src;
-	struct text *dst;
-	R_xlen_t i, n;
-	R_xlen_t s, ns;
-	double ri, rn;
-
-	src = as_text(stext, &n);
-	rn = (double)n;
-
-	PROTECT(si = coerceVector(si, REALSXP));
-	ns = XLENGTH(si);
-	subset = REAL(si);
-
-	prot = R_ExternalPtrProtected(stext);
-	PROTECT(ans = alloc_text(ns, prot));
-
-	dst = as_text(ans, NULL);
-	for (s = 0; s < ns; s++) {
-		ri = subset[s] - 1;
-		if (!(0 <= ri && ri < rn)) {
-			error("invalid index (%g) at position %"PRIu64,
-			      subset[s], (uint64_t)(s + 1));
-		}
-		i = (R_xlen_t)ri;
-		dst[s] = src[i];
-	}
-
-	UNPROTECT(2);
-	return ans;
-}
-
-
-SEXP is_na_text(SEXP stext)
-{
-	SEXP ans;
-	struct text *text;
-	R_xlen_t i, n;
-	int *isna;
-
-	text = as_text(stext, &n);
-	PROTECT(ans = allocVector(LGLSXP, n));
-	isna = LOGICAL(ans);
-
-	for (i = 0; i < n; i++) {
-		if (text[i].ptr) {
-			isna[i] = FALSE;
-		} else {
-			isna[i] = TRUE;
-		}
-	}
-
-	UNPROTECT(1);
-	return ans;
-}
-
-
-SEXP anyNA_text(SEXP stext)
-{
-	struct text *text;
-	R_xlen_t i, n;
-	int anyNA;
-
-	text = as_text(stext, &n);
-
-	anyNA = FALSE;
-	for (i = 0; i < n; i++) {
-		if (!text[i].ptr) {
-			anyNA = TRUE;
+		default:
+			txt.ptr = NULL;
+			txt.attr = 0;
+			flags = 0;
 			break;
 		}
-	}
 
-	return ScalarLogical(anyNA);
+		begin = (start[i] < 1) ? 0 : (start[i] - 1);
+		end = stop[i] < start[i] ? start[i] : stop[i];
+		if ((size_t)end > TEXT_SIZE(&txt)) {
+			end = (int)TEXT_SIZE(&txt);
+		}
+
+
+		// this could be made more efficient; add a
+		// 'can_break?' function to corpus/text.h
+		err = text_assign(&text[i], txt.ptr + begin, end - begin,
+				  flags);
+
+		if (err) {
+			error("text span in row[[%"PRIu64"]]"
+			      " starts or ends in the middle"
+			      " of a multi-byte character", i + 1);
+		}
+	}
 }

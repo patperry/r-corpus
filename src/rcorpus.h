@@ -26,6 +26,7 @@
 #include "corpus/src/token.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/datatype.h"
+#include "corpus/src/data.h"
 
 struct data;
 struct filebuf;
@@ -99,15 +100,13 @@ int is_filebuf(SEXP sbuf);
 struct filebuf *as_filebuf(SEXP sbuf);
 
 /* text (core) */
-SEXP alloc_text(R_xlen_t n, SEXP prot);
+SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop);
 int is_text(SEXP text);
 struct text *as_text(SEXP text, R_xlen_t *lenptr);
 
-SEXP alloc_na_text(void);
 SEXP coerce_text(SEXP x);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
-SEXP subset_text(SEXP text, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);

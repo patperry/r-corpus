@@ -27,6 +27,9 @@
 
 SEXP sentences_text(SEXP sx)
 {
+	(void)sx;
+	return R_NilValue;
+	/*
 	SEXP ans, ans_i, prot, names, stext;
 	const struct text *text;
 	struct text *buf, *text_i;
@@ -75,6 +78,7 @@ SEXP sentences_text(SEXP sx)
 
 	UNPROTECT(2);
 	return ans;
+	*/
 }
 
 

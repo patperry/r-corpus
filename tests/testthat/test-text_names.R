@@ -67,14 +67,16 @@ test_that("`names<-` should preserve attributes", {
     expect_equal(attr(x, "foo"), "bar")
 })
 
-test_that("`names<-` should not allow NA", {
+
+test_that("`names<-` should allow NA", {
     x <- text(1:3)
-    expect_error(names(x) <- c("a", NA, "b"),
-                 "names attribute cannot contain missing values")
+    names(x) <- c("a", NA, "b")
+    expect_equal(names(x), c("a", NA, "b"))
 })
 
-test_that("`names<-` should not allow duplicates", {
+
+test_that("`names<-` should allow duplicates", {
     x <- text(1:3)
-    expect_error(names(x) <- c("a", "b", "a"),
-                 "names attribute cannot contain duplicate values")
+    names(x) <- c("a", "b", "a")
+    expect_equal(names(x), c("a", "b", "a"))
 })
