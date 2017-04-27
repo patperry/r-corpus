@@ -7,6 +7,9 @@
 
 * More convenient interface for accessing JSON arrays.
 
+* Rename `as.text`/`is.text` to `as_text`/`is_text`; make `as_text`
+  retain names, work on S3 objects.
+
 
 # corpus 0.2.0
 
