@@ -2,16 +2,17 @@ To Do
 =====
 
 
-Bugs
-----
-
- * Serializing text objects (`saveRDS`) is currently broken.
-
-
 Features
 --------
 
  * The concat operator `c()` does not work on text or dataset. Should it?
+
+ * Need implementations for the `.S3PrimitiveGenerics` for `dataset` and
+   `text`.
+
+ * Need implementations for
+   `names(.knownS3Generics)[.knownS3Generics == "base"]`
+   for `dataset` and `text`.
 
  * `summary.text`
 
