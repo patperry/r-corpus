@@ -53,13 +53,48 @@ test_that("'sentences' propagates names if its argument has them", {
     text <- text(a="First sentence.", b="Second sentence!")
     ctext <- c(a="First sentence.", b="Second sentence!")
 
-    # character
     sents <- sentences(text)
     expect_equal(sents, list(a=text("First sentence."),
                              b=text("Second sentence!")))
 
+    # character
     csents <- sentences(ctext)
     expect_equal(csents, list(a=text("First sentence."),
                               b=text("Second sentence!")))
 })
 
+
+test_that("the result of 'sentences' can be serialized", {
+    text <- c(a="He said, 'Are you going?' John Shook his head.",
+              b="'Are you going?' John asked",
+              c="This. Is. A. Long. Sentence!!!",
+              d="Why all the shouting??")
+
+    sents <- sentences(text)
+    file <- tempfile()
+    saveRDS(sents, file)
+    sents2 <- readRDS(file)
+    expect_equal(sents, sents2)
+    file.remove(file)
+})
+
+
+test_that("the result of 'sentences' on JSON data can be serialized", {
+    text <- c(a="He said, 'Are you going?' John Shook his head.",
+              b="'Are you going?' John asked",
+              c="This. Is. A. Long. Sentence!!!",
+              d="Why all the shouting??")
+    json <- paste0('{"name": "', names(text), '", "text": "', text, '"}')
+    file <- tempfile()
+    writeLines(json, file)
+
+    data <- read_json(file)
+    sents <- sentences(data$text)
+
+    file2 <- tempfile()
+    saveRDS(sents, file2)
+    sents2 <- readRDS(file2)
+    expect_equal(sents, sents2)
+
+    rm("data", "sents", "sents2"); gc(); file.remove(file, file2)
+})
