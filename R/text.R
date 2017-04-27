@@ -271,7 +271,7 @@ as.Date.text <- function(x, format, ...)
 
 is.character.text <- function(x)
 {
-    TRUE
+    FALSE
 }
 
 all.equal.text <- function(target, current, ...)
