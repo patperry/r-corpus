@@ -454,7 +454,7 @@ static void load_text(SEXP x)
 			error("source[[%"PRIu64"]] (%d) is out of range",
 				(uint64_t)i + 1, s);
 		}
-		s--; // switch to 0-based index;:w
+		s--; // switch to 0-based index
 
 		r = row[i];
 		if (!(1 <= r && r <= sources[s].nrow)) {
