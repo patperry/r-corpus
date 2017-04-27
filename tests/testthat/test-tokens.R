@@ -51,3 +51,19 @@ test_that("'tokens' works on empty and missing values", {
     expect_equal(tokens(c("1", "2", "", NA, "5")),
                  list("1", "2", character(), NA_character_, "5"))
 })
+
+
+test_that("'tokens' should work on S3 objects", {
+    x <- structure(c(a="I LIKE TO SHOUT!! HA HA!",
+                     b="There's no need. For that.",
+                     c="Why not? :("),
+                   class="upper")
+    as.character.upper <<- function(x) sapply(unclass(x), toupper)
+
+    x2 <- as.character(x)
+    names(x2) <- names(x)
+
+    toks <- tokens(x)
+    toks2 <- tokens(x2)
+    expect_equal(toks, toks2)
+})
