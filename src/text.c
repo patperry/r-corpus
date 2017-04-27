@@ -269,7 +269,7 @@ SEXP as_text_character(SEXP x)
 	struct text *text;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
-	int err, duped = 0;
+	int err, iname, duped = 0;
 
 	if (TYPEOF(x) != STRSXP) {
 	       error("invalid 'character' object");
@@ -306,6 +306,9 @@ SEXP as_text_character(SEXP x)
 		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
 	}
 	R_SetExternalPtrAddr(handle, text);
+
+	iname = findListElement(ans, "names");
+	SET_VECTOR_ELT(ans, iname, getAttrib(x, R_NamesSymbol));
 
 	for (i = 0; i < nrow; i++) {
 		str = STRING_ELT(x, i);
@@ -370,7 +373,6 @@ SEXP alloc_na_text(void)
 SEXP coerce_text(SEXP sx)
 {
 	SEXP ans;
-	int i;
 
 	if (is_text(sx)) {
 		return sx;
@@ -380,11 +382,8 @@ SEXP coerce_text(SEXP sx)
 
 	PROTECT(sx = coerceVector(sx, STRSXP));
 	ans = as_text_character(sx);
-
-	i = findListElement(ans, "names");
-	SET_VECTOR_ELT(ans, i, getAttrib(sx, R_NamesSymbol));
-
 	UNPROTECT(1);
+
 	return ans;
 }
 

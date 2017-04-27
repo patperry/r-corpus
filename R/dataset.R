@@ -203,7 +203,7 @@ print.dataset <- function(x, ...)
 
 as.character.dataset <- function(x, ...)
 {
-    as.character(as.text.dataset(x, ...))
+    as.character(as_text.dataset(x, ...))
 }
 
 
@@ -238,7 +238,7 @@ as.list.dataset <- function(x, ...)
 }
 
 
-as.text.dataset <- function(x, ...)
+as_text.dataset <- function(x, ...)
 {
     .Call(C_as_text_dataset, x)
 }

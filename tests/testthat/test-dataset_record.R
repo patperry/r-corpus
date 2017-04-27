@@ -10,8 +10,7 @@ test_that("converting to list works", {
     ds <- read_json(file)
     l <- as.list(ds)
 
-    expect_equal(l, list(x=x, y=as.text(y)))
+    expect_equal(l, list(x=x, y=as_text(y)))
 
-    rm("ds"); gc()
-    file.remove(file)
+    rm("ds"); gc(); file.remove(file)
 })

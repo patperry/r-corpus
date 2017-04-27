@@ -58,12 +58,15 @@ print.text_filter <- function(x, ...)
 
 sentences <- function(x)
 {
+    x <- as_text(x)
     .Call(C_sentences_text, x)
 }
 
 
 tokens <- function(x, filter = text_filter())
 {
+    x <- as_text(x)
+
     if (!is.null(filter) && !inherits(filter, "text_filter")) {
         stop("invalid 'filter' argument")
     }
@@ -74,6 +77,8 @@ tokens <- function(x, filter = text_filter())
 
 word_counts <- function(x, filter = text_filter(), ...)
 {
+    x <- as_text(x)
+
     if (!is.null(filter) && !inherits(filter, "text_filter")) {
         stop("invalid 'filter' argument")
     }

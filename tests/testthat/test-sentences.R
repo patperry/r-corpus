@@ -98,3 +98,19 @@ test_that("the result of 'sentences' on JSON data can be serialized", {
 
     rm("data", "sents", "sents2"); gc(); file.remove(file, file2)
 })
+
+
+test_that("'sentences' should work on S3 objects", {
+    x <- structure(c(a="I LIKE TO SHOUT!! HA HA!",
+                     b="There's no need. For that.",
+                     c="Why not? :("),
+                   class="upper")
+    as.character.upper <<- function(x) sapply(unclass(x), toupper)
+
+    x2 <- as.character(x)
+    names(x2) <- names(x)
+
+    sents <- sentences(x)
+    sents2 <- sentences(x2)
+    expect_equal(sents, sents2)
+})

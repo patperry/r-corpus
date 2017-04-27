@@ -14,12 +14,12 @@ test_that("`names<-` should work on text", {
 })
 
 
-test_that("`as.text` should drop names", {
-    x <- as.text(c(a="1", b="2"))
-    expect_equal(names(x), NULL)
+test_that("`as_text` should not drop names", {
+    x <- as_text(c(a="1", b="2"))
+    expect_equal(names(x), c("a", "b"))
 
-    y <- as.text(text(a="1", b="2"))
-    expect_equal(names(y), NULL)
+    y <- as_text(text(a="1", b="2"))
+    expect_equal(names(y), c("a", "b"))
 })
 
 
@@ -32,19 +32,18 @@ test_that("`all.equal` should test names", {
 })
 
 
-test_that("`as.text` should drop names", {
+test_that("`as_text` should not drop names", {
     x <- text(foo="hello")
-    y <- as.text(x)
+    y <- as_text(x)
 
-    expect_equal(x, text(foo="hello"))
-    expect_equal(y, text("hello"))
+    expect_equal(y, text(foo="hello"))
 })
 
 
-test_that("`as.text` should drop attributes", {
+test_that("`as_text` should drop attributes", {
     x <- text("hello")
     attr(x, "foo") <- "bar"
-    y <- as.text(x)
+    y <- as_text(x)
 
     expect_equal(y, text("hello"))
 })

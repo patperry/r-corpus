@@ -103,6 +103,7 @@ struct filebuf *as_filebuf(SEXP sbuf);
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop);
 int is_text(SEXP text);
 struct text *as_text(SEXP text, R_xlen_t *lenptr);
+SEXP as_text_character(SEXP text);
 
 SEXP alloc_na_text(void);
 SEXP coerce_text(SEXP x);

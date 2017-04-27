@@ -15,41 +15,38 @@
 text <- function(...)
 {
     x <- c(...)
-    nm <- names(x)
-    x <- as.text(x)
-    names(x) <- nm
-    x
+    as_text(x)
 }
 
-
-as.text <- function(x, ...)
+as_text <- function(x, ...)
 {
-    UseMethod("as.text")
+    UseMethod("as_text")
 }
 
-
-as.text.default <- function(x, ...)
+as_text.character <- function(x, ...)
 {
-    x <- .Call(C_coerce_text, x)
-    names(x) <- NULL
-    x
+    .Call(C_as_text_character, x)
 }
 
-
-as.text.text <- function(x, ...)
+as_text.default <- function(x, ...)
 {
-    names(x) <- NULL
-    x
+    if (is_text(x)) {
+        x
+    } else {
+        nm <- names(x)
+        x <- as_text(as.character(x, ...))
+        names(x) <- nm
+        x
+    }
 }
 
-
-is.text <- function(x)
+is_text <- function(x)
 {
-    UseMethod("is.text")
+    UseMethod("is_text")
 }
 
 
-is.text.default <- function(x)
+is_text.default <- function(x)
 {
     inherits(x, "text")
 }
@@ -272,7 +269,7 @@ is.character.text <- function(x)
 
 all.equal.text <- function(target, current, ...)
 {
-    if (!is.text(current)) {
+    if (!is_text(current)) {
         return(c(paste("Modes: text,", mode(current)),
                  paste("target is text, current is", mode(current))))
     }
