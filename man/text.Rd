@@ -24,10 +24,13 @@
     \code{\link{read_json}} function or by converting another object
     using the \code{as_text} function.
 
-    The \code{as_text} function converts an object to type \code{"text"};
-    unlike the other R conversion functions (\code{as.numeric},
-    \code{as.character}, etc.), the \code{as_text} function retains
-    the names of the object.
+    The \code{as_text} function first gets the names of the object
+    by calling \code{names(x)}; then, it converts the object to type
+    \code{"text"} and drops all of the object attributes. Finally,
+    the function sets the converted objects names to original object
+    names. This special handling for the names of the object is
+    different from the other R conversion functions
+    (\code{as.numeric}, \code{as.character}, etc.), which drop the names.
 
     \code{as_text} and \code{is_text} are generic: you can write methods
     to handle specific classes of objects. The default behavior is to

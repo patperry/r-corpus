@@ -49,6 +49,20 @@ test_that("`as_text` should drop attributes", {
 })
 
 
+test_that("`as_text` should drop attributes for JSON objects", {
+    file <- tempfile()
+    writeLines('{"text": "hello"}', file)
+    x <- read_json(file)$text
+
+    attr(x, "foo") <- "bar"
+    y <- as_text(x)
+
+    expect_equal(y, text("hello"))
+
+    rm("x", "y"); gc(); file.remove(file)
+})
+
+
 test_that("`names<-` should not modify copies", {
     x <- text(1:3)
     y <- x

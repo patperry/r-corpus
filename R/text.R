@@ -25,12 +25,19 @@ as_text <- function(x, ...)
 
 as_text.character <- function(x, ...)
 {
-    .Call(C_as_text_character, x)
+    .Call(C_as_text_character, c(x)) # c(x) drops attributes, keeps names
 }
 
 as_text.default <- function(x, ...)
 {
     if (is_text(x)) {
+        attrs <- attributes(x)
+        for (a in names(attrs)) {
+            if (!(a %in% c("class", "names"))) {
+                attr(x, a) <- NULL
+            }
+        }
+        attr(x, "class") <- "text"
         x
     } else {
         nm <- names(x)
@@ -275,12 +282,26 @@ all.equal.text <- function(target, current, ...)
     }
 
     nt <- names(target)
+    at <- attributes(target)
     target <- as.character(target)
     names(target) <- nt
 
+    for (a in names(at)) {
+        if (!(a %in% c("names", "class"))) {
+            attr(target, a) <- at[[a]]
+        }
+    }
+
     nc <- names(current)
+    ac <- attributes(current)
     current <- as.character(current)
     names(current) <- nc
+
+    for (a in names(ac)) {
+        if (!(a %in% c("names", "class"))) {
+            attr(current, a) <- ac[[a]]
+        }
+    }
 
     all.equal(target, current, ...)
 }
