@@ -125,7 +125,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
 
 	PROTECT(row_names = allocVector(REALSXP, 2));
 	REAL(row_names)[0] = NA_REAL;
-	REAL(row_names)[1] = (double)n;
+	REAL(row_names)[1] = -(double)n;
 	setAttrib(table, R_RowNamesSymbol, row_names);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
