@@ -1,7 +1,9 @@
 
 # corpus 0.3.0
 
-* Support for serializing dataset objects (readRDS/saveRDS)
+* Support for serializing dataset and text objects (readRDS/saveRDS).
+  Unfortunately, this support doesn't come for free, and the objects
+  take a little bit more memory.
 
 * More convenient interface for accessing JSON arrays.
 
