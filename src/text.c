@@ -361,6 +361,12 @@ SEXP as_text_character(SEXP x)
 }
 
 
+SEXP alloc_na_text(void)
+{
+	return as_text_character(ScalarString(NA_STRING));
+}
+
+
 SEXP coerce_text(SEXP sx)
 {
 	SEXP ans;

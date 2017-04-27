@@ -15,7 +15,6 @@
  */
 
 #include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
@@ -29,131 +28,87 @@
 
 SEXP sentences_text(SEXP sx)
 {
-	SEXP ans, handle, sources, pnames, psource, prow, pstart, pstop,
-	     ptable, source, row, start, stop, index, pname, names;
+	SEXP ans, ans_i, sources, ptable, psource, prow, pstart,
+		handle, source, row, start, stop;
 	const struct text *text;
-	struct text *sent, *sent1;
-	R_xlen_t *parent, *parent1;
+	struct text *buf, *sent;
 	struct sentscan scan;
-	R_xlen_t i, src, n, isent, nsent, nsent_max;
+	R_xlen_t i, n, isent, nsent, nsent_max;
 	double r;
-	int j, off, len, iname;
+	int s, off, len;
 
 	PROTECT(sx = coerce_text(sx));
 	text = as_text(sx, &n);
+	sources = getListElement(sx, "sources");
+
+	PROTECT(ans = allocVector(VECSXP, n));
+	setAttrib(ans, R_NamesSymbol, names_text(sx));
 	sources = getListElement(sx, "sources");
 	ptable = getListElement(sx, "table");
 	psource = getListElement(ptable, "source");
 	prow = getListElement(ptable, "row");
 	pstart = getListElement(ptable, "start");
-	pstop = getListElement(ptable, "stop");
 
-	pnames = names_text(sx);
-
-	nsent = 0;
 	nsent_max = 256;
-	sent = xmalloc(nsent_max * sizeof(*sent));
-	parent = xmalloc(nsent_max * sizeof(*parent));;
-	if (sent == NULL || parent == NULL) {
-		free(sent);
-		free(parent);
-		error("memory allocation failure");
-	}
+	nsent = 0;
+	buf = (void *)R_alloc(nsent_max, sizeof(*buf));
 
 	for (i = 0; i < n; i++) {
 		if (!text[i].ptr) {
+			SET_VECTOR_ELT(ans, i, alloc_na_text());
 			continue;
 		}
 
+		nsent = 0;
 		sentscan_make(&scan, &text[i]);
+
 		while (sentscan_advance(&scan)) {
 			if (nsent == nsent_max) {
 				nsent_max = 2 * nsent_max;
-
-				sent1 = xrealloc(sent,
-						 nsent_max * sizeof(*sent));
-				if (!sent1) {
-					free(sent);
-					free(parent);
-					error("memory allocation failure");
-				}
-				sent = sent1;
-
-				parent1 = xrealloc(parent,
-						   nsent_max * sizeof(*parent));
-				if (!parent1) {
-					free(sent);
-					free(parent);
-					error("memory allocation failure");
-				}
-				parent = parent1;
+				buf = (void *)S_realloc((void *)buf,
+							 nsent_max, nsent,
+							 sizeof(*buf));
 			}
 
-			sent[nsent] = scan.current;
-			parent[nsent] = i;
+			buf[nsent] = scan.current;
 			nsent++;
 		}
-	}
 
-	// free excess memory
-	sent = xrealloc(sent, nsent * sizeof(*sent));
-	parent = xrealloc(parent, nsent * sizeof(*parent));
+		PROTECT(source = allocVector(INTSXP, nsent));
+		PROTECT(row = allocVector(REALSXP, nsent));
+		PROTECT(start = allocVector(INTSXP, nsent));
+		PROTECT(stop = allocVector(INTSXP, nsent));
 
-	PROTECT(source = allocVector(INTSXP, nsent));
-	PROTECT(row = allocVector(REALSXP, nsent));
-	PROTECT(start = allocVector(INTSXP, nsent));
-	PROTECT(stop = allocVector(INTSXP, nsent));
-	PROTECT(index = allocVector(INTSXP, nsent));
-
-	i = -1;
-	j = 0;
-	for (isent = 0; isent < nsent; isent++) {
-		if (parent[isent] != i) {
-			i = parent[isent];
-			j = 0;
-			src = INTEGER(psource)[i];
-			r = REAL(prow)[i];
-			off = INTEGER(pstart)[i];
+		sent = xmalloc(nsent * sizeof(*sent));
+		if (nsent > 0 && !sent) {
+			error("memory allocation failure");
 		}
-		len = (int)TEXT_SIZE(&text[i]);
+		memcpy(sent, buf, nsent * sizeof(*sent));
 
-		INTEGER(source)[isent] = src;
-		REAL(row)[isent] = r;
-		INTEGER(start)[isent] = off;
-		INTEGER(stop)[isent] = off + (len - 1);
-		INTEGER(index)[isent] = j + 1;
-		j++;
-		off += len;
-	}
+		PROTECT(ans_i = alloc_text(sources, source, row, start, stop));
+		handle = getListElement(ans_i, "handle");
+		R_SetExternalPtrAddr(handle, sent);
 
-	PROTECT(ans = alloc_text(sources, source, row, start, stop));
-	handle = getListElement(ans, "handle");
-	R_SetExternalPtrAddr(handle, sent);
+		s = INTEGER(psource)[i];
+		r = REAL(prow)[i];
+		off = INTEGER(pstart)[i];
 
-	i = -1;
-	j = 0;
-	if (pnames != R_NilValue) {
-		PROTECT(names = allocVector(STRSXP, nsent));
 		for (isent = 0; isent < nsent; isent++) {
-			if (parent[isent] != i) {
-				i = parent[isent];
-				j = 0;
-				pname = STRING_ELT(pnames, i);
-			}
-			// TODO concatenate pname + (j+1)
-			SET_STRING_ELT(names, isent, pname);
-			j++;
+			len = (int)TEXT_SIZE(&sent[isent]);
+
+			INTEGER(source)[isent] = s;
+			REAL(row)[isent] = r;
+			INTEGER(start)[isent] = off;
+			INTEGER(stop)[isent] = off + (len - 1);
+
+			off += len;
 		}
 
-		iname = findListElement(ans, "names");
-		SET_VECTOR_ELT(ans, iname, names);
-
-		UNPROTECT(1);
+		SET_VECTOR_ELT(ans, i, ans_i);
+		UNPROTECT(5);
 	}
 
-	free(parent);
-
-	UNPROTECT(7);
+	UNPROTECT(2);
 	return ans;
 }
 
