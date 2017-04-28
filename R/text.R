@@ -54,7 +54,6 @@ as_text.default <- function(x, ...)
         names(x) <- nm
         x
     } else {
-        x <- c(x) # drop attributes
         nm <- names(x)
         x <- as_text(as.character(x, ...))
         names(x) <- nm
