@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
