@@ -210,7 +210,7 @@ as.character.dataset <- function(x, ...)
 as.data.frame.dataset <- function(x, ...)
 {
     l <- as.list(x)
-    as.data.frame(l, row.names=rownames(x), ...)
+    as.data.frame(l, row.names=row.names(x), ...)
 }
 
 
@@ -240,5 +240,15 @@ as.list.dataset <- function(x, ...)
 
 as_text.dataset <- function(x, ...)
 {
-    .Call(C_as_text_dataset, x)
+    if (length(dim(x)) == 2) {
+        if (!("text" %in% names(x))) {
+            stop("no column named 'text'")
+        }
+        nm <- row.names(x)
+        x <- as_text(x$text)
+        names(x) <- nm
+        x
+    } else {
+        .Call(C_as_text_dataset, x)
+    }
 }
