@@ -156,7 +156,7 @@ names.text <- function(x)
 }
 
 
-format.text <- function(x, nchar_max = 66, suffix = "\u2026", ...)
+format.text <- function(x, nchar_max = 60, suffix = "\u2026", ...)
 {
     if (length(x) == 0) {
         str <- character()
@@ -170,12 +170,11 @@ format.text <- function(x, nchar_max = 66, suffix = "\u2026", ...)
         long <- !is.na(len) & (len >= nchar_max + 1)
         str[long] <- paste0(substr(str[long], 1, nchar_max), suffix)
     }
-    format(str, ...)
+    format(str, justify = "left")
 }
 
 
-print.text <- function(x, justify = "none", print_max = 6L,
-                       nchar_max = ifelse(is.null(names(x)), 66, 50), ...)
+print.text <- function(x, print_max = 6L, ...)
 {
     if (length(x) == 0) {
         cat("text(0)\n")
@@ -190,8 +189,7 @@ print.text <- function(x, justify = "none", print_max = 6L,
         nextra <- length(x) - print_max
     }
 
-    str <- format(xsub, nchar_max = nchar_max, justify = justify,
-                  na.encode = FALSE, ...)
+    str <- format(xsub, na.encode = FALSE, ...)
     nm <- names(str)
 
     if (is.null(nm)) {
