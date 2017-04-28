@@ -39,21 +39,22 @@ as_text.default <- function(x, ...)
         }
         attr(x, "class") <- "text"
         x
-    } else if (is.data.frame(x)) {
+    } else if (length(dim(x)) == 2 && !is.matrix(x)) {
         if (!("text" %in% names(x))) {
             stop("no column named 'text'")
         }
 
-        if (.row_names_info(x, type = 1) > 0) {
-            nm <- row.names(x)
-        } else {
+        if (is.data.frame(x) && .row_names_info(x) <= 0) {
             nm <- NULL
+        } else {
+            nm <- row.names(x)
         }
 
         x <- as_text(x$text)
         names(x) <- nm
         x
     } else {
+        x <- c(x) # drop attributes
         nm <- names(x)
         x <- as_text(as.character(x, ...))
         names(x) <- nm
