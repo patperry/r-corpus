@@ -54,7 +54,7 @@ as_text.default <- function(x, ...)
         names(x) <- nm
         x
     } else {
-        nm <- names(x)
+        nm <- names(c(x))
         x <- as_text(as.character(x, ...))
         names(x) <- nm
         x
