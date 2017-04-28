@@ -116,7 +116,9 @@ names.text <- function(x)
     i <- index[i]
 
     y <- unclass(x)
+    y$handle <- .Call(C_subset_text_handle, y$handle, as.double(i))
     y$table <- y$table[i,]
+    y$names <- y$names[i]
     class(y) <- class(x)
     y
 }

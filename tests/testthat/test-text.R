@@ -1,6 +1,14 @@
 context("text")
 
 
+test_that("subsetting should work", {
+    x <- as_text(LETTERS)
+    i <- c(7, 2, 3, 21, 15)
+    y <- x[i]
+    expect_equal(y, as_text(LETTERS[i]));
+})
+
+
 test_that("`format` should handle NAs", {
     x <- c(NA, "Friday, November 23, 1787", NA)
     expect_equal(format(as_text(x)), format(as.character(x)))

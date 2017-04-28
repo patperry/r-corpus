@@ -18,6 +18,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "corpus/src/xalloc.h"
 #include "rcorpus.h"
 
 #define TEXT_TAG install("corpus::text")
@@ -514,4 +515,35 @@ static void load_text(SEXP x)
 			      " of a multi-byte character", i + 1);
 		}
 	}
+}
+
+
+SEXP subset_text_handle(SEXP handle, SEXP si)
+{
+	SEXP ans;
+	const struct text *text = R_ExternalPtrAddr(handle);
+	struct text *sub;
+	R_xlen_t i, n;
+	double ix;
+
+	PROTECT(ans = R_MakeExternalPtr(NULL, TEXT_TAG, R_NilValue));
+	R_RegisterCFinalizerEx(ans, free_text, TRUE);
+
+	if (text) {
+		n = XLENGTH(si);
+		sub = xcalloc(n, sizeof(*sub));
+		if (n && !sub) {
+			error("failed allocating %"PRIu64" bytes",
+			      (uint64_t)n * sizeof(*sub));
+		}
+		R_SetExternalPtrAddr(ans, sub);
+
+		for (i = 0; i < n; i++) {
+			ix = REAL(si)[i] - 1;
+			sub[i] = text[(R_xlen_t)ix];
+		}
+	}
+
+	UNPROTECT(1);
+	return ans;
 }

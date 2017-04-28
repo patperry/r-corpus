@@ -109,6 +109,7 @@ SEXP alloc_na_text(void);
 SEXP coerce_text(SEXP x);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
+SEXP subset_text_handle(SEXP handle, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
