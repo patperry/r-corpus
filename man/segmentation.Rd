@@ -19,8 +19,8 @@
     example, the text \code{"I saw Mr. Jones today."} will get split into
     two sentences.
 
-    Future versions of the \code{sentences} function may change to acommodate
-    special rules for abbreviations like "Mr.", "Dr.", etc.
+    Future versions of the \code{sentences} function may change to
+    accommodate special rules for abbreviations like "Mr.", "Dr.", etc.
 }
 \value{
     A data frame with three columns: \code{parent}, \code{index}, and
