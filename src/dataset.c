@@ -867,7 +867,7 @@ static SEXP as_list_dataset_record(SEXP sdata)
 		SET_VECTOR_ELT(ans, j, ans_j);
 		UNPROTECT(1); // sfield2 protected by ans_j, protected by ans
 
-		shandle = getListElement(sdata, "handle");
+		shandle = getListElement(ans_j, "handle");
 		d_j = R_ExternalPtrAddr(shandle);
 		d_j->rows = rows[j];
 		d_j->nrow = n;
@@ -898,7 +898,7 @@ static SEXP as_list_dataset_record(SEXP sdata)
 
 	for (j = 0; j < nfield; j++) {
 		ans_j = VECTOR_ELT(ans, j);
-		shandle = getListElement(sdata, "handle");
+		shandle = getListElement(ans_j, "handle");
 		d_j = R_ExternalPtrAddr(shandle);
 		d_j->type_id = type_id[j];
 		if (type_id[j] < 0) {
