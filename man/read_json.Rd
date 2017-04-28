@@ -6,7 +6,7 @@
     and create a dataset object from it.
 }
 \usage{
-    read_json(file, simplify = FALSE)
+    read_json(file, simplify = TRUE)
 }
 \arguments{
     \item{file}{the name of the file which the data are to be read from.
