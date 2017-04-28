@@ -23,9 +23,12 @@
     special rules for abbreviations like "Mr.", "Dr.", etc.
 }
 \value{
-    A list of the same length as \code{x}, with the same names. Each list
-    item is a \code{\link{text}} vector with the sentences for the
-    corresponding element of \code{x}.
+    A data frame with three columns: \code{parent}, \code{index}, and
+    \code{text}, and one row for each sentence. The \code{parent} value
+    is the integer index of the parent text in \code{x}; the \code{index} value
+    is the integer index of the sentence in its parent; the
+    \code{text} value is the text of the sentence, a value of type
+    \code{\link{text}}.
 }
 \seealso{
     \code{\link{tokens}}.
