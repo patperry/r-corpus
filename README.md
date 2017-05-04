@@ -136,7 +136,7 @@ The next benchmark performs a series of operations to transform each text into
 a sequence of normalized tokens, called types. First, we segment each text
 into word tokens using the boundaries defined by
 [Unicode Standard Annex #29, Section 4][wordbreak]. Next, we normalize the
-text into [Unicode NFKD normal form][nfkd], and we [case fold][casefold]
+text into [Unicode NFKC normal form][nfkc], and we [case fold][casefold]
 the text (for most languages, replacing uppercase with lowercase). Then,
 we remove non-white-space [control characters][cc], default ignorable
 characters like zero-width spaces, and we remove white space. We also
@@ -158,8 +158,7 @@ example if it started out as white space), then we discard it.
     ## 450 MB
 
 
-With `stringi`, it is more efficient to transform to NFKC normal form instead
-of NFKD, and it is more efficient to do the word segmentation after the
+With `stringi`, it is more efficient to do the word segmentation after the
 normalization. Further, the `stringi` package handles punctuation and
 white space differently, so it gives slightly different results.
 
@@ -229,7 +228,7 @@ Corpus is released under the [Apache Licence, Version 2.0][apache].
 [corpus]: https://github.com/patperry/corpus
 [cran]: https://cran.r-project.org/package=corpus
 [jsonl]: http://jsonlines.org/
-[nfkd]: http://unicode.org/reports/tr15/
+[nfkc]: http://unicode.org/reports/tr15/
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries
 [windows]: https://github.com/patperry/corpus/blob/master/TODO.md
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries
