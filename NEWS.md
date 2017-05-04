@@ -14,6 +14,8 @@
 
 * Renames `read_json` to `read_ndjson` to not clash with `jsonlite`.
 
+* Rename `dataset` type to `jsondata`.
+
 
 # corpus 0.2.0
 

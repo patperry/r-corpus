@@ -33,16 +33,16 @@
 #include "corpus/src/datatype.h"
 #include "rcorpus.h"
 
-#define DATASET_TAG install("corpus::dataset")
+#define DATASET_TAG install("corpus::jsondata")
 
 
-static SEXP subrows_dataset(SEXP sdata, SEXP si);
-static SEXP subfield_dataset(SEXP sdata, SEXP sname);
+static SEXP subrows_jsondata(SEXP sdata, SEXP si);
+static SEXP subfield_jsondata(SEXP sdata, SEXP sname);
 
 
-static void free_dataset(SEXP sdataset)
+static void free_jsondata(SEXP sjsondata)
 {
-        struct dataset *d = R_ExternalPtrAddr(sdataset);
+        struct jsondata *d = R_ExternalPtrAddr(sjsondata);
 	if (d) {
 		free(d->rows);
 		free(d);
@@ -50,14 +50,14 @@ static void free_dataset(SEXP sdataset)
 }
 
 
-SEXP alloc_dataset(SEXP sfilebuf, SEXP sfield, SEXP srows)
+SEXP alloc_jsondata(SEXP sfilebuf, SEXP sfield, SEXP srows)
 {
 	SEXP ans, sclass, shandle, snames;
-	struct dataset *obj;
+	struct jsondata *obj;
 	int err;
 
 	PROTECT(shandle = R_MakeExternalPtr(NULL, DATASET_TAG, R_NilValue));
-	R_RegisterCFinalizerEx(shandle, free_dataset, TRUE);
+	R_RegisterCFinalizerEx(shandle, free_jsondata, TRUE);
 
 	if (!(obj = malloc(sizeof(*obj)))) {
 		error("failed allocating memory (%u bytes)",
@@ -89,7 +89,7 @@ SEXP alloc_dataset(SEXP sfilebuf, SEXP sfield, SEXP srows)
 	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
-	SET_STRING_ELT(sclass, 0, mkChar("dataset"));
+	SET_STRING_ELT(sclass, 0, mkChar("jsondata"));
 	setAttrib(ans, R_ClassSymbol, sclass);
 
 	UNPROTECT(4);
@@ -141,11 +141,11 @@ static void grow_datarows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
 }
 
 
-static void dataset_load(SEXP sdata)
+static void jsondata_load(SEXP sdata)
 {
 	SEXP shandle, sparent_handle, sfilebuf, sfield, sfield_path,
 	     srows, sparent, sparent2;
-	struct dataset *obj;
+	struct jsondata *obj;
 	struct data *rows;
 	struct filebuf *buf;
 	struct filebuf_iter it;
@@ -161,7 +161,7 @@ static void dataset_load(SEXP sdata)
 	}
 
 	sfilebuf = getListElement(sdata, "filebuf");
-	PROTECT(sparent = alloc_dataset(sfilebuf, R_NilValue, R_NilValue));
+	PROTECT(sparent = alloc_jsondata(sfilebuf, R_NilValue, R_NilValue));
 	sparent_handle = getListElement(sparent, "handle");
 	obj = R_ExternalPtrAddr(sparent_handle);
 
@@ -224,8 +224,8 @@ static void dataset_load(SEXP sdata)
 	// first extract the rows from the parent...
 	srows = getListElement(sdata, "rows");
 	if (srows != R_NilValue) {
-		PROTECT(sparent2 = subrows_dataset(sparent, srows));
-		free_dataset(sparent_handle);
+		PROTECT(sparent2 = subrows_jsondata(sparent, srows));
+		free_jsondata(sparent_handle);
 		R_SetExternalPtrAddr(sparent_handle, NULL);
 		UNPROTECT(2);
 		PROTECT(sparent = sparent2);
@@ -238,8 +238,8 @@ static void dataset_load(SEXP sdata)
 		m = XLENGTH(sfield_path);
 		for (j = 0; j < m; j++) {
 			sfield = STRING_ELT(sfield_path, j);
-			PROTECT(sparent2 = subfield_dataset(sparent, sfield));
-			free_dataset(sparent_handle);
+			PROTECT(sparent2 = subfield_jsondata(sparent, sfield));
+			free_jsondata(sparent_handle);
 			R_SetExternalPtrAddr(sparent_handle, NULL);
 			UNPROTECT(2);
 			PROTECT(sparent = sparent2);
@@ -248,14 +248,14 @@ static void dataset_load(SEXP sdata)
 	}
 
 	// steal the handle from the parent
-	free_dataset(shandle);
+	free_jsondata(shandle);
 	R_SetExternalPtrAddr(shandle, R_ExternalPtrAddr(sparent_handle));
 	R_SetExternalPtrAddr(sparent_handle, NULL);
 	UNPROTECT(1);
 }
 
 
-int is_dataset(SEXP sdata)
+int is_jsondata(SEXP sdata)
 {
 	SEXP handle, filebuf;
 
@@ -278,16 +278,16 @@ int is_dataset(SEXP sdata)
 }
 
 
-struct dataset *as_dataset(SEXP sdata)
+struct jsondata *as_jsondata(SEXP sdata)
 {
 	SEXP shandle;
-	struct dataset *obj;
+	struct jsondata *obj;
 
-	if (!is_dataset(sdata)) {
-		error("invalid 'dataset' object");
+	if (!is_jsondata(sdata)) {
+		error("invalid 'jsondata' object");
 	}
 
-	dataset_load(sdata);
+	jsondata_load(sdata);
 
 	shandle = getListElement(sdata, "handle");
 	obj = R_ExternalPtrAddr(shandle);
@@ -296,10 +296,10 @@ struct dataset *as_dataset(SEXP sdata)
 }
 
 
-SEXP dim_dataset(SEXP sdata)
+SEXP dim_jsondata(SEXP sdata)
 {
 	SEXP dims;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	const struct datatype *t;
 	const struct datatype_record *r;
 
@@ -325,9 +325,9 @@ SEXP dim_dataset(SEXP sdata)
 }
 
 
-SEXP length_dataset(SEXP sdata)
+SEXP length_jsondata(SEXP sdata)
 {
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	const struct datatype *t;
 	const struct datatype_record *r;
 
@@ -345,10 +345,10 @@ SEXP length_dataset(SEXP sdata)
 }
 
 
-SEXP names_dataset(SEXP sdata)
+SEXP names_jsondata(SEXP sdata)
 {
 	SEXP names, str;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	const struct datatype *t;
 	const struct datatype_record *r;
 	const struct text *name;
@@ -373,10 +373,10 @@ SEXP names_dataset(SEXP sdata)
 }
 
 
-SEXP datatype_dataset(SEXP sdata)
+SEXP datatype_jsondata(SEXP sdata)
 {
 	SEXP str, ans;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	struct render r;
 
 	if (render_init(&r, ESCAPE_NONE) != 0) {
@@ -401,10 +401,10 @@ SEXP datatype_dataset(SEXP sdata)
 }
 
 
-SEXP datatypes_dataset(SEXP sdata)
+SEXP datatypes_jsondata(SEXP sdata)
 {
 	SEXP types, str, names;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	const struct datatype *t;
 	const struct datatype_record *rec;
 	struct render r;
@@ -414,7 +414,7 @@ SEXP datatypes_dataset(SEXP sdata)
 		return R_NilValue;
 	}
 
-	PROTECT(names = names_dataset(sdata));
+	PROTECT(names = names_jsondata(sdata));
 
 	t = &d->schema.types[d->type_id];
 	rec = &t->meta.record;
@@ -444,9 +444,9 @@ SEXP datatypes_dataset(SEXP sdata)
 }
 
 
-SEXP print_dataset(SEXP sdata)
+SEXP print_jsondata(SEXP sdata)
 {
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	struct render r;
 
 	if (render_init(&r, ESCAPE_CONTROL) != 0) {
@@ -460,11 +460,11 @@ SEXP print_dataset(SEXP sdata)
 	}
 
 	if (d->kind == DATATYPE_RECORD) {
-		Rprintf("JSON dataset with %"PRIu64" rows"
+		Rprintf("JSON jsondata with %"PRIu64" rows"
 			" of the following type:\n%s\n",
 			(uint64_t)d->nrow, r.string);
 	} else {
-		Rprintf("JSON dataset with %"PRIu64" rows"
+		Rprintf("JSON jsondata with %"PRIu64" rows"
 			" of type %s\n", (uint64_t)d->nrow, r.string);
 	}
 
@@ -473,10 +473,10 @@ SEXP print_dataset(SEXP sdata)
 }
 
 
-SEXP subscript_dataset(SEXP sdata, SEXP si)
+SEXP subscript_jsondata(SEXP sdata, SEXP si)
 {
 	SEXP ans, sname;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	const struct schema *s = &d->schema;
 	const struct datatype *t;
 	const struct datatype_record *r;
@@ -490,7 +490,7 @@ SEXP subscript_dataset(SEXP sdata, SEXP si)
 	i = REAL(si)[0];
 
 	if (d->kind != DATATYPE_RECORD) {
-		ans = subrows_dataset(sdata, si);
+		ans = subrows_jsondata(sdata, si);
 	} else {
 		t = &d->schema.types[d->type_id];
 		r = &t->meta.record;
@@ -503,7 +503,7 @@ SEXP subscript_dataset(SEXP sdata, SEXP si)
 
 		PROTECT(sname = mkCharLenCE((const char *)name->ptr,
 					    (int)TEXT_SIZE(name), CE_UTF8));
-		PROTECT(ans = subfield_dataset(sdata, sname));
+		PROTECT(ans = subfield_jsondata(sdata, sname));
 		UNPROTECT(2);
 	}
 
@@ -511,11 +511,11 @@ SEXP subscript_dataset(SEXP sdata, SEXP si)
 }
 
 
-SEXP subrows_dataset(SEXP sdata, SEXP si)
+SEXP subrows_jsondata(SEXP sdata, SEXP si)
 {
 	SEXP ans, shandle, sfilebuf, sfield, srows, srows2;
-	const struct dataset *obj = as_dataset(sdata);
-	struct dataset *obj2;
+	const struct jsondata *obj = as_jsondata(sdata);
+	struct jsondata *obj2;
 	struct data *rows;
 	const struct data *src;
 	const double *index;
@@ -538,7 +538,7 @@ SEXP subrows_dataset(SEXP sdata, SEXP si)
 	PROTECT(srows2 = allocVector(REALSXP, n));
 	irows = REAL(srows2);
 
-	PROTECT(ans = alloc_dataset(sfilebuf, sfield, srows2));
+	PROTECT(ans = alloc_jsondata(sfilebuf, sfield, srows2));
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -596,16 +596,16 @@ SEXP subrows_dataset(SEXP sdata, SEXP si)
 }
 
 
-SEXP subfield_dataset(SEXP sdata, SEXP sname)
+SEXP subfield_jsondata(SEXP sdata, SEXP sname)
 {
 	SEXP ans, sfilebuf, sfield, sfield2, shandle, srows;
-	const struct dataset *obj = as_dataset(sdata);
+	const struct jsondata *obj = as_jsondata(sdata);
 	struct text name;
 	struct data *rows;
 	struct data field;
 	const char *name_ptr;
 	size_t name_len;
-	struct dataset *obj2;
+	struct jsondata *obj2;
 	R_xlen_t i, n;
 	int err, j, m, name_id, type_id;
 
@@ -642,7 +642,7 @@ SEXP subfield_dataset(SEXP sdata, SEXP sname)
 	}
 	SET_STRING_ELT(sfield2, m, sname);
 
-	PROTECT(ans = alloc_dataset(sfilebuf, sfield2, srows));
+	PROTECT(ans = alloc_jsondata(sfilebuf, sfield2, srows));
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -680,10 +680,10 @@ SEXP subfield_dataset(SEXP sdata, SEXP sname)
 }
 
 
-SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
+SEXP subset_jsondata(SEXP sdata, SEXP si, SEXP sj)
 {
 	SEXP ans;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 
 	if (si == R_NilValue) {
 		if (sj == R_NilValue) {
@@ -692,27 +692,27 @@ SEXP subset_dataset(SEXP sdata, SEXP si, SEXP sj)
 			if (d->kind != DATATYPE_RECORD) {
 				error("incorrect number of dimensions");
 			}
-			return subscript_dataset(sdata, sj);
+			return subscript_jsondata(sdata, sj);
 		}
 	} else if (sj == R_NilValue) {
-		return subrows_dataset(sdata, si);
+		return subrows_jsondata(sdata, si);
 	} else {
 		if (d->kind != DATATYPE_RECORD) {
 			error("incorrect number of dimensions");
 		}
 
-		PROTECT(sdata = subrows_dataset(sdata, si));
-		ans = subscript_dataset(sdata, sj);
+		PROTECT(sdata = subrows_jsondata(sdata, si));
+		ans = subscript_jsondata(sdata, sj);
 		UNPROTECT(1);
 		return ans;
 	}
 }
 
 
-SEXP as_double_dataset(SEXP sdata)
+SEXP as_double_jsondata(SEXP sdata)
 {
 	SEXP ans;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	double *val;
 	R_xlen_t i, n = d->nrow;
 	int err, overflow;
@@ -739,10 +739,10 @@ SEXP as_double_dataset(SEXP sdata)
 }
 
 
-static SEXP as_integer_dataset_check(SEXP sdata, int *overflowptr)
+static SEXP as_integer_jsondata_check(SEXP sdata, int *overflowptr)
 {
 	SEXP ans;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	int *val;
 	R_xlen_t i, n = d->nrow;
 	int err, overflow;
@@ -772,12 +772,12 @@ static SEXP as_integer_dataset_check(SEXP sdata, int *overflowptr)
 }
 
 
-SEXP as_integer_dataset(SEXP sdata)
+SEXP as_integer_jsondata(SEXP sdata)
 {
 	SEXP ans;
 	int overflow;
 
-	PROTECT(ans = as_integer_dataset_check(sdata, &overflow));
+	PROTECT(ans = as_integer_jsondata_check(sdata, &overflow));
 	if (overflow) {
 		warning("NAs introduced by coercion to integer range");
 	}
@@ -787,10 +787,10 @@ SEXP as_integer_dataset(SEXP sdata)
 }
 
 
-SEXP as_logical_dataset(SEXP sdata)
+SEXP as_logical_jsondata(SEXP sdata)
 {
 	SEXP ans;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	R_xlen_t i, n = d->nrow;
 	int *val;
 	int b, err;
@@ -812,12 +812,12 @@ SEXP as_logical_dataset(SEXP sdata)
 }
 
 
-static SEXP as_list_dataset_record(SEXP sdata)
+static SEXP as_list_jsondata_record(SEXP sdata)
 {
 	SEXP ans, ans_j, names, sfilebuf, sfield, sfield2, srows,
 	     shandle, sname;
-	const struct dataset *d = as_dataset(sdata);
-	struct dataset *d_j;
+	const struct jsondata *d = as_jsondata(sdata);
+	struct jsondata *d_j;
 	struct schema **schema;
 	const struct datatype_record *r;
 	struct data_fields it;
@@ -837,7 +837,7 @@ static SEXP as_list_dataset_record(SEXP sdata)
 	sfilebuf = getListElement(sdata, "filebuf");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
-	PROTECT(names = names_dataset(sdata));
+	PROTECT(names = names_jsondata(sdata));
 
 	PROTECT(ans = allocVector(VECSXP, r->nfield));
 	setAttrib(ans, R_NamesSymbol, names);
@@ -863,7 +863,7 @@ static SEXP as_list_dataset_record(SEXP sdata)
 			SET_STRING_ELT(sfield2, k, STRING_ELT(sfield, k));
 		}
 		SET_STRING_ELT(sfield2, m, sname);
-		ans_j = alloc_dataset(sfilebuf, sfield2, srows);
+		ans_j = alloc_jsondata(sfilebuf, sfield2, srows);
 		SET_VECTOR_ELT(ans, j, ans_j);
 		UNPROTECT(1); // sfield2 protected by ans_j, protected by ans
 
@@ -907,7 +907,7 @@ static SEXP as_list_dataset_record(SEXP sdata)
 			d_j->kind = schema[j]->types[type_id[j]].kind;
 		}
 
-		ans_j = simplify_dataset(ans_j);
+		ans_j = simplify_jsondata(ans_j);
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
 
@@ -916,16 +916,16 @@ static SEXP as_list_dataset_record(SEXP sdata)
 }
 
 
-SEXP as_list_dataset(SEXP sdata)
+SEXP as_list_jsondata(SEXP sdata)
 {
 	SEXP ans, val;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	struct decode decode;
 	struct data data;
 	R_xlen_t i, n = d->nrow;
 
 	if (d->kind == DATATYPE_RECORD) {
-		return as_list_dataset_record(sdata);
+		return as_list_jsondata_record(sdata);
 	}
 
 
@@ -949,35 +949,35 @@ SEXP as_list_dataset(SEXP sdata)
 }
 
 
-SEXP simplify_dataset(SEXP sdata)
+SEXP simplify_jsondata(SEXP sdata)
 {
 	SEXP ans;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	int overflow;
 
 	switch (d->kind) {
 	case DATATYPE_NULL:
 	case DATATYPE_BOOLEAN:
-		ans = as_logical_dataset(sdata);
+		ans = as_logical_jsondata(sdata);
 		break;
 
 	case DATATYPE_INTEGER:
-		ans = as_integer_dataset_check(sdata, &overflow);
+		ans = as_integer_jsondata_check(sdata, &overflow);
 		if (overflow) {
-			ans = as_double_dataset(sdata);
+			ans = as_double_jsondata(sdata);
 		}
 		break;
 
 	case DATATYPE_REAL:
-		ans = as_double_dataset(sdata);
+		ans = as_double_jsondata(sdata);
 		break;
 
 	case DATATYPE_TEXT:
-		ans = as_text_dataset(sdata);
+		ans = as_text_jsondata(sdata);
 		break;
 
 	case DATATYPE_ARRAY:
-		ans = as_list_dataset(sdata);
+		ans = as_list_jsondata(sdata);
 		break;
 
 	default:

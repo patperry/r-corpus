@@ -1,4 +1,4 @@
-context("dataset_record")
+context("jsondata_record")
 
 
 test_that("converting to list works", {

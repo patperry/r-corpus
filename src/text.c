@@ -34,7 +34,7 @@ enum source_type {
 struct source {
 	int type;
 	union {
-		const struct dataset *set;
+		const struct jsondata *set;
 		SEXP chars;
 	} data;
 	R_xlen_t nrow;
@@ -46,7 +46,7 @@ static void load_text(SEXP x);
 
 static int is_source(SEXP x)
 {
-	return (x == R_NilValue || TYPEOF(x) == STRSXP || is_dataset(x));
+	return (x == R_NilValue || TYPEOF(x) == STRSXP || is_jsondata(x));
 }
 
 
@@ -59,13 +59,13 @@ static void source_assign(struct source *source, SEXP value)
 		source->type = SOURCE_CHAR;
 		source->data.chars = value;
 		source->nrow = XLENGTH(value);
-	} else if (is_dataset(value)) {
+	} else if (is_jsondata(value)) {
 		source->type = SOURCE_DATASET;
-		source->data.set = as_dataset(value);
+		source->data.set = as_jsondata(value);
 		source->nrow = source->data.set->nrow;
 	} else {
 		error("invalid text source;"
-		      " should be 'character', 'dataset', or NULL");
+		      " should be 'character', 'jsondata', or NULL");
 	}
 }
 
@@ -107,7 +107,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
 		src = VECTOR_ELT(sources, s);
 		if (!is_source(src)) {
 			error("'sources' element at index %d is invalid;"
-			      "should be a 'character' or 'dataset'", s + 1);
+			      "should be a 'character' or 'jsondata'", s + 1);
 		}
 	}
 
@@ -208,10 +208,10 @@ struct text *as_text(SEXP stext, R_xlen_t *lenptr)
 }
 
 
-SEXP as_text_dataset(SEXP sdata)
+SEXP as_text_jsondata(SEXP sdata)
 {
 	SEXP ans, handle, sources, source, row, start, stop;
-	const struct dataset *d = as_dataset(sdata);
+	const struct jsondata *d = as_jsondata(sdata);
 	struct text *text;
 	R_xlen_t i, nrow = d->nrow;
 	int err;
@@ -377,8 +377,8 @@ SEXP coerce_text(SEXP sx)
 
 	if (is_text(sx)) {
 		return sx;
-	} else if (is_dataset(sx)) {
-		return as_text_dataset(sx);
+	} else if (is_jsondata(sx)) {
+		return as_text_jsondata(sx);
 	}
 
 	PROTECT(sx = coerceVector(sx, STRSXP));
@@ -485,7 +485,7 @@ static void load_text(SEXP x)
 			break;
 
 		case SOURCE_DATASET:
-			// no need to validate input (handled by dataset)
+			// no need to validate input (handled by jsondata)
 			data_text(&sources[s].data.set->rows[j], &txt);
 			flags = 0;
 			break;

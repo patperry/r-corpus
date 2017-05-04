@@ -22,8 +22,8 @@ SEXP read_ndjson(SEXP sfile)
 	SEXP ans, sbuf;
 
 	PROTECT(sbuf = alloc_filebuf(sfile));
-	PROTECT(ans = alloc_dataset(sbuf, R_NilValue, R_NilValue));
-	as_dataset(ans); // force dataset load
+	PROTECT(ans = alloc_jsondata(sbuf, R_NilValue, R_NilValue));
+	as_jsondata(ans); // force jsondata load
 	UNPROTECT(2);
 
 	return ans;

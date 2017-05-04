@@ -31,7 +31,7 @@
 struct data;
 struct filebuf;
 
-struct dataset {
+struct jsondata {
 	struct schema schema;
 	struct data *rows;
 	R_xlen_t nrow;
@@ -71,24 +71,24 @@ SEXP logging_off(void);
 SEXP logging_on(void);
 
 /* data set */
-SEXP alloc_dataset(SEXP sfilebuf, SEXP sfield, SEXP srows);
-int is_dataset(SEXP data);
-struct dataset *as_dataset(SEXP data);
+SEXP alloc_jsondata(SEXP sfilebuf, SEXP sfield, SEXP srows);
+int is_jsondata(SEXP data);
+struct jsondata *as_jsondata(SEXP data);
 
-SEXP as_integer_dataset(SEXP data);
-SEXP as_double_dataset(SEXP data);
-SEXP as_list_dataset(SEXP data);
-SEXP as_logical_dataset(SEXP data);
-SEXP as_text_dataset(SEXP data);
-SEXP dim_dataset(SEXP data);
-SEXP length_dataset(SEXP data);
-SEXP names_dataset(SEXP data);
-SEXP print_dataset(SEXP data);
-SEXP datatype_dataset(SEXP data);
-SEXP datatypes_dataset(SEXP data);
-SEXP simplify_dataset(SEXP data);
-SEXP subscript_dataset(SEXP data, SEXP i);
-SEXP subset_dataset(SEXP data, SEXP i, SEXP j);
+SEXP as_integer_jsondata(SEXP data);
+SEXP as_double_jsondata(SEXP data);
+SEXP as_list_jsondata(SEXP data);
+SEXP as_logical_jsondata(SEXP data);
+SEXP as_text_jsondata(SEXP data);
+SEXP dim_jsondata(SEXP data);
+SEXP length_jsondata(SEXP data);
+SEXP names_jsondata(SEXP data);
+SEXP print_jsondata(SEXP data);
+SEXP datatype_jsondata(SEXP data);
+SEXP datatypes_jsondata(SEXP data);
+SEXP simplify_jsondata(SEXP data);
+SEXP subscript_jsondata(SEXP data, SEXP i);
+SEXP subset_jsondata(SEXP data, SEXP i, SEXP j);
 
 /* data */
 SEXP scalar_data(const struct data *d, const struct schema *s,

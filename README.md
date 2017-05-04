@@ -20,7 +20,7 @@ exports three main functions:
 
 The package also provides two new data types:
 
- + `dataset` for storing JSON-encoded data;
+ + `jsondata` for storing JSON-encoded data;
 
  + `text` for storing text.
 

@@ -10,14 +10,14 @@ Features
  * `term_matrix()` for document-by-term (not `text_matrix()`); accepts
    `groups` and `weights` arguments for collapsing rows.
 
- * The concat operator `c()` does not work on text or dataset. Should it?
+ * The concat operator `c()` does not work on text or jsondata. Should it?
 
- * Need implementations for the `.S3PrimitiveGenerics` for `dataset` and
+ * Need implementations for the `.S3PrimitiveGenerics` for `jsondata` and
    `text`.
 
  * Need implementations for
    `names(.knownS3Generics)[.knownS3Generics == "base"]`
-   for `dataset` and `text`.
+   for `jsondata` and `text`.
 
  * `summary.text`
 

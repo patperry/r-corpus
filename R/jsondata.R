@@ -12,31 +12,42 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-dim.dataset <- function(x)
+
+read_ndjson <- function(file, simplify = TRUE)
 {
-    .Call(C_dim_dataset, x)
+    ans <- .Call(C_read_ndjson, file)
+    if (simplify) {
+        ans <- .Call(C_simplify_jsondata, ans)
+    }
+    ans
 }
 
 
-length.dataset <- function(x)
+dim.jsondata <- function(x)
 {
-    .Call(C_length_dataset, x)
+    .Call(C_dim_jsondata, x)
 }
 
 
-names.dataset <- function(x)
+length.jsondata <- function(x)
 {
-    .Call(C_names_dataset, x)
+    .Call(C_length_jsondata, x)
 }
 
 
-`names<-.dataset` <- function(x, value)
+names.jsondata <- function(x)
 {
-    stop("setting names on a dataset object is not allowed")
+    .Call(C_names_jsondata, x)
 }
 
 
-dimnames.dataset <- function(x)
+`names<-.jsondata` <- function(x, value)
+{
+    stop("setting names on a jsondata object is not allowed")
+}
+
+
+dimnames.jsondata <- function(x)
 {
     cn <- names(x)
     if (is.null(cn)) {
@@ -47,40 +58,40 @@ dimnames.dataset <- function(x)
 }
 
 
-datatype.dataset <- function(x, ...)
+datatype.jsondata <- function(x, ...)
 {
-    .Call(C_datatype_dataset, x)
+    .Call(C_datatype_jsondata, x)
 }
 
 
-datatypes.dataset <- function(x, ...)
+datatypes.jsondata <- function(x, ...)
 {
-    .Call(C_datatypes_dataset, x)
+    .Call(C_datatypes_jsondata, x)
 }
 
 
-print.dataset <- function(x, ...)
+print.jsondata <- function(x, ...)
 {
-    invisible(.Call(C_print_dataset, x))
+    invisible(.Call(C_print_jsondata, x))
 }
 
 
-`$.dataset` <- function(x, name)
+`$.jsondata` <- function(x, name)
 {
     if (is.null(dim(x))) {
-        stop("$ operator is invalid for scalar datasets")
+        stop("$ operator is invalid for scalar jsondatas")
     }
     x[[name]]
 }
 
 
-`$<-.dataset` <- function(x, name, value)
+`$<-.jsondata` <- function(x, name, value)
 {
-    stop("$<- operator is invalid for dataset objects")
+    stop("$<- operator is invalid for jsondata objects")
 }
 
 
-`[[.dataset` <- function(x, i)
+`[[.jsondata` <- function(x, i)
 {
     if (length(i) == 0) {
         stop("subscript of length 0 is not allowed")
@@ -88,20 +99,20 @@ print.dataset <- function(x, ...)
         stop("subscript of length >1 is not allowed")
     }
 
-    # For scalar datasets, i is the index.
+    # For scalar jsondatas, i is the index.
     #
-    # For record datasets, i can either be the column index, or
+    # For record jsondatas, i can either be the column index, or
     # the column name; in the latter case convert i to the column
     # index.
     #
     # In both cases, convert i to a whole number double.
 
-    if (is.null(dim(x))) { # scalar dataset
+    if (is.null(dim(x))) { # scalar jsondata
         if (!is.numeric(i) || is.na(i)) {
             stop(paste0("invalid subscript: \"", i, "\""))
         }
         i <- floor(as.double(i))
-    } else { # record dataset
+    } else { # record jsondata
         if (is.character(i)) {
             if (!(i %in% names(x))) {
                 stop(paste0("invalid column name: \"", i, "\""))
@@ -114,20 +125,20 @@ print.dataset <- function(x, ...)
         i <- floor(as.double(i))
     }
 
-    ans <- .Call(C_subscript_dataset, x, i)
-    ans <- .Call(C_simplify_dataset, ans)
+    ans <- .Call(C_subscript_jsondata, x, i)
+    ans <- .Call(C_simplify_jsondata, ans)
     ans
 }
 
 
-`[[<-.dataset` <- function(x, i, value)
+`[[<-.jsondata` <- function(x, i, value)
 {
-    stop("[[<- operator is invalid for dataset objects")
+    stop("[[<- operator is invalid for jsondata objects")
 }
 
 
 
-`[.dataset` <- function(x, ...)
+`[.jsondata` <- function(x, ...)
 {
     if (!all(names(sys.call()[-1] == ""))) {
         stop("named arguments are not allowed")
@@ -136,7 +147,7 @@ print.dataset <- function(x, ...)
     ni <- nargs() - 1
 
     if (is.null(dim(x))) {
-        # Scalar dataset:
+        # Scalar jsondata:
         # If non-NULL, convert i to a double() vector of indices;
         # set j to NULL.
 
@@ -152,7 +163,7 @@ print.dataset <- function(x, ...)
         }
 	    j <- NULL
     } else {
-        # Record dataset:
+        # Record jsondata:
         # If non-NULL, convert i to a double() vector of indices;
         # if non-NULL convert j to a column index
 
@@ -191,54 +202,54 @@ print.dataset <- function(x, ...)
         }
     }
 
-    .Call(C_subset_dataset, x, i, j)
+    .Call(C_subset_jsondata, x, i, j)
 }
 
 
-`[<-.dataset` <- function(x, ..., value)
+`[<-.jsondata` <- function(x, ..., value)
 {
-    stop("[<- operator is invalid for dataset objects")
+    stop("[<- operator is invalid for jsondata objects")
 }
 
 
-as.character.dataset <- function(x, ...)
+as.character.jsondata <- function(x, ...)
 {
-    as.character(as_text.dataset(x, ...))
+    as.character(as_text.jsondata(x, ...))
 }
 
 
-as.data.frame.dataset <- function(x, ...)
+as.data.frame.jsondata <- function(x, ...)
 {
     l <- as.list(x)
     as.data.frame(l, row.names=row.names(x), ...)
 }
 
 
-as.logical.dataset <- function(x, ...)
+as.logical.jsondata <- function(x, ...)
 {
-    .Call(C_as_logical_dataset, x)
+    .Call(C_as_logical_jsondata, x)
 }
 
 
-as.integer.dataset <- function(x, ...)
+as.integer.jsondata <- function(x, ...)
 {
-    .Call(C_as_integer_dataset, x)
+    .Call(C_as_integer_jsondata, x)
 }
 
 
-as.double.dataset <- function(x, ...)
+as.double.jsondata <- function(x, ...)
 {
-    .Call(C_as_double_dataset, x)
+    .Call(C_as_double_jsondata, x)
 }
 
 
-as.list.dataset <- function(x, ...)
+as.list.jsondata <- function(x, ...)
 {
-    .Call(C_as_list_dataset, x)
+    .Call(C_as_list_jsondata, x)
 }
 
 
-as_text.dataset <- function(x, ...)
+as_text.jsondata <- function(x, ...)
 {
     if (length(dim(x)) == 2) {
         if (!("text" %in% names(x))) {
@@ -249,6 +260,6 @@ as_text.dataset <- function(x, ...)
         names(x) <- nm
         x
     } else {
-        .Call(C_as_text_dataset, x)
+        .Call(C_as_text_jsondata, x)
     }
 }

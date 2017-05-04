@@ -1,7 +1,7 @@
-context("dataset_serialize")
+context("jsondata_serialize")
 
 
-test_that("serializing dataset works", {
+test_that("serializing jsondata works", {
     x <- c("S", "P", "Q", "R")
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
@@ -19,7 +19,7 @@ test_that("serializing dataset works", {
 })
 
 
-test_that("serializing dataset should use relative, not absolute path", {
+test_that("serializing jsondata should use relative, not absolute path", {
     wd <- getwd()
     on.exit(setwd(wd))
 
@@ -59,7 +59,7 @@ test_that("serializing dataset should use relative, not absolute path", {
 })
 
 
-test_that("serializing dataset subset works", {
+test_that("serializing jsondata subset works", {
     x <- LETTERS
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
@@ -80,7 +80,7 @@ test_that("serializing dataset subset works", {
 })
 
 
-test_that("serializing dataset field works", {
+test_that("serializing jsondata field works", {
     x <- LETTERS
     y <- 3.14 * seq_along(LETTERS) - 10
     file <- tempfile()
@@ -101,7 +101,7 @@ test_that("serializing dataset field works", {
 })
 
 
-test_that("serializing dataset nested fields works", {
+test_that("serializing jsondata nested fields works", {
     x <- 1:10
     file <- tempfile()
     writeLines(paste0('{"f1": {"f2": {"f3": {"x": ', x, '}}}}'), file)
@@ -121,7 +121,7 @@ test_that("serializing dataset nested fields works", {
 })
 
 
-test_that("serializing dataset field subset works", {
+test_that("serializing jsondata field subset works", {
     x <- LETTERS
     y <- 3.14 * seq_along(LETTERS) - 10
     file <- tempfile()

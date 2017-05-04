@@ -1,4 +1,4 @@
-context("dataset_scalar")
+context("jsondata_scalar")
 
 
 test_that("reading integer works", {
