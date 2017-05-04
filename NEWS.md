@@ -10,6 +10,8 @@
 * Rename `as.text`/`is.text` to `as_text`/`is_text`; make `as_text`
   retain names, work on S3 objects.
 
+* Add support for stemming via the Snowball library.
+
 
 # corpus 0.2.0
 
