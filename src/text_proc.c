@@ -182,7 +182,7 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
-	if (symtab_init(&symtab, kind) != 0) {
+	if (symtab_init(&symtab, kind, NULL) != 0) {
 		error("memory allocation failure");
 	}
 

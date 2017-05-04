@@ -1,12 +1,36 @@
 PKG_CFLAGS = -Icorpus/src
 PKG_LIBS = -L. -lccorpus
 
+SNOWBALL = corpus/lib/libstemmer_c
+STEMMER_O = $(SNOWBALL)/src_c/stem_UTF_8_arabic.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_danish.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_dutch.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_english.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_finnish.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_french.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_german.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_hungarian.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_italian.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_norwegian.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_porter.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_portuguese.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_romanian.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_russian.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_spanish.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_swedish.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_tamil.o \
+			$(SNOWBALL)/src_c/stem_UTF_8_turkish.o \
+			$(SNOWBALL)/runtime/api.o \
+			$(SNOWBALL)/runtime/utilities.o \
+			$(SNOWBALL)/libstemmer/libstemmer_utf8.o
+
 LIBCORPUS = corpus/lib/strntod_c.o corpus/lib/strntoimax.o \
-	corpus/src/array.o corpus/src/data.o corpus/src/datatype.o \
-	corpus/src/error.o corpus/src/filebuf.o corpus/src/render.o \
-	corpus/src/sentscan.o corpus/src/symtab.o corpus/src/table.o \
-	corpus/src/text.o corpus/src/token.o corpus/src/unicode.o \
-	corpus/src/wordscan.o corpus/src/xalloc.o
+	corpus/src/array.o corpus/src/census.o corpus/src/data.o \
+    corpus/src/datatype.o corpus/src/error.o corpus/src/filebuf.o \
+    corpus/src/render.o corpus/src/sentscan.o corpus/src/symtab.o \
+    corpus/src/table.o corpus/src/text.o corpus/src/token.o \
+    corpus/src/unicode.o corpus/src/wordscan.o corpus/src/xalloc.o \
+    $(STEMMER_O)
 
 $(SHLIB): libccorpus.a
 
