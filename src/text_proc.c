@@ -29,7 +29,7 @@
 
 SEXP sentences_text(SEXP sx)
 {
-	SEXP ans, handle, sources, pnames, psource, prow, pstart, pstop,
+	SEXP ans, handle, sources, psource, prow, pstart,
 	     ptable, source, row, start, stop, index, sparent, stext, names,
 	     sclass, row_names;
 	const struct text *text;
@@ -47,9 +47,6 @@ SEXP sentences_text(SEXP sx)
 	psource = getListElement(ptable, "source");
 	prow = getListElement(ptable, "row");
 	pstart = getListElement(ptable, "start");
-	pstop = getListElement(ptable, "stop");
-
-	pnames = names_text(sx);
 
 	nsent = 0;
 	nsent_max = 256;
@@ -109,6 +106,10 @@ SEXP sentences_text(SEXP sx)
 
 	i = -1;
 	j = 0;
+	off = 0;
+	r = NA_REAL;
+	src = NA_INTEGER;
+
 	for (isent = 0; isent < nsent; isent++) {
 		if (parent[isent] != i) {
 			i = parent[isent];
