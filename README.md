@@ -45,7 +45,7 @@ Demonstration
 -------------
 
 Here are some performance comparisons for some basic operations. We
-compare against `jsonlite` version 1.3 and `stringi` version 1.1.3.
+compare against *jsonlite* version 1.3 and *stringi* version 1.1.3.
 
 
 ### Extracting text from a newline-delimited JSON file
@@ -59,22 +59,20 @@ first round of the [Yelp Dataset Challence][yelp]; it is stored in
 
     system.time({
         data <- read_ndjson("yelp-review.json")
-        text <- data$text
     })
 
     ##   user  system elapsed
-    ##  1.235   0.079   1.316
+    ##  2.146   0.108   2.257
 
     pryr::mem_used()
 
-    ## 24.5 MB
+    ## 63.2 MB
 
 
     # Using the jsonlite library:
 
     system.time({
         data <- jsonlite::stream_in(file("yelp-review.json"), verbose=FALSE)
-        text <- data$text
     })
 
     ##   user  system elapsed
@@ -84,8 +82,8 @@ first round of the [Yelp Dataset Challence][yelp]; it is stored in
 
     ## 335 MB
 
-We are about 30 times faster than `jsonlite`, and we use less than 10%
-of the RAM.  How are we reading a 286 MB file in only 24.5 MB?  We memory-map
+We are about 16 times faster than *jsonlite*, and we use less than 20%
+of the RAM.  How are we reading a 286 MB file in only 63.2 MB?  We memory-map
 the file, letting the operating system move data from the file to RAM
 whenever necessary. We store the addresses of the text strings, but we
 do not load values into RAM until they are needed.
@@ -99,35 +97,39 @@ defined by [Unicode Standard Annex #29, Section 5][sentbreak].
     # Using the corpus library:
 
     system.time({
-        sents <- sentences(text)
+        sents <- sentences(data$text)
     })
 
     ##   user  system elapsed
-    ##  2.877   0.065   2.947
+    ##  2.115   0.082   2.200
 
-    rm("data", "text")
+    rm("data")
     pryr::mem_used()
     ## 135 MB
 
 
     # Using the stringi library:
     system.time({
-        sents <- stringi::stri_split_boundaries(text, type="sentence")
+        sents <- stringi::stri_split_boundaries(data$text, type="sentence")
     })
 
     ##   user  system elapsed
     ##  8.010   0.147   8.191
 
-    rm("data", "text")
+    rm("data")
     pryr::mem_used()
 
     ## 536 MB
 
-In the `corpus` benchmark, the text object is the array of memory-mapped
-values returned by the call to `read_ndjson`; in the `stringi` benchmark, the
-text object is an in-memory array returned by `jsonlite`. The `stringi` package
-can read the values directly from RAM instead of from the hard drive. Despite
-this advantage, `corpus` is about 2.7 times faster than `stringi`.
+This is not an apples-to-apples comparison, because *corpus* returns a
+single data frame with all of the sentences while *stringi* returns a list of
+character vectors. This difference in output formats gives *corpus* a
+speed advantage. A second difference is that in the *corpus* benchmark,
+the input text object is an array of memory-mapped values returned by the call
+to `read_ndjson`; in the *stringi* benchmark, the input text object is an
+in-memory array returned by *jsonlite*. The *stringi* package
+can read the values directly from RAM instead of from the hard drive.
+Overall, *corpus* is about 3.7 times faster than *stringi*.
 
 
 ### Tokenizing and normalizing text
@@ -146,39 +148,39 @@ ASCII single quote ('). If, after normalization, the token is empty (for
 example if it started out as white space), then we discard it.
 
     system.time({
-        toks <- tokens(text)
+        toks <- tokens(data$text)
     })
 
     ##   user  system elapsed
-    ##  7.910   0.162   8.085
+    ##  7.408   0.195   7.612
 
-    rm("data", "text")
+    rm("data")
     pryr::mem_used()
 
-    ## 450 MB
+    ## 451 MB
 
 
-With `stringi`, it is more efficient to do the word segmentation after the
-normalization. Further, the `stringi` package handles punctuation and
+With *stringi*, it is more efficient to do the word segmentation after the
+normalization. Further, the *stringi* package handles punctuation and
 white space differently, so it gives slightly different results.
 
     system.time({
-        ntext <- stringi::stri_trans_nfkc_casefold(text)
+        ntext <- stringi::stri_trans_nfkc_casefold(data$text)
         toks <- stringi::stri_extract_all_words(ntext)
     })
 
     ##   user  system elapsed
     ## 13.565   0.272  13.864
 
-    rm("data", "text", "ntext")
+    rm("data", "ntext")
     pryr::mem_used()
 
     ## 400 MB
 
-Both `corpus` and `stringi` produce the same type of output: lists of
-character arrays.  As in the previous benchmark, `corpus` takes as input a
-memory-mapped text object, while `stringi` takes as input in in-memory
-character vector. We are 1.7 times faster than `stringi`. We use slightly more
+Both *corpus* and *stringi* produce the same type of output: lists of
+character arrays.  As in the previous benchmark, *corpus* takes as input a
+memory-mapped text object, while *stringi* takes as input in in-memory
+character vector. We are 1.8 times faster than `stringi`. We use slightly more
 RAM, but only because we do not throw away punctuation-only tokens.
 
 
