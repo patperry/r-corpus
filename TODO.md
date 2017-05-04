@@ -28,3 +28,6 @@ Features
 
  * Bootstrapping. Not sure what the interface should look like, but should
    support sentence-level, word-level, block-level.
+
+ * `read_ndjson` should make memory-mapping opt-in instead of the default,
+   and should allow input from a connection when opting out.
