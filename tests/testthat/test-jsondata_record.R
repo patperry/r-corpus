@@ -12,5 +12,5 @@ test_that("converting to list works", {
 
     expect_equal(l, list(x=x, y=as_text(y)))
 
-    rm("ds"); gc(); file.remove(file)
+    rm("ds", "l"); gc(); file.remove(file)
 })
