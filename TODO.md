@@ -1,12 +1,6 @@
 To Do
 =====
 
-Bugs
-----
-
- * `as_text` sets names for data frames that don't have them.
-
-
 Features
 --------
 
