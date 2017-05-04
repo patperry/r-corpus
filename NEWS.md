@@ -12,9 +12,12 @@
 
 * Add support for stemming via the Snowball library.
 
-* Renames `read_json` to `read_ndjson` to not clash with `jsonlite`.
+* Rename `read_json` to `read_ndjson` to not clash with `jsonlite`.
 
 * Rename `dataset` type to `jsondata`.
+
+* Make `read_ndjson` return a data frame by default, not a `jsondata`
+  object.
 
 
 # corpus 0.2.0
