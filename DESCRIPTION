@@ -1,8 +1,7 @@
 Package:     corpus
 Version:     0.3.0
-Date:        2017-04-15
+Date:        2017-05-04
 Title:       Text Corpus Analysis
-Author:      Patrick O. Perry
 Maintainer:  Patrick O. Perry <pperry@stern.nyu.edu>
 Description:
     Text corpus data analysis, with full support for UTF8-encoded Unicode text. The package provides the ability to seamlessly read and process text from large JSON files without holding all of the data in memory simultaneously.
@@ -12,3 +11,6 @@ License:     Apache License (== 2.0) | file LICENSE
 URL:         https://github.com/patperry/r-corpus
 BugReports:  https://github.com/patperry/r-corpus/issues
 Encoding:    UTF-8
+Author:      Patrick O. Perry [aut, cre],
+             Martin Porter and Richard Boulton [ctb, cph] (Snowball),
+             Unicode, Inc. [ctb, cph] (Unicode Character Database)
