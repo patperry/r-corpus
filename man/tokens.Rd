@@ -10,7 +10,8 @@
     text_filter(fold_case = TRUE, fold_dash = TRUE,
                 fold_quote = TRUE, map_compatible = TRUE,
                 remove_control = TRUE, remove_ignorable = TRUE,
-                remove_whitespace = TRUE, drop_empty = TRUE)
+                remove_whitespace = TRUE, drop_empty = TRUE,
+                stemmer = NULL)
 
     tokens(x, filter = text_filter())
 }
@@ -49,11 +50,21 @@
         which, after applying all other normalizations, are empty (containing
         no characters). A token can become empty if, for example, it starts
         as white space.}
+
+    \item{stemmer}{a character value giving the name of the stemming
+        algorithm, or \code{NULL} to disable stemming. The stemming
+        algorithms are provided by the
+        \href{http://snowballstem.org/algorithms/}{Snowball stemming library};
+        the following stemming algorithms are available:
+            arabic, danish, dutch, english, finnish, french,
+	        german, hungarian, italian, norwegian, porter, portuguese,
+	        romanian, russian, spanish, swedish, tamil, and turkish.
+        }
 }
 \details{
     \code{tokens} splits text at the word boundaries defined by
     \href{http://unicode.org/reports/tr29/#Word_Boundaries}{Unicode Standard Annex #29, Section 4},
-    normalizes the text to Unicode NFD normal form, and then applies
+    normalizes the text to Unicode NFC normal form, and then applies
     a series of further transformations to the resulting tokens
     as specified by the \code{filter} argument. To skip the addtional
     transformation step, specify \code{filter = NULL}.

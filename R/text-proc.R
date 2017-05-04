@@ -12,10 +12,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+stemmers <- c("arabic", "danish", "dutch", "english", "finnish", "french",
+	"german", "hungarian", "italian", "norwegian", "porter", "portuguese",
+	"romanian", "russian", "spanish", "swedish", "tamil", "turkish")
+
 text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         map_compatible = TRUE, remove_control = TRUE,
                         remove_ignorable = TRUE, remove_whitespace = TRUE,
-                        drop_empty = TRUE)
+                        drop_empty = TRUE, stemmer = NULL)
 {
     if (!is.logical(fold_case) || is.na(fold_case)) {
         stop("invalid 'fold_case' value:", fold_case)
@@ -33,6 +37,9 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
         stop("invalid 'remove_whitespace' value:", remove_whitespace)
     } else if (!is.logical(drop_empty || is.na(drop_empty))) {
         stop("invalid 'drop_empty' value:", drop_empty)
+    } else if (!is.null(stemmer)
+               && !(length(stemmer) == 1 && stemmer %in% stemmers)) {
+        stop("invalid 'stemmer' value:", stemmer)
     }
 
     ans <- list(fold_case = fold_case, fold_dash = fold_dash,
@@ -40,7 +47,7 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                 remove_control = remove_control,
                 remove_ignorable = remove_ignorable,
                 remove_whitespace = remove_whitespace,
-                drop_empty = drop_empty)
+                drop_empty = drop_empty, stemmer = stemmer)
     class(ans) <- "text_filter"
     ans
 }
@@ -50,7 +57,8 @@ print.text_filter <- function(x, ...)
 {
     cat("Text filter with the following options:\n\n")
     for (k in names(x)) {
-        cat(paste0("\t", k, ": ", x[[k]], "\n"))
+        val <- ifelse(is.null(x[[k]]), "NULL", x[[k]])
+        cat(paste0("\t", k, ": ", val, "\n"))
     }
     invisible(x)
 }

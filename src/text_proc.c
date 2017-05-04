@@ -170,20 +170,22 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 	struct symtab symtab;
 	R_xlen_t i, j, n, nbuf, nbuf_max;
 	int *buf, kind, token_id, type_id, nadd, ntype, ntype_max;
+	const char *stemmer;
 	int drop_empty;
 
 	PROTECT(stext = coerce_text(sx));
 	text = as_text(stext, &n);
 
 	kind = text_filter_type_kind(sfilter);
+	stemmer = text_filter_stemmer(sfilter);
 	drop_empty = text_filter_drop_empty(sfilter);
 
 	PROTECT(ans = allocVector(VECSXP, n));
 	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
-	if (symtab_init(&symtab, kind, NULL) != 0) {
-		error("memory allocation failure");
+	if (symtab_init(&symtab, kind, stemmer) != 0) {
+		error("failed initializing tokens symbol table");
 	}
 
 	nbuf_max = 256;

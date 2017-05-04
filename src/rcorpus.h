@@ -118,6 +118,7 @@ SEXP anyNA_text(SEXP text);
 int is_text_filter(SEXP filter);
 int text_filter_type_kind(SEXP filter);
 int text_filter_drop_empty(SEXP filter);
+const char *text_filter_stemmer(SEXP filter);
 
 /* text processing */
 SEXP sentences_text(SEXP x);

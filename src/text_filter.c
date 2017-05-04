@@ -140,3 +140,25 @@ int text_filter_type_kind(SEXP filter)
 
 	return kind;
 }
+
+
+const char *text_filter_stemmer(SEXP filter)
+{
+	SEXP alg = lookup_text_filter(filter, "stemmer");
+	SEXP val;
+
+	if (alg == R_NilValue) {
+		return NULL;
+	}
+
+	if (TYPEOF(alg) != STRSXP || XLENGTH(alg) != 1) {
+		error("invalid text filter 'stemmer' value");
+	}
+
+	val = STRING_ELT(alg, 0);
+	if (val == NA_STRING || XLENGTH(val) == 0) {
+		return NULL;
+	}
+
+	return CHAR(val);
+}
