@@ -18,6 +18,9 @@ read_ndjson <- function(file, simplify = TRUE)
     ans <- .Call(C_read_ndjson, file)
     if (simplify) {
         ans <- .Call(C_simplify_jsondata, ans)
+        if (length(dim(ans)) == 2) {
+            ans <- as.data.frame(ans)
+        }
     }
     ans
 }

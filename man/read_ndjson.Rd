@@ -40,16 +40,16 @@
 }
 \examples{
     lines <- c('{ "a": 1, "b": true }',
-               '{ "b": false, "c": { "nested": 100 }}',
-               '{ "a": 3.14, "c": { "nested": 1e23 }}')
+               '{ "b": false, "nested": { "c": 100, "d": false }}',
+               '{ "a": 3.14, "nested": { "d": true }}')
     file <- tempfile()
     writeLines(lines, file)
     (data <- read_ndjson(file))
 
     data$a
     data$b
-    data$c
-    data$c$nested
+    data$nested.c
+    data$nested.d
 
     rm("data")
     gc() # force the garbage collector to release the memory-map
