@@ -39,7 +39,7 @@ test_that("serialization should work", {
 
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
     text <- as_text(ds)
 
     file2 <- tempfile()

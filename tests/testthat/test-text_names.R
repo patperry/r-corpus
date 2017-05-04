@@ -52,7 +52,7 @@ test_that("`as_text` should drop attributes", {
 test_that("`as_text` should drop attributes for JSON objects", {
     file <- tempfile()
     writeLines('{"text": "hello"}', file)
-    x <- read_json(file)$text
+    x <- read_ndjson(file)$text
 
     attr(x, "foo") <- "bar"
     y <- as_text(x)

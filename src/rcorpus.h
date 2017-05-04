@@ -131,7 +131,7 @@ int is_schema(SEXP schema);
 struct schema *as_schema(SEXP schema);
 
 /* json values */
-SEXP read_json(SEXP file);
+SEXP read_ndjson(SEXP file);
 
 /* internal utility functions */
 int findListElement(SEXP list, const char *str);

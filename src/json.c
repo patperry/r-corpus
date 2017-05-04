@@ -17,7 +17,7 @@
 #include "rcorpus.h"
 
 
-SEXP read_json(SEXP sfile)
+SEXP read_ndjson(SEXP sfile)
 {
 	SEXP ans, sbuf;
 

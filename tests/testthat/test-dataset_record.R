@@ -7,7 +7,7 @@ test_that("converting to list works", {
     file <- tempfile()
     writeLines(paste0('{"x":', x, ',"y":"', y, '"}'), file)
 
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
     l <- as.list(ds)
 
     expect_equal(l, list(x=x, y=as_text(y)))

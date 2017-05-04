@@ -21,7 +21,7 @@
     package suitable for processing Unicode text. Text vectors behave
     like character vectors (and can be converted to them with the
     \code{as.character} function). They can be created using the
-    \code{\link{read_json}} function or by converting another object
+    \code{\link{read_ndjson}} function or by converting another object
     using the \code{as_text} function.
 
     The \code{as_text} function first gets the names of the object
@@ -46,7 +46,7 @@
         whether its argument is of text type or not.
 }
 \seealso{
-    \code{\link{read_json}}.
+    \code{\link{read_ndjson}}.
 }
 \examples{
     as_text("hello, world!")

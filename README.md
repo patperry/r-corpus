@@ -11,7 +11,7 @@ Overview
 This is an R text processing package that currently does very little. It
 exports three main functions:
 
- + `read_json()` for reading in data in JSON Lines format;
+ + `read_ndjson()` for reading in data in newline-delimited JSON format;
 
  + `sentences()` for segmenting text into sentences;
 
@@ -48,17 +48,17 @@ Here are some performance comparisons for some basic operations. We
 compare against `jsonlite` version 1.3 and `stringi` version 1.1.3.
 
 
-### Extracting text from a JSON Lines file
+### Extracting text from a newline-delimited JSON file
 
 The following benchmark reads in a 286 MB data file, `yelp-review.json`,
 and extracts the text field from each row.  The raw data comes from the
 first round of the [Yelp Dataset Challence][yelp]; it is stored in
-[JSON Lines format][jsonl].
+[newline-delimited JSON format][ndjson].
 
     # Using the corpus library:
 
     system.time({
-        data <- read_json("yelp-review.json")
+        data <- read_ndjson("yelp-review.json")
         text <- data$text
     })
 
@@ -124,7 +124,7 @@ defined by [Unicode Standard Annex #29, Section 5][sentbreak].
     ## 536 MB
 
 In the `corpus` benchmark, the text object is the array of memory-mapped
-values returned by the call to `read_json`; in the `stringi` benchmark, the
+values returned by the call to `read_ndjson`; in the `stringi` benchmark, the
 text object is an in-memory array returned by `jsonlite`. The `stringi` package
 can read the values directly from RAM instead of from the hard drive. Despite
 this advantage, `corpus` is about 2.7 times faster than `stringi`.
@@ -227,7 +227,7 @@ Corpus is released under the [Apache Licence, Version 2.0][apache].
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 [corpus]: https://github.com/patperry/corpus
 [cran]: https://cran.r-project.org/package=corpus
-[jsonl]: http://jsonlines.org/
+[ndjson]: http://ndjson.org/
 [nfkc]: http://unicode.org/reports/tr15/
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries
 [windows]: https://github.com/patperry/corpus/blob/master/TODO.md

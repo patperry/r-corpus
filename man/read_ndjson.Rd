@@ -1,12 +1,12 @@
-\name{read_json}
-\alias{read_json}
+\name{read_ndjson}
+\alias{read_ndjson}
 \title{JSON Data Input}
 \description{
-    Read a file in JavaScript Object Notation Lines (JSON Lines) format
-    and create a dataset object from it.
+    Read a file in newline-delimited JavaScript Object Notation
+    (NDJSON) format and create a dataset object from it.
 }
 \usage{
-    read_json(file, simplify = TRUE)
+    read_ndjson(file, simplify = TRUE)
 }
 \arguments{
     \item{file}{the name of the file which the data are to be read from.
@@ -27,11 +27,11 @@
     into memory when it is needed, enabling you to transparently process
     large datasets that do not fit into memory.
 
-    The return value from \code{read_json} is a \code{dataset} object
+    The return value from \code{read_ndjson} is a \code{dataset} object
     that behaves like a data frame.
 
     The one danger in using this function is that if you delete the file
-    after calling \code{read_json} but before processing the data, then
+    after calling \code{read_ndjson} but before processing the data, then
     the results will be undefined, and your computer may crash. (On
     POSIX-compliant systems like Mac OS and Linux, there should be no
     ill effects to deleting the file. On recent versions of Windows,
@@ -44,7 +44,7 @@
                '{ "a": 3.14, "c": { "nested": 1e23 }}')
     file <- tempfile()
     writeLines(lines, file)
-    (data <- read_json(file))
+    (data <- read_ndjson(file))
 
     data$a
     data$b

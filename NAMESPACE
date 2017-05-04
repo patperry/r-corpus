@@ -5,7 +5,7 @@ export(as_text)
 export(as_text.default)
 export(is_text)
 export(is_text.default)
-export(read_json)
+export(read_ndjson)
 export(sentences)
 ## export(text) # don't export, clashes with graphics::text
 export(text_filter)

@@ -12,6 +12,8 @@
 
 * Add support for stemming via the Snowball library.
 
+* Renames `read_json` to `read_ndjson` to not clash with `jsonlite`.
+
 
 # corpus 0.2.0
 

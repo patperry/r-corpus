@@ -100,7 +100,7 @@ test_that("the result of 'sentences' on JSON data can be serialized", {
     file <- tempfile()
     writeLines(json, file)
 
-    data <- read_json(file)
+    data <- read_ndjson(file)
     sents <- sentences(data$text)
 
     file2 <- tempfile()

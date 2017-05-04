@@ -5,7 +5,7 @@ test_that("reading integer works", {
     x <- c(48, -18, 42, 50, -4, 28, -18, -26, 11)
     file <- tempfile()
     writeLines(as.character(x), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
@@ -21,7 +21,7 @@ test_that("subscripting and subsetting integer works", {
     x <- c(-194, 273, -112, -76, 38, 0, 0, 99)
     file <- tempfile()
     writeLines(as.character(x), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     for (i in seq_along(data)) {
         expect_equal(ds[[i]], x[[i]])
@@ -39,7 +39,7 @@ test_that("reading double works", {
     x <- c(-1.6571900, 0.1579793, -1.7205961, 0.1625917, 0.3143757, -1.1230602)
     file <- tempfile()
     writeLines(as.character(x), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
@@ -55,7 +55,7 @@ test_that("subscripting and subsetting double works", {
     x <- c(-1.6571900, 0.1579793, -1.7205961, 0.1625917, 0.3143757, -1.1230602)
     file <- tempfile()
     writeLines(as.character(x), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     for (i in seq_along(data)) {
         expect_equal(ds[[i]], x[[i]])
@@ -81,7 +81,7 @@ test_that("reading text works", {
 
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
@@ -99,7 +99,7 @@ test_that("reading boolean works", {
     x <- c(TRUE, FALSE, NA, TRUE, TRUE, FALSE, NA)
     file <- tempfile()
     writeLines(ifelse(is.na(x), "null", ifelse(x, "true", "false")), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
@@ -114,7 +114,7 @@ test_that("reading boolean works", {
 test_that("reading empty works", {
     file <- tempfile()
     writeLines(character(), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
 
     expect_equal(length(ds), 0)
     expect_equal(dim(ds), NULL)
@@ -131,7 +131,7 @@ test_that("reading double array words", {
     file <- tempfile()
     writeLines(sapply(x, function(xi)
                       paste0("[", paste0(xi, collapse=", "), "]")), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
     expect_equal(names(ds), NULL)
@@ -147,7 +147,7 @@ test_that("reading integer array words", {
     file <- tempfile()
     writeLines(sapply(x, function(xi)
                       paste0("[", paste0(xi, collapse=", "), "]")), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
     expect_equal(names(ds), NULL)
@@ -162,7 +162,7 @@ test_that("reading character array works", {
     file <- tempfile()
     writeLines(sapply(x, function(xi)
                       paste0('["', paste0(xi, collapse='", "'), '"]')), file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
     expect_equal(names(ds), NULL)
@@ -186,7 +186,7 @@ test_that("reading record array works", {
 
     file <- tempfile()
     writeLines(json, file)
-    ds <- read_json(file)
+    ds <- read_ndjson(file)
     expect_equal(as.list(ds), x)
 
     rm("ds"); gc(); file.remove(file)
