@@ -1,8 +1,8 @@
 \name{text}
-\alias{as.text}
-\alias{as.text.default}
-\alias{is.text}
-\alias{is.text.default}
+\alias{as_text}
+\alias{as_text.default}
+\alias{is_text}
+\alias{is_text.default}
 \alias{text}
 \title{Text Vectors}
 \description{
