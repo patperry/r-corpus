@@ -17,7 +17,7 @@
 #include "rcorpus.h"
 
 
-SEXP read_ndjson(SEXP sfile)
+SEXP mmap_ndjson(SEXP sfile)
 {
 	SEXP ans, sbuf;
 
@@ -25,6 +25,22 @@ SEXP read_ndjson(SEXP sfile)
 	PROTECT(ans = alloc_jsondata(sbuf, R_NilValue, R_NilValue));
 	as_jsondata(ans); // force jsondata load
 	UNPROTECT(2);
+
+	return ans;
+}
+
+
+SEXP read_ndjson(SEXP sbuffer)
+{
+	SEXP ans;
+
+	if (TYPEOF(sbuffer) != RAWSXP) {
+		error("'buffer' must be a raw vector");
+	}
+
+	PROTECT(ans = alloc_jsondata(sbuffer, R_NilValue, R_NilValue));
+	as_jsondata(ans); // force jsondata load
+	UNPROTECT(1);
 
 	return ans;
 }

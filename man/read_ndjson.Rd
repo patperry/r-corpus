@@ -6,12 +6,17 @@
     (NDJSON) format.
 }
 \usage{
-    read_ndjson(file, simplify = TRUE)
+    read_ndjson(file, mmap = FALSE, simplify = TRUE)
 }
 \arguments{
-    \item{file}{the name of the file which the data are to be read from.
-        The file should be encoded as UTF-8, and each line of the file
-        should be a valid JSON value.}
+    \item{file}{the name of the file which the data are to be read from,
+        or a connection (unless \code{mmap} is \code{TRUE}, see below).
+        The data should be encoded as UTF-8, and each line should be a
+        valid JSON value.}
+
+    \item{mmap}{whether to memory-map the file instead of reading all
+        of its data into memory simultaneously. See the
+        \sQuote{Memory mapping} section.}
 
     \item{simplify}{whether to attempt to simplify the type of the return
        value. For example, if each line of the file stores an integer,
@@ -22,29 +27,50 @@
     This function is the principal means of reading data for processing
     by the corpus package.
 
-    Internally, the function memory-maps the file rather than reading it into
-    memory directly. This allows the operating system to only read the data
-    into memory when it is needed, enabling you to transparently process
-    large data sets that do not fit into memory.
+    In the default usage, with argument \code{simplify = TRUE}, when
+    the lines of the file are records (JSON object literals), the
+    return value from \code{read_ndjson} is a data frame. With
+    \code{simplify = FALSE}, the result is a \code{jsondata} object.
 
-    The return value from \code{read_ndjson} is a \code{jsondata} object
-    that behaves like a data frame.
+}
+\section{Memory mapping}{
+    When you specify \code{mmap = TRUE}, the function memory-maps the file
+    instead of reading it into memory directly. In this case, the \code{file}
+    argument must be a character string giving the path to the file, not
+    a connection object. When you memory-map the file, the operating
+    system reads data into memory only when it is needed, enabling
+    you to transparently process large data sets that do not fit into
+    memory.
 
-    The one danger in using this function is that if you delete the file
+    One danger in memory-mapping is that if you delete the file
     after calling \code{read_ndjson} but before processing the data, then
     the results will be undefined, and your computer may crash. (On
     POSIX-compliant systems like Mac OS and Linux, there should be no
     ill effects to deleting the file. On recent versions of Windows,
     the system will not allow you to delete the file as long as the data
     is active; on older versions, the behavior is undefined.)
+
+    Another danger in memory-mapping is that if you serialize a
+    \code{jsondata} object or derived \code{text} object using
+    \code{\link{saveRDS}} or another similar function, and then you
+    de-serialize the object, then R will attempt create a new memory-map
+    using the original \code{file} argument passed to the \code{read_ndjson}
+    call. If \code{file} is a relative path, then your working directory
+    at the time of deserialization must agree with your working directory
+    at the time of the \code{read_ndjson} call.  You can avoid this
+    situation by specifying an absolute path as the \code{file} argument
+    (the \code{\link{normalizePath}} function will convert a relative
+    to an absolute path).
 }
 \examples{
+
+    # Memory mapping
     lines <- c('{ "a": 1, "b": true }',
                '{ "b": false, "nested": { "c": 100, "d": false }}',
                '{ "a": 3.14, "nested": { "d": true }}')
     file <- tempfile()
     writeLines(lines, file)
-    (data <- read_ndjson(file))
+    (data <- read_ndjson(file, mmap = TRUE))
 
     data$a
     data$b

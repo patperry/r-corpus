@@ -71,7 +71,7 @@ SEXP logging_off(void);
 SEXP logging_on(void);
 
 /* data set */
-SEXP alloc_jsondata(SEXP sfilebuf, SEXP sfield, SEXP srows);
+SEXP alloc_jsondata(SEXP buffer, SEXP field, SEXP rows);
 int is_jsondata(SEXP data);
 struct jsondata *as_jsondata(SEXP data);
 
@@ -131,7 +131,8 @@ int is_schema(SEXP schema);
 struct schema *as_schema(SEXP schema);
 
 /* json values */
-SEXP read_ndjson(SEXP file);
+SEXP mmap_ndjson(SEXP file);
+SEXP read_ndjson(SEXP buffer);
 
 /* internal utility functions */
 int findListElement(SEXP list, const char *str);

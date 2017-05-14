@@ -1,4 +1,11 @@
 
+# corpus 0.4.0
+
+* Allow `read_ndjson` to read from connections, not just files, by
+  reading the file contents into memory first. Use this be default
+  instead of memory mapping.
+
+
 # corpus 0.3.0
 
 * Support for serializing dataset and text objects (readRDS/saveRDS).

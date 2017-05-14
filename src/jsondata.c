@@ -50,7 +50,7 @@ static void free_jsondata(SEXP sjsondata)
 }
 
 
-SEXP alloc_jsondata(SEXP sfilebuf, SEXP sfield, SEXP srows)
+SEXP alloc_jsondata(SEXP sbuffer, SEXP sfield, SEXP srows)
 {
 	SEXP ans, sclass, shandle, snames;
 	struct jsondata *obj;
@@ -77,13 +77,13 @@ SEXP alloc_jsondata(SEXP sfilebuf, SEXP sfield, SEXP srows)
 
 	PROTECT(ans = allocVector(VECSXP, 4));
 	SET_VECTOR_ELT(ans, 0, shandle);
-	SET_VECTOR_ELT(ans, 1, sfilebuf);
+	SET_VECTOR_ELT(ans, 1, sbuffer);
 	SET_VECTOR_ELT(ans, 2, sfield);
 	SET_VECTOR_ELT(ans, 3, srows);
 
 	PROTECT(snames = allocVector(STRSXP, 4));
 	SET_STRING_ELT(snames, 0, mkChar("handle"));
-	SET_STRING_ELT(snames, 1, mkChar("filebuf"));
+	SET_STRING_ELT(snames, 1, mkChar("buffer"));
 	SET_STRING_ELT(snames, 2, mkChar("field"));
 	SET_STRING_ELT(snames, 3, mkChar("rows"));
 	setAttrib(ans, R_NamesSymbol, snames);
@@ -143,13 +143,14 @@ static void grow_datarows(struct data **rowsptr, R_xlen_t *nrow_maxptr)
 
 static void jsondata_load(SEXP sdata)
 {
-	SEXP shandle, sparent_handle, sfilebuf, sfield, sfield_path,
+	SEXP shandle, sparent_handle, sbuffer, sfield, sfield_path,
 	     srows, sparent, sparent2;
 	struct jsondata *obj;
 	struct data *rows;
 	struct filebuf *buf;
 	struct filebuf_iter it;
-	const uint8_t *ptr;
+	const uint8_t *ptr, *begin, *line_end, *end;
+	uint_fast8_t ch;
 	size_t size;
 	R_xlen_t nrow, nrow_max, j, m;
 	int err, type_id;
@@ -160,8 +161,8 @@ static void jsondata_load(SEXP sdata)
 		return;
 	}
 
-	sfilebuf = getListElement(sdata, "filebuf");
-	PROTECT(sparent = alloc_jsondata(sfilebuf, R_NilValue, R_NilValue));
+	sbuffer = getListElement(sdata, "buffer");
+	PROTECT(sparent = alloc_jsondata(sbuffer, R_NilValue, R_NilValue));
 	sparent_handle = getListElement(sparent, "handle");
 	obj = R_ExternalPtrAddr(sparent_handle);
 
@@ -170,33 +171,71 @@ static void jsondata_load(SEXP sdata)
 	nrow_max = 0;
 	rows = NULL;
 
-	buf = as_filebuf(sfilebuf);
-	filebuf_iter_make(&it, buf);
+	if (is_filebuf(sbuffer)) {
+		buf = as_filebuf(sbuffer);
 
-	while (filebuf_iter_advance(&it)) {
-		if (nrow == nrow_max) {
-			grow_datarows(&rows, &nrow_max);
+		filebuf_iter_make(&it, buf);
+		while (filebuf_iter_advance(&it)) {
+			if (nrow == nrow_max) {
+				grow_datarows(&rows, &nrow_max);
+			}
+
+			ptr = it.current.ptr;
+			size = it.current.size;
+
+			if ((err = data_assign(&rows[nrow], &obj->schema,
+					       ptr, size))) {
+				free(rows);
+				error("error parsing row %"PRIu64
+				      " of JSON data", (uint64_t)(nrow + 1));
+			}
+
+			if ((err = schema_union(&obj->schema, type_id,
+						rows[nrow].type_id,
+						&type_id))) {
+				free(rows);
+				error("memory allocation failure"
+				      " after parsing row %"PRIu64
+				      " of JSON data", (uint64_t)(nrow + 1));
+			}
+			nrow++;
 		}
+	} else {
+		// parse data from buffer
+		begin = (const uint8_t *)RAW(sbuffer);
+		end = begin + XLENGTH(sbuffer);
+		ptr = begin;
 
-		ptr = it.current.ptr;
-		size = it.current.size;
+		while (ptr != end) {
+			if (nrow == nrow_max) {
+				grow_datarows(&rows, &nrow_max);
+			}
 
-		if ((err = data_assign(&rows[nrow], &obj->schema,
-						ptr, size))) {
-			free(rows);
-			error("error parsing row %"PRIu64
-			      " of JSON file", (uint64_t)(nrow + 1));
+			line_end = ptr;
+			do {
+				ch = *line_end++;
+			} while (ch != '\n' && line_end != end);
+
+			size = (size_t)(line_end - ptr);
+
+			if ((err = data_assign(&rows[nrow], &obj->schema,
+					       ptr, size))) {
+				free(rows);
+				error("error parsing row %"PRIu64
+				      " of JSON data", (uint64_t)(nrow + 1));
+			}
+
+			if ((err = schema_union(&obj->schema, type_id,
+						rows[nrow].type_id,
+						&type_id))) {
+				free(rows);
+				error("memory allocation failure"
+				      " after parsing row %"PRIu64
+				      " of JSON data", (uint64_t)(nrow + 1));
+			}
+			nrow++;
+			ptr = line_end;
 		}
-
-		if ((err = schema_union(&obj->schema, type_id,
-					rows[nrow].type_id,
-					&type_id))) {
-			free(rows);
-			error("memory allocation failure"
-			      " after parsing row %"PRIu64
-			      " of JSON file", (uint64_t)(nrow + 1));
-		}
-		nrow++;
 	}
 
 	// free excess memory
@@ -257,7 +296,7 @@ static void jsondata_load(SEXP sdata)
 
 int is_jsondata(SEXP sdata)
 {
-	SEXP handle, filebuf;
+	SEXP handle, buffer;
 
 	if (!isVectorList(sdata)) {
 		return 0;
@@ -268,8 +307,8 @@ int is_jsondata(SEXP sdata)
 		return 0;
 	}
 
-	filebuf = getListElement(sdata, "filebuf");
-	if (!is_filebuf(filebuf)) {
+	buffer = getListElement(sdata, "buffer");
+	if (!(TYPEOF(buffer) == RAWSXP || is_filebuf(buffer))) {
 		return 0;
 	}
 
@@ -290,7 +329,7 @@ struct jsondata *as_jsondata(SEXP sdata)
 	jsondata_load(sdata);
 
 	shandle = getListElement(sdata, "handle");
-	obj = R_ExternalPtrAddr(shandle);
+obj = R_ExternalPtrAddr(shandle);
 
 	return obj;
 }
@@ -513,7 +552,7 @@ SEXP subscript_jsondata(SEXP sdata, SEXP si)
 
 SEXP subrows_jsondata(SEXP sdata, SEXP si)
 {
-	SEXP ans, shandle, sfilebuf, sfield, srows, srows2;
+	SEXP ans, shandle, sbuffer, sfield, srows, srows2;
 	const struct jsondata *obj = as_jsondata(sdata);
 	struct jsondata *obj2;
 	struct data *rows;
@@ -531,14 +570,14 @@ SEXP subrows_jsondata(SEXP sdata, SEXP si)
 	index = REAL(si);
 	n = XLENGTH(si);
 
-	sfilebuf = getListElement(sdata, "filebuf");
+	sbuffer = getListElement(sdata, "buffer");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
 
 	PROTECT(srows2 = allocVector(REALSXP, n));
 	irows = REAL(srows2);
 
-	PROTECT(ans = alloc_jsondata(sfilebuf, sfield, srows2));
+	PROTECT(ans = alloc_jsondata(sbuffer, sfield, srows2));
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -598,7 +637,7 @@ SEXP subrows_jsondata(SEXP sdata, SEXP si)
 
 SEXP subfield_jsondata(SEXP sdata, SEXP sname)
 {
-	SEXP ans, sfilebuf, sfield, sfield2, shandle, srows;
+	SEXP ans, sbuffer, sfield, sfield2, shandle, srows;
 	const struct jsondata *obj = as_jsondata(sdata);
 	struct text name;
 	struct data *rows;
@@ -626,7 +665,7 @@ SEXP subfield_jsondata(SEXP sdata, SEXP sname)
 		return R_NilValue;
 	}
 
-	sfilebuf = getListElement(sdata, "filebuf");
+	sbuffer = getListElement(sdata, "buffer");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
 
@@ -642,7 +681,7 @@ SEXP subfield_jsondata(SEXP sdata, SEXP sname)
 	}
 	SET_STRING_ELT(sfield2, m, sname);
 
-	PROTECT(ans = alloc_jsondata(sfilebuf, sfield2, srows));
+	PROTECT(ans = alloc_jsondata(sbuffer, sfield2, srows));
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -814,7 +853,7 @@ SEXP as_logical_jsondata(SEXP sdata)
 
 static SEXP as_list_jsondata_record(SEXP sdata)
 {
-	SEXP ans, ans_j, names, sfilebuf, sfield, sfield2, srows,
+	SEXP ans, ans_j, names, sbuffer, sfield, sfield2, srows,
 	     shandle, sname;
 	const struct jsondata *d = as_jsondata(sdata);
 	struct jsondata *d_j;
@@ -834,7 +873,7 @@ static SEXP as_list_jsondata_record(SEXP sdata)
 	r = &d->schema.types[d->type_id].meta.record;
 	nfield = r->nfield;
 
-	sfilebuf = getListElement(sdata, "filebuf");
+	sbuffer = getListElement(sdata, "buffer");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
 	PROTECT(names = names_jsondata(sdata));
@@ -863,7 +902,7 @@ static SEXP as_list_jsondata_record(SEXP sdata)
 			SET_STRING_ELT(sfield2, k, STRING_ELT(sfield, k));
 		}
 		SET_STRING_ELT(sfield2, m, sname);
-		ans_j = alloc_jsondata(sfilebuf, sfield2, srows);
+		ans_j = alloc_jsondata(sbuffer, sfield2, srows);
 		SET_VECTOR_ELT(ans, j, ans_j);
 		UNPROTECT(1); // sfield2 protected by ans_j, protected by ans
 

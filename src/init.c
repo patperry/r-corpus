@@ -40,6 +40,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(length_text, 1),
 	CALLDEF(logging_off, 0),
 	CALLDEF(logging_on, 0),
+	CALLDEF(mmap_ndjson, 1),
 	CALLDEF(names_jsondata, 1),
 	CALLDEF(print_jsondata, 1),
 	CALLDEF(read_ndjson, 1),

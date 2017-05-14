@@ -13,9 +13,44 @@
 #  limitations under the License.
 
 
-read_ndjson <- function(file, simplify = TRUE)
+read_ndjson <- function(file, mmap = FALSE, simplify = TRUE)
 {
-    ans <- .Call(C_read_ndjson, file)
+    if (mmap) {
+        if (!is.character(file)) {
+            stop("'file' must be a character string when 'mmap' is TRUE")
+        }
+
+        ans <- .Call(C_mmap_ndjson, file)
+
+    } else {
+        # open the file in binary mode
+        if (is.character(file)) {
+            file <- file(file, "rb")
+            on.exit(close(file))
+        }
+        if (!inherits(file, "connection")) {
+            stop("'file' must be a character string or connection")
+        }
+        if (!isOpen(file, "rb")) {
+            open(file, "rb")
+            on.exit(close(file))
+        }
+
+        # read the raw data
+        size <- 32 * 1024 * 1024 # 32 MB chunks
+        buffer <- raw()
+
+        repeat {
+            chunk <- readBin(file, raw(), size)
+            if (length(chunk) == 0) {
+                break
+            }
+            buffer <- c(buffer, chunk)
+        }
+
+        ans <- .Call(C_read_ndjson, buffer)
+    }
+
     if (simplify) {
         ans <- .Call(C_simplify_jsondata, ans)
         if (length(dim(ans)) == 2) {
