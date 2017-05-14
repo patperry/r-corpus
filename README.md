@@ -58,7 +58,7 @@ first round of the [Yelp Dataset Challence][yelp]; it is stored in
     # Using the corpus library:
 
     system.time({
-        data <- read_ndjson("yelp-review.json")
+        data <- read_ndjson("yelp-review.json", mmap=TRUE)
     })
 
     ##   user  system elapsed
@@ -87,6 +87,10 @@ of the RAM.  How are we reading a 286 MB file in only 63.2 MB?  We memory-map
 the file, letting the operating system move data from the file to RAM
 whenever necessary. We store the addresses of the text strings, but we
 do not load values into RAM until they are needed.
+
+(If we specify `mmap=FALSE`, the default, then we read the entire file
+into memory; in this case, `read_ndjson` is about 7 times faster than
+*jsonlite* and uses about 10% more memory.)
 
 
 ### Segmenting text into sentences
