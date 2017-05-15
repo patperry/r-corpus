@@ -27,13 +27,13 @@ static void ignore_message(int code, const char *message)
 
 SEXP logging_off(void)
 {
-	logmsg_func = ignore_message;
+	corpus_log_func = ignore_message;
 	return R_NilValue;
 }
 
 
 SEXP logging_on(void)
 {
-	logmsg_func = NULL;
+	corpus_log_func = NULL;
 	return R_NilValue;
 }

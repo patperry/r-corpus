@@ -21,14 +21,14 @@
 #include "corpus/src/data.h"
 #include "rcorpus.h"
 
-static int logical_data(const struct data *d);
-static int integer_data(const struct data *d, int *overflowptr);
-static double real_data(const struct data *d, int *overflowptr);
-static SEXP charsxp_data(const struct data *d, struct mkchar *mk);
-static SEXP decode_array(struct decode *d, const struct data *val,
-			 const struct schema *s);
-static SEXP decode_record(struct decode *d, const struct data *val,
-			  const struct schema *s);
+static int logical_data(const struct corpus_data *d);
+static int integer_data(const struct corpus_data *d, int *overflowptr);
+static double real_data(const struct corpus_data *d, int *overflowptr);
+static SEXP charsxp_data(const struct corpus_data *d, struct mkchar *mk);
+static SEXP decode_array(struct decode *d, const struct corpus_data *val,
+			 const struct corpus_schema *s);
+static SEXP decode_record(struct decode *d, const struct corpus_data *val,
+			  const struct corpus_schema *s);
 
 
 void decode_init(struct decode *d)
@@ -50,33 +50,33 @@ void decode_clear(struct decode *d)
 }
 
 
-int decode_logical(struct decode *d, const struct data *val)
+int decode_logical(struct decode *d, const struct corpus_data *val)
 {
 	(void)d;
 	return logical_data(val);
 }
 
 
-int decode_integer(struct decode *d, const struct data *val)
+int decode_integer(struct decode *d, const struct corpus_data *val)
 {
 	return integer_data(val, &d->overflow);
 }
 
 
-double decode_real(struct decode *d, const struct data *val)
+double decode_real(struct decode *d, const struct corpus_data *val)
 {
 	return real_data(val, &d->overflow);
 }
 
 
-SEXP decode_charsxp(struct decode *d, const struct data *val)
+SEXP decode_charsxp(struct decode *d, const struct corpus_data *val)
 {
 	return charsxp_data(val, &d->mkchar);
 }
 
 
-SEXP decode_sexp(struct decode *d, const struct data *val,
-		 const struct schema *s)
+SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
+		 const struct corpus_schema *s)
 {
 	SEXP ans;
 	int kind, i;
@@ -91,35 +91,35 @@ SEXP decode_sexp(struct decode *d, const struct data *val,
 	overflow = 0;
 
 	switch (kind) {
-	case DATATYPE_NULL:
+	case CORPUS_DATATYPE_NULL:
 		ans = R_NilValue;
 		break;
 
-	case DATATYPE_BOOLEAN:
+	case CORPUS_DATATYPE_BOOLEAN:
 		ans = ScalarLogical(logical_data(val));
 		break;
 
-	case DATATYPE_INTEGER:
+	case CORPUS_DATATYPE_INTEGER:
 		i = integer_data(val, &overflow);
 		if (!overflow) {
 			ans = ScalarInteger(i);
 			break;
 		}
-		// else fall through to DATATYPE_REAL
+		// else fall through to CORPUS_DATATYPE_REAL
 
-	case DATATYPE_REAL:
+	case CORPUS_DATATYPE_REAL:
 		ans = ScalarReal(real_data(val, &overflow));
 		break;
 
-	case DATATYPE_TEXT:
+	case CORPUS_DATATYPE_TEXT:
 		ans = ScalarString(charsxp_data(val, &d->mkchar));
 		break;
 
-	case DATATYPE_ARRAY:
+	case CORPUS_DATATYPE_ARRAY:
 		ans = decode_array(d, val, s);
 		break;
 
-	case DATATYPE_RECORD:
+	case CORPUS_DATATYPE_RECORD:
 		ans = decode_record(d, val, s);
 		break;
 
@@ -136,13 +136,13 @@ SEXP decode_sexp(struct decode *d, const struct data *val,
 }
 
 
-int logical_data(const struct data *d)
+int logical_data(const struct corpus_data *d)
 {
 	int ans, err, b;
 
-	err = data_bool(d, &b);
+	err = corpus_data_bool(d, &b);
 
-	if (err == ERROR_INVAL) {
+	if (err == CORPUS_ERROR_INVAL) {
 		ans = NA_LOGICAL;
 	} else {
 		ans = b ? TRUE : FALSE;
@@ -152,17 +152,17 @@ int logical_data(const struct data *d)
 }
 
 
-int integer_data(const struct data *d, int *overflowptr)
+int integer_data(const struct corpus_data *d, int *overflowptr)
 {
 	int ans, err, i;
 	int overflow;
 
 	overflow = 0;
 
-	err = data_int(d, &i);
-	if (err == ERROR_INVAL) {
+	err = corpus_data_int(d, &i);
+	if (err == CORPUS_ERROR_INVAL) {
 		ans = NA_INTEGER;
-	} else if (err == ERROR_OVERFLOW || i == NA_INTEGER) {
+	} else if (err == CORPUS_ERROR_OVERFLOW || i == NA_INTEGER) {
 		ans = NA_INTEGER;
 		overflow = 1;
 	} else {
@@ -177,18 +177,18 @@ int integer_data(const struct data *d, int *overflowptr)
 }
 
 
-double real_data(const struct data *d, int *overflowptr)
+double real_data(const struct corpus_data *d, int *overflowptr)
 {
 	double ans, r;
 	int err;
 	int overflow;
 
 	overflow = 0;
-	err = data_double(d, &r);
-	if (err == ERROR_INVAL) {
+	err = corpus_data_double(d, &r);
+	if (err == CORPUS_ERROR_INVAL) {
 		ans = NA_REAL;
 	} else {
-		if (err == ERROR_OVERFLOW) {
+		if (err == CORPUS_ERROR_OVERFLOW) {
 			overflow = 1;
 		}
 		ans = r;
@@ -202,13 +202,13 @@ double real_data(const struct data *d, int *overflowptr)
 }
 
 
-SEXP charsxp_data(const struct data *d, struct mkchar *mk)
+SEXP charsxp_data(const struct corpus_data *d, struct mkchar *mk)
 {
-	struct text text;
+	struct corpus_text text;
 	int err;
 
-	err = data_text(d, &text);
-	if (err == ERROR_INVAL) {
+	err = corpus_data_text(d, &text);
+	if (err == CORPUS_ERROR_INVAL) {
 		return NA_STRING;
 	}
 
@@ -216,36 +216,36 @@ SEXP charsxp_data(const struct data *d, struct mkchar *mk)
 }
 
 
-SEXP decode_array(struct decode *d, const struct data *val,
-		  const struct schema *s)
+SEXP decode_array(struct decode *d, const struct corpus_data *val,
+		  const struct corpus_schema *s)
 {
 	SEXP ans;
-	struct data_items it;
+	struct corpus_data_items it;
 	int err, i, n, overflow;
 	int arr_id, type_id;
 
-	if ((err = data_nitem(val, s, &n))) {
+	if ((err = corpus_data_nitem(val, s, &n))) {
 		ans = R_NilValue;
 		goto out;
 	}
-	data_items(val, s, &it); // won't fail if data_nitem succeeds
+	corpus_data_items(val, s, &it); // won't fail if data_nitem succeeds
 	i = 0;
 
 	arr_id = val->type_id;
 	type_id = s->types[arr_id].meta.array.type_id;
 	switch (type_id) {
-	case DATATYPE_BOOLEAN:
+	case CORPUS_DATATYPE_BOOLEAN:
 		PROTECT(ans = allocVector(LGLSXP, n));
-		while (data_items_advance(&it)) {
+		while (corpus_data_items_advance(&it)) {
 			LOGICAL(ans)[i] = decode_logical(d, &it.current);
 			i++;
 		}
 		break;
 
-	case DATATYPE_INTEGER:
+	case CORPUS_DATATYPE_INTEGER:
 		PROTECT(ans = allocVector(INTSXP, n));
 		overflow = 0;
-		while (data_items_advance(&it)) {
+		while (corpus_data_items_advance(&it)) {
 			INTEGER(ans)[i] = integer_data(&it.current, &overflow);
 			i++;
 		}
@@ -253,21 +253,21 @@ SEXP decode_array(struct decode *d, const struct data *val,
 			break;
 		} else {
 			UNPROTECT(1);
-			data_items_reset(&it);
-			// fall through, decode as DATATYPE_REAL
+			corpus_data_items_reset(&it);
+			// fall through, decode as CORPUS_DATATYPE_REAL
 		}
 
-	case DATATYPE_REAL:
+	case CORPUS_DATATYPE_REAL:
 		PROTECT(ans = allocVector(REALSXP, n));
-		while (data_items_advance(&it)) {
+		while (corpus_data_items_advance(&it)) {
 			REAL(ans)[i] = decode_real(d, &it.current);
 			i++;
 		}
 		break;
 
-	case DATATYPE_TEXT:
+	case CORPUS_DATATYPE_TEXT:
 		PROTECT(ans = allocVector(STRSXP, n));
-		while (data_items_advance(&it)) {
+		while (corpus_data_items_advance(&it)) {
 			SET_STRING_ELT(ans, i, decode_charsxp(d, &it.current));
 			i++;
 		}
@@ -280,7 +280,7 @@ SEXP decode_array(struct decode *d, const struct data *val,
 		}
 
 		PROTECT(ans = allocVector(VECSXP, n));
-		while (data_items_advance(&it)) {
+		while (corpus_data_items_advance(&it)) {
 			SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));
 			i++;
 		}
@@ -295,19 +295,19 @@ out:
 }
 
 
-SEXP decode_record(struct decode *d, const struct data *val,
-		   const struct schema *s)
+SEXP decode_record(struct decode *d, const struct corpus_data *val,
+		   const struct corpus_schema *s)
 {
 	SEXP ans, names;
-	const struct text *name;
-	struct data_fields it;
+	const struct corpus_text *name;
+	struct corpus_data_fields it;
 	int err, i, n;
 
-	if ((err = data_nfield(val, s, &n))) {
+	if ((err = corpus_data_nfield(val, s, &n))) {
 		ans = R_NilValue;
 		goto out;
 	}
-	data_fields(val, s, &it); // won't fail if data_nfield succeeds
+	corpus_data_fields(val, s, &it); // won't fail if data_nfield succeeds
 
 	PROTECT(ans = allocVector(VECSXP, n));
 	PROTECT(names = allocVector(STRSXP, n));
@@ -317,7 +317,7 @@ SEXP decode_record(struct decode *d, const struct data *val,
 	}
 
 	i = 0;
-	while (data_fields_advance(&it)) {
+	while (corpus_data_fields_advance(&it)) {
 		SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));
 
 		name = &s->names.types[it.name_id].text;

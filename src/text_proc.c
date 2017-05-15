@@ -23,7 +23,6 @@
 #include "corpus/src/symtab.h"
 #include "corpus/src/sentscan.h"
 #include "corpus/src/wordscan.h"
-#include "corpus/src/xalloc.h"
 #include "rcorpus.h"
 
 
@@ -32,10 +31,10 @@ SEXP sentences_text(SEXP sx)
 	SEXP ans, handle, sources, psource, prow, pstart,
 	     ptable, source, row, start, stop, index, sparent, stext, names,
 	     sclass, row_names;
-	const struct text *text;
-	struct text *sent, *sent1;
+	const struct corpus_text *text;
+	struct corpus_text *sent, *sent1;
 	R_xlen_t *parent, *parent1;
-	struct sentscan scan;
+	struct corpus_sentscan scan;
 	R_xlen_t i, src, n, isent, nsent, nsent_max;
 	double r;
 	int j, off, len;
@@ -50,8 +49,8 @@ SEXP sentences_text(SEXP sx)
 
 	nsent = 0;
 	nsent_max = 256;
-	sent = xmalloc(nsent_max * sizeof(*sent));
-	parent = xmalloc(nsent_max * sizeof(*parent));;
+	sent = malloc(nsent_max * sizeof(*sent));
+	parent = malloc(nsent_max * sizeof(*parent));;
 	if (sent == NULL || parent == NULL) {
 		free(sent);
 		free(parent);
@@ -63,13 +62,13 @@ SEXP sentences_text(SEXP sx)
 			continue;
 		}
 
-		sentscan_make(&scan, &text[i]);
-		while (sentscan_advance(&scan)) {
+		corpus_sentscan_make(&scan, &text[i]);
+		while (corpus_sentscan_advance(&scan)) {
 			if (nsent == nsent_max) {
 				nsent_max = 2 * nsent_max;
 
-				sent1 = xrealloc(sent,
-						 nsent_max * sizeof(*sent));
+				sent1 = realloc(sent,
+						nsent_max * sizeof(*sent));
 				if (!sent1) {
 					free(sent);
 					free(parent);
@@ -77,8 +76,8 @@ SEXP sentences_text(SEXP sx)
 				}
 				sent = sent1;
 
-				parent1 = xrealloc(parent,
-						   nsent_max * sizeof(*parent));
+				parent1 = realloc(parent,
+						  nsent_max * sizeof(*parent));
 				if (!parent1) {
 					free(sent);
 					free(parent);
@@ -94,8 +93,8 @@ SEXP sentences_text(SEXP sx)
 	}
 
 	// free excess memory
-	sent = xrealloc(sent, nsent * sizeof(*sent));
-	parent = xrealloc(parent, nsent * sizeof(*parent));
+	sent = realloc(sent, nsent * sizeof(*sent));
+	parent = realloc(parent, nsent * sizeof(*parent));
 
 	PROTECT(source = allocVector(INTSXP, nsent));
 	PROTECT(row = allocVector(REALSXP, nsent));
@@ -118,7 +117,7 @@ SEXP sentences_text(SEXP sx)
 			r = REAL(prow)[i];
 			off = INTEGER(pstart)[i];
 		}
-		len = (int)TEXT_SIZE(&sent[isent]);
+		len = (int)CORPUS_TEXT_SIZE(&sent[isent]);
 
 		INTEGER(source)[isent] = src;
 		REAL(row)[isent] = r;
@@ -165,10 +164,10 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 {
 	SEXP ans, ans_i, names, stext;
 	SEXP *types;
-	const struct text *text, *type;
-	struct text empty;
-	struct wordscan scan;
-	struct symtab symtab;
+	const struct corpus_text *text, *type;
+	struct corpus_text empty;
+	struct corpus_wordscan scan;
+	struct corpus_symtab symtab;
 	R_xlen_t i, j, n, nbuf, nbuf_max;
 	int *buf, kind, token_id, type_id, nadd, ntype, ntype_max;
 	const char *stemmer;
@@ -185,7 +184,7 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
-	if (symtab_init(&symtab, kind, stemmer) != 0) {
+	if (corpus_symtab_init(&symtab, kind, stemmer) != 0) {
 		error("failed initializing tokens symbol table");
 	}
 
@@ -200,7 +199,7 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 	// add the empty type, and protect it
 	empty.ptr = NULL;
 	empty.attr = 0;
-	if (symtab_add_type(&symtab, &empty, &type_id) != 0) {
+	if (corpus_symtab_add_type(&symtab, &empty, &type_id) != 0) {
 		error("memory allocation failure");
 	}
 	assert(type_id == 0);
@@ -215,11 +214,11 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 
 		nbuf = 0;
 		nadd = 0;
-		wordscan_make(&scan, &text[i]);
+		corpus_wordscan_make(&scan, &text[i]);
 
-		while (wordscan_advance(&scan)) {
-			if (symtab_add_token(&symtab, &scan.current,
-						&token_id) != 0) {
+		while (corpus_wordscan_advance(&scan)) {
+			if (corpus_symtab_add_token(&symtab, &scan.current,
+						    &token_id) != 0) {
 				error("memory allocation failure");
 			}
 			type_id = symtab.tokens[token_id].type_id;
@@ -234,15 +233,16 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 							ntype,
 							sizeof(*types));
 				}
-				types[ntype] = mkCharLenCE((char *)type->ptr,
-							   TEXT_SIZE(type),
-							   CE_UTF8);
+				types[ntype] = mkCharLenCE(
+							(char *)type->ptr,
+							CORPUS_TEXT_SIZE(type),
+							CE_UTF8);
 				PROTECT(types[ntype]);
 				ntype++;
 				nadd++;
 			}
 
-			if (TEXT_SIZE(type) == 0 && drop_empty) {
+			if (CORPUS_TEXT_SIZE(type) == 0 && drop_empty) {
 				continue;
 			}
 
@@ -265,7 +265,7 @@ SEXP tokens_text(SEXP sx, SEXP sfilter)
 		UNPROTECT(nadd);
 	}
 
-	symtab_destroy(&symtab);
+	corpus_symtab_destroy(&symtab);
 
 	UNPROTECT(3);
 	return ans;

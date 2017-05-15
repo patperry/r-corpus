@@ -24,16 +24,16 @@
 #define FILEBUF_TAG install("corpus::filebuf")
 
 
-static struct filebuf *filebuf_new(const char *filename)
+static struct corpus_filebuf *filebuf_new(const char *filename)
 {
-	struct filebuf *obj = NULL;
-	struct filebuf buf;
+	struct corpus_filebuf *obj = NULL;
+	struct corpus_filebuf buf;
 
 	errno = 0;
 
-	if (filebuf_init(&buf, filename) == 0) {
+	if (corpus_filebuf_init(&buf, filename) == 0) {
 		if (!(obj = malloc(sizeof(*obj)))) {
-			filebuf_destroy(&buf);
+			corpus_filebuf_destroy(&buf);
 			error("failed allocating memory (%u bytes)",
 			      (unsigned)sizeof(*obj));
 		}
@@ -51,10 +51,10 @@ static struct filebuf *filebuf_new(const char *filename)
 }
 
 
-static void filebuf_free(struct filebuf *buf)
+static void filebuf_free(struct corpus_filebuf *buf)
 {
 	if (buf) {
-		filebuf_destroy(buf);
+		corpus_filebuf_destroy(buf);
 		free(buf);
 	}
 }
@@ -62,7 +62,7 @@ static void filebuf_free(struct filebuf *buf)
 
 static void free_filebuf(SEXP sbuf)
 {
-        struct filebuf *buf = R_ExternalPtrAddr(sbuf);
+        struct corpus_filebuf *buf = R_ExternalPtrAddr(sbuf);
 	filebuf_free(buf);
 }
 
@@ -70,7 +70,7 @@ static void free_filebuf(SEXP sbuf)
 SEXP alloc_filebuf(SEXP sfile)
 {
 	SEXP ans, sclass, shandle, snames;
-	struct filebuf *buf;
+	struct corpus_filebuf *buf;
 	const char *file;
 
 	if (!(isString(sfile) && LENGTH(sfile) == 1)) {
@@ -126,10 +126,10 @@ int is_filebuf(SEXP sbuf)
 }
 
 
-struct filebuf *as_filebuf(SEXP sbuf)
+struct corpus_filebuf *as_filebuf(SEXP sbuf)
 {
 	SEXP shandle, sfile;
-	struct filebuf *buf;
+	struct corpus_filebuf *buf;
 	const char *file;
 
 	if (!is_filebuf(sbuf)) {

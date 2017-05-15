@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
 #include "corpus/src/array.h"
 #include "corpus/src/error.h"
+#include "corpus/src/memory.h"
 #include "corpus/src/text.h"
 #include "corpus/src/unicode.h"
-#include "corpus/src/xalloc.h"
 #include "rcorpus.h"
 
 
@@ -35,19 +34,19 @@ void mkchar_init(struct mkchar *mk)
 
 void mkchar_destroy(struct mkchar *mk)
 {
-	free(mk->buf);
+	corpus_free(mk->buf);
 }
 
 
 /* Note: We have to destroy the mkchar object before calling error
  * so that we don't leak memory.
  */
-SEXP mkchar_get(struct mkchar *mk, const struct text *text)
+SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 {
 	SEXP ans;
 	uint8_t *ptr;
-	size_t len = TEXT_SIZE(text);
-	struct text_iter it;
+	size_t len = CORPUS_TEXT_SIZE(text);
+	struct corpus_text_iter it;
 	int err;
 
 	if (len >= INT_MAX) {
@@ -59,16 +58,16 @@ SEXP mkchar_get(struct mkchar *mk, const struct text *text)
 	if (text->ptr == NULL) {
 		ans = NA_STRING;
 	} else {
-		if (TEXT_HAS_ESC(text)) {
+		if (CORPUS_TEXT_HAS_ESC(text)) {
 			if ((err = mkchar_ensure(mk, (int)len))) {
 				goto error;
 			}
-			text_iter_make(&it, text);
+			corpus_text_iter_make(&it, text);
 			ptr = mk->buf;
-			while (text_iter_advance(&it)) {
-				encode_utf8(it.current, &ptr);
+			while (corpus_text_iter_advance(&it)) {
+				corpus_encode_utf8(it.current, &ptr);
 			}
-			len = ptr - mk->buf;
+			len = (size_t)(ptr - mk->buf);
 			ptr = mk->buf;
 		} else {
 			ptr = (uint8_t *)text->ptr;
@@ -96,7 +95,7 @@ static int mkchar_ensure(struct mkchar *mk, int nmin)
 		return 0;
 	}
 
-	err = array_grow(&base, &size, sizeof(uint8_t), 0, nmin);
+	err = corpus_array_grow(&base, &size, sizeof(uint8_t), 0, nmin);
 	if (!err) {
 		mk->buf = base;
 		mk->size = size;

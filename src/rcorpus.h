@@ -28,12 +28,12 @@
 #include "corpus/src/datatype.h"
 #include "corpus/src/data.h"
 
-struct data;
-struct filebuf;
+struct corpus_data;
+struct corpus_filebuf;
 
 struct jsondata {
-	struct schema schema;
-	struct data *rows;
+	struct corpus_schema schema;
+	struct corpus_data *rows;
 	R_xlen_t nrow;
 	int type_id;
 	int kind;
@@ -52,19 +52,19 @@ struct decode {
 /* converting text to CHARSXP */
 void mkchar_init(struct mkchar *mk);
 void mkchar_destroy(struct mkchar *mk);
-SEXP mkchar_get(struct mkchar *mk, const struct text *text);
+SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text);
 
 /* converting data to R values */
 void decode_init(struct decode *d);
 void decode_clear(struct decode *d);
 void decode_destroy(struct decode *d);
 
-int decode_logical(struct decode *d, const struct data *val);
-int decode_integer(struct decode *d, const struct data *val);
-double decode_real(struct decode *d, const struct data *val);
-SEXP decode_charsxp(struct decode *d, const struct data *val);
-SEXP decode_sexp(struct decode *d, const struct data *val,
-		 const struct schema *s);
+int decode_logical(struct decode *d, const struct corpus_data *val);
+int decode_integer(struct decode *d, const struct corpus_data *val);
+double decode_real(struct decode *d, const struct corpus_data *val);
+SEXP decode_charsxp(struct decode *d, const struct corpus_data *val);
+SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
+		 const struct corpus_schema *s);
 
 /* logging */
 SEXP logging_off(void);
@@ -91,18 +91,18 @@ SEXP subscript_jsondata(SEXP data, SEXP i);
 SEXP subset_jsondata(SEXP data, SEXP i, SEXP j);
 
 /* data */
-SEXP scalar_data(const struct data *d, const struct schema *s,
+SEXP scalar_data(const struct corpus_data *d, const struct corpus_schema *s,
 		 int *overflowptr);
 
 /* file buffer */
 SEXP alloc_filebuf(SEXP file);
 int is_filebuf(SEXP sbuf);
-struct filebuf *as_filebuf(SEXP sbuf);
+struct corpus_filebuf *as_filebuf(SEXP sbuf);
 
 /* text (core) */
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop);
 int is_text(SEXP text);
-struct text *as_text(SEXP text, R_xlen_t *lenptr);
+struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
 SEXP as_text_character(SEXP text);
 
 SEXP alloc_na_text(void);
@@ -128,7 +128,7 @@ SEXP word_counts_text(SEXP x, SEXP filter);
 /* data schema */
 SEXP alloc_schema(void);
 int is_schema(SEXP schema);
-struct schema *as_schema(SEXP schema);
+struct corpus_schema *as_schema(SEXP schema);
 
 /* json values */
 SEXP mmap_ndjson(SEXP file);

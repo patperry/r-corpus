@@ -46,8 +46,8 @@ SEXP length_text(SEXP stext)
 SEXP as_character_text(SEXP stext)
 {
 	SEXP ans, str;
-	struct text *text;
-	struct text_iter it;
+	struct corpus_text *text;
+	struct corpus_text_iter it;
 	const uint8_t *ptr;
 	uint8_t *buf, *end;
 	size_t buf_len, len;
@@ -63,29 +63,29 @@ SEXP as_character_text(SEXP stext)
 
 	for (i = 0; i < n; i++) {
 		ptr = text[i].ptr;
-		len = TEXT_SIZE(&text[i]);
+		len = CORPUS_TEXT_SIZE(&text[i]);
 
 		if (ptr == NULL) {
 			str = NA_STRING;
 		} else {
-			if (TEXT_HAS_ESC(&text[i])) {
+			if (CORPUS_TEXT_HAS_ESC(&text[i])) {
 				// grow buffer if necessary
 				if (buf_len < len) {
 					buf_len = len;
 					buf = (uint8_t *)R_alloc(buf_len, 1);
 				}
 
-				text_iter_make(&it, &text[i]);
+				corpus_text_iter_make(&it, &text[i]);
 				end = buf;
 
-				while (text_iter_advance(&it)) {
-					encode_utf8(it.current, &end);
+				while (corpus_text_iter_advance(&it)) {
+					corpus_encode_utf8(it.current, &end);
 				}
 
 				ptr = buf;
 				len = end - ptr;
 			} else {
-				len = TEXT_SIZE(&text[i]);
+				len = CORPUS_TEXT_SIZE(&text[i]);
 			}
 			str = mkCharLenCE((char *)ptr, len, CE_UTF8);
 		}
@@ -100,7 +100,7 @@ SEXP as_character_text(SEXP stext)
 SEXP is_na_text(SEXP stext)
 {
 	SEXP ans;
-	struct text *text;
+	struct corpus_text *text;
 	R_xlen_t i, n;
 	int *isna;
 
@@ -123,7 +123,7 @@ SEXP is_na_text(SEXP stext)
 
 SEXP anyNA_text(SEXP stext)
 {
-	struct text *text;
+	struct corpus_text *text;
 	R_xlen_t i, n;
 	int anyNA;
 

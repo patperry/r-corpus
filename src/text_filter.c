@@ -117,25 +117,25 @@ int text_filter_type_kind(SEXP filter)
 	kind = 0;
 
 	if (text_filter_logical(filter, "fold_case", 0)) {
-		kind |= TYPE_CASEFOLD;
+		kind |= CORPUS_TYPE_CASEFOLD;
 	}
 	if (text_filter_logical(filter, "fold_dash", 0)) {
-		kind |= TYPE_DASHFOLD;
+		kind |= CORPUS_TYPE_DASHFOLD;
 	}
 	if (text_filter_logical(filter, "fold_quote", 0)) {
-		kind |= TYPE_QUOTFOLD;
+		kind |= CORPUS_TYPE_QUOTFOLD;
 	}
 	if (text_filter_logical(filter, "map_compatible", 0)) {
-		kind |= TYPE_COMPAT;
+		kind |= CORPUS_TYPE_COMPAT;
 	}
 	if (text_filter_logical(filter, "remove_control", 0)) {
-		kind |= TYPE_RMCC;
+		kind |= CORPUS_TYPE_RMCC;
 	}
 	if (text_filter_logical(filter, "remove_ignorable", 0)) {
-		kind |= TYPE_RMDI;
+		kind |= CORPUS_TYPE_RMDI;
 	}
 	if (text_filter_logical(filter, "remove_whitespace", 0)) {
-		kind |= TYPE_RMWS;
+		kind |= CORPUS_TYPE_RMWS;
 	}
 
 	return kind;

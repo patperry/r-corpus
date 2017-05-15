@@ -24,12 +24,12 @@ STEMMER_O = $(SNOWBALL)/src_c/stem_UTF_8_arabic.o \
 			$(SNOWBALL)/runtime/utilities.o \
 			$(SNOWBALL)/libstemmer/libstemmer_utf8.o
 
-LIBCORPUS = corpus/lib/strntod_c.o corpus/lib/strntoimax.o \
+LIBCORPUS = corpus/lib/strntod.o corpus/lib/strntoimax.o \
 	corpus/src/array.o corpus/src/census.o corpus/src/data.o \
 	corpus/src/datatype.o corpus/src/error.o corpus/src/filebuf.o \
-	corpus/src/render.o corpus/src/sentscan.o corpus/src/symtab.o \
-	corpus/src/table.o corpus/src/text.o corpus/src/token.o \
-	corpus/src/unicode.o corpus/src/wordscan.o corpus/src/xalloc.o \
+	corpus/src/memory.o corpus/src/render.o corpus/src/sentscan.o \
+	corpus/src/symtab.o corpus/src/table.o corpus/src/text.o \
+	corpus/src/token.o corpus/src/unicode.o corpus/src/wordscan.o \
 	$(STEMMER_O)
 
 $(SHLIB): libccorpus.a

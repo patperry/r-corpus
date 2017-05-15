@@ -18,7 +18,6 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "corpus/src/xalloc.h"
 #include "rcorpus.h"
 
 #define TEXT_TAG install("corpus::text")
@@ -72,7 +71,7 @@ static void source_assign(struct source *source, SEXP value)
 
 static void free_text(SEXP stext)
 {
-        struct text *text = R_ExternalPtrAddr(stext);
+        struct corpus_text *text = R_ExternalPtrAddr(stext);
         free(text);
 }
 
@@ -173,10 +172,10 @@ int is_text(SEXP x)
 }
 
 
-struct text *as_text(SEXP stext, R_xlen_t *lenptr)
+struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 {
 	SEXP handle, source, table;
-	struct text *text;
+	struct corpus_text *text;
 
 	if (!is_text(stext)) {
 		error("invalid 'text' object");
@@ -212,7 +211,7 @@ SEXP as_text_jsondata(SEXP sdata)
 {
 	SEXP ans, handle, sources, source, row, start, stop;
 	const struct jsondata *d = as_jsondata(sdata);
-	struct text *text;
+	struct corpus_text *text;
 	R_xlen_t i, nrow = d->nrow;
 	int err;
 
@@ -242,20 +241,20 @@ SEXP as_text_jsondata(SEXP sdata)
 	R_SetExternalPtrAddr(handle, text);
 
 	for (i = 0; i < nrow; i++) {
-		if ((err = data_text(&d->rows[i], &text[i]))) {
+		if ((err = corpus_data_text(&d->rows[i], &text[i]))) {
 			text[i].ptr = NULL;
 			text[i].attr = 0;
 			INTEGER(start)[i] = NA_INTEGER;
 			INTEGER(stop)[i] = NA_INTEGER;
 		} else {
-			if (TEXT_SIZE(&text[i]) > INT_MAX) {
+			if (CORPUS_TEXT_SIZE(&text[i]) > INT_MAX) {
 				error("text size (%"PRIu64 "bytes)"
 				      "exceeds maximum (%d bytes)",
-				      (uint64_t)TEXT_SIZE(&text[i]),
+				      (uint64_t)CORPUS_TEXT_SIZE(&text[i]),
 				      INT_MAX);
 			}
 			INTEGER(start)[i] = 1;
-			INTEGER(stop)[i] = (int)TEXT_SIZE(&text[i]);
+			INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&text[i]);
 		}
 	}
 
@@ -267,7 +266,7 @@ SEXP as_text_jsondata(SEXP sdata)
 SEXP as_text_character(SEXP x)
 {
 	SEXP ans, handle, sources, source, row, start, stop, str;
-	struct text *text;
+	struct corpus_text *text;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
 	int err, iname, duped = 0;
@@ -337,12 +336,12 @@ SEXP as_text_character(SEXP x)
 
 		// convert to char to text
 		len = XLENGTH(str);
-		if ((uint64_t)len > (uint64_t)TEXT_SIZE_MAX) {
+		if ((uint64_t)len > (uint64_t)CORPUS_TEXT_SIZE_MAX) {
 			error("size of character object at index %"PRIu64
 			      " (%"PRIu64" bytes)"
 			      " exceeds maximum (%"PRIu64" bytes)",
 			      (uint64_t)(i + 1), (uint64_t)len,
-			      (uint64_t)TEXT_SIZE_MAX);
+			      (uint64_t)CORPUS_TEXT_SIZE_MAX);
 		}
 		if (len > INT_MAX) {
 			error("size of character object at index %"PRIu64
@@ -350,14 +349,15 @@ SEXP as_text_character(SEXP x)
 			      " exceeds maximum (%d bytes)",
 			      (uint64_t)(i + 1), (uint64_t)len, INT_MAX);
 		}
-		if ((err = text_assign(&text[i], (uint8_t *)ptr, (size_t)len,
-					TEXT_NOESCAPE))) {
+		if ((err = corpus_text_assign(&text[i], (uint8_t *)ptr,
+					      (size_t)len,
+					      CORPUS_TEXT_NOESCAPE))) {
 			error("character object at index %"PRIu64
 			      " contains invalid UTF-8", (uint64_t)(i + 1));
 		}
 
 		INTEGER(start)[i] = 1;
-		INTEGER(stop)[i] = (int)TEXT_SIZE(&text[i]);
+		INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&text[i]);
 	}
 
 	UNPROTECT(6);
@@ -394,8 +394,8 @@ static void load_text(SEXP x)
 	SEXP shandle, srow, ssource, sstart, sstop, ssources, src, str, stable;
 	const double *row;
 	const int *source, *start, *stop;
-	struct text *text;
-	struct text txt;
+	struct corpus_text *text;
+	struct corpus_text txt;
 	struct source *sources;
 	const uint8_t *ptr;
 	double r;
@@ -474,8 +474,8 @@ static void load_text(SEXP x)
 			str = STRING_ELT(sources[s].data.chars, j);
 			ptr = (const uint8_t *)CHAR(str);
 			len = XLENGTH(str);
-			flags = TEXT_NOESCAPE;
-			err = text_assign(&txt, ptr, len, flags);
+			flags = CORPUS_TEXT_NOESCAPE;
+			err = corpus_text_assign(&txt, ptr, len, flags);
 			if (err) {
 				error("character object in source %d"
 				      " at index %"PRIu64
@@ -486,7 +486,7 @@ static void load_text(SEXP x)
 
 		case SOURCE_DATASET:
 			// no need to validate input (handled by jsondata)
-			data_text(&sources[s].data.set->rows[j], &txt);
+			corpus_data_text(&sources[s].data.set->rows[j], &txt);
 			flags = 0;
 			break;
 
@@ -499,15 +499,14 @@ static void load_text(SEXP x)
 
 		begin = (start[i] < 1) ? 0 : (start[i] - 1);
 		end = stop[i] < start[i] ? start[i] : stop[i];
-		if ((size_t)end > TEXT_SIZE(&txt)) {
-			end = (int)TEXT_SIZE(&txt);
+		if ((size_t)end > CORPUS_TEXT_SIZE(&txt)) {
+			end = (int)CORPUS_TEXT_SIZE(&txt);
 		}
-
 
 		// this could be made more efficient; add a
 		// 'can_break?' function to corpus/text.h
-		err = text_assign(&text[i], txt.ptr + begin, end - begin,
-				  flags);
+		err = corpus_text_assign(&text[i], txt.ptr + begin,
+					 end - begin, flags);
 
 		if (err) {
 			error("text span in row[[%"PRIu64"]]"
@@ -521,8 +520,8 @@ static void load_text(SEXP x)
 SEXP subset_text_handle(SEXP handle, SEXP si)
 {
 	SEXP ans;
-	const struct text *text = R_ExternalPtrAddr(handle);
-	struct text *sub;
+	const struct corpus_text *text = R_ExternalPtrAddr(handle);
+	struct corpus_text *sub;
 	R_xlen_t i, n;
 	double ix;
 
@@ -531,7 +530,7 @@ SEXP subset_text_handle(SEXP handle, SEXP si)
 
 	if (text) {
 		n = XLENGTH(si);
-		sub = xcalloc(n, sizeof(*sub));
+		sub = calloc(n, sizeof(*sub));
 		if (n && !sub) {
 			error("failed allocating %"PRIu64" bytes",
 			      (uint64_t)n * sizeof(*sub));

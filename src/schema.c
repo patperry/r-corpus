@@ -29,14 +29,14 @@
 #define SCHEMA_TAG install("corpus::schema")
 
 
-static struct schema *schema_new(void)
+static struct corpus_schema *schema_new(void)
 {
-	struct schema *obj = NULL;
-	struct schema s;
+	struct corpus_schema *obj = NULL;
+	struct corpus_schema s;
 
-	if (schema_init(&s) == 0) {
+	if (corpus_schema_init(&s) == 0) {
 		if (!(obj = malloc(sizeof(*obj)))) {
-			schema_destroy(&s);
+			corpus_schema_destroy(&s);
 			error("failed allocating memory (%u bytes)",
 			      (unsigned)sizeof(*obj));
 		}
@@ -49,10 +49,10 @@ static struct schema *schema_new(void)
 }
 
 
-static void schema_free(struct schema *s)
+static void schema_free(struct corpus_schema *s)
 {
 	if (s) {
-		schema_destroy(s);
+		corpus_schema_destroy(s);
 		free(s);
 	}
 }
@@ -60,7 +60,7 @@ static void schema_free(struct schema *s)
 
 static void free_schema(SEXP sschema)
 {
-        struct schema *s = R_ExternalPtrAddr(sschema);
+        struct corpus_schema *s = R_ExternalPtrAddr(sschema);
 	schema_free(s);
 }
 
@@ -68,7 +68,7 @@ static void free_schema(SEXP sschema)
 SEXP alloc_schema(void)
 {
 	SEXP sschema;
-	struct schema *s;
+	struct corpus_schema *s;
 
 	s = schema_new();
 	PROTECT(sschema = R_MakeExternalPtr(s, SCHEMA_TAG, R_NilValue));
@@ -86,7 +86,7 @@ int is_schema(SEXP sschema)
 }
 
 
-struct schema *as_schema(SEXP sschema)
+struct corpus_schema *as_schema(SEXP sschema)
 {
 	if (!is_schema(sschema))
 		error("invalid 'schema' object");
