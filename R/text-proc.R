@@ -19,7 +19,10 @@ stemmers <- c("arabic", "danish", "dutch", "english", "finnish", "french",
 text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         map_compatible = TRUE, remove_control = TRUE,
                         remove_ignorable = TRUE, remove_whitespace = TRUE,
-                        drop_empty = TRUE, stemmer = NULL)
+                        ignore_empty = TRUE, drop_symbol = FALSE,
+                        drop_number = FALSE, drop_letter = FALSE,
+                        drop_kana = FALSE, drop_ideo = FALSE,
+                        stemmer = NULL)
 {
     if (!is.logical(fold_case) || is.na(fold_case)) {
         stop("invalid 'fold_case' value:", fold_case)
@@ -35,8 +38,18 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
         stop("invalid 'remove_ignorable' value:", remove_ignorable)
     } else if (!is.logical(remove_whitespace || is.na(remove_whitespace))) {
         stop("invalid 'remove_whitespace' value:", remove_whitespace)
-    } else if (!is.logical(drop_empty || is.na(drop_empty))) {
-        stop("invalid 'drop_empty' value:", drop_empty)
+    } else if (!is.logical(ignore_empty || is.na(ignore_empty))) {
+        stop("invalid 'ignore_empty' value:", ignore_empty)
+    } else if (!is.logical(drop_symbol || is.na(drop_symbol))) {
+        stop("invalid 'drop_symbol' value:", drop_symbol)
+    } else if (!is.logical(drop_number || is.na(drop_number))) {
+        stop("invalid 'drop_number' value:", drop_number)
+    } else if (!is.logical(drop_letter || is.na(drop_letter))) {
+        stop("invalid 'drop_letter' value:", drop_letter)
+    } else if (!is.logical(drop_kana || is.na(drop_kana))) {
+        stop("invalid 'drop_kana' value:", drop_kana)
+    } else if (!is.logical(drop_ideo || is.na(drop_ideo))) {
+        stop("invalid 'drop_ideo' value:", drop_ideo)
     } else if (!is.null(stemmer)
                && !(length(stemmer) == 1 && stemmer %in% stemmers)) {
         stop("invalid 'stemmer' value:", stemmer)
@@ -47,7 +60,13 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                 remove_control = remove_control,
                 remove_ignorable = remove_ignorable,
                 remove_whitespace = remove_whitespace,
-                drop_empty = drop_empty, stemmer = stemmer)
+                ignore_empty = ignore_empty,
+                drop_symbol = drop_symbol,
+                drop_number = drop_number,
+                drop_letter = drop_letter,
+                drop_kana = drop_kana,
+                drop_ideo = drop_ideo,
+                stemmer = stemmer)
     class(ans) <- "text_filter"
     ans
 }
@@ -92,6 +111,4 @@ word_counts <- function(x, filter = text_filter(), ...)
     }
 
     stop("not implemented")
-
-    .Call(C_word_counts_text, x, filter)
 }

@@ -115,15 +115,23 @@ SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
 
 /* text filter */
+struct text_filter_drop {
+	int symbol;
+	int number;
+	int letter;
+	int kana;
+	int ideo;
+};
+
 int is_text_filter(SEXP filter);
 int text_filter_type_kind(SEXP filter);
-int text_filter_drop_empty(SEXP filter);
+int text_filter_ignore_empty(SEXP filter);
+void text_filter_get_drop(SEXP filter, struct text_filter_drop *dropptr);
 const char *text_filter_stemmer(SEXP filter);
 
 /* text processing */
 SEXP sentences_text(SEXP x);
 SEXP tokens_text(SEXP x, SEXP filter);
-SEXP word_counts_text(SEXP x, SEXP filter);
 
 /* data schema */
 SEXP alloc_schema(void);

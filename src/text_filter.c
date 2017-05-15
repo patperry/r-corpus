@@ -100,9 +100,26 @@ static int text_filter_logical(SEXP filter, const char *key, int nullval)
 }
 
 
-int text_filter_drop_empty(SEXP filter)
+int text_filter_ignore_empty(SEXP filter)
 {
-	return text_filter_logical(filter, "drop_empty", 0);
+	return text_filter_logical(filter, "ignore_empty", 0);
+}
+
+
+void text_filter_get_drop(SEXP filter,
+			  struct text_filter_drop *dropptr)
+{
+	struct text_filter_drop drop;
+
+	drop.symbol = text_filter_logical(filter, "drop_symbol", 0);
+	drop.number = text_filter_logical(filter, "drop_number", 0);
+	drop.letter = text_filter_logical(filter, "drop_letter", 0);
+	drop.kana = text_filter_logical(filter, "drop_kana", 0);
+	drop.ideo = text_filter_logical(filter, "drop_ideo", 0);
+
+	if (dropptr) {
+		*dropptr = drop;
+	}
 }
 
 

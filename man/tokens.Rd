@@ -10,8 +10,10 @@
     text_filter(fold_case = TRUE, fold_dash = TRUE,
                 fold_quote = TRUE, map_compatible = TRUE,
                 remove_control = TRUE, remove_ignorable = TRUE,
-                remove_whitespace = TRUE, drop_empty = TRUE,
-                stemmer = NULL)
+                remove_whitespace = TRUE, ignore_empty = TRUE,
+                drop_symbol = FALSE, drop_number = FALSE,
+                drop_letter = FALSE, drop_kana = FALSE,
+                drop_ideo = FALSE, stemmer = NULL)
 
     tokens(x, filter = text_filter())
 }
@@ -46,10 +48,27 @@
     \item{remove_whitespace}{a logical value indicating whether to remove
         white space characters like space and new line.}
 
-    \item{drop_empty}{a logical value indicating whether to remove tokens
+    \item{ignore_empty}{a logical value indicating whether to ignore tokens
         which, after applying all other normalizations, are empty (containing
         no characters). A token can become empty if, for example, it starts
         as white space.}
+
+    \item{drop_symbol}{a logical value indicating whether to replace symbol
+        words (punctuation, emoji, and other words that are not classified
+        as number, letter, kana, or ideo) with \code{NA}.}
+
+    \item{drop_number}{a logical value indicating whether to replace words
+        that appear to be numbers with \code{NA}.}
+
+    \item{drop_letter}{a logical value indicating whether to replace words
+        containing of letters---excluding hiragana, katakana, and ideographic
+        characters---with \code{NA}.}
+
+    \item{drop_kana}{a logical value indicating whether to replace words
+        containing kana characters with \code{NA}.}
+
+    \item{drop_ideo}{a logical value indicating whether to replace words
+        containing ideographic characters with \code{NA}.}
 
     \item{stemmer}{a character value giving the name of the stemming
         algorithm, or \code{NULL} to disable stemming. The stemming
