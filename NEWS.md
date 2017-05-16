@@ -1,3 +1,7 @@
+# corpus 0.5.0
+
+* Add `stopwords` function.
+
 
 # corpus 0.4.0
 

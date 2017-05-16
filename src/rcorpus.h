@@ -132,6 +132,7 @@ const char *text_filter_stemmer(SEXP filter);
 /* text processing */
 SEXP sentences_text(SEXP x);
 SEXP tokens_text(SEXP x, SEXP filter);
+SEXP stopwords(SEXP kind);
 
 /* data schema */
 SEXP alloc_schema(void);

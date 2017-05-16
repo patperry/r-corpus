@@ -112,3 +112,17 @@ word_counts <- function(x, filter = text_filter(), ...)
 
     stop("not implemented")
 }
+
+
+stopwords <- function(kind = "english")
+{
+    if (is.null(kind)) {
+        return(NULL)
+    }
+
+    if (!(is.character(kind) && length(kind) == 1)) {
+        stop("'kind' must be a character string")
+    }
+
+    .Call(C_stopwords, kind)
+}

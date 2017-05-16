@@ -7,6 +7,7 @@ export(is_text)
 export(is_text.default)
 export(read_ndjson)
 export(sentences)
+export(stopwords)
 ## export(text) # don't export, clashes with graphics::text
 export(text_filter)
 export(tokens)

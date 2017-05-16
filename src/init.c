@@ -46,6 +46,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(read_ndjson, 1),
 	CALLDEF(sentences_text, 1),
 	CALLDEF(simplify_jsondata, 1),
+	CALLDEF(stopwords, 1),
 	CALLDEF(subscript_jsondata, 2),
 	CALLDEF(subset_jsondata, 3),
 	CALLDEF(subset_text_handle, 2),
