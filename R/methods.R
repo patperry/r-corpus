@@ -12,8 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-as.text <- function(x, ...) UseMethod("as.text")
-
 datatype <- function(x, ...) UseMethod("datatype")
 
 datatypes <- function(x, ...) UseMethod("datatypes")
