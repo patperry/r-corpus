@@ -2,8 +2,16 @@
 # corpus 0.4.0
 
 * Allow `read_ndjson` to read from connections, not just files, by
-  reading the file contents into memory first. Use this be default
+  reading the file contents into memory first. Use this by default
   instead of memory mapping.
+
+* Rename `drop_empty` to `ignore_empty` in `text_filter()`.
+
+* Add `drop_symbol`, `drop_number`, etc. in `text_filter()`; these
+  options replace the matched tokens with `NA`.
+
+* Fix internal function namespace clashes on Linux and other similar
+  platforms.
 
 
 # corpus 0.3.0
