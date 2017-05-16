@@ -8,3 +8,4 @@
 ^TODO.md$
 ^shell.sh$
 ^src/corpus/.git
+^src/corpus/data
