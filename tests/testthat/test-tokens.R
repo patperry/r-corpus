@@ -67,3 +67,83 @@ test_that("'tokens' should work on S3 objects", {
     toks2 <- tokens(x2)
     expect_equal(toks, toks2)
 })
+
+
+test_that("'tokens' can drop symbols", {
+    x <- "easy as 1, 2, 3!"
+    f <- text_filter(drop_symbol = TRUE)
+    expect_equal(tokens(x, f),
+                 list(c("easy", "as", "1", NA, "2", NA, "3", NA)))
+})
+
+
+test_that("'tokens' can drop numbers", {
+    x <- "easy as 1, 2, 3!"
+    f <- text_filter(drop_number = TRUE)
+    expect_equal(tokens(x, f),
+                 list(c("easy", "as", NA, ",", NA, ",", NA, "!")))
+})
+
+
+test_that("'tokens' can drop letter words", {
+    x <- "easy as 1, 2, 3!"
+    f <- text_filter(drop_letter = TRUE)
+    expect_equal(tokens(x, f),
+                 list(c(NA, NA, "1", ",", "2", ",", "3", "!")))
+})
+
+
+test_that("'tokens' can drop words", {
+    x <- c("Able was I ere I saw Elba.",
+           "A man, a plan, a canal: Panama.")
+    f <- text_filter(drop_words = stopwords("english"))
+    expect_equal(tokens(x, f),
+                 list(c("able", NA, NA, "ere", NA, "saw", "elba", "."),
+                      c(NA, "man", ",", NA, "plan", ",", NA, "canal", ":",
+                        "panama", ".")))
+})
+
+
+test_that("'tokens' can combine", {
+    x <- c("New York is the Empire State",
+           "a new York Street restaurant")
+    f <- text_filter(combine = cbind("new", "york"))
+    expect_equal(tokens(x, f),
+                 list(c("new york", "is", "the", "empire", "state"),
+                      c("a", "new york", "street", "restaurant")))
+})
+
+
+test_that("'tokens' combine iteratively", {
+    x <- c("New York City is the Big Apple")
+    f <- text_filter(combine = rbind(cbind("new", "york"),
+                                     cbind("new york", "city")))
+    expect_equal(tokens(x, f),
+                 list(c("new york city", "is", "the", "big", "apple")))
+})
+
+
+test_that("'tokens' can select", {
+    x <- c("a b c d e f g h i j",
+           "k l m n o p q r s t",
+           "u v w x y z")
+    f <- text_filter(select = c("a", "e", "i", "o", "u"))
+    expect_equal(tokens(x, f),
+                 list(c("a", NA, NA, NA, "e", NA, NA, NA, "i", NA),
+                      c(NA, NA, NA, NA, "o", NA, NA, NA, NA, NA),
+                      c("u", NA, NA, NA, NA, NA)))
+})
+
+
+test_that("'tokens' can select combined", {
+    x <- c("New York City, New York",
+           "Austin, Texas",
+           "Sacramento, California")
+    f <- text_filter(combine = rbind(cbind("new", "york"),
+                                     cbind("new york", "city")),
+                     select = c("new york city", "austin", "sacramento"))
+    expect_equal(tokens(x, f),
+                 list(c("new york city", NA, NA),
+                      c("austin", NA, NA),
+                      c("sacramento", NA, NA)))
+})

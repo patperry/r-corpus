@@ -12,9 +12,25 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
 stemmers <- c("arabic", "danish", "dutch", "english", "finnish", "french",
 	"german", "hungarian", "italian", "norwegian", "porter", "portuguese",
 	"romanian", "russian", "spanish", "swedish", "tamil", "turkish")
+
+
+stopwords <- function(kind = "english")
+{
+    if (is.null(kind)) {
+        return(NULL)
+    }
+
+    if (!(is.character(kind) && length(kind) == 1)) {
+        stop("'kind' must be a character string")
+    }
+
+    .Call(C_stopwords, kind)
+}
+
 
 text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         map_compatible = TRUE, remove_control = TRUE,
@@ -22,53 +38,138 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         ignore_empty = TRUE, drop_symbol = FALSE,
                         drop_number = FALSE, drop_letter = FALSE,
                         drop_kana = FALSE, drop_ideo = FALSE,
-                        stemmer = NULL)
+                        drop_words = NULL, stemmer = NULL,
+                        combine = NULL, select = NULL)
 {
-    if (!is.logical(fold_case) || is.na(fold_case)) {
-        stop("invalid 'fold_case' value:", fold_case)
-    } else if (!is.logical(fold_dash || is.na(fold_dash))) {
-        stop("invalid 'fold_dash' value:", fold_dash)
-    } else if (!is.logical(fold_quote || is.na(fold_quote))) {
-        stop("invalid 'fold_quote' value:", fold_quote)
-    } else if (!is.logical(map_compatible || is.na(map_compatible))) {
-        stop("invalid 'map_compatible' value:", map_compatible)
-    } else if (!is.logical(remove_control || is.na(remove_control))) {
-        stop("invalid 'remove_control' value:", remove_control)
-    } else if (!is.logical(remove_ignorable || is.na(remove_ignorable))) {
-        stop("invalid 'remove_ignorable' value:", remove_ignorable)
-    } else if (!is.logical(remove_whitespace || is.na(remove_whitespace))) {
-        stop("invalid 'remove_whitespace' value:", remove_whitespace)
-    } else if (!is.logical(ignore_empty || is.na(ignore_empty))) {
-        stop("invalid 'ignore_empty' value:", ignore_empty)
-    } else if (!is.logical(drop_symbol || is.na(drop_symbol))) {
-        stop("invalid 'drop_symbol' value:", drop_symbol)
-    } else if (!is.logical(drop_number || is.na(drop_number))) {
-        stop("invalid 'drop_number' value:", drop_number)
-    } else if (!is.logical(drop_letter || is.na(drop_letter))) {
-        stop("invalid 'drop_letter' value:", drop_letter)
-    } else if (!is.logical(drop_kana || is.na(drop_kana))) {
-        stop("invalid 'drop_kana' value:", drop_kana)
-    } else if (!is.logical(drop_ideo || is.na(drop_ideo))) {
-        stop("invalid 'drop_ideo' value:", drop_ideo)
-    } else if (!is.null(stemmer)
-               && !(length(stemmer) == 1 && stemmer %in% stemmers)) {
-        stop("invalid 'stemmer' value:", stemmer)
+    ans <- structure(list(), class="text_filter")
+
+    ans$fold_case <- fold_case
+    ans$fold_dash <- fold_dash
+    ans$fold_quote <- fold_quote
+    ans$map_compatible <- map_compatible
+    ans$remove_control <- remove_control
+    ans$remove_ignorable <- remove_ignorable
+    ans$remove_whitespace <- remove_whitespace
+    ans$ignore_empty <- ignore_empty
+    ans$drop_symbol <- drop_symbol
+    ans$drop_number <- drop_number
+    ans$drop_letter <- drop_letter
+    ans$drop_kana <- drop_kana
+    ans$drop_ideo <- drop_ideo
+    ans$drop_words <- drop_words
+    ans$stemmer <- stemmer
+    ans$combine <- combine
+    ans$select <- select
+
+    ans
+}
+
+
+as_text_filter <- function(x)
+{
+    if (is.null(x)) {
+        return(NULL)
     }
 
-    ans <- list(fold_case = fold_case, fold_dash = fold_dash,
-                fold_quote = fold_quote, map_compatible = map_compatible,
-                remove_control = remove_control,
-                remove_ignorable = remove_ignorable,
-                remove_whitespace = remove_whitespace,
-                ignore_empty = ignore_empty,
-                drop_symbol = drop_symbol,
-                drop_number = drop_number,
-                drop_letter = drop_letter,
-                drop_kana = drop_kana,
-                drop_ideo = drop_ideo,
-                stemmer = stemmer)
-    class(ans) <- "text_filter"
+    ans <- structure(list(), class="text_filter")
+    keys <- names(text_filter())
+    for (key in keys) {
+        ans[[key]] <- x[[key]]
+    }
     ans
+}
+
+
+`[<-.text_filter` <- function(x, i, value)
+{
+    if (anyNA(i)) {
+        stop("NAs are not allowed in subscripted assignments")
+    }
+    if (!is.character(i)) {
+        i <- names(x)[i]
+    }
+
+    if (length(value) == 1) {
+        value <- rep(value, length(i))
+    } else if (length(value) != length(i)) {
+        stop("number of items to replace differs from the replacement length")
+    }
+
+    for (j in seq_along(i)) {
+        key <- i[[j]]
+        val <- value[[j]]
+        if (!is.na(key)) {
+            x[[key]] <- val
+        }
+    }
+
+    x
+}
+
+
+`$<-.text_filter` <- function(x, name, value)
+{
+    if (name %in% c("fold_case", "fold_dash", "fold_quote", "map_compatible",
+                    "remove_control", "remove_ignorable", "remove_whitespace",
+                    "ignore_empty", "drop_symbol", "drop_number",
+                    "drop_letter", "drop_kana", "drop_ideo")) {
+        if (!(is.logical(value) && length(value) == 1 && !is.na(value))) {
+            stop(paste0("invalid text_filter '", name, "' property;",
+                        " should be TRUE or FALSE"))
+        }
+    } else if (name %in% c("drop_words", "select")) {
+        if (!is.null(value) && !is.character(value)) {
+            stop(paste0("invalid text_filter '", name, "' property;",
+                        " should be a character vector or NULL"))
+        }
+    } else if (name %in% c("stemmer")) {
+        if (!is.null(value) && !(length(value) == 1 && is.character(value))) {
+            stop(paste0("invlaid text_filter '", name, "' property;",
+                        " should be a character string or NULL"))
+        }
+    } else if (name %in% c("combine")) {
+        if (!is.null(value) && !(is.matrix(value) && is.character(value)
+                                 && ncol(value) == 2)) {
+            stop(paste0("invalid text_filter '", name, "' property;",
+                        " should be a two-column character matrix"))
+        }
+    } else {
+        stop(paste0("unrecognized text_filter property: '", name, "'"))
+    }
+
+    if (name == "stemmer" && !is.null(value) && !(value %in% stemmers)) {
+        stop(paste0("unrecognized stemmer: '", value, "'"))
+    }
+
+    y <- unclass(x)
+    if (is.null(value)) {
+        # setting a list element to NULL is tricky; see
+        # http://stackoverflow.com/a/7945259
+        y[[name]] <- NA
+        y[match(name, names(y))] <- list(NULL)
+    } else {
+        y[[name]] <- value
+    }
+    class(y) <- class(x)
+    y
+}
+
+
+`[[<-.text_filter` <- function(x, i, value)
+{
+    if (length(i) > 1) {
+        stop("no such text_filter property")
+    }
+    if (!is.character(i)) {
+        name <- names(x)[[i]]
+    } else {
+        name <- i
+    }
+    if (is.na(name)) {
+        stop(paste0("no such text_filter property (", i, ")"))
+    }
+
+    `$<-.text_filter`(x, name, value)
 }
 
 
@@ -76,8 +177,17 @@ print.text_filter <- function(x, ...)
 {
     cat("Text filter with the following options:\n\n")
     for (k in names(x)) {
-        val <- ifelse(is.null(x[[k]]), "NULL", x[[k]])
-        cat(paste0("\t", k, ": ", val, "\n"))
+        val <- x[[k]]
+
+        cat(paste0("\t", k, ": "))
+        if (is.null(val)) {
+            cat("NULL\n")
+        } else if (length(val) == 1) {
+            cat(paste0(val, "\n"))
+        } else {
+            utils::str(val, width = getOption("width") - 8 - nchar(k) - 2,
+                       give.attr = FALSE)
+        }
     }
     invisible(x)
 }
@@ -93,36 +203,22 @@ sentences <- function(x)
 tokens <- function(x, filter = text_filter())
 {
     x <- as_text(x)
-
-    if (!is.null(filter) && !inherits(filter, "text_filter")) {
-        stop("invalid 'filter' argument")
-    }
-
+    filter <- as_text_filter(filter)
     .Call(C_tokens_text, x, filter)
 }
 
 
-word_counts <- function(x, filter = text_filter(), ...)
+term_counts <- function(x, filter = text_filter())
 {
     x <- as_text(x)
-
-    if (!is.null(filter) && !inherits(filter, "text_filter")) {
-        stop("invalid 'filter' argument")
-    }
-
+    filter <- as_text_filter(filter)
     stop("not implemented")
 }
 
 
-stopwords <- function(kind = "english")
+term_matrix <- function(x, filter = text_filter())
 {
-    if (is.null(kind)) {
-        return(NULL)
-    }
-
-    if (!(is.character(kind) && length(kind) == 1)) {
-        stop("'kind' must be a character string")
-    }
-
-    .Call(C_stopwords, kind)
+    x <- as_text(x)
+    filter <- as_text_filter(filter)
+    stop("not implemented")
 }
