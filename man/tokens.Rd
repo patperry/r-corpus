@@ -21,7 +21,8 @@
 \arguments{
     \item{x}{object to be tokenized.}
 
-    \item{filter}{filter to apply to the token sequence, or \code{NULL}.}
+    \item{filter}{filter specifying the transformation from text to
+        token sequence, a list or \code{text_filter} object.}
 
     \item{fold_case}{a logical value indicating whether to apply Unicode
         case folding to the text. For most languages, this transformation
