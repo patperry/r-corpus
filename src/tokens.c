@@ -159,15 +159,15 @@ static SEXP tokens_scan(struct tokens *ctx,
 	corpus_wordscan_make(&ctx->scan, text);
 
 	while (corpus_wordscan_advance(&ctx->scan)) {
+		type_id = tokens_add(ctx, &ctx->scan.current, &nadd);
+		type = &ctx->symtab.types[type_id].text;
+
+		if (CORPUS_TEXT_SIZE(type) == 0 && ctx->ignore_empty) {
+			continue;
+		}
+
 		if (tokens_drop(ctx, ctx->scan.type)) {
 			type_id = -1;
-		} else {
-			type_id = tokens_add(ctx, &ctx->scan.current, &nadd);
-			type = &ctx->symtab.types[type_id].text;
-
-			if (CORPUS_TEXT_SIZE(type) == 0 && ctx->ignore_empty) {
-				continue;
-			}
 		}
 
 		if (ntok == ctx->nbuf_max) {
