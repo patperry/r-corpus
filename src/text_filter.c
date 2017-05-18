@@ -133,17 +133,17 @@ int text_filter_type_kind(SEXP filter)
 
 	kind = 0;
 
-	if (text_filter_logical(filter, "fold_case", 0)) {
+	if (text_filter_logical(filter, "map_case", 0)) {
 		kind |= CORPUS_TYPE_CASEFOLD;
 	}
-	if (text_filter_logical(filter, "fold_dash", 0)) {
+	if (text_filter_logical(filter, "map_compat", 0)) {
+		kind |= CORPUS_TYPE_COMPAT;
+	}
+	if (text_filter_logical(filter, "map_dash", 0)) {
 		kind |= CORPUS_TYPE_DASHFOLD;
 	}
-	if (text_filter_logical(filter, "fold_quote", 0)) {
+	if (text_filter_logical(filter, "map_quote", 0)) {
 		kind |= CORPUS_TYPE_QUOTFOLD;
-	}
-	if (text_filter_logical(filter, "map_compatible", 0)) {
-		kind |= CORPUS_TYPE_COMPAT;
 	}
 	if (text_filter_logical(filter, "remove_control", 0)) {
 		kind |= CORPUS_TYPE_RMCC;
@@ -151,7 +151,7 @@ int text_filter_type_kind(SEXP filter)
 	if (text_filter_logical(filter, "remove_ignorable", 0)) {
 		kind |= CORPUS_TYPE_RMDI;
 	}
-	if (text_filter_logical(filter, "remove_whitespace", 0)) {
+	if (text_filter_logical(filter, "remove_space", 0)) {
 		kind |= CORPUS_TYPE_RMWS;
 	}
 

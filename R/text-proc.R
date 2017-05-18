@@ -32,9 +32,9 @@ stopwords <- function(kind = "english")
 }
 
 
-text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
-                        map_compatible = TRUE, remove_control = TRUE,
-                        remove_ignorable = TRUE, remove_whitespace = TRUE,
+text_filter <- function(map_case = TRUE, map_compat = TRUE, map_dash = TRUE,
+                        map_quote = TRUE, remove_control = TRUE,
+                        remove_ignorable = TRUE, remove_space = TRUE,
                         ignore_empty = TRUE, stemmer = NULL,
                         stem_except = drop, combine = NULL,
                         drop_symbol = FALSE, drop_number = FALSE,
@@ -43,13 +43,13 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
 {
     ans <- structure(list(), class="text_filter")
 
-    ans$fold_case <- fold_case
-    ans$fold_dash <- fold_dash
-    ans$fold_quote <- fold_quote
-    ans$map_compatible <- map_compatible
+    ans$map_case <- map_case
+    ans$map_compat <- map_compat
+    ans$map_dash <- map_dash
+    ans$map_quote <- map_quote
     ans$remove_control <- remove_control
     ans$remove_ignorable <- remove_ignorable
-    ans$remove_whitespace <- remove_whitespace
+    ans$remove_space <- remove_space
     ans$ignore_empty <- ignore_empty
     ans$stemmer <- stemmer
     ans$stem_except <- stem_except
@@ -110,8 +110,8 @@ as_text_filter <- function(x)
 
 `$<-.text_filter` <- function(x, name, value)
 {
-    if (name %in% c("fold_case", "fold_dash", "fold_quote", "map_compatible",
-                    "remove_control", "remove_ignorable", "remove_whitespace",
+    if (name %in% c("map_case", "map_compat", "map_dash", "map_quote",
+                    "remove_control", "remove_ignorable", "remove_space",
                     "ignore_empty", "drop_symbol", "drop_number",
                     "drop_letter", "drop_kana", "drop_ideo")) {
         if (!(is.logical(value) && length(value) == 1 && !is.na(value))) {

@@ -7,10 +7,10 @@
    a particular \sQuote{term} (formally, a type).
 }
 \usage{
-    text_filter(fold_case = TRUE, fold_dash = TRUE,
-                fold_quote = TRUE, map_compatible = TRUE,
+    text_filter(map_case = TRUE, map_compat = TRUE,
+                map_dash = TRUE, map_quote = TRUE, 
                 remove_control = TRUE, remove_ignorable = TRUE,
-                remove_whitespace = TRUE, ignore_empty = TRUE,
+                remove_space = TRUE, ignore_empty = TRUE,
                 stemmer = NULL, stem_except = drop, combine = NULL,
                 drop_symbol = FALSE, drop_number = FALSE,
                 drop_letter = FALSE, drop_kana = FALSE,
@@ -24,36 +24,36 @@
     \item{filter}{filter specifying the transformation from text to
         token sequence, a list or \code{text_filter} object.}
 
-    \item{fold_case}{a logical value indicating whether to apply Unicode
-        case folding to the text. For most languages, this transformation
+    \item{map_case}{a logical value indicating whether to apply Unicode
+        case mapping to the text. For most languages, this transformation
         changes uppercase characters to their lowercase equivalents.}
 
-    \item{fold_dash}{a logical value indicating whether to replace Unicode
-        dash characters like em dash and en dash with an ASCII dash (-).}
-
-    \item{fold_quote}{a logical value indicating whether to replace Unicode
-        quote characters like single quote, double quote, and apostrophe,
-        with an ASCII single quote (').}
-
-    \item{map_compatible}{a logical value indicating whether to apply
+    \item{map_compat}{a logical value indicating whether to apply
         Unicode compatibility mappings to the characters, those required
         for NFKC and NFKD normal forms.}
 
+    \item{map_dash}{a logical value indicating whether to replace Unicode
+        dash characters like em dash and en dash with an ASCII dash (-).}
+
+    \item{map_quote}{a logical value indicating whether to replace Unicode
+        quote characters like single quote, double quote, and apostrophe,
+        with an ASCII single quote (').}
+
     \item{remove_control}{a logical value indicating whether to remove
-        non-whitespace control characters (from the C0 and C1 character
+        non-white-space control characters (from the C0 and C1 character
         classes, and the delete characer).}
 
     \item{remove_ignorable}{a logical value indicating whether to remove
         Unicode "default ignorable" characters like zero-width spaces
         and soft hyphens.}
 
-    \item{remove_whitespace}{a logical value indicating whether to remove
-        white space characters like space and new line.}
+    \item{remove_space}{a logical value indicating whether to remove
+        white-space characters like space and new line.}
 
     \item{ignore_empty}{a logical value indicating whether to ignore tokens
         which, after applying all other normalizations, are empty (containing
         no characters). A token can become empty if, for example, it starts
-        as white space.}
+        as white-space.}
 
     \item{stemmer}{a character value giving the name of the stemming
         algorithm, or \code{NULL} to leave words unchanged. The stemming
@@ -65,29 +65,29 @@
 	        romanian, russian, spanish, swedish, tamil, and turkish.
         }
 
-    \item{stem_except}{a character vector of words to exempt from
+    \item{stem_except}{a character vector of exception words to exempt from
         stemming, or \code{NULL}. If left unspecified, \code{stem_except}
         is set equal to the \code{drop} argument.}
 
-    \item{combine}{a character vector of word phrases to combine, or
+    \item{combine}{a character vector of multi-word phrases to combine, or
         \code{NULL}; see \sQuote{Combining words}.}
 
     \item{drop_symbol}{a logical value indicating whether to replace symbol
-        words (punctuation, emoji, and other words that are not classified
+        terms (punctuation, emoji, and other words that are not classified
         as number, letter, kana, or ideo) with \code{NA}.}
 
-    \item{drop_number}{a logical value indicating whether to replace words
+    \item{drop_number}{a logical value indicating whether to replace terms
         that appear to be numbers with \code{NA}.}
 
-    \item{drop_letter}{a logical value indicating whether to replace words
-        containing of letters---excluding hiragana, katakana, and ideographic
+    \item{drop_letter}{a logical value indicating whether to replace terms
+        starting with letters---excluding hiragana, katakana, and ideographic
         characters---with \code{NA}.}
 
-    \item{drop_kana}{a logical value indicating whether to replace words
-        containing kana characters with \code{NA}.}
+    \item{drop_kana}{a logical value indicating whether to replace terms
+        starting kana characters with \code{NA}.}
 
-    \item{drop_ideo}{a logical value indicating whether to replace words
-        containing ideographic characters with \code{NA}.}
+    \item{drop_ideo}{a logical value indicating whether to replace terms
+        starting with ideographic characters with \code{NA}.}
 
     \item{drop}{a character vector of terms to replace with \code{NA},
         or \code{NULL}.}
@@ -97,9 +97,9 @@
         this list get replaced with \code{NA}.}
 }
 \details{
-    \code{tokens} splits texts into token sequences. This operation
-    proceeds in a series of stages, controlled by the \code{filter}
-    argument:
+    \code{tokens} splits texts into token sequences. Each token is an instance
+    of a particular term (formally, type). This operation proceeds in a series
+    of stages, controlled by the \code{filter} argument:
 
     \enumerate{
         \item First, we segment the text into words using the boundaries
@@ -115,16 +115,16 @@
             extender as a letter.
 
         \item Next, we normalize the words by applying the
-            character mappings indicated by the \code{fold_case},
-            \code{fold_dash}, \code{fold_quote}, \code{map_compatible},
+            character mappings indicated by the \code{map_case},
+            \code{map_compat}, \code{map_dash}, \code{map_quote},
             \code{remove_control}, \code{remove_ignorable}, and
-            \code{remove_whitespace} properties. If, after normalization, a
-            word is empty (for example, if it started out as all white space
-            and \code{remove_whitespace} is \code{TRUE}), and if
+            \code{remove_space} properties. If, after normalization, a
+            word is empty (for example, if it started out as all white-space
+            and \code{remove_space} is \code{TRUE}), and if
             \code{ignore_empty} is \code{TRUE}, we delete the word from
             the sequence.  At the end of the second stage, we have segmented
             the text into a sequence of normalized words, in Unicode composed
-            normal form (NFC, or if \code{map_compatible} is \code{TRUE},
+            normal form (NFC, or if \code{map_compat} is \code{TRUE},
             NFKC).
 
         \item In the third stage, if the \code{stemmer} property is
@@ -134,7 +134,7 @@
 
         \item Next, if the \code{combine} property is non-\code{NULL},
             we scan the word sequence from left to right, searching for
-            the longest possible match in the \code{combine} list. If such
+            the longest possible match in the \code{combine} list. If
             a match exists, we replace the word sequence with a single token
             for that term; otherwise, we create a single-word token. See the
             \sQuote{Combining words} section below for more details.  After
@@ -143,14 +143,15 @@
 
         \item If any of \code{drop_symbol}, \code{drop_number},
             \code{drop_letter}, \code{drop_kana}, or \code{drop_ideo}
-            are \code{TRUE}, we replace the single-word tokens in the
-            corresponding categories by \code{NA}. Also, if the
-            \code{drop} property is non-\code{NULL}, we replace
-            tokens that match elements of this character vector with
+            are \code{TRUE}, we replace the terms in the
+            corresponding categories by \code{NA}. (For multi-word terms,
+            we take the category of the first word in the phrase.)
+            Next, if the \code{drop} property is non-\code{NULL}, we replace
+            terms that match elements of this character vector with
             \code{NA}.
 
         \item Finally, if \code{select} is non-\code{NULL}, we replace
-            tokens that do not match elements of this character vector
+            terms that do not match elements of this character vector
             with \code{NA}.
     }
 
