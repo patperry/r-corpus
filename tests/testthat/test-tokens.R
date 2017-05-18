@@ -93,10 +93,10 @@ test_that("'tokens' can drop letter words", {
 })
 
 
-test_that("'tokens' can drop words", {
+test_that("'tokens' can drop tokens", {
     x <- c("Able was I ere I saw Elba.",
            "A man, a plan, a canal: Panama.")
-    f <- text_filter(drop_words = stopwords("english"))
+    f <- text_filter(drop = stopwords("english"))
     expect_equal(tokens(x, f),
                  list(c("able", NA, NA, "ere", NA, "saw", "elba", "."),
                       c(NA, "man", ",", NA, "plan", ",", NA, "canal", ":",
@@ -104,20 +104,19 @@ test_that("'tokens' can drop words", {
 })
 
 
-test_that("'tokens' can combine", {
+test_that("'tokens' can combine two words", {
     x <- c("New York is the Empire State",
            "a new York Street restaurant")
-    f <- text_filter(combine = cbind("new", "york"))
+    f <- text_filter(combine = "new york")
     expect_equal(tokens(x, f),
                  list(c("new york", "is", "the", "empire", "state"),
                       c("a", "new york", "street", "restaurant")))
 })
 
 
-test_that("'tokens' combine iteratively", {
+test_that("'tokens' can combine three words", {
     x <- c("New York City is the Big Apple")
-    f <- text_filter(combine = rbind(cbind("new", "york"),
-                                     cbind("new york", "city")))
+    f <- text_filter(combine = "new york city")
     expect_equal(tokens(x, f),
                  list(c("new york city", "is", "the", "big", "apple")))
 })
@@ -135,12 +134,11 @@ test_that("'tokens' can select", {
 })
 
 
-test_that("'tokens' can select combined", {
+test_that("'tokens' can select combined tokens", {
     x <- c("New York City, New York",
            "Austin, Texas",
            "Sacramento, California")
-    f <- text_filter(combine = rbind(cbind("new", "york"),
-                                     cbind("new york", "city")),
+    f <- text_filter(combine = "new york city",
                      select = c("new york city", "austin", "sacramento"))
     expect_equal(tokens(x, f),
                  list(c("new york city", NA, NA),

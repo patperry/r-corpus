@@ -35,11 +35,11 @@ stopwords <- function(kind = "english")
 text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
                         map_compatible = TRUE, remove_control = TRUE,
                         remove_ignorable = TRUE, remove_whitespace = TRUE,
-                        ignore_empty = TRUE, drop_symbol = FALSE,
-                        drop_number = FALSE, drop_letter = FALSE,
-                        drop_kana = FALSE, drop_ideo = FALSE,
-                        drop_words = NULL, stemmer = NULL,
-                        combine = NULL, select = NULL)
+                        ignore_empty = TRUE, stemmer = NULL,
+                        stem_except = drop, combine = NULL,
+                        drop_symbol = FALSE, drop_number = FALSE,
+                        drop_letter = FALSE, drop_kana = FALSE,
+                        drop_ideo = FALSE, drop = NULL, select = NULL)
 {
     ans <- structure(list(), class="text_filter")
 
@@ -51,14 +51,15 @@ text_filter <- function(fold_case = TRUE, fold_dash = TRUE, fold_quote = TRUE,
     ans$remove_ignorable <- remove_ignorable
     ans$remove_whitespace <- remove_whitespace
     ans$ignore_empty <- ignore_empty
+    ans$stemmer <- stemmer
+    ans$stem_except <- stem_except
+    ans$combine <- combine
     ans$drop_symbol <- drop_symbol
     ans$drop_number <- drop_number
     ans$drop_letter <- drop_letter
     ans$drop_kana <- drop_kana
     ans$drop_ideo <- drop_ideo
-    ans$drop_words <- drop_words
-    ans$stemmer <- stemmer
-    ans$combine <- combine
+    ans$drop <- drop
     ans$select <- select
 
     ans
@@ -117,7 +118,7 @@ as_text_filter <- function(x)
             stop(paste0("invalid text_filter '", name, "' property;",
                         " should be TRUE or FALSE"))
         }
-    } else if (name %in% c("drop_words", "select")) {
+    } else if (name %in% c("stem_except", "combine", "drop", "select")) {
         if (!is.null(value) && !is.character(value)) {
             stop(paste0("invalid text_filter '", name, "' property;",
                         " should be a character vector or NULL"))
@@ -126,12 +127,6 @@ as_text_filter <- function(x)
         if (!is.null(value) && !(length(value) == 1 && is.character(value))) {
             stop(paste0("invlaid text_filter '", name, "' property;",
                         " should be a character string or NULL"))
-        }
-    } else if (name %in% c("combine")) {
-        if (!is.null(value) && !(is.matrix(value) && is.character(value)
-                                 && ncol(value) == 2)) {
-            stop(paste0("invalid text_filter '", name, "' property;",
-                        " should be a two-column character matrix"))
         }
     } else {
         stop(paste0("unrecognized text_filter property: '", name, "'"))
