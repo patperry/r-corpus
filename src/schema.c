@@ -20,7 +20,8 @@
 #include <Rdefines.h>
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
-#include "corpus/src/token.h"
+#include "corpus/src/textset.h"
+#include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/datatype.h"
 #include "rcorpus.h"

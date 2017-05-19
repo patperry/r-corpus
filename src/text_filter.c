@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+#include "corpus/src/table.h"
 #include "corpus/src/text.h"
-#include "corpus/src/token.h"
+#include "corpus/src/textset.h"
+#include "corpus/src/typemap.h"
 #include "rcorpus.h"
 
 
