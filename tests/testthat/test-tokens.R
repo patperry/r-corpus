@@ -130,6 +130,14 @@ test_that("'tokens' can combine three words", {
 })
 
 
+test_that("'tokens' combines the longest match", {
+    x <- "I live in New York City, New York"
+    f <- text_filter(combine = c("new york", "new york city"))
+    expect_equal(tokens(x, f),
+                 list(c("i", "live", "in", "new york city", ",", "new york")))
+})
+
+
 test_that("'tokens' can select", {
     x <- c("a b c d e f g h i j",
            "k l m n o p q r s t",

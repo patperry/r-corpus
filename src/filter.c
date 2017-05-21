@@ -144,6 +144,7 @@ static const char *text_filter_stemmer(SEXP filter)
 
 	val = STRING_ELT(alg, 0);
 	if (val == NA_STRING || XLENGTH(val) == 0) {
+		Rprintf("done!\n");
 		return NULL;
 	}
 
@@ -183,6 +184,145 @@ static int text_filter_flags(SEXP filter)
 }
 
 
+static void stem_except_terms(struct corpus_filter *f, SEXP sterms)
+{
+	const struct corpus_text *terms;
+	R_xlen_t i, n;
+	int err;
+
+	if (sterms == R_NilValue) {
+		return;
+	}
+
+	PROTECT(sterms = coerce_text(sterms));
+	terms = as_text(sterms, &n);
+
+	for (i = 0; i < n; i++) {
+		if (!terms[i].ptr) {
+			continue;
+		}
+
+		if ((err = corpus_filter_stem_except(f, &terms[i]))) {
+			Rf_error("failed adding term to text_filter "
+				 "stem exception list");
+		}
+	}
+
+	UNPROTECT(1);
+}
+
+
+static void drop_terms(struct corpus_filter *f, SEXP sterms)
+{
+	const struct corpus_text *terms;
+	R_xlen_t i, n;
+	int err;
+
+	if (sterms == R_NilValue) {
+		return;
+	}
+
+	PROTECT(sterms = coerce_text(sterms));
+	terms = as_text(sterms, &n);
+
+	for (i = 0; i < n; i++) {
+		if (!terms[i].ptr) {
+			continue;
+		}
+
+		if ((err = corpus_filter_drop(f, &terms[i]))) {
+			Rf_error("failed adding term to text_filter drop list");
+		}
+	}
+
+	UNPROTECT(1);
+}
+
+
+static void drop_except_terms(struct corpus_filter *f, SEXP sterms)
+{
+	const struct corpus_text *terms;
+	R_xlen_t i, n;
+	int err;
+
+	if (sterms == R_NilValue) {
+		return;
+	}
+
+	PROTECT(sterms = coerce_text(sterms));
+	terms = as_text(sterms, &n);
+
+	for (i = 0; i < n; i++) {
+		if (!terms[i].ptr) {
+			continue;
+		}
+
+		if ((err = corpus_filter_drop_except(f, &terms[i]))) {
+			Rf_error("failed adding term to text_filter "
+				 "drop exception list");
+		}
+	}
+
+	UNPROTECT(1);
+}
+
+
+static void combine_terms(struct corpus_filter *f, SEXP sterms)
+{
+	const struct corpus_text *terms;
+	R_xlen_t i, n;
+	int err;
+
+	if (sterms == R_NilValue) {
+		return;
+	}
+
+	PROTECT(sterms = coerce_text(sterms));
+	terms = as_text(sterms, &n);
+
+	for (i = 0; i < n; i++) {
+		if (!terms[i].ptr) {
+			continue;
+		}
+
+		if ((err = corpus_filter_combine(f, &terms[i]))) {
+			Rf_error("failed adding term to text_filter "
+				 " combine list");
+		}
+	}
+
+	UNPROTECT(1);
+}
+
+
+static void select_terms(struct corpus_filter *f, SEXP sterms)
+{
+	const struct corpus_text *terms;
+	R_xlen_t i, n;
+	int err;
+
+	if (sterms == R_NilValue) {
+		return;
+	}
+
+	PROTECT(sterms = coerce_text(sterms));
+	terms = as_text(sterms, &n);
+
+	for (i = 0; i < n; i++) {
+		if (!terms[i].ptr) {
+			continue;
+		}
+
+		if ((err = corpus_filter_select(f, &terms[i], NULL))) {
+			Rf_error("failed adding term to text_filter "
+				 " select list");
+		}
+	}
+
+	UNPROTECT(1);
+}
+
+
 SEXP alloc_filter(SEXP props)
 {
 	SEXP sfilter;
@@ -197,6 +337,12 @@ SEXP alloc_filter(SEXP props)
 	f = filter_new(type_kind, stemmer, flags);
 	PROTECT(sfilter = R_MakeExternalPtr(f, FILTER_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(sfilter, free_filter, TRUE);
+
+	stem_except_terms(f, getListElement(props, "stem_except"));
+	drop_terms(f, getListElement(props, "drop"));
+	drop_except_terms(f, getListElement(props, "drop_except"));
+	combine_terms(f, getListElement(props, "combine"));
+	select_terms(f, getListElement(props, "select"));
 
 	UNPROTECT(1);
 	return sfilter;
