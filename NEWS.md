@@ -2,6 +2,21 @@
 
 * Add `stopwords` function.
 
+* Rename `text_filter` options `fold_case`, `fold_dash`, `fold_quote`
+  to `map_case`, `map_dash`, `map_quote`.
+
+* Add `text_filter` option (`stem_except`) to exempt specific terms from
+  stemming.
+
+* Add `text_filter` option (`drop`) to drop specific terms, along with
+  aoption (`drop_except`) to exempt specific terms from dropping.
+
+* Add `text_filter` option (`combine`) to combine multi-word phrases like
+  "new york city" into a single term.
+
+* Add `text_filter` option (`select`) to select specific terms (excluding
+  all words that are not on this list).
+
 
 # corpus 0.4.0
 
