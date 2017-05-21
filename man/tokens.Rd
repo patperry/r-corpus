@@ -96,7 +96,8 @@
     \item{drop_except}{a character of terms to exempt from the drop
         rules specified by the \code{drop_symbol}, \code{drop_number},
         \code{drop_letter}, \code{drop_kana}, \code{drop_ideo}, and
-        \code{drop} arguments, or \code{NULL}}.
+        \code{drop} arguments, or \code{NULL}. If left unspecified,
+        \code{drop_except} is set equal to the \code{select} argument.}
 
     \item{select}{a character vector of terms to keep, or
         \code{NULL}; if non-\code{NULL}, tokens that are not on
