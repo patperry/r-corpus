@@ -32,14 +32,15 @@ stopwords <- function(kind = "english")
 }
 
 
-text_filter <- function(map_case = TRUE, map_compat = TRUE, map_dash = TRUE,
-                        map_quote = TRUE, remove_control = TRUE,
-                        remove_ignorable = TRUE, remove_space = TRUE,
-                        ignore_empty = TRUE, stemmer = NULL,
-                        stem_except = drop, combine = NULL,
+text_filter <- function(map_case = TRUE, map_compat = TRUE,
+                        map_dash = TRUE, map_quote = TRUE,
+                        remove_control = TRUE, remove_ignorable = TRUE,
+                        remove_space = TRUE, ignore_empty = TRUE,
+                        stemmer = NULL, stem_except = drop, combine = NULL,
                         drop_symbol = FALSE, drop_number = FALSE,
                         drop_letter = FALSE, drop_kana = FALSE,
-                        drop_ideo = FALSE, drop = NULL, select = NULL)
+                        drop_ideo = FALSE, drop = NULL, drop_except = select,
+                        select = NULL)
 {
     ans <- structure(list(), class="text_filter")
 
@@ -60,6 +61,7 @@ text_filter <- function(map_case = TRUE, map_compat = TRUE, map_dash = TRUE,
     ans$drop_kana <- drop_kana
     ans$drop_ideo <- drop_ideo
     ans$drop <- drop
+    ans$drop_except <- drop_except
     ans$select <- select
 
     ans
@@ -118,7 +120,8 @@ as_text_filter <- function(x)
             stop(paste0("invalid text_filter '", name, "' property;",
                         " should be TRUE or FALSE"))
         }
-    } else if (name %in% c("stem_except", "combine", "drop", "select")) {
+    } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
+                           "select")) {
         if (!is.null(value) && !is.character(value)) {
             stop(paste0("invalid text_filter '", name, "' property;",
                         " should be a character vector or NULL"))

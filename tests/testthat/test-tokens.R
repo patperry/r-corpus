@@ -104,6 +104,14 @@ test_that("'tokens' can drop tokens", {
 })
 
 
+test_that("'tokens' can make drop exceptions", {
+    x <- "0, 1, 2, 3, 4, 5"
+    f <- text_filter(drop_number = TRUE, drop_except = c("0", "2", "4"))
+    expect_equal(tokens(x, f),
+                 list(c("0", ",", NA, ",", "2", ",", NA, ",", "4", ",", NA)))
+})
+
+
 test_that("'tokens' can combine two words", {
     x <- c("New York is the Empire State",
            "a new York Street restaurant")

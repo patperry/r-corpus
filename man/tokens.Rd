@@ -14,7 +14,8 @@
                 stemmer = NULL, stem_except = drop, combine = NULL,
                 drop_symbol = FALSE, drop_number = FALSE,
                 drop_letter = FALSE, drop_kana = FALSE,
-                drop_ideo = FALSE, drop = NULL, select = NULL)
+                drop_ideo = FALSE, drop = NULL, drop_except = select,
+                select = NULL)
 
     tokens(x, filter = text_filter())
 }
@@ -92,6 +93,11 @@
     \item{drop}{a character vector of terms to replace with \code{NA},
         or \code{NULL}.}
 
+    \item{drop_except}{a character of terms to exempt from the drop
+        rules specified by the \code{drop_symbol}, \code{drop_number},
+        \code{drop_letter}, \code{drop_kana}, \code{drop_ideo}, and
+        \code{drop} arguments, or \code{NULL}}.
+
     \item{select}{a character vector of terms to keep, or
         \code{NULL}; if non-\code{NULL}, tokens that are not on
         this list get replaced with \code{NA}.}
@@ -146,9 +152,13 @@
             are \code{TRUE}, we replace the terms in the
             corresponding categories by \code{NA}. (For multi-word terms,
             we take the category of the first word in the phrase.)
-            Next, if the \code{drop} property is non-\code{NULL}, we replace
+            Then, if the \code{drop} property is non-\code{NULL}, we replace
             terms that match elements of this character vector with
-            \code{NA}.
+            \code{NA}. We can add exceptions to the drop rules by specifying
+            a non-\code{NULL} value for the \code{drop_except} property:
+            \code{drop_except} is a character vector, then we we restore
+            terms that match elements of vector to their values prior to
+            dropping.
 
         \item Finally, if \code{select} is non-\code{NULL}, we replace
             terms that do not match elements of this character vector
@@ -182,4 +192,8 @@
     # drop common function words ('stop' words):
     tokens("Able was I ere I saw Elba.",
            text_filter(drop = stopwords("english")))
+
+    # drop numbers, with some exceptions:"
+    tokens("0, 1, 2, 3, 4, 5",
+           text_filter(drop_number = TRUE, drop_except = c("0", "2", "4")))
 }
