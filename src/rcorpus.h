@@ -31,6 +31,7 @@
 
 struct corpus_data;
 struct corpus_filebuf;
+struct corpus_filter;
 
 struct jsondata {
 	struct corpus_schema schema;
@@ -116,23 +117,13 @@ SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
 
 /* text filter */
-struct text_filter_drop {
-	int symbol;
-	int number;
-	int letter;
-	int kana;
-	int ideo;
-};
-
-int is_text_filter(SEXP filter);
-int text_filter_type_kind(SEXP filter);
-int text_filter_ignore_empty(SEXP filter);
-void text_filter_get_drop(SEXP filter, struct text_filter_drop *dropptr);
-const char *text_filter_stemmer(SEXP filter);
+SEXP alloc_filter(SEXP props);
+int is_filter(SEXP filter);
+struct corpus_filter *as_filter(SEXP filter);
 
 /* text processing */
 SEXP sentences_text(SEXP x);
-SEXP tokens_text(SEXP x, SEXP filter);
+SEXP tokens_text(SEXP x, SEXP props);
 SEXP stopwords(SEXP kind);
 
 /* data schema */

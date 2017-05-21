@@ -19,41 +19,44 @@
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
+#include "corpus/src/tree.h"
 #include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/wordscan.h"
+#include "corpus/src/filter.h"
 #include "rcorpus.h"
+
+// the R 'error' is a #define (to Rf_error) that clashes with the 'error'
+// member of struct corpus_filter
+#ifdef error
+#  undef error
+#endif
 
 
 struct tokens {
-	struct corpus_symtab symtab;
-	struct corpus_wordscan scan;
-	int ignore_empty;
-	struct text_filter_drop drop;
+	struct corpus_filter *filter;
 
 	int *buf;
 	int nbuf, nbuf_max;
 
 	SEXP *types;
 	int ntype, ntype_max;
+
+	int nprot;
 };
 
 
-static void tokens_init(struct tokens *ctx, SEXP sfilter)
+static void tokens_init(struct tokens *ctx, struct corpus_filter *filter);
+static void tokens_destroy(struct tokens *ctx);
+static void tokens_add(struct tokens *ctx, int type_id);
+static SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text);
+
+
+void tokens_init(struct tokens *ctx, struct corpus_filter *filter)
 {
-	struct corpus_text empty;
-	const char *stemmer;
-	int kind, type_id;
+	int i, n;
 
-	kind = text_filter_type_kind(sfilter);
-	stemmer = text_filter_stemmer(sfilter);
-
-	if (corpus_symtab_init(&ctx->symtab, kind, stemmer) != 0) {
-		error("failed initializing tokens symbol table");
-	}
-
-	ctx->ignore_empty = text_filter_ignore_empty(sfilter);
-	text_filter_get_drop(sfilter, &ctx->drop);
+	ctx->filter = filter;
 
 	ctx->nbuf_max = 256;
 	ctx->buf = (void *)R_alloc(ctx->nbuf_max, sizeof(*ctx->buf));
@@ -62,113 +65,68 @@ static void tokens_init(struct tokens *ctx, SEXP sfilter)
 	ctx->ntype = 0;
 	ctx->types = (void *)R_alloc(ctx->ntype_max, sizeof(*ctx->types));
 
-	// add the empty type, and protect it
-	empty.ptr = NULL;
-	empty.attr = 0;
-	if (corpus_symtab_add_type(&ctx->symtab, &empty, &type_id) != 0) {
-		corpus_symtab_destroy(&ctx->symtab);
-		error("memory allocation failure");
+	// add the terms in the filter
+	n = ctx->filter->nterm;
+	for (i = 0; i < n; i++) {
+		tokens_add(ctx, filter->type_ids[i]);
 	}
-	PROTECT(ctx->types[0] = mkCharLenCE(NULL, 0, CE_UTF8));
+
+	ctx->nprot = n;
+}
+
+
+void tokens_destroy(struct tokens *ctx)
+{
+	UNPROTECT(ctx->nprot);
+}
+
+
+void tokens_add(struct tokens *ctx, int type_id)
+{
+	const struct corpus_text *type;
+
+	if (ctx->ntype == ctx->ntype_max) {
+		ctx->ntype_max = 2 * ctx->ntype_max;
+		ctx->types = (void *)S_realloc((void *)ctx->types,
+					       ctx->ntype_max,
+					       ctx->ntype,
+					       sizeof(*ctx->types));
+	}
+
+	type = &ctx->filter->symtab.types[type_id].text;
+	ctx->types[ctx->ntype] = mkCharLenCE((char *)type->ptr,
+					     CORPUS_TEXT_SIZE(type),
+					     CE_UTF8);
+	PROTECT(ctx->types[ctx->ntype]);
 	ctx->ntype++;
 }
 
 
-static void tokens_destroy(struct tokens *ctx)
-{
-	corpus_symtab_destroy(&ctx->symtab);
-	UNPROTECT(1);
-}
-
-
-static int tokens_add(struct tokens *ctx, const struct corpus_text *token,
-		      int *naddptr)
-{
-	const struct corpus_text *type;
-	int token_id, type_id;
-
-	if (corpus_symtab_add_token(&ctx->symtab, token, &token_id) != 0) {
-		tokens_destroy(ctx);
-		error("memory allocation failure");
-	}
-
-	type_id = ctx->symtab.tokens[token_id].type_id;
-
-	if (type_id == ctx->ntype) {
-		if (ctx->ntype == ctx->ntype_max) {
-			ctx->ntype_max = 2 * ctx->ntype_max;
-			ctx->types = (void *)S_realloc((void *)ctx->types,
-							ctx->ntype_max,
-							ctx->ntype,
-							sizeof(*ctx->types));
-		}
-
-		type = &ctx->symtab.types[type_id].text;
-		ctx->types[ctx->ntype] = mkCharLenCE((char *)type->ptr,
-						     CORPUS_TEXT_SIZE(type),
-						     CE_UTF8);
-		PROTECT(ctx->types[ctx->ntype]);
-		ctx->ntype++;
-		*naddptr = *naddptr + 1;
-	}
-
-	return type_id;
-}
-
-
-static int tokens_drop(struct tokens *ctx, enum corpus_word_type type)
-{
-	switch (type) {
-	case CORPUS_WORD_NONE:
-		return ctx->drop.symbol;
-
-	case CORPUS_WORD_NUMBER:
-		return ctx->drop.number;
-
-	case CORPUS_WORD_LETTER:
-		return ctx->drop.letter;
-
-	case CORPUS_WORD_KANA:
-		return ctx->drop.kana;
-
-	case CORPUS_WORD_IDEO:
-		return ctx->drop.ideo;
-
-	default:
-		tokens_destroy(ctx);
-		error("internal error: unknown word type");
-		return 0;
-	}
-}
-
-
-static SEXP tokens_scan(struct tokens *ctx,
-			const struct corpus_text *text)
+SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 {
 	SEXP ans;
-	const struct corpus_text *type;
-	int nadd, type_id;
-	int i, ntok;
+	int nadd, type_id, term_id, nterm;
+	int err, i, ntok;
 
 	if (!text->ptr) {
 		return ScalarString(NA_STRING);
 	}
 
-	ntok = 0;
+	if ((err = corpus_filter_start(ctx->filter, text))) {
+		Rf_error("error while tokenizing text");
+	}
+
+	nterm = ctx->filter->nterm;
 	nadd = 0;
+	ntok = 0;
 
-	corpus_wordscan_make(&ctx->scan, text);
-
-	while (corpus_wordscan_advance(&ctx->scan)) {
-		type_id = tokens_add(ctx, &ctx->scan.current, &nadd);
-		type = &ctx->symtab.types[type_id].text;
-
-		if (CORPUS_TEXT_SIZE(type) == 0 && ctx->ignore_empty) {
-			continue;
-		}
-
-		if (tokens_drop(ctx, ctx->scan.type)) {
-			type_id = -1;
+	while (corpus_filter_advance(ctx->filter, &term_id)) {
+		// add the new terms
+		while (nterm < ctx->filter->nterm) {
+			type_id = ctx->filter->type_ids[nterm];
+			tokens_add(ctx, type_id);
+			nterm++;
+			nadd++;
 		}
 
 		if (ntok == ctx->nbuf_max) {
@@ -177,49 +135,57 @@ static SEXP tokens_scan(struct tokens *ctx,
 						     ctx->nbuf_max,
 						     ntok, sizeof(*ctx->buf));
 		}
-		ctx->buf[ntok] = type_id;
+		ctx->buf[ntok] = term_id;
 		ntok++;
+	}
+
+	if (ctx->filter->error) {
+		Rf_error("error while tokenizing text");
 	}
 
 	PROTECT(ans = allocVector(STRSXP, ntok));
 	for (i = 0; i < ntok; i++) {
-		type_id =  ctx->buf[i];
-		if (type_id >= 0) {
-			SET_STRING_ELT(ans, i, ctx->types[type_id]);
+		term_id =  ctx->buf[i];
+		if (term_id >= 0) {
+			SET_STRING_ELT(ans, i, ctx->types[term_id]);
 		} else {
 			SET_STRING_ELT(ans, i, NA_STRING);
 		}
 	}
 
-	// no need to protect the new words any more, since they
-	// are protected by ans
+	// no need to protect the new terms any more; ans protects them
 	UNPROTECT(nadd + 1);
 
 	return ans;
 }
 
 
-SEXP tokens_text(SEXP sx, SEXP sfilter)
+SEXP tokens_text(SEXP sx, SEXP sprops)
 {
-	SEXP ans, names, stext;
+	SEXP ans, names, stext, sfilter;
 	const struct corpus_text *text;
+	struct corpus_filter *filter;
 	struct tokens ctx;
 	R_xlen_t i, n;
 
 	PROTECT(stext = coerce_text(sx));
+	PROTECT(sfilter = alloc_filter(sprops));
+
 	text = as_text(stext, &n);
+	filter = as_filter(sfilter);
 
 	PROTECT(ans = allocVector(VECSXP, n));
 	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
-	tokens_init(&ctx, sfilter);
+	tokens_init(&ctx, filter);
 
 	for (i = 0; i < n; i++) {
 		SET_VECTOR_ELT(ans, i, tokens_scan(&ctx, &text[i]));
 	}
 
 	tokens_destroy(&ctx);
-	UNPROTECT(2);
+
+	UNPROTECT(3);
 	return ans;
 }
