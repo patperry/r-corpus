@@ -39,18 +39,27 @@ as_text.default <- function(x, ...)
         }
         attr(x, "class") <- "text"
         x
-    } else if (length(dim(x)) == 2 && !is.matrix(x)) {
-        if (!("text" %in% names(x))) {
-            stop("no column named 'text'")
-        }
-
-        if (is.data.frame(x) && .row_names_info(x) <= 0) {
+    } else if (is.data.frame(x)) {
+        if (.row_names_info(x) <= 0) {
             nm <- NULL
         } else {
             nm <- row.names(x)
         }
 
-        x <- as_text(x$text)
+        # find the columns with type 'text'
+        text_cols <- sapply(x, is_text)
+        ntext <- sum(text_cols == TRUE)
+
+        if ("text" %in% names(x)) {
+            x <- as_text(x$text)
+        } else if (ntext == 0) {
+            stop("no column named 'text', and no columns of type 'text'")
+        } else if (ntext > 1) {
+            stop("no column named 'text', and multiple columns of type 'text'")
+        } else {
+            x <- as_text(x[[which(text_cols)]])
+        }
+
         names(x) <- nm
         x
     } else {

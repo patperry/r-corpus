@@ -24,25 +24,44 @@
     \code{\link{read_ndjson}} function or by converting another object
     using the \code{as_text} function.
 
-    The \code{as_text} function first gets the names of the object
-    by calling \code{names(x)}; then, it converts the object to type
-    \code{"text"} and drops all of the object attributes. Finally,
-    the function sets the converted objects names to original object
-    names. This special handling for the names of the object is
-    different from the other R conversion functions
-    (\code{as.numeric}, \code{as.character}, etc.), which drop the names.
+    The default behavior for \code{as_text} is to proceed as follows:
+    \enumerate{
+        \item If \code{x} is a \code{character} vector, then we create
+            a new \code{text} vector from \code{x}, preserving
+            \code{names(x)} if they exist.
+
+        \item If \code{is_text(x)} is \code{TRUE}, then we drop all
+            attributes from the object except for its names, and we
+            set the object class to \code{text}.
+
+        \item Otherwise, if \code{is.data.frame(x)} is \code{TRUE},
+            then we look for a column to convert. First, we look for a
+            column named \code{"text"}. If none exists, we look for a
+            column of type \code{text}. If we find such a column, then
+            we call \code{as_text} on the found column and we set the
+            object names to match \code{x}'s row names. If there
+            are no columns with type \code{text} or if there multiple
+            columns of type \code{text}, none of which are named
+            \code{"text"}, then we fail with an error message.
+
+        \item Finally, if \code{x} is not a \code{character} vector, and if
+            \code{is_text(x)} and \code{is.data.frame(x)} are
+            both \code{FALSE}, then we try to use \code{as.character}
+            on the object and then we convert the resulting character
+            vector to \code{text}.
+    }
+    This special handling for the names of the object is different from
+    the other R conversion functions (\code{as.numeric},
+    \code{as.character}, etc.), which drop the names.
 
     \code{as_text} and \code{is_text} are generic: you can write methods
-    to handle specific classes of objects. The default behavior is to
-    extract the names from the object using the \code{names} function,
-    then call \code{as.character} on the object and convert the
-    resulting character vector to a \code{text} object.
+    to handle specific classes of objects.
 }
 \value{
-    \code{as.text} attempts to coerce its argument to text type; it
-        strips attributes including names.
+    \code{as_text} attempts to coerce its argument to \code{text} type; it
+        strips all attributes except for names.
 
-    \code{is.text} returns \code{TRUE} or \code{FALSE} depending on
+    \code{is_text} returns \code{TRUE} or \code{FALSE} depending on
         whether its argument is of text type or not.
 }
 \seealso{
