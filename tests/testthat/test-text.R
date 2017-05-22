@@ -38,7 +38,7 @@ test_that("serialization should work", {
 	       "he was put in a pie by Mrs. McGregor.'")
 
     file <- tempfile()
-    writeLines(paste0('"', x, '"'), file)
+    writeLines(paste0('{"text": "', x, '"}'), file)
     ds <- read_ndjson(file)
     text <- as_text(ds)
 
