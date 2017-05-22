@@ -912,6 +912,7 @@ SEXP as_factor_jsondata(SEXP sdata)
 				goto error_add;
 			}
 			if (id == INT_MAX || id == NA_INTEGER) {
+				corpus_textset_destroy(&set);
 				error("number of factor levels (%d)"
 				      " exceeds maximum", id);
 			}
