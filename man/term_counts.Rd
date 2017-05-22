@@ -23,10 +23,17 @@
     by one.
 }
 \value{
-    A data frame with two columns, \code{term} and \code{count}, and one
-    row for each appearing term. Rows are sorted in descending order according
-    to \code{count}, with ties broken arbitrarily.
+    A data frame with two columns, \code{term} and \code{count}, with one
+    row for each appearing term. Rows are sorted in descending order
+    according to \code{count}, with ties broken arbitrarily.
+}
+\seealso{
+    \code{\link{tokens}}.
 }
 \examples{
     term_counts("A rose is a rose is a rose.")
+
+    # remove punctuation and stop words
+    term_counts("A rose is a rose is a rose.",
+                text_filter(drop_symbol = TRUE, drop = stopwords("english")))
 }
