@@ -48,15 +48,12 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 	R_xlen_t i, n;
 	int err, term_id, type_id, nprot = 0;
 
-	Rprintf("Coericing text...\n");
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
 
-	Rprintf("Building filter...\n");
 	PROTECT(sfilter = alloc_filter(sprops)); nprot++;
 	filter = as_filter(sfilter);
 
-	Rprintf("Coercing weights...\n");
 	if (sweights != R_NilValue) {
 		PROTECT(sweights = coerceVector(sweights, REALSXP)); nprot++;
 		if (XLENGTH(sweights) != n) {
@@ -83,50 +80,32 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 		goto error_census;
 	}
 
-	Rprintf("Tokenizing...\n");
-	
 	for (i = 0; i < n; i++) {
 		wt = weights ? weights[i] : 1;
 
-		Rprintf("Starting filter of text %d with weight %g...\n",
-			(int)(i + 1), wt);
-		
 		if ((err = corpus_filter_start(filter, &text[i]))) {
 			goto error;
 		}
 
 
 		while (corpus_filter_advance(filter, &term_id)) {
-			Rprintf("Got token %d.\n", term_id);
-			
 			if (term_id < 0) {
-				Rprintf("Skipping token...\n");
 				continue;
 			}
-
-			Rprintf("Adding to census...\n");
 
 			if ((err = corpus_census_add(&census, term_id, wt))) {
 				goto error;
 			}
-
-			Rprintf("Advancing to next token...\n");
 		}
-
-		Rprintf("Done with text %d.\n", (int)(i + 1));
 
 		if (filter->error) {
 			goto error;
 		}
 	}
 
-	Rprintf("Sorting...\n");
-
 	if ((err = corpus_census_sort(&census))) {
 		goto error;
 	}
-
-	Rprintf("Summarizing results...\n");
 
 	PROTECT(sterm = allocVector(STRSXP, census.nitem)); nprot++;
 	PROTECT(scount = allocVector(REALSXP, census.nitem)); nprot++;
@@ -162,8 +141,6 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 	SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
 	setAttrib(ans, R_ClassSymbol, sclass);
 
-	Rprintf("Cleaning up...\n");
-
 	err = 0;
 error:
 	corpus_census_destroy(&census);
@@ -172,6 +149,5 @@ error_census:
 		Rf_error("failed computing term counts");
 	}
 	UNPROTECT(nprot);
-	Rprintf("Done.\n");
 	return ans;
 }
