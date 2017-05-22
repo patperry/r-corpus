@@ -9,14 +9,19 @@ Overview
 --------
 
 This is an R text processing package that currently does very little. It
-exports three main functions:
+exports five main functions:
 
  + `read_ndjson()` for reading in data in newline-delimited JSON format;
 
  + `sentences()` for segmenting text into sentences;
 
+ + `text_filter()` for specifying the process by which a text gets transformed
+    into a token sequence (normalization, stemming, stop word removal, etc.);
+
  + `tokens()` for segmenting text into tokens, each of which is an instance
-    of a particular word type (normalized token).
+    of a particular term (formally, a word type);
+
+ + `term_counts()` for tabulating term occurrence frequencies.
 
 The package also provides two new data types:
 
@@ -45,7 +50,8 @@ Demonstration
 -------------
 
 Here are some performance comparisons for some basic operations. We
-compare against *jsonlite* version 1.3 and *stringi* version 1.1.3.
+compare against *jsonlite* version 1.3, *stringi* version 1.1.3, and
+*quanteda* version 0.9.9-50.
 
 
 ### Extracting text from a newline-delimited JSON file
@@ -163,7 +169,6 @@ example if it started out as white space), then we discard it.
 
     ## 451 MB
 
-
 With *stringi*, it is more efficient to do the word segmentation after the
 normalization. Further, the *stringi* package handles punctuation and
 white space differently, so it gives slightly different results.
@@ -186,6 +191,56 @@ character arrays.  As in the previous benchmark, *corpus* takes as input a
 memory-mapped text object, while *stringi* takes as input in in-memory
 character vector. We are 1.8 times faster than `stringi`. We use slightly more
 RAM, but only because we do not throw away punctuation-only tokens.
+
+
+### Tabulating term frequencies
+
+In the final benchmark, we tokenize the texts and compute the 5 most common
+terms. While tokenizing, we normalize the tokens as in the previous benchmark,
+stem the words, drop symbols and numbers, and drop stopwords. We specify
+this tokenization behavior in a `text_filter` object that we pass to the
+`term_counts()` function.
+
+    system.time({
+        f <- text_filter(stemmer = "english", drop_symbol = TRUE,
+                         drop_number = TRUE, drop = stopwords("english"))
+
+        stats <- term_counts(data$text, f)
+
+        print(head(stats, n = 5))
+    })
+
+    ##    term  count
+    ## 1 place 238732
+    ## 2  good 218029
+    ## 3  food 192648
+    ## 4  like 185951
+    ## 5   get 170033
+
+    ##   user  system elapsed
+    ##  5.499   0.032   5.536
+
+We compare against the *quateda* package. This isn't a fair comparison
+because *quanteda* doesn't have a way of getting the term counts directly.
+Instead, we compute a document feature matrix and then use *quanteda's*
+`topfeatures()` function on this matrix.
+
+    data <- jsonlite::stream_in(file("~/yelp-review.json"), verbose=FALSE)
+    library("quanteda")
+    system.time({
+        x <- quanteda::dfm(data$text, stem = TRUE, remove_symbol = TRUE,
+                           remove_numbers = TRUE,
+                           remove = quanteda::stopwords("english"))
+        print(topfeatures(x, n = 5))
+    })
+
+    ##  place   good   food   like    get
+    ## 238732 218029 192648 185951 170033
+
+    ##    user  system elapsed
+    ##  52.325   3.258  55.628
+
+We get the same results, and we are about 10 times faster than *quanteda*.
 
 
 Building from source
