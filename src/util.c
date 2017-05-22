@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <string.h>
 #include <Rdefines.h>
 #include "rcorpus.h"
 
@@ -21,8 +22,17 @@
 /* based on R-Exts Section 5.9.6 "handling lists" */
 int findListElement(SEXP list, const char *str)
 {
-	SEXP names = getAttrib(list, R_NamesSymbol);
+	SEXP names;
 	int i, n;
+
+	if (list == R_NilValue) {
+		return -1;
+	}
+
+	names = getAttrib(list, R_NamesSymbol);
+	if (names == R_NilValue) {
+		return -1;
+	}
 
 	n = LENGTH(list);
 	for (i = 0; i < n; i++) {
