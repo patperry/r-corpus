@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 
-read_ndjson <- function(file, mmap = FALSE, simplify = TRUE)
+read_ndjson <- function(file, text = "text", simplify = TRUE, mmap = FALSE)
 {
     if (mmap) {
         if (!is.character(file)) {
@@ -52,9 +52,11 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE)
     }
 
     if (simplify) {
-        ans <- .Call(C_simplify_jsondata, ans)
+        text <- as.character(text)
         if (length(dim(ans)) == 2) {
-            ans <- as.data.frame(ans)
+            ans <- as.data.frame(ans, stringsAsFactors = FALSE, text = text)
+        } else {
+            ans <- .Call(C_simplify_jsondata, ans, text)
         }
     }
     ans
@@ -256,10 +258,10 @@ as.character.jsondata <- function(x, ...)
 }
 
 
-as.data.frame.jsondata <- function(x, ...)
+as.data.frame.jsondata <- function(x, ..., text = "text")
 {
-    l <- as.list(x)
-    as.data.frame(l, row.names=row.names(x), ...)
+    l <- as.list(x, text = text)
+    as.data.frame(l, row.names = row.names(x), ..., text = text)
 }
 
 
@@ -281,9 +283,10 @@ as.double.jsondata <- function(x, ...)
 }
 
 
-as.list.jsondata <- function(x, ...)
+as.list.jsondata <- function(x, text = "text", ...)
 {
-    .Call(C_as_list_jsondata, x)
+    text <- as.character(text)
+    .Call(C_as_list_jsondata, x, text)
 }
 
 

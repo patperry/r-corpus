@@ -6,7 +6,7 @@
     (NDJSON) format.
 }
 \usage{
-    read_ndjson(file, mmap = FALSE, simplify = TRUE)
+    read_ndjson(file, text = "text", simplify = TRUE, mmap = FALSE)
 }
 \arguments{
     \item{file}{the name of the file which the data are to be read from,
@@ -14,24 +14,26 @@
         The data should be encoded as UTF-8, and each line should be a
         valid JSON value.}
 
-    \item{mmap}{whether to memory-map the file instead of reading all
-        of its data into memory simultaneously. See the
-        \sQuote{Memory mapping} section.}
+    \item{text}{a character vector of string fields to interpret as
+       \code{text} instead of \code{character}.}
 
     \item{simplify}{whether to attempt to simplify the type of the return
        value. For example, if each line of the file stores an integer,
        if \code{simplify} is set to \code{TRUE} then the return value
        will be an integer vector rather than a \code{jsondata} object.}
+
+    \item{mmap}{whether to memory-map the file instead of reading all
+        of its data into memory simultaneously. See the
+        \sQuote{Memory mapping} section.}
 }
 \details{
-    This function is the principal means of reading data for processing
+    This function is the recommended means of reading data for processing
     by the corpus package.
 
-    In the default usage, with argument \code{simplify = TRUE}, when
-    the lines of the file are records (JSON object literals), the
-    return value from \code{read_ndjson} is a data frame. With
-    \code{simplify = FALSE}, the result is a \code{jsondata} object.
-
+    When the \code{text} argument is non-\code{NULL} string data
+    fields with names indicated by this argument are decoded as
+    \code{text} values, not as \code{character} values. The default behavior
+    is to decode fields named \code{"text"} as \code{text} values.
 }
 \section{Memory mapping}{
     When you specify \code{mmap = TRUE}, the function memory-maps the file
@@ -62,8 +64,16 @@
     (the \code{\link{normalizePath}} function will convert a relative
     to an absolute path).
 }
+\value{
+    In the default usage, with argument \code{simplify = TRUE}, when
+    the lines of the file are records (JSON object literals), the
+    return value from \code{read_ndjson} is a data frame. With
+    \code{simplify = FALSE}, the result is a \code{jsondata} object.
+}
+\seealso{
+    \code{\link{text}}.
+}
 \examples{
-
     # Memory mapping
     lines <- c('{ "a": 1, "b": true }',
                '{ "b": false, "nested": { "c": 100, "d": false }}',

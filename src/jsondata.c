@@ -503,7 +503,7 @@ SEXP print_jsondata(SEXP sdata)
 	}
 
 	if (d->kind == CORPUS_DATATYPE_RECORD) {
-		Rprintf("JSON jsondata with %"PRIu64" rows"
+		Rprintf("JSON data set with %"PRIu64" rows"
 			" of the following type:\n%s\n",
 			(uint64_t)d->nrow, r.string);
 	} else {
@@ -858,7 +858,67 @@ SEXP as_logical_jsondata(SEXP sdata)
 }
 
 
-static SEXP as_list_jsondata_record(SEXP sdata)
+SEXP as_character_jsondata(SEXP sdata)
+{
+	SEXP ans;
+	const struct jsondata *d = as_jsondata(sdata);
+	struct mkchar mkchar;
+	struct corpus_text text;
+	R_xlen_t i, n = d->nrow;
+	int err;
+
+	PROTECT(ans = allocVector(STRSXP, n));
+
+	mkchar_init(&mkchar);
+
+	for (i = 0; i < n; i++) {
+		err = corpus_data_text(&d->rows[i], &text);
+		if (err == CORPUS_ERROR_INVAL) {
+			SET_STRING_ELT(ans, i, NA_STRING);
+		} else {
+			SET_STRING_ELT(ans, i, mkchar_get(&mkchar, &text));
+		}
+	}
+
+	mkchar_destroy(&mkchar);
+
+	UNPROTECT(1);
+	return ans;
+}
+
+
+static int in_string_set(SEXP strs, SEXP item)
+{
+	R_xlen_t i, n;
+	const char *s1, *s2;
+
+	if (strs == R_NilValue || item == NA_STRING) {
+		return 0;
+	}
+
+	n = XLENGTH(strs);
+	if (n == 0) {
+		return 0;
+	}
+
+	s2 = translateCharUTF8(item);
+
+	for (i = 0; i < n; i++) {
+		if (STRING_ELT(strs, i) == NA_STRING) {
+			continue;
+		}
+
+		s1 = translateCharUTF8(STRING_ELT(strs, i));
+		if (strcmp(s1, s2) == 0) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+
+static SEXP as_list_jsondata_record(SEXP sdata, SEXP stext)
 {
 	SEXP ans, ans_j, names, sbuffer, sfield, sfield2, srows,
 	     shandle, sname;
@@ -954,7 +1014,13 @@ static SEXP as_list_jsondata_record(SEXP sdata)
 			d_j->kind = schema[j]->types[type_id[j]].kind;
 		}
 
-		ans_j = simplify_jsondata(ans_j);
+		if (d_j->kind == CORPUS_DATATYPE_TEXT
+				&& in_string_set(stext,
+						 STRING_ELT(names, j))) {
+			ans_j = as_text_jsondata(ans_j);
+		} else {
+			ans_j = simplify_jsondata(ans_j, stext);
+		}
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
 
@@ -963,7 +1029,7 @@ static SEXP as_list_jsondata_record(SEXP sdata)
 }
 
 
-SEXP as_list_jsondata(SEXP sdata)
+SEXP as_list_jsondata(SEXP sdata, SEXP stext)
 {
 	SEXP ans, val;
 	const struct jsondata *d = as_jsondata(sdata);
@@ -972,7 +1038,7 @@ SEXP as_list_jsondata(SEXP sdata)
 	R_xlen_t i, n = d->nrow;
 
 	if (d->kind == CORPUS_DATATYPE_RECORD) {
-		return as_list_jsondata_record(sdata);
+		return as_list_jsondata_record(sdata, stext);
 	}
 
 	PROTECT(ans = allocVector(VECSXP, n));
@@ -995,7 +1061,7 @@ SEXP as_list_jsondata(SEXP sdata)
 }
 
 
-SEXP simplify_jsondata(SEXP sdata)
+SEXP simplify_jsondata(SEXP sdata, SEXP stext)
 {
 	SEXP ans;
 	const struct jsondata *d = as_jsondata(sdata);
@@ -1019,11 +1085,12 @@ SEXP simplify_jsondata(SEXP sdata)
 		break;
 
 	case CORPUS_DATATYPE_TEXT:
-		ans = as_text_jsondata(sdata);
+		//ans = as_text_jsondata(sdata);
+		ans = as_character_jsondata(sdata);
 		break;
 
 	case CORPUS_DATATYPE_ARRAY:
-		ans = as_list_jsondata(sdata);
+		ans = as_list_jsondata(sdata, stext);
 		break;
 
 	default:
