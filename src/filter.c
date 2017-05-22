@@ -144,7 +144,6 @@ static const char *text_filter_stemmer(SEXP filter)
 
 	val = STRING_ELT(alg, 0);
 	if (val == NA_STRING || XLENGTH(val) == 0) {
-		Rprintf("done!\n");
 		return NULL;
 	}
 
@@ -203,8 +202,8 @@ static void stem_except_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_stem_except(f, &terms[i]))) {
-			Rf_error("failed adding term to text_filter "
-				 "stem exception list");
+			error("failed adding term to text_filter "
+			      "stem exception list");
 		}
 	}
 
@@ -231,7 +230,8 @@ static void drop_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_drop(f, &terms[i]))) {
-			Rf_error("failed adding term to text_filter drop list");
+			error("failed adding term to text_filter "
+			      "drop list");
 		}
 	}
 
@@ -258,8 +258,8 @@ static void drop_except_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_drop_except(f, &terms[i]))) {
-			Rf_error("failed adding term to text_filter "
-				 "drop exception list");
+			error("failed adding term to text_filter "
+			      "drop exception list");
 		}
 	}
 
@@ -286,8 +286,8 @@ static void combine_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_combine(f, &terms[i]))) {
-			Rf_error("failed adding term to text_filter "
-				 " combine list");
+			error("failed adding term to text_filter "
+			      " combine list");
 		}
 	}
 
@@ -314,8 +314,8 @@ static void select_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_select(f, &terms[i], NULL))) {
-			Rf_error("failed adding term to text_filter "
-				 " select list");
+			error("failed adding term to text_filter "
+			      " select list");
 		}
 	}
 
@@ -358,7 +358,8 @@ int is_filter(SEXP sfilter)
 
 struct corpus_filter *as_filter(SEXP sfilter)
 {
-	if (!is_filter(sfilter))
+	if (!is_filter(sfilter)) {
 		error("invalid 'filter' object");
+	}
 	return R_ExternalPtrAddr(sfilter);
 }
