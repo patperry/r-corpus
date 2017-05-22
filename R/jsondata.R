@@ -13,7 +13,8 @@
 #  limitations under the License.
 
 
-read_ndjson <- function(file, text = "text", simplify = TRUE, mmap = FALSE)
+read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = "text",
+                        stringsAsFactors = default.stringsAsFactors())
 {
     if (mmap) {
         if (!is.character(file)) {
@@ -54,9 +55,10 @@ read_ndjson <- function(file, text = "text", simplify = TRUE, mmap = FALSE)
     if (simplify) {
         text <- as.character(text)
         if (length(dim(ans)) == 2) {
-            ans <- as.data.frame(ans, stringsAsFactors = FALSE, text = text)
+            ans <- as.data.frame(ans, text = text,
+                                 stringsAsFactors = stringsAsFactors)
         } else {
-            ans <- .Call(C_simplify_jsondata, ans, text)
+            ans <- .Call(C_simplify_jsondata, ans, text, stringsAsFactors)
         }
     }
     ans
@@ -254,14 +256,17 @@ print.jsondata <- function(x, ...)
 
 as.character.jsondata <- function(x, ...)
 {
-    as.character(as_text.jsondata(x, ...))
+    as.character(C_as_character_jsondata, x)
 }
 
 
-as.data.frame.jsondata <- function(x, ..., text = "text")
+as.data.frame.jsondata <-
+    function(x, ..., text = "text",
+             stringsAsFactors = default.stringsAsFactors())
 {
-    l <- as.list(x, text = text)
-    as.data.frame(l, row.names = row.names(x), ..., text = text)
+    l <- as.list(x, text = text, stringsAsFactors = stringsAsFactors)
+    as.data.frame(l, row.names = row.names(x), ...,
+                  text = text, stringsAsFactors = stringsAsFactors)
 }
 
 
@@ -283,10 +288,11 @@ as.double.jsondata <- function(x, ...)
 }
 
 
-as.list.jsondata <- function(x, text = "text", ...)
+as.list.jsondata <- function(x, ..., text = "text",
+                             stringsAsFactors = default.stringsAsFactors())
 {
     text <- as.character(text)
-    .Call(C_as_list_jsondata, x, text)
+    .Call(C_as_list_jsondata, x, text, stringsAsFactors)
 }
 
 

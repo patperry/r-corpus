@@ -6,7 +6,8 @@
     (NDJSON) format.
 }
 \usage{
-    read_ndjson(file, text = "text", simplify = TRUE, mmap = FALSE)
+    read_ndjson(file, mmap = FALSE, simplify = TRUE, text = "text",
+                stringsAsFactors = default.stringsAsFactors())
 }
 \arguments{
     \item{file}{the name of the file which the data are to be read from,
@@ -14,17 +15,20 @@
         The data should be encoded as UTF-8, and each line should be a
         valid JSON value.}
 
-    \item{text}{a character vector of string fields to interpret as
-       \code{text} instead of \code{character}.}
+    \item{mmap}{whether to memory-map the file instead of reading all
+        of its data into memory simultaneously. See the
+        \sQuote{Memory mapping} section.}
 
     \item{simplify}{whether to attempt to simplify the type of the return
        value. For example, if each line of the file stores an integer,
        if \code{simplify} is set to \code{TRUE} then the return value
        will be an integer vector rather than a \code{jsondata} object.}
 
-    \item{mmap}{whether to memory-map the file instead of reading all
-        of its data into memory simultaneously. See the
-        \sQuote{Memory mapping} section.}
+    \item{text}{a character vector of string fields to interpret as
+       \code{text} instead of \code{character} or \code{factor}.}
+
+    \item{stringsAsFactors}{a logical value indicating whether to interpret
+        JSON character strings as \code{factor} instead of \code{character}.}
 }
 \details{
     This function is the recommended means of reading data for processing

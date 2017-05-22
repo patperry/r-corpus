@@ -79,7 +79,8 @@ struct jsondata *as_jsondata(SEXP data);
 
 SEXP as_integer_jsondata(SEXP data);
 SEXP as_double_jsondata(SEXP data);
-SEXP as_list_jsondata(SEXP data, SEXP text);
+SEXP as_factor_jsondata(SEXP data);
+SEXP as_list_jsondata(SEXP data, SEXP text, SEXP stringsAsFactors);
 SEXP as_logical_jsondata(SEXP data);
 SEXP as_character_jsondata(SEXP data);
 SEXP as_text_jsondata(SEXP data);
@@ -89,7 +90,7 @@ SEXP names_jsondata(SEXP data);
 SEXP print_jsondata(SEXP data);
 SEXP datatype_jsondata(SEXP data);
 SEXP datatypes_jsondata(SEXP data);
-SEXP simplify_jsondata(SEXP data, SEXP text);
+SEXP simplify_jsondata(SEXP data, SEXP text, SEXP stringsAsFactors);
 SEXP subscript_jsondata(SEXP data, SEXP i);
 SEXP subset_jsondata(SEXP data, SEXP i, SEXP j);
 

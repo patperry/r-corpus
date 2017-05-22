@@ -25,10 +25,11 @@
 
 static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(anyNA_text, 1),
+	CALLDEF(as_character_jsondata, 1),
 	CALLDEF(as_character_text, 1),
 	CALLDEF(as_integer_jsondata, 1),
 	CALLDEF(as_double_jsondata, 1),
-	CALLDEF(as_list_jsondata, 2),
+	CALLDEF(as_list_jsondata, 3),
 	CALLDEF(as_logical_jsondata, 1),
 	CALLDEF(as_text_character, 1),
 	CALLDEF(as_text_jsondata, 1),
@@ -45,7 +46,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(print_jsondata, 1),
 	CALLDEF(read_ndjson, 1),
 	CALLDEF(sentences_text, 1),
-	CALLDEF(simplify_jsondata, 2),
+	CALLDEF(simplify_jsondata, 3),
 	CALLDEF(stopwords, 1),
 	CALLDEF(subscript_jsondata, 2),
 	CALLDEF(subset_jsondata, 3),

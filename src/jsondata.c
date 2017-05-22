@@ -887,6 +887,63 @@ SEXP as_character_jsondata(SEXP sdata)
 }
 
 
+SEXP as_factor_jsondata(SEXP sdata)
+{
+	SEXP ans, lev, levels;
+	const struct jsondata *d = as_jsondata(sdata);
+	struct corpus_text text;
+	struct corpus_textset set;
+	struct mkchar mkchar;
+	R_xlen_t i, n = d->nrow;
+	int err, id, nprot = 0;
+
+	PROTECT(ans = allocVector(INTSXP, n)); nprot++;
+
+	if ((err = corpus_textset_init(&set))) {
+		goto error_init;
+	}
+
+	for (i = 0; i < n; i++) {
+		err = corpus_data_text(&d->rows[i], &text);
+		if (err == CORPUS_ERROR_INVAL) {
+			id = NA_INTEGER;
+		} else {
+			if ((err = corpus_textset_add(&set, &text, &id))) {
+				goto error_add;
+			}
+			if (id == INT_MAX || id == NA_INTEGER) {
+				error("number of factor levels (%d)"
+				      " exceeds maximum", id);
+			}
+		}
+		INTEGER(ans)[i] = id + 1;
+	}
+
+	PROTECT(levels = allocVector(STRSXP, set.nitem)); nprot++;
+
+	mkchar_init(&mkchar);
+
+	for (id = 0; id < set.nitem; id++) {
+		lev = mkchar_get(&mkchar, &set.items[id]);
+		SET_STRING_ELT(levels, id, lev);
+	}
+
+	mkchar_destroy(&mkchar);
+
+	setAttrib(ans, R_LevelsSymbol, levels);
+	setAttrib(ans, R_ClassSymbol, mkString("factor"));
+
+error_add:
+	corpus_textset_destroy(&set);
+error_init:
+	if (err) {
+		error("failed decoding JSON data to factor type");
+	}
+	UNPROTECT(nprot);
+	return ans;
+}
+
+
 static int in_string_set(SEXP strs, SEXP item)
 {
 	R_xlen_t i, n;
@@ -918,7 +975,8 @@ static int in_string_set(SEXP strs, SEXP item)
 }
 
 
-static SEXP as_list_jsondata_record(SEXP sdata, SEXP stext)
+static SEXP as_list_jsondata_record(SEXP sdata, SEXP stext,
+				    SEXP stringsAsFactors)
 {
 	SEXP ans, ans_j, names, sbuffer, sfield, sfield2, srows,
 	     shandle, sname;
@@ -1019,7 +1077,8 @@ static SEXP as_list_jsondata_record(SEXP sdata, SEXP stext)
 						 STRING_ELT(names, j))) {
 			ans_j = as_text_jsondata(ans_j);
 		} else {
-			ans_j = simplify_jsondata(ans_j, stext);
+			ans_j = simplify_jsondata(ans_j, stext,
+						  stringsAsFactors);
 		}
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
@@ -1029,7 +1088,7 @@ static SEXP as_list_jsondata_record(SEXP sdata, SEXP stext)
 }
 
 
-SEXP as_list_jsondata(SEXP sdata, SEXP stext)
+SEXP as_list_jsondata(SEXP sdata, SEXP stext, SEXP stringsAsFactors)
 {
 	SEXP ans, val;
 	const struct jsondata *d = as_jsondata(sdata);
@@ -1038,7 +1097,7 @@ SEXP as_list_jsondata(SEXP sdata, SEXP stext)
 	R_xlen_t i, n = d->nrow;
 
 	if (d->kind == CORPUS_DATATYPE_RECORD) {
-		return as_list_jsondata_record(sdata, stext);
+		return as_list_jsondata_record(sdata, stext, stringsAsFactors);
 	}
 
 	PROTECT(ans = allocVector(VECSXP, n));
@@ -1061,7 +1120,7 @@ SEXP as_list_jsondata(SEXP sdata, SEXP stext)
 }
 
 
-SEXP simplify_jsondata(SEXP sdata, SEXP stext)
+SEXP simplify_jsondata(SEXP sdata, SEXP stext, SEXP sstringsAsFactors)
 {
 	SEXP ans;
 	const struct jsondata *d = as_jsondata(sdata);
@@ -1085,12 +1144,15 @@ SEXP simplify_jsondata(SEXP sdata, SEXP stext)
 		break;
 
 	case CORPUS_DATATYPE_TEXT:
-		//ans = as_text_jsondata(sdata);
-		ans = as_character_jsondata(sdata);
+		if (LOGICAL(sstringsAsFactors)[0] == TRUE) {
+			ans = as_factor_jsondata(sdata);
+		} else {
+			ans = as_character_jsondata(sdata);
+		}
 		break;
 
 	case CORPUS_DATATYPE_ARRAY:
-		ans = as_list_jsondata(sdata, stext);
+		ans = as_list_jsondata(sdata, stext, sstringsAsFactors);
 		break;
 
 	default:
