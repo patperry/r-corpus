@@ -225,8 +225,8 @@ because *quanteda* doesn't have a way of getting the term counts directly.
 Instead, we compute a document feature matrix and then use *quanteda's*
 `topfeatures()` function on this matrix.
 
-    data <- jsonlite::stream_in(file("~/yelp-review.json"), verbose=FALSE)
     library("quanteda")
+
     system.time({
         x <- quanteda::dfm(data$text, stem = TRUE, remove_symbol = TRUE,
                            remove_numbers = TRUE,
