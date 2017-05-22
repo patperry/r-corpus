@@ -10,6 +10,7 @@ export(sentences)
 export(stopwords)
 ## export(text) # don't export, clashes with graphics::text
 export(text_filter)
+export(term_counts)
 export(tokens)
 
 ## Methods
