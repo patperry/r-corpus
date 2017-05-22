@@ -36,4 +36,9 @@
     # remove punctuation and stop words
     term_counts("A rose is a rose is a rose.",
                 text_filter(drop_symbol = TRUE, drop = stopwords("english")))
+
+    # weight the texts
+    term_counts(c("A rose is a rose is a rose.",
+                  "A Rose is red, a violet is blue!"),
+                weights = c(100, 1))
 }
