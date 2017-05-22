@@ -1,0 +1,74 @@
+Changes in version 0.5.0
+
+ * Add term_counts() function to tabulate term frequencies.
+
+ * Add text_filter() option ("stem_except") to exempt specific terms from
+   stemming.
+
+ * Add text_filter() option ("drop") to drop specific terms, along with
+   option ("drop_except") to exempt specific terms from dropping.
+
+ * Add text_filter() option ("combine") to combine multi-word phrases like
+   "new york city" into a single term.
+
+ * Add text_filter() option ("select") to select specific terms (excluding
+   all words that are not on this list).
+
+ * Rename text_filter() options "fold_case", "fold_dash", "fold_quote"
+   to "map_case", "map_dash", "map_quote".
+
+ * Add stopwords() function.
+
+
+Changes in version 0.4.0 (2017-05-16)
+
+ * Allow read_ndjson() to read from connections, not just files, by
+   reading the file contents into memory first. Use this by default
+   instead of memory mapping.
+
+ * Rename text_filter() option "drop_empty" to "ignore_empty".
+
+ * Add text_filter() options "drop_symbol", "drop_number", "drop_letter",
+   "drop_kana", and "drop_ideo"; these options replace the matched tokens
+   with NA.
+
+ * Fix internal function namespace clashes on Linux and other similar
+   platforms.
+
+
+Changes in version 0.3.0 (2017-05-04)
+
+ * Support for serializing dataset and text objects via readRDS() and
+   other native routines.  Unfortunately, this support doesn't come for
+   free, and the objects take a little bit more memory.
+
+ * More convenient interface for accessing JSON arrays.
+
+ * Rename as.text()/is.text() to as_text()/is_text(); make as_text()
+   retain names, work on S3 objects.
+
+ * Add support for stemming via the Snowball library.
+
+ * Rename read_json() to read_ndjson() to not clash with jsonlite.
+
+ * Rename "dataset" type to "jsondata".
+
+ * Make read_ndjson() return a data frame by default, not a "jsondata"
+   object.
+
+
+Changes in version 0.2.0 (2017-04-15)
+
+ * First CRAN release.
+
+ * Added Windows support.
+
+ * Added support for setting names on text objects.
+
+ * Added documentation.
+
+
+Changes in version 0.1.0 (2017-04-11)
+
+ * First milestone, with support for JSON decoding, text segmentation,
+   and text normalization.
