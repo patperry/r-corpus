@@ -206,11 +206,23 @@ tokens <- function(x, filter = text_filter())
 }
 
 
-term_counts <- function(x, filter = text_filter())
+term_counts <- function(x, filter = text_filter(), weights = NULL)
 {
     x <- as_text(x)
     filter <- as_text_filter(filter)
-    stop("not implemented")
+
+    if (!is.null(weights)) {
+        weights <- as.numeric(weights)
+        if (length(weights) != length(x)) {
+            stop(paste0("'weights' argument has wrong length ('",
+                        length(weights), "'; should be '", length(x), "'"))
+        }
+        if (!all(is.finite(weights))) {
+            stop("'weights' argument contains a missing or infinite value");
+        }
+    }
+
+    .Call(C_term_counts_text, x, filter, weights);
 }
 
 

@@ -124,6 +124,7 @@ struct corpus_filter *as_filter(SEXP filter);
 /* text processing */
 SEXP sentences_text(SEXP x);
 SEXP tokens_text(SEXP x, SEXP props);
+SEXP term_counts_text(SEXP x, SEXP props, SEXP weights);
 SEXP stopwords(SEXP kind);
 
 /* data schema */
