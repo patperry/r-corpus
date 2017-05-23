@@ -11,7 +11,7 @@ Overview
 This is an R text processing package that currently does very little, but
 it does enough to be useful. The exports six main functions:
 
- + `read_ndjson()` for reading in data in newline-delimited JSON format;
+ + `read_ndjson()` for reading data in newline-delimited JSON format;
 
  + `sentences()` for segmenting text into sentences;
 
