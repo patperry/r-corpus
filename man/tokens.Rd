@@ -182,7 +182,8 @@
     element of \code{x}.
 }
 \seealso{
-    \code{\link{sentences}}, \code{\link{term_counts}}.
+    \code{\link{sentences}}, \code{\link{term_counts}},
+    \code{\link{term_matrix}}.
 }
 \examples{
     tokens("The quick ('brown') fox can't jump 32.3 feet, right?")

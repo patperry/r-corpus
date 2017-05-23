@@ -1,5 +1,9 @@
 useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 
+# Imports
+importFrom(Matrix, sparseMatrix)
+importFrom(utils, str)
+
 ## Exports
 export(as_text)
 export(as_text.default)
@@ -11,6 +15,7 @@ export(stopwords)
 ## export(text) # don't export, clashes with graphics::text
 export(text_filter)
 export(term_counts)
+export(term_matrix)
 export(tokens)
 
 ## Methods

@@ -28,7 +28,7 @@
     according to \code{count}, with ties broken arbitrarily.
 }
 \seealso{
-    \code{\link{tokens}}.
+    \code{\link{tokens}}, \code{\link{term_matrix}}.
 }
 \examples{
     term_counts("A rose is a rose is a rose.")

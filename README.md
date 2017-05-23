@@ -261,6 +261,10 @@ and *quanteda* tokenization rules:
    [other behavior](https://github.com/kbenoit/quanteda/issues/746)
    that I do not understand.
 
+(This is with the latest released version of *quanteda* at the time of
+writing, version 0.9.9-50; the tokenizer may be different in the latest
+development version of *quanteda*.)
+
 Despite these differences, we agree with *quanteda* on the most frequent
 terms, and we are about 10 times faster.
 
@@ -317,17 +321,23 @@ terms, and we are about 10 times faster.
         # compute all term frequencies
         f <- text_filter(stemmer = "english", drop_symbol = TRUE,
                          drop_number = TRUE, drop = stopwords("english"))
+
         # compute the frequency matrix for the selected terms
         x <- term_matrix(data, f)
         x <- x[, Matrix::colSums(x) >= 5, drop = FALSE]
+
+        # update the text filter
+        f$select <- colnames(x)
     })
 
     ##   user  system elapsed
     ##  9.200   0.986  10.240
 
-    The later approach is about 6.5 times faster than *quanteda*, but I
-    do not recommend it; it's better to keep all of the prepocessing in
-    the text filter.
+    The later approach is about 6.5 times faster than *quanteda*, but's
+    more error-prone and I do not recommend it. The recommended approach
+    above makes it clear that the preprocessing decisions get made before
+    constructing the final matrix. (Also, as a side benefit, it orders the
+    columns of `x` in descending order occording to overall term count.)
 
 
 Building from source
