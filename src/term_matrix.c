@@ -40,8 +40,8 @@
 
 SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 {
-	SEXP ans, snames, si, sj, scount, stext, sfilter, scol_names,
-	     srow_names;
+	SEXP ans = R_NilValue, snames, si, sj, scount, stext, sfilter,
+	     scol_names, srow_names;
 	const struct corpus_text *text, *type;
 	struct mkchar mkchar;
 	struct corpus_filter *filter;
@@ -181,7 +181,6 @@ error:
 
 	if (err) {
 		Rf_error("failed computing term counts");
-		ans = R_NilValue;
 	}
 	UNPROTECT(nprot);
 	return ans;
