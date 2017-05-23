@@ -27,6 +27,14 @@ test_that("'term_matrix' works", {
 })
 
 
+test_that("'term_matrix' should handle empty texts", {
+    x <- term_matrix(c(NA, "hello", "", NA, ""))
+    x0 <- Matrix::sparseMatrix(i = 2, j = 1, x = 1, dims=c(5,1),
+                               dimnames=list(NULL, "hello"))
+    expect_equal(x, x0)
+})
+
+
 test_that("'term_maxtrix' weights works", {
     text <- c("A rose is a rose is a rose.",
               "A Rose is red, a violet is blue!",

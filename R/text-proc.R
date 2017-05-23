@@ -263,9 +263,16 @@ term_matrix <- function(x, filter = text_filter(), weights = NULL,
     weights <- as_weights(weights, length(x))
     group <- as_group(group, length(x))
 
+    if (is.null(group)) {
+        n <- length(x)
+    } else {
+        n <- nlevels(group)
+    }
+
     mat <- .Call(C_term_matrix_text, x, filter, weights, group);
 
     Matrix::sparseMatrix(i = mat$i,j = mat$j, x = mat$count,
+                         dims = c(n, length(mat$col_names)),
                          dimnames = list(mat$row_names, mat$col_names),
                          index1 = FALSE, check = FALSE)
 }
