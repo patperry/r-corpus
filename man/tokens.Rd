@@ -42,7 +42,7 @@
 
     \item{remove_control}{a logical value indicating whether to remove
         non-white-space control characters (from the C0 and C1 character
-        classes, and the delete characer).}
+        classes, and the delete character).}
 
     \item{remove_ignorable}{a logical value indicating whether to remove
         Unicode "default ignorable" characters like zero-width spaces
@@ -61,9 +61,12 @@
         algorithms are provided by the
         \href{http://snowballstem.org/algorithms/}{Snowball stemming library};
         the following stemming algorithms are available:
-            arabic, danish, dutch, english, finnish, french,
-	        german, hungarian, italian, norwegian, porter, portuguese,
-	        romanian, russian, spanish, swedish, tamil, and turkish.
+            \code{"arabic"}, \code{"danish"}, \code{"dutch"},
+            \code{"english"}, \code{"finnish"}, \code{"french"},
+	        \code{"german"}, \code{"hungarian"}, \code{"italian"},
+            \code{"norwegian"}, \code{"porter"}, \code{"portuguese"},
+	        \code{"romanian"}, \code{"russian"}, \code{"spanish"},
+            \code{"swedish"}, \code{"tamil"}, and \code{"turkish"}.
         }
 
     \item{stem_except}{a character vector of exception words to exempt from
@@ -73,22 +76,25 @@
     \item{combine}{a character vector of multi-word phrases to combine, or
         \code{NULL}; see \sQuote{Combining words}.}
 
-    \item{drop_symbol}{a logical value indicating whether to replace symbol
-        terms (punctuation, emoji, and other words that are not classified
-        as number, letter, kana, or ideo) with \code{NA}.}
+    \item{drop_symbol}{a logical value indicating whether to replace
+        \code{"symbol"} terms (punctuation, emoji, and other words that
+        are not classified as \code{"number"}, \code{"letter"}, \code{"kana"},
+        or \code{"ideo"}) with \code{NA}.}
 
-    \item{drop_number}{a logical value indicating whether to replace terms
-        that appear to be numbers with \code{NA}.}
+    \item{drop_number}{a logical value indicating whether to replace
+        \code{"number"} terms (starting with numerals) with \code{NA}.}
 
-    \item{drop_letter}{a logical value indicating whether to replace terms
-        starting with letters---excluding hiragana, katakana, and ideographic
-        characters---with \code{NA}.}
+    \item{drop_letter}{a logical value indicating whether to replace
+        \code{"letter"} terms (starting with letters excluding kana
+        and ideographic characters) with \code{NA}.}
 
-    \item{drop_kana}{a logical value indicating whether to replace terms
-        starting kana characters with \code{NA}.}
+    \item{drop_kana}{a logical value indicating whether to replace
+        \code{"kana"} terms (starting with kana characters)
+        with \code{NA}.}
 
-    \item{drop_ideo}{a logical value indicating whether to replace terms
-        starting with ideographic characters with \code{NA}.}
+    \item{drop_ideo}{a logical value indicating whether to replace
+        \code{"ideo"} terms (starting with ideographic characters)
+        with \code{NA}.}
 
     \item{drop}{a character vector of terms to replace with \code{NA},
         or \code{NULL}.}
@@ -113,9 +119,9 @@
             defined by
             \href{http://unicode.org/reports/tr29/#Word_Boundaries}{Unicode
                 Standard Annex #29, Section 4}. We categorize each word as
-            \code{number}, \code{letter}, \code{kana}, \code{ideo}, or
-            \code{symbol} according to whether the first character is a
-            number, letter, kana, ideographic, or other character,
+            \code{"number"}, \code{"letter"}, \code{"kana"}, \code{"ideo"}, or
+            \code{"symbol"} according to whether the first character is a
+            numeral, letter, kana, ideographic, or other character,
             respectively. For words with two or more characters that start
             with extenders like underscore (\code{_}), we use the second
             character in the word to categorize it, treating a second

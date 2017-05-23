@@ -8,8 +8,8 @@ Text corpus analysis in R. Heavy lifting is done by the
 Overview
 --------
 
-This is an R text processing package that currently does very little. It
-exports five main functions:
+This is an R text processing package that currently does very little, but
+it does enough to be useful. The exports six main functions:
 
  + `read_ndjson()` for reading in data in newline-delimited JSON format;
 
@@ -21,7 +21,10 @@ exports five main functions:
  + `tokens()` for segmenting text into tokens, each of which is an instance
     of a particular term (formally, a word type);
 
- + `term_counts()` for tabulating term occurrence frequencies.
+ + `term_counts()` for tabulating term occurrence frequencies;
+
+ + `term_matrix()` for computing a term frequency matrix (also known as
+    a "document-by-term matrix").
 
 The package also provides two new data types:
 
@@ -29,9 +32,8 @@ The package also provides two new data types:
 
  + `text` for storing text.
 
-That's it. There are no n-grams, no term-by-document matrix, no part-of-speech
-tagging, no topic models, and no word vectors.  Some of these features are
-planned for future releases.
+That's it. There are no n-grams, no part-of-speech tagging, no topic models,
+and no word vectors.  Some of these features are planned for future releases.
 
 
 Installing
@@ -271,10 +273,10 @@ terms, and we are about 10 times faster.
 
 ### Computing a term frequency matrix
 
-For the final benchmark, we compute a term frequency matrix (known
-also as a "document-by-term" matrix or "document feature matrix").
-We perform the same preprocessing as before, but we only retain terms
-occurring at least five times in the corpus.
+For the final benchmark, we compute a term frequency matrix (also known
+as a "document-by-term" matrix).  We perform the same preprocessing as
+before, but we only retain terms occurring at least five times in the
+corpus.
 
     system.time({
         # compute all term frequencies

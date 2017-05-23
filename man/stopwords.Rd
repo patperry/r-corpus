@@ -9,11 +9,11 @@
 }
 \arguments{
     \item{kind}{the name of the stop word list, or \code{NULL}. Allowed
-        values are \code{danish}, \code{dutch}, \code{english},
-        \code{finnish}, \code{french}, \code{german}, \code{hungarian},
-        \code{italian}, \code{norwegian}, \code{portuguese}, and
-        \code{russian}; these values retrieve the language-specific stopword
-        lists compiled by the
+        values are \code{"danish"}, \code{"dutch"}, \code{"english"},
+        \code{"finnish"}, \code{"french"}, \code{"german"},
+        \code{"hungarian"}, \code{"italian"}, \code{"norwegian"},
+        \code{"portuguese"}, and \code{"russian"}; these values
+        retrieve the language-specific stop word lists compiled by the
         \href{http://snowballstem.org/}{Snowball stemming project}.}
 }
 \details{

@@ -59,7 +59,7 @@
     Another danger in memory-mapping is that if you serialize a
     \code{jsondata} object or derived \code{text} object using
     \code{\link{saveRDS}} or another similar function, and then you
-    de-serialize the object, then R will attempt create a new memory-map
+    deserialize the object, then R will attempt create a new memory-map
     using the original \code{file} argument passed to the \code{read_ndjson}
     call. If \code{file} is a relative path, then your working directory
     at the time of deserialization must agree with your working directory

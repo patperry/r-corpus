@@ -16,7 +16,7 @@
         weights to each text, or \code{NULL} for unit weights.}
 }
 \details{
-    \code{term_counts} tokenizes a set of texts and computes the occurence
+    \code{term_counts} tokenizes a set of texts and computes the occurrence
     counts for each term. If \code{weights} is non-\code{NULL}, then each
     token in text \code{i} increments the count for the corresponding term
     by \code{weights[i]}; otherwise, each appearance increments the count

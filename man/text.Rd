@@ -17,7 +17,7 @@
     \item{\dots}{further arguments passed to or from other methods.}
 }
 \details{
-    The \code{text} type is a new datatype provided by the \code{corpus}
+    The \code{text} type is a new data type provided by the \code{corpus}
     package suitable for processing Unicode text. Text vectors behave
     like character vectors (and can be converted to them with the
     \code{as.character} function). They can be created using the
