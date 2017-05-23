@@ -2,6 +2,8 @@ Changes in version 0.5.0
 
  * Add term_counts() function to tabulate term frequencies.
 
+ * Add term_matrix() function to compute a term frequency matrix.
+
  * Add text_filter() option ("stem_except") to exempt specific terms from
    stemming.
 
@@ -19,8 +21,9 @@ Changes in version 0.5.0
 
  * Add stopwords() function.
 
- * Make read_ndjson() decode JSON strings as character (not text), except
-   for record fields named "text".
+ * Make read_ndjson() decode JSON strings as character or factor (according
+   to whether "stringsAsFactors" is TRUE) except for fields named "text",
+   which get decoded as text objects.
 
 
 Changes in version 0.4.0 (2017-05-16)
