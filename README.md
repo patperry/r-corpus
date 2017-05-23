@@ -107,7 +107,7 @@ defined by [Unicode Standard Annex #29, Section 5][sentbreak].
     # Using the corpus library:
 
     system.time({
-        sents <- sentences(data$text)
+        sents <- sentences(data) # gets text from data$text
     })
 
     ##   user  system elapsed
@@ -158,7 +158,7 @@ ASCII single quote ('). If, after normalization, the token is empty (for
 example if it started out as white space), then we discard it.
 
     system.time({
-        toks <- tokens(data$text)
+        toks <- tokens(data)
     })
 
     ##   user  system elapsed
@@ -205,7 +205,7 @@ this tokenization behavior in a `text_filter` object that we pass to the
         f <- text_filter(stemmer = "english", drop_symbol = TRUE,
                          drop_number = TRUE, drop = stopwords("english"))
 
-        stats <- term_counts(data$text, f)
+        stats <- term_counts(data, f)
 
         print(head(stats, n = 5))
     })
@@ -240,7 +240,94 @@ Instead, we compute a document feature matrix and then use *quanteda's*
     ##    user  system elapsed
     ##  52.325   3.258  55.628
 
-We get the same results, and we are about 10 times faster than *quanteda*.
+We get similar results, but there are some differences between the *corpus*
+and *quanteda* tokenization rules:
+
+ + *Quanteda* has special rules for handling URLs, email addresses, and
+   Twitter handles, but *corpus* does not.
+
+ + *Corpus* interprets tokens starting with digits like `5pm`, `70s`, and
+  `110th` as numbers, but *quanteda* does not.
+
+ + *Quanteda* removes words before stemming; *corpus* removes words after
+   stemming and by default does not stem words in the `drop` list. This leads
+   to differences in the output. The word "others", for example, is not in the
+   stop word list, but it stems to "other", a stop word.  *Corpus* will
+   drop all instances of "other" and "others". *Quanteda* will drop all
+   instances of "other" but not of "others" (it replaces the latter with
+   non-dropped "other" tokens).
+
+ + *Quanteda* has some
+   [other behavior](https://github.com/kbenoit/quanteda/issues/746)
+   that I do not understand.
+
+Despite these differences, we agree with *quanteda* on the most frequent
+terms, and we are about 10 times faster.
+
+
+### Computing a term frequency matrix
+
+    For the final benchmark, we compute a term frequency matrix (known
+    also as a "document-by-term" matrix or "document feature matrix").
+    We perform the same preprocessing as before, but we only retain terms
+    occurring at least five times in the corpus.
+
+    system.time({
+        # compute all term frequencies
+        f <- text_filter(stemmer = "english", drop_symbol = TRUE,
+                         drop_number = TRUE, drop = stopwords("english"))
+        stats <- term_counts(data, f)
+
+        # select terms appearing at least 5 times
+        f$select <- subset(stats, count >= 5)$term
+
+        # compute the frequency matrix for the selected terms
+        x <- term_matrix(data, f)
+    })
+
+    ##   user  system elapsed
+    ## 14.424   0.665  15.096
+
+    Note that we first set the properties of the text filter, `f`, and then
+    we build the term matrix. The text filter records all of the
+    pre-processing and feature selection. If we need to, we we can call
+    `term_matrix` on a new text vector to get a matrix with the same columns
+    as `x`.
+
+    The *quanteda* package does not have an object analogous to a text
+    filter. We contruct the full term matrix, then drop columns for
+    low-fequency terms:
+
+    system.time({
+        x <- quanteda::dfm(data$text, stem = TRUE, remove_symbols = TRUE,
+                           remove_numbers = TRUE,
+                           remove = quanteda::stopwords("english"))
+        x <- quanteda::dfm_trim(x, min_count = 5)
+    })
+
+    ##   user  system elapsed
+    ## 62.047   4.319  66.576
+
+    We're about 4 times faster than *quanteda*. If we really care about
+    efficiency, we can widen the gap by performing the following sequence
+    of operations instead:
+
+    data <- read_ndjson("~/yelp-review.json")
+    system.time({
+        # compute all term frequencies
+        f <- text_filter(stemmer = "english", drop_symbol = TRUE,
+                         drop_number = TRUE, drop = stopwords("english"))
+        # compute the frequency matrix for the selected terms
+        x <- term_matrix(data, f)
+        x <- x[, Matrix::colSums(x) >= 5, drop = FALSE]
+    })
+
+    ##   user  system elapsed
+    ##  9.200   0.986  10.240
+
+    The later approach is about 6.5 times faster than *quanteda*, but I
+    do not recommend it; it's better to keep all of the prepocessing in
+    the text filter.
 
 
 Building from source

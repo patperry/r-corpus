@@ -206,29 +206,66 @@ tokens <- function(x, filter = text_filter())
 }
 
 
+as_weights <- function(weights, n)
+{
+    if (!is.null(weights)) {
+        weights <- as.numeric(weights)
+
+        if (length(weights) != n) {
+            stop(paste0("'weights' argument has wrong length (",
+                        length(weights), ", should be ", n, ")"))
+        }
+        if (anyNA(weights)) {
+            stop("'weights' argument contains a missing value");
+        }
+        if (any(is.nan(weights))) {
+            stop("'weights' argument contains a NaN value");
+        }
+        if (any(is.infinite(weights))) {
+            stop("'weights' argument contains an infinite value");
+        }
+    }
+
+    weights
+}
+
+
+as_group <- function(group, n)
+{
+    if (!is.null(group)) {
+        group <- as.factor(group)
+
+        if (length(group) != n) {
+            stop(paste0("'group' argument has wrong length ('",
+                        length(group), "'; should be '", n, "'"))
+        }
+    }
+
+    group
+}
+
+
 term_counts <- function(x, filter = text_filter(), weights = NULL)
 {
     x <- as_text(x)
     filter <- as_text_filter(filter)
-
-    if (!is.null(weights)) {
-        weights <- as.numeric(weights)
-        if (length(weights) != length(x)) {
-            stop(paste0("'weights' argument has wrong length ('",
-                        length(weights), "'; should be '", length(x), "'"))
-        }
-        if (!all(is.finite(weights))) {
-            stop("'weights' argument contains a missing or infinite value");
-        }
-    }
+    weights <- as_weights(weights, length(x))
 
     .Call(C_term_counts_text, x, filter, weights);
 }
 
 
-term_matrix <- function(x, filter = text_filter())
+term_matrix <- function(x, filter = text_filter(), weights = NULL,
+                        group = NULL)
 {
     x <- as_text(x)
     filter <- as_text_filter(filter)
-    stop("not implemented")
+    weights <- as_weights(weights, length(x))
+    group <- as_group(group, length(x))
+
+    mat <- .Call(C_term_matrix_text, x, filter, weights, group);
+
+    Matrix::sparseMatrix(i = mat$i,j = mat$j, x = mat$count,
+                         dimnames = list(mat$row_names, mat$col_names),
+                         index1 = FALSE, check = FALSE)
 }

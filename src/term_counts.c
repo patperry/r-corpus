@@ -62,16 +62,6 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 				 (uint64_t)n);
 		}
 		weights = REAL(sweights);
-
-		for (i = 0; i < n; i++) {
-			if (ISNA(weights[i])) {
-				Rf_error("weights[%"PRIu64"] is NA",
-					 (uint64_t)(i+1));
-			} else if (!R_FINITE(weights[i])) {
-				Rf_error("weights[%"PRIu64"] is Inf or NaN",
-					 (uint64_t)(i+1));
-			}
-		}
 	} else {
 		weights = NULL;
 	}
