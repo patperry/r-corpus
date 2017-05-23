@@ -139,7 +139,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		ntok++;
 	}
 
-	if (ctx->filter->error) {
+	if ((err = ctx->filter->error)) {
 		Rf_error("error while tokenizing text");
 	}
 

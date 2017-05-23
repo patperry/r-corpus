@@ -113,7 +113,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 			}
 		}
 
-		if (filter->error) {
+		if ((err = filter->error)) {
 			goto error;
 		}
 	}
