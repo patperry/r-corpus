@@ -271,10 +271,10 @@ terms, and we are about 10 times faster.
 
 ### Computing a term frequency matrix
 
-    For the final benchmark, we compute a term frequency matrix (known
-    also as a "document-by-term" matrix or "document feature matrix").
-    We perform the same preprocessing as before, but we only retain terms
-    occurring at least five times in the corpus.
+For the final benchmark, we compute a term frequency matrix (known
+also as a "document-by-term" matrix or "document feature matrix").
+We perform the same preprocessing as before, but we only retain terms
+occurring at least five times in the corpus.
 
     system.time({
         # compute all term frequencies
@@ -292,11 +292,11 @@ terms, and we are about 10 times faster.
     ##   user  system elapsed
     ## 14.424   0.665  15.096
 
-    Note that we first set the properties of the text filter, `f`, and then
-    we build the term matrix. The text filter records all of the
-    pre-processing and feature selection. If we need to, we we can call
-    `term_matrix` on a new text vector to get a matrix with the same columns
-    as `x`.
+Note that we first set the properties of the text filter, `f`, and then
+we build the term matrix. The text filter records all of the
+pre-processing and feature selection. If we need to, we we can call
+`term_matrix` on a new text vector to get a matrix with the same columns
+as `x`.
 
     The *quanteda* package does not have an object analogous to a text
     filter. We contruct the full term matrix, then drop columns for
@@ -312,9 +312,9 @@ terms, and we are about 10 times faster.
     ##   user  system elapsed
     ## 62.047   4.319  66.576
 
-    We're about 4 times faster than *quanteda*. If we really care about
-    efficiency, we can widen the gap by performing the following sequence
-    of operations instead:
+We're about 4 times faster than *quanteda*. If we really care about
+efficiency, we can widen the gap by performing the following sequence
+of operations instead:
 
     data <- read_ndjson("~/yelp-review.json")
     system.time({
@@ -333,11 +333,11 @@ terms, and we are about 10 times faster.
     ##   user  system elapsed
     ##  9.200   0.986  10.240
 
-    The later approach is about 6.5 times faster than *quanteda*, but's
-    more error-prone and I do not recommend it. The recommended approach
-    above makes it clear that the preprocessing decisions get made before
-    constructing the final matrix. (Also, as a side benefit, it orders the
-    columns of `x` in descending order occording to overall term count.)
+The later approach is about 6.5 times faster than *quanteda*, but's
+more error-prone and I do not recommend it. The recommended approach
+above makes it clear that the preprocessing decisions get made before
+constructing the final matrix. (Also, as a side benefit, it orders the
+columns of `x` in descending order occording to overall term count.)
 
 
 Building from source
