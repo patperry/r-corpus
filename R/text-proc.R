@@ -271,7 +271,7 @@ term_matrix <- function(x, filter = text_filter(), weights = NULL,
 
     mat <- .Call(C_term_matrix_text, x, filter, weights, group);
 
-    Matrix::sparseMatrix(i = mat$i,j = mat$j, x = mat$count,
+    Matrix::sparseMatrix(i = mat$i, j = mat$j, x = mat$count,
                          dims = c(n, length(mat$col_names)),
                          dimnames = list(mat$row_names, mat$col_names),
                          index1 = FALSE, check = FALSE)
