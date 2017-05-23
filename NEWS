@@ -1,4 +1,4 @@
-Changes in version 0.5.0
+Changes in version 0.5.0 (2017-05-23)
 
  * Add term_counts() function to tabulate term frequencies.
 
