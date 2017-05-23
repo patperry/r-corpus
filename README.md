@@ -9,7 +9,7 @@ Overview
 --------
 
 This is an R text processing package that currently does very little, but
-it does enough to be useful. The exports six main functions:
+it does enough to be useful. The package exports six main functions:
 
  + `read_ndjson()` for reading data in newline-delimited JSON format;
 
@@ -44,8 +44,8 @@ version, run the following command in R:
 
     install.packages("corpus")
 
-Alternatively, use any other other installation method supported by your
-R development environment.
+Alternatively, use any other installation method supported by your R
+development environment.
 
 
 Demonstration
@@ -58,9 +58,9 @@ compare against *jsonlite* version 1.3, *stringi* version 1.1.3, and
 
 ### Extracting text from a newline-delimited JSON file
 
-The following benchmark reads in a 286 MB data file, `yelp-review.json`,
-and extracts the text field from each row.  The raw data comes from the
-first round of the [Yelp Dataset Challence][yelp]; it is stored in
+The first benchmark reads in a 286 MB data file, `yelp-review.json`.
+The raw data comes from the first round of the
+[Yelp Dataset Challence][yelp]; it is stored in
 [newline-delimited JSON format][ndjson].
 
     # Using the corpus library:
@@ -94,7 +94,7 @@ We are about 16 times faster than *jsonlite*, and we use less than 20%
 of the RAM.  How are we reading a 286 MB file in only 63.2 MB?  We memory-map
 the file, letting the operating system move data from the file to RAM
 whenever necessary. We store the addresses of the text strings, but we
-do not load values into RAM until they are needed.
+do not load text values into RAM until they are needed.
 
 (If we specify `mmap=FALSE`, the default, then we read the entire file
 into memory; in this case, `read_ndjson` is about 7 times faster than
@@ -147,13 +147,14 @@ Overall, *corpus* is about 3.7 times faster than *stringi*.
 ### Tokenizing and normalizing text
 
 The next benchmark performs a series of operations to transform each text into
-a sequence of normalized tokens, called types. First, we segment each text
-into word tokens using the boundaries defined by
-[Unicode Standard Annex #29, Section 4][wordbreak]. Next, we normalize the
-text into [Unicode NFKC normal form][nfkc], and we [case fold][casefold]
-the text (for most languages, replacing uppercase with lowercase). Then,
-we remove non-white-space [control characters][cc], default ignorable
-characters like zero-width spaces, and we remove white space. We also
+a sequence of normalized tokens. Formally, the value of a token is called a
+"type", but this name is heavily overloaded, so we refer to the value as a
+"term" instead. First, we segment each text into word tokens using the
+boundaries defined by [Unicode Standard Annex #29, Section 4][wordbreak]. Next,
+we normalize the text into [Unicode NFKC normal form][nfkc], and we
+[case fold][casefold] the text (for most languages, replacing uppercase with
+lowercase). Then, we remove non-white-space [control characters][cc], default
+ignorable characters like zero-width spaces, and we remove white space. We also
 "dash fold," replacing Unicode dashes with an ASCII dash (-), and we
 "quote fold," replacing Unicode quotes (single, double, apostrophe) with
 ASCII single quote ('). If, after normalization, the token is empty (for
@@ -197,11 +198,12 @@ RAM, but only because we do not throw away punctuation-only tokens.
 
 ### Tabulating term frequencies
 
-In the final benchmark, we tokenize the texts and compute the 5 most common
-terms. While tokenizing, we normalize the tokens as in the previous benchmark,
-stem the words, drop symbols and numbers, and drop stopwords. We specify
-this tokenization behavior in a `text_filter` object that we pass to the
-`term_counts()` function.
+We are now ready to compute some text statistics.  In the next benchmark, we
+tokenize the texts and compute the 5 most common terms. While tokenizing, we
+normalize the text as in the previous benchmark, stem the words, drop
+symbols and numbers, and drop common function words ("stop" words). We
+specify this tokenization behavior in a `text_filter` object that we pass
+to the `term_counts()` function.
 
     system.time({
         f <- text_filter(stemmer = "english", drop_symbol = TRUE,
@@ -224,8 +226,9 @@ this tokenization behavior in a `text_filter` object that we pass to the
 
 We compare against the *quateda* package. This isn't a fair comparison
 because *quanteda* doesn't have a way of getting the term counts directly.
-Instead, we compute a document feature matrix and then use *quanteda's*
-`topfeatures()` function on this matrix.
+Instead, we compute a term matrix (a "document feature matrix" or "dfm" in
+*quanteda* lingo) and then use *quanteda's* `topfeatures()` function on
+this matrix.
 
     library("quanteda")
 
@@ -243,7 +246,7 @@ Instead, we compute a document feature matrix and then use *quanteda's*
     ##  52.325   3.258  55.628
 
 We get similar results, but there are some differences between the *corpus*
-and *quanteda* tokenization rules:
+and the *quanteda* tokenization rules (as of *quanteda* version 0.9.9-50):
 
  + *Quanteda* has special rules for handling URLs, email addresses, and
    Twitter handles, but *corpus* does not.
@@ -263,10 +266,6 @@ and *quanteda* tokenization rules:
    [other behavior](https://github.com/kbenoit/quanteda/issues/746)
    that I do not understand.
 
-(This is with the latest released version of *quanteda* at the time of
-writing, version 0.9.9-50; the tokenizer may be different in the latest
-development version of *quanteda*.)
-
 Despite these differences, we agree with *quanteda* on the most frequent
 terms, and we are about 10 times faster.
 
@@ -274,8 +273,8 @@ terms, and we are about 10 times faster.
 ### Computing a term frequency matrix
 
 For the final benchmark, we compute a term frequency matrix (also known
-as a "document-by-term" matrix).  We perform the same preprocessing as
-before, but we only retain terms occurring at least five times in the
+as a "document-by-term" matrix).  We perform the same pre-processing steps
+as before, but we only retain terms occurring at least five times in the
 corpus.
 
     system.time({
@@ -301,8 +300,8 @@ pre-processing and feature selection. If we need to, we we can call
 as `x`.
 
 The *quanteda* package does not have an object analogous to a text
-filter. We contruct the full term matrix, then drop columns for
-low-fequency terms:
+filter. We construct the full term matrix, then drop columns for
+low-frequency terms:
 
     system.time({
         x <- quanteda::dfm(data$text, stem = TRUE, remove_symbols = TRUE,
@@ -314,7 +313,7 @@ low-fequency terms:
     ##   user  system elapsed
     ## 62.047   4.319  66.576
 
-We're about 4 times faster than *quanteda*. If we really care about
+*Corpus* is about 4 times faster than *quanteda*. If we really care about
 efficiency, we can widen the gap by performing the following sequence
 of operations instead:
 
@@ -335,11 +334,11 @@ of operations instead:
     ##   user  system elapsed
     ##  9.200   0.986  10.240
 
-The latter approach is about 6.5 times faster than *quanteda*, but it's
-more error-prone and I do not recommend it. The recommended approach
-above makes it clear that the preprocessing decisions get made before
-constructing the final matrix. (Also, as a side benefit, it orders the
-columns of `x` in descending order according to overall term count.)
+The latter approach is about 6.5 times faster than *quanteda* but it's
+more error-prone and I do not recommend it. In the first approach,
+the pre-processing decisions come before the text matrix. (Also, as a
+side benefit, using the first approach, the columns of `x` get ordered
+in descending order according to overall term count.)
 
 
 Building from source
@@ -369,8 +368,9 @@ To obtain the source code, clone the repository and the submodules:
 
 The `--recursive` flag is to make sure that the corpus library also gets
 cloned. If you forget the `--recursive` flag, you can manually clone
-the submodule with the following command:
+the submodule with the following commands:
 
+    cd r-corpus
     git submodule update --init
 
 There are no other dependencies.
