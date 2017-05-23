@@ -30,6 +30,7 @@
 #include "corpus/src/textset.h"
 #include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
+#include "corpus/src/unicode.h"
 #include "corpus/src/data.h"
 #include "corpus/src/datatype.h"
 #include "rcorpus.h"
@@ -892,10 +893,18 @@ SEXP as_factor_jsondata(SEXP sdata)
 	SEXP ans, lev, levels;
 	const struct jsondata *d = as_jsondata(sdata);
 	struct corpus_text text;
+	struct corpus_text_iter it;
 	struct corpus_textset set;
 	struct mkchar mkchar;
 	R_xlen_t i, n = d->nrow;
-	int err, id, nprot = 0;
+	int err, id, utf8, nprot = 0;
+	struct corpus_text buf;
+	uint8_t *ptr;
+	size_t nbuf;
+
+	buf.ptr = NULL;
+	buf.attr = 0;
+	nbuf = 0;
 
 	PROTECT(ans = allocVector(INTSXP, n)); nprot++;
 
@@ -908,11 +917,49 @@ SEXP as_factor_jsondata(SEXP sdata)
 		if (err == CORPUS_ERROR_INVAL) {
 			id = NA_INTEGER;
 		} else {
-			if ((err = corpus_textset_add(&set, &text, &id))) {
+			// decode escapes in the input
+			if (CORPUS_TEXT_HAS_ESC(&text)) {
+				if (CORPUS_TEXT_SIZE(&text) >= nbuf) {
+					nbuf = CORPUS_TEXT_SIZE(&text);
+					ptr = realloc(buf.ptr, nbuf);
+					if (!ptr) {
+						corpus_textset_destroy(&set);
+						free(buf.ptr);
+						error("failed allocating"
+						      " %"PRIu64" bytes",
+						      (uint64_t)nbuf);
+					}
+					buf.ptr = ptr;
+				}
+
+				utf8 = 0;
+				ptr = buf.ptr;
+				corpus_text_iter_make(&it, &text);
+
+				while (corpus_text_iter_advance(&it)) {
+					if (!CORPUS_IS_ASCII(it.current)) {
+						utf8 = 1;
+					}
+					corpus_encode_utf8(it.current,
+							   &ptr);
+				}
+
+				buf.attr = (size_t)(ptr - buf.ptr);
+				if (utf8) {
+					buf.attr |= CORPUS_TEXT_UTF8_BIT;
+				}
+
+				err = corpus_textset_add(&set, &buf, &id);
+			} else {
+				err = corpus_textset_add(&set, &text, &id);
+			}
+
+			if (err) {
 				goto error_add;
 			}
 			if (id == INT_MAX || id + 1 == NA_INTEGER) {
 				corpus_textset_destroy(&set);
+				free(buf.ptr);
 				error("number of factor levels (%d)"
 				      " exceeds maximum", id);
 			}
@@ -936,6 +983,7 @@ SEXP as_factor_jsondata(SEXP sdata)
 
 error_add:
 	corpus_textset_destroy(&set);
+	free(buf.ptr);
 error_init:
 	if (err) {
 		error("failed decoding JSON data to factor type");
