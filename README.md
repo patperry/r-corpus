@@ -335,11 +335,11 @@ of operations instead:
     ##   user  system elapsed
     ##  9.200   0.986  10.240
 
-The later approach is about 6.5 times faster than *quanteda*, but's
+The latter approach is about 6.5 times faster than *quanteda*, but it's
 more error-prone and I do not recommend it. The recommended approach
 above makes it clear that the preprocessing decisions get made before
 constructing the final matrix. (Also, as a side benefit, it orders the
-columns of `x` in descending order occording to overall term count.)
+columns of `x` in descending order according to overall term count.)
 
 
 Building from source
