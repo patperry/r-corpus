@@ -181,6 +181,7 @@ error:
 
 	if (err) {
 		Rf_error("failed computing term counts");
+		ans = R_NilValue;
 	}
 	UNPROTECT(nprot);
 	return ans;
