@@ -168,7 +168,7 @@ print.jsondata <- function(x, ...)
     }
 
     ans <- .Call(C_subscript_jsondata, x, i)
-    ans <- .Call(C_simplify_jsondata, ans)
+    ans <- .Call(C_simplify_jsondata, ans, NULL, FALSE)
     ans
 }
 
