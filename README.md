@@ -300,9 +300,9 @@ pre-processing and feature selection. If we need to, we we can call
 `term_matrix` on a new text vector to get a matrix with the same columns
 as `x`.
 
-    The *quanteda* package does not have an object analogous to a text
-    filter. We contruct the full term matrix, then drop columns for
-    low-fequency terms:
+The *quanteda* package does not have an object analogous to a text
+filter. We contruct the full term matrix, then drop columns for
+low-fequency terms:
 
     system.time({
         x <- quanteda::dfm(data$text, stem = TRUE, remove_symbols = TRUE,
