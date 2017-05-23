@@ -4,19 +4,16 @@ To Do
 Features
 --------
 
- * `ngram_counts()` returns data frame; `term_counts()` returns vector
+ * `ngram_counts()`, analogous to `term_counts()`
 
- * `term_matrix()` for document-by-term (not `text_matrix()`); accepts
-   `groups` and `weights` arguments for collapsing rows.
+ * `ngram_matrix()`, analogous to `term_matrix()`
 
- * The concat operator `c()` does not work on text or jsondata. Should it?
+ * Concat operator `c()` for text.
 
- * Need implementations for the `.S3PrimitiveGenerics` for `jsondata` and
-   `text`.
+ * Need implementations for the `.S3PrimitiveGenerics` for `text`.
 
  * Need implementations for
-   `names(.knownS3Generics)[.knownS3Generics == "base"]`
-   for `jsondata` and `text`.
+   `names(.knownS3Generics)[.knownS3Generics == "base"]` for `text`.
 
  * `summary.text`
 
@@ -27,6 +24,3 @@ Features
 
  * Bootstrapping. Not sure what the interface should look like, but should
    support sentence-level, word-level, block-level.
-
- * `read_ndjson` should make memory-mapping opt-in instead of the default,
-   and should allow input from a connection when opting out.
