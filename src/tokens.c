@@ -48,7 +48,7 @@ struct tokens {
 
 static void tokens_init(struct tokens *ctx, struct corpus_filter *filter);
 static void tokens_destroy(struct tokens *ctx);
-static void tokens_add(struct tokens *ctx, int type_id);
+static SEXP tokens_add(struct tokens *ctx, int type_id);
 static SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text);
 
 
@@ -68,7 +68,7 @@ void tokens_init(struct tokens *ctx, struct corpus_filter *filter)
 	// add the terms in the filter
 	n = ctx->filter->nterm;
 	for (i = 0; i < n; i++) {
-		tokens_add(ctx, filter->type_ids[i]);
+		PROTECT(tokens_add(ctx, filter->type_ids[i]));
 	}
 
 	ctx->nprot = n;
@@ -81,8 +81,9 @@ void tokens_destroy(struct tokens *ctx)
 }
 
 
-void tokens_add(struct tokens *ctx, int type_id)
+SEXP tokens_add(struct tokens *ctx, int type_id)
 {
+	SEXP ans;
 	const struct corpus_text *type;
 
 	if (ctx->ntype == ctx->ntype_max) {
@@ -94,11 +95,11 @@ void tokens_add(struct tokens *ctx, int type_id)
 	}
 
 	type = &ctx->filter->symtab.types[type_id].text;
-	ctx->types[ctx->ntype] = mkCharLenCE((char *)type->ptr,
-					     CORPUS_TEXT_SIZE(type),
-					     CE_UTF8);
-	PROTECT(ctx->types[ctx->ntype]);
+	ans = mkCharLenCE((char *)type->ptr, CORPUS_TEXT_SIZE(type), CE_UTF8);
+	ctx->types[ctx->ntype] = ans;
 	ctx->ntype++;
+
+	return ans;
 }
 
 
@@ -124,9 +125,9 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		// add the new terms
 		while (nterm < ctx->filter->nterm) {
 			type_id = ctx->filter->type_ids[nterm];
-			tokens_add(ctx, type_id);
-			nterm++;
+			PROTECT(tokens_add(ctx, type_id));
 			nadd++;
+			nterm++;
 		}
 
 		if (ntok == ctx->nbuf_max) {
