@@ -6,7 +6,7 @@
 \alias{text}
 \title{Text Vectors}
 \description{
-    Create or test for objects of type \code{"text"}.
+    Create or test for text objects.
 }
 \usage{
     as_text(x, ...)

@@ -146,7 +146,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
         setAttrib(ans, R_NamesSymbol, names);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
-        SET_STRING_ELT(sclass, 0, mkChar("text"));
+        SET_STRING_ELT(sclass, 0, mkChar("corpus_text"));
         setAttrib(ans, R_ClassSymbol, sclass);
 
 	UNPROTECT(8);

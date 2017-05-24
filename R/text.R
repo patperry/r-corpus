@@ -37,7 +37,7 @@ as_text.default <- function(x, ...)
                 attr(x, a) <- NULL
             }
         }
-        attr(x, "class") <- "text"
+        attr(x, "class") <- "corpus_text"
         x
     } else if (is.data.frame(x)) {
         if (.row_names_info(x) <= 0) {
@@ -45,6 +45,7 @@ as_text.default <- function(x, ...)
         } else {
             nm <- row.names(x)
         }
+
 
         # find the columns with type 'text'
         text_cols <- sapply(x, is_text)
@@ -78,29 +79,29 @@ is_text <- function(x)
 
 is_text.default <- function(x)
 {
-    inherits(x, "text")
+    inherits(x, "corpus_text")
 }
 
 
-length.text <- function(x)
+length.corpus_text <- function(x)
 {
     .Call(C_length_text, x)
 }
 
 
-dim.text <- function(x)
+dim.corpus_text <- function(x)
 {
     NULL
 }
 
 
-names.text <- function(x)
+names.corpus_text <- function(x)
 {
     unclass(x)$names
 }
 
 
-`names<-.text` <- function(x, value)
+`names<-.corpus_text` <- function(x, value)
 {
     if (!is.null(value)) {
         value <- as.character(value)
@@ -118,7 +119,7 @@ names.text <- function(x)
 }
 
 
-`[.text` <- function(x, i)
+`[.corpus_text` <- function(x, i)
 {
     index <- seq_along(x)
     names(index) <- names(x)
@@ -133,7 +134,7 @@ names.text <- function(x)
 }
 
 
-`[[.text` <- function(x, i)
+`[[.corpus_text` <- function(x, i)
 {
     index <- seq_along(x)
     names(index) <- names(x)
@@ -142,31 +143,31 @@ names.text <- function(x)
 }
 
 
-`$.text` <- function(x, name)
+`$.corpus_text` <- function(x, name)
 {
     stop("$ operator is invalid for text objects")
 }
 
 
-`$<-.text` <- function(x, name, value)
+`$<-.corpus_text` <- function(x, name, value)
 {
     stop("$<- operator is invalid for text objects")
 }
 
 
-`[<-.text` <- function(x, i, value)
+`[<-.corpus_text` <- function(x, i, value)
 {
     stop("[<- operator is invalid for text objects")
 }
 
 
-`[[<-.text` <- function(x, i, value)
+`[[<-.corpus_text` <- function(x, i, value)
 {
     stop("[[<- operator is invalid for text objects")
 }
 
 
-format.text <- function(x, nchar_max = 60, suffix = "\u2026", ...)
+format.corpus_text <- function(x, nchar_max = 60, suffix = "\u2026", ...)
 {
     if (length(x) == 0) {
         str <- character()
@@ -184,7 +185,7 @@ format.text <- function(x, nchar_max = 60, suffix = "\u2026", ...)
 }
 
 
-print.text <- function(x, print_max = 6L, ...)
+print.corpus_text <- function(x, print_max = 6L, ...)
 {
     if (length(x) == 0) {
         cat("text(0)\n")
@@ -220,24 +221,24 @@ print.text <- function(x, print_max = 6L, ...)
 }
 
 
-summary.text <- function(object, ...)
+summary.corpus_text <- function(object, ...)
 {
     value <- c(Length = length(object), Class = "text", Mode = "character")
     class(value) <- c("summaryDefault", "table")
     value
 }
 
-as.character.text <- function(x, ...)
+as.character.corpus_text <- function(x, ...)
 {
     .Call(C_as_character_text, x)
 }
 
-as.complex.text <- function(x, ...)
+as.complex.corpus_text <- function(x, ...)
 {
     as.complex(as.character(x, ...))
 }
 
-as.data.frame.text <- function(x, row.names = NULL, optional = FALSE, ...)
+as.data.frame.corpus_text <- function(x, row.names = NULL, optional = FALSE, ...)
 {
     nm <- deparse(substitute(x), width.cutoff = 500L)
 
@@ -272,32 +273,32 @@ as.data.frame.text <- function(x, row.names = NULL, optional = FALSE, ...)
     structure(value, row.names = row.names, class = "data.frame")
 }
 
-as.double.text <- function(x, ...)
+as.double.corpus_text <- function(x, ...)
 {
     as.double(as.character(x, ...))
 }
 
-as.integer.text <- function(x, ...)
+as.integer.corpus_text <- function(x, ...)
 {
     as.integer(as.character(x, ...))
 }
 
-as.logical.text <- function(x, ...)
+as.logical.corpus_text <- function(x, ...)
 {
     as.logical(as.character(x, ...))
 }
 
-as.Date.text <- function(x, format, ...)
+as.Date.corpus_text <- function(x, format, ...)
 {
     as.Date(as.character(x), format, ...)
 }
 
-is.character.text <- function(x)
+is.character.corpus_text <- function(x)
 {
     FALSE
 }
 
-all.equal.text <- function(target, current, ...)
+all.equal.corpus_text <- function(target, current, ...)
 {
     if (!is_text(current)) {
         return(c(paste("Modes: text,", mode(current)),
@@ -329,17 +330,17 @@ all.equal.text <- function(target, current, ...)
     all.equal(target, current, ...)
 }
 
-is.na.text <- function(x)
+is.na.corpus_text <- function(x)
 {
     .Call(C_is_na_text, x)
 }
 
-anyNA.text <- function(x, recursive = FALSE)
+anyNA.corpus_text <- function(x, recursive = FALSE)
 {
     .Call(C_anyNA_text, x)
 }
 
-Ops.text <- function(e1, e2)
+Ops.corpus_text <- function(e1, e2)
 {
     if (nargs() == 1)
         stop(gettextf("unary %s not defined for \"text\" objects",
