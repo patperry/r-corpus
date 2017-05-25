@@ -28,9 +28,9 @@ it does enough to be useful. The package exports six main functions:
 
 The package also provides two new data types:
 
- + `jsondata` for storing JSON-encoded data;
+ + `corpus_json` for storing JSON-encoded data;
 
- + `text` for storing text.
+ + `corpus_text` for storing text.
 
 That's it. There are no n-grams, no part-of-speech tagging, no topic models,
 and no word vectors.  Some of these features are planned for future releases.
