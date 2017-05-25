@@ -1,6 +1,10 @@
 Corpus (R Package)
 ==================
 
+[![Build Status](https://api.travis-ci.org/patperry/r-corpus.svg?branch=master)](https://travis-ci.org/patperry/r-corpus)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/corpus)](http://cran.r-project.org/package=corpus)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/corpus)](https://cran.r-project.org/package=corpus)
+
 Text corpus analysis in R. Heavy lifting is done by the
 [Corpus C library][corpus].
 
