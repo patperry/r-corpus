@@ -33,7 +33,7 @@ enum source_type {
 struct source {
 	int type;
 	union {
-		const struct jsondata *set;
+		const struct json *set;
 		SEXP chars;
 	} data;
 	R_xlen_t nrow;
@@ -45,7 +45,7 @@ static void load_text(SEXP x);
 
 static int is_source(SEXP x)
 {
-	return (x == R_NilValue || TYPEOF(x) == STRSXP || is_jsondata(x));
+	return (x == R_NilValue || TYPEOF(x) == STRSXP || is_json(x));
 }
 
 
@@ -58,13 +58,13 @@ static void source_assign(struct source *source, SEXP value)
 		source->type = SOURCE_CHAR;
 		source->data.chars = value;
 		source->nrow = XLENGTH(value);
-	} else if (is_jsondata(value)) {
+	} else if (is_json(value)) {
 		source->type = SOURCE_DATASET;
-		source->data.set = as_jsondata(value);
+		source->data.set = as_json(value);
 		source->nrow = source->data.set->nrow;
 	} else {
 		error("invalid text source;"
-		      " should be 'character', 'jsondata', or NULL");
+		      " should be 'character', 'json', or NULL");
 	}
 }
 
@@ -106,7 +106,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
 		src = VECTOR_ELT(sources, s);
 		if (!is_source(src)) {
 			error("'sources' element at index %d is invalid;"
-			      "should be a 'character' or 'jsondata'", s + 1);
+			      "should be a 'character' or 'json'", s + 1);
 		}
 	}
 
@@ -207,10 +207,10 @@ struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 }
 
 
-SEXP as_text_jsondata(SEXP sdata)
+SEXP as_text_json(SEXP sdata)
 {
 	SEXP ans, handle, sources, source, row, start, stop;
-	const struct jsondata *d = as_jsondata(sdata);
+	const struct json *d = as_json(sdata);
 	struct corpus_text *text;
 	R_xlen_t i, nrow = d->nrow;
 	int err;
@@ -377,8 +377,8 @@ SEXP coerce_text(SEXP sx)
 
 	if (is_text(sx)) {
 		return sx;
-	} else if (is_jsondata(sx)) {
-		return as_text_jsondata(sx);
+	} else if (is_json(sx)) {
+		return as_text_json(sx);
 	}
 
 	PROTECT(sx = coerceVector(sx, STRSXP));
@@ -485,7 +485,7 @@ static void load_text(SEXP x)
 			break;
 
 		case SOURCE_DATASET:
-			// no need to validate input (handled by jsondata)
+			// no need to validate input (handled by json)
 			corpus_data_text(&sources[s].data.set->rows[j], &txt);
 			flags = 0;
 			break;

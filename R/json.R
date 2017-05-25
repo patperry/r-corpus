@@ -58,38 +58,38 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = "text",
             ans <- as.data.frame(ans, text = text,
                                  stringsAsFactors = stringsAsFactors)
         } else {
-            ans <- .Call(C_simplify_jsondata, ans, text, stringsAsFactors)
+            ans <- .Call(C_simplify_json, ans, text, stringsAsFactors)
         }
     }
     ans
 }
 
 
-dim.jsondata <- function(x)
+dim.corpus_json <- function(x)
 {
-    .Call(C_dim_jsondata, x)
+    .Call(C_dim_json, x)
 }
 
 
-length.jsondata <- function(x)
+length.corpus_json <- function(x)
 {
-    .Call(C_length_jsondata, x)
+    .Call(C_length_json, x)
 }
 
 
-names.jsondata <- function(x)
+names.corpus_json <- function(x)
 {
-    .Call(C_names_jsondata, x)
+    .Call(C_names_json, x)
 }
 
 
-`names<-.jsondata` <- function(x, value)
+`names<-.corpus_json` <- function(x, value)
 {
-    stop("setting names on a jsondata object is not allowed")
+    stop("setting names on a json object is not allowed")
 }
 
 
-dimnames.jsondata <- function(x)
+dimnames.corpus_json <- function(x)
 {
     cn <- names(x)
     if (is.null(cn)) {
@@ -100,40 +100,40 @@ dimnames.jsondata <- function(x)
 }
 
 
-datatype.jsondata <- function(x, ...)
+datatype.corpus_json <- function(x, ...)
 {
-    .Call(C_datatype_jsondata, x)
+    .Call(C_datatype_json, x)
 }
 
 
-datatypes.jsondata <- function(x, ...)
+datatypes.corpus_json <- function(x, ...)
 {
-    .Call(C_datatypes_jsondata, x)
+    .Call(C_datatypes_json, x)
 }
 
 
-print.jsondata <- function(x, ...)
+print.corpus_json <- function(x, ...)
 {
-    invisible(.Call(C_print_jsondata, x))
+    invisible(.Call(C_print_json, x))
 }
 
 
-`$.jsondata` <- function(x, name)
+`$.corpus_json` <- function(x, name)
 {
     if (is.null(dim(x))) {
-        stop("$ operator is invalid for scalar jsondatas")
+        stop("$ operator is invalid for scalar json objects")
     }
     x[[name]]
 }
 
 
-`$<-.jsondata` <- function(x, name, value)
+`$<-.corpus_json` <- function(x, name, value)
 {
-    stop("$<- operator is invalid for jsondata objects")
+    stop("$<- operator is invalid for json objects")
 }
 
 
-`[[.jsondata` <- function(x, i)
+`[[.corpus_json` <- function(x, i)
 {
     if (length(i) == 0) {
         stop("subscript of length 0 is not allowed")
@@ -141,20 +141,20 @@ print.jsondata <- function(x, ...)
         stop("subscript of length >1 is not allowed")
     }
 
-    # For scalar jsondatas, i is the index.
+    # For scalar json objects, i is the index.
     #
-    # For record jsondatas, i can either be the column index, or
+    # For record objects, i can either be the column index, or
     # the column name; in the latter case convert i to the column
     # index.
     #
     # In both cases, convert i to a whole number double.
 
-    if (is.null(dim(x))) { # scalar jsondata
+    if (is.null(dim(x))) { # scalar json
         if (!is.numeric(i) || is.na(i)) {
             stop(paste0("invalid subscript: \"", i, "\""))
         }
         i <- floor(as.double(i))
-    } else { # record jsondata
+    } else { # record json
         if (is.character(i)) {
             if (!(i %in% names(x))) {
                 stop(paste0("invalid column name: \"", i, "\""))
@@ -167,20 +167,20 @@ print.jsondata <- function(x, ...)
         i <- floor(as.double(i))
     }
 
-    ans <- .Call(C_subscript_jsondata, x, i)
-    ans <- .Call(C_simplify_jsondata, ans, NULL, FALSE)
+    ans <- .Call(C_subscript_json, x, i)
+    ans <- .Call(C_simplify_json, ans, NULL, FALSE)
     ans
 }
 
 
-`[[<-.jsondata` <- function(x, i, value)
+`[[<-.corpus_json` <- function(x, i, value)
 {
-    stop("[[<- operator is invalid for jsondata objects")
+    stop("[[<- operator is invalid for json objects")
 }
 
 
 
-`[.jsondata` <- function(x, ...)
+`[.corpus_json` <- function(x, ...)
 {
     if (!all(names(sys.call()[-1] == ""))) {
         stop("named arguments are not allowed")
@@ -189,7 +189,7 @@ print.jsondata <- function(x, ...)
     ni <- nargs() - 1
 
     if (is.null(dim(x))) {
-        # Scalar jsondata:
+        # Scalar json:
         # If non-NULL, convert i to a double() vector of indices;
         # set j to NULL.
 
@@ -205,7 +205,7 @@ print.jsondata <- function(x, ...)
         }
 	    j <- NULL
     } else {
-        # Record jsondata:
+        # Record json:
         # If non-NULL, convert i to a double() vector of indices;
         # if non-NULL convert j to a column index
 
@@ -244,23 +244,23 @@ print.jsondata <- function(x, ...)
         }
     }
 
-    .Call(C_subset_jsondata, x, i, j)
+    .Call(C_subset_json, x, i, j)
 }
 
 
-`[<-.jsondata` <- function(x, ..., value)
+`[<-.corpus_json` <- function(x, ..., value)
 {
-    stop("[<- operator is invalid for jsondata objects")
+    stop("[<- operator is invalid for json objects")
 }
 
 
-as.character.jsondata <- function(x, ...)
+as.character.corpus_json <- function(x, ...)
 {
-    as.character(C_as_character_jsondata, x)
+    as.character(C_as_character_json, x)
 }
 
 
-as.data.frame.jsondata <-
+as.data.frame.corpus_json <-
     function(x, ..., text = "text",
              stringsAsFactors = default.stringsAsFactors())
 {
@@ -270,33 +270,33 @@ as.data.frame.jsondata <-
 }
 
 
-as.logical.jsondata <- function(x, ...)
+as.logical.corpus_json <- function(x, ...)
 {
-    .Call(C_as_logical_jsondata, x)
+    .Call(C_as_logical_json, x)
 }
 
 
-as.integer.jsondata <- function(x, ...)
+as.integer.corpus_json <- function(x, ...)
 {
-    .Call(C_as_integer_jsondata, x)
+    .Call(C_as_integer_json, x)
 }
 
 
-as.double.jsondata <- function(x, ...)
+as.double.corpus_json <- function(x, ...)
 {
-    .Call(C_as_double_jsondata, x)
+    .Call(C_as_double_json, x)
 }
 
 
-as.list.jsondata <- function(x, ..., text = "text",
-                             stringsAsFactors = default.stringsAsFactors())
+as.list.corpus_json <- function(x, ..., text = "text",
+                                stringsAsFactors = default.stringsAsFactors())
 {
     text <- as.character(text)
-    .Call(C_as_list_jsondata, x, text, stringsAsFactors)
+    .Call(C_as_list_json, x, text, stringsAsFactors)
 }
 
 
-as_text.jsondata <- function(x, ...)
+as_text.corpus_json <- function(x, ...)
 {
     if (length(dim(x)) == 2) {
         if (!("text" %in% names(x))) {
@@ -307,6 +307,6 @@ as_text.jsondata <- function(x, ...)
         names(x) <- nm
         x
     } else {
-        .Call(C_as_text_jsondata, x)
+        .Call(C_as_text_json, x)
     }
 }

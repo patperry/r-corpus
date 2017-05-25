@@ -33,7 +33,7 @@ struct corpus_data;
 struct corpus_filebuf;
 struct corpus_filter;
 
-struct jsondata {
+struct json {
 	struct corpus_schema schema;
 	struct corpus_data *rows;
 	R_xlen_t nrow;
@@ -73,26 +73,26 @@ SEXP logging_off(void);
 SEXP logging_on(void);
 
 /* data set */
-SEXP alloc_jsondata(SEXP buffer, SEXP field, SEXP rows);
-int is_jsondata(SEXP data);
-struct jsondata *as_jsondata(SEXP data);
+SEXP alloc_json(SEXP buffer, SEXP field, SEXP rows);
+int is_json(SEXP data);
+struct json *as_json(SEXP data);
 
-SEXP as_integer_jsondata(SEXP data);
-SEXP as_double_jsondata(SEXP data);
-SEXP as_factor_jsondata(SEXP data);
-SEXP as_list_jsondata(SEXP data, SEXP text, SEXP stringsAsFactors);
-SEXP as_logical_jsondata(SEXP data);
-SEXP as_character_jsondata(SEXP data);
-SEXP as_text_jsondata(SEXP data);
-SEXP dim_jsondata(SEXP data);
-SEXP length_jsondata(SEXP data);
-SEXP names_jsondata(SEXP data);
-SEXP print_jsondata(SEXP data);
-SEXP datatype_jsondata(SEXP data);
-SEXP datatypes_jsondata(SEXP data);
-SEXP simplify_jsondata(SEXP data, SEXP text, SEXP stringsAsFactors);
-SEXP subscript_jsondata(SEXP data, SEXP i);
-SEXP subset_jsondata(SEXP data, SEXP i, SEXP j);
+SEXP as_integer_json(SEXP data);
+SEXP as_double_json(SEXP data);
+SEXP as_factor_json(SEXP data);
+SEXP as_list_json(SEXP data, SEXP text, SEXP stringsAsFactors);
+SEXP as_logical_json(SEXP data);
+SEXP as_character_json(SEXP data);
+SEXP as_text_json(SEXP data);
+SEXP dim_json(SEXP data);
+SEXP length_json(SEXP data);
+SEXP names_json(SEXP data);
+SEXP print_json(SEXP data);
+SEXP datatype_json(SEXP data);
+SEXP datatypes_json(SEXP data);
+SEXP simplify_json(SEXP data, SEXP text, SEXP stringsAsFactors);
+SEXP subscript_json(SEXP data, SEXP i);
+SEXP subset_json(SEXP data, SEXP i, SEXP j);
 
 /* data */
 SEXP scalar_data(const struct corpus_data *d, const struct corpus_schema *s,
