@@ -47,6 +47,4 @@ test_that("serialization should work", {
     text2 <- readRDS(file2)
 
     expect_equal(text, text2)
-
-    rm("ds", "text", "text2"); gc(); file.remove(file, file2)
 })

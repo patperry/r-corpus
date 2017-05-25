@@ -58,8 +58,6 @@ test_that("`as_text` should drop attributes for JSON objects", {
     y <- as_text(x)
 
     expect_equal(y, text("hello"))
-
-    rm("x", "y"); gc(); file.remove(file)
 })
 
 

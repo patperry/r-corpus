@@ -107,8 +107,6 @@ test_that("the result of 'sentences' on JSON data can be serialized", {
     saveRDS(sents, file2)
     sents2 <- readRDS(file2)
     expect_equal(sents, sents2)
-
-    rm("data", "sents", "sents2"); gc(); file.remove(file, file2)
 })
 
 
