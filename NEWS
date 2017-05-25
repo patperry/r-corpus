@@ -1,4 +1,4 @@
-Changes in version 0.5.1
+Changes in version 0.5.1 (2017-05-25)
 
  * Rename "text" class to "corpus_text" to avoid name classes with grid.
 
