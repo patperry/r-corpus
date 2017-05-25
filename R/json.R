@@ -170,9 +170,7 @@ print.corpus_json <- function(x, ...)
     }
 
     ans <- .Call(C_subscript_json, x, i)
-    if (is.null(dim(x))) { # scalar json
-        ans <- .Call(C_simplify_json, ans, NULL, FALSE)
-    }
+    ans <- .Call(C_simplify_json, ans, NULL, FALSE)
     ans
 }
 
