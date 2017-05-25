@@ -2,6 +2,7 @@
 .*.o$
 .*.so$
 ^.git
+^.travis.yml$
 ^Makefile$
 ^README.md$
 ^TODO.md$
