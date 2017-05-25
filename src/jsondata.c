@@ -915,7 +915,7 @@ SEXP as_factor_jsondata(SEXP sdata)
 	for (i = 0; i < n; i++) {
 		err = corpus_data_text(&d->rows[i], &text);
 		if (err == CORPUS_ERROR_INVAL) {
-			id = NA_INTEGER;
+			INTEGER(ans)[i] = NA_INTEGER;
 		} else {
 			// decode escapes in the input
 			if (CORPUS_TEXT_HAS_ESC(&text)) {
@@ -963,8 +963,8 @@ SEXP as_factor_jsondata(SEXP sdata)
 				error("number of factor levels (%d)"
 				      " exceeds maximum", id);
 			}
+			INTEGER(ans)[i] = id + 1;
 		}
-		INTEGER(ans)[i] = id + 1;
 	}
 
 	PROTECT(levels = allocVector(STRSXP, set.nitem)); nprot++;

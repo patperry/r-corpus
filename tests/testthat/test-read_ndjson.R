@@ -15,3 +15,12 @@ test_that("reading a factor with escapes should work", {
     expect_equal(levels(x), "an\nescape")
     expect_equal(as.integer(x), c(1, 1))
 })
+
+
+test_that("reading a factor with nulls should work", {
+    file <- tempfile()
+    writeLines(c('"A"', 'null', '"B"'), file)
+    x <- read_ndjson(file)
+    expect_equal(levels(x), c("A", "B"))
+    expect_equal(as.integer(x), c(1, NA, 2))
+})
