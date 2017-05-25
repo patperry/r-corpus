@@ -2,7 +2,7 @@ Corpus (R Package)
 ==================
 
 [![Build Status](https://api.travis-ci.org/patperry/r-corpus.svg?branch=master)](https://travis-ci.org/patperry/r-corpus)
-[![Coverage Status](https://codecov.io/github/patperr/r-corpus/coverage.svg?branch=master)](https://codecov.io/github/patperry/r-corpus?branch=master)
+[![Coverage Status](https://codecov.io/github/patperry/r-corpus/coverage.svg?branch=master)](https://codecov.io/github/patperry/r-corpus?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/corpus)](http://cran.r-project.org/package=corpus)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/corpus)](https://cran.r-project.org/package=corpus)
 
