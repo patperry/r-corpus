@@ -57,6 +57,8 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = "text",
         if (length(dim(ans)) == 2) {
             ans <- as.data.frame(ans, text = text,
                                  stringsAsFactors = stringsAsFactors)
+        } else if (datatype(ans) == "text") {
+            ans <- .Call(C_as_text_json, ans)
         } else {
             ans <- .Call(C_simplify_json, ans, text, stringsAsFactors)
         }
@@ -168,7 +170,9 @@ print.corpus_json <- function(x, ...)
     }
 
     ans <- .Call(C_subscript_json, x, i)
-    ans <- .Call(C_simplify_json, ans, NULL, FALSE)
+    if (is.null(dim(x))) { # scalar json
+        ans <- .Call(C_simplify_json, ans, NULL, FALSE)
+    }
     ans
 }
 
@@ -256,7 +260,7 @@ print.corpus_json <- function(x, ...)
 
 as.character.corpus_json <- function(x, ...)
 {
-    as.character(C_as_character_json, x)
+    .Call(C_as_character_json, x)
 }
 
 

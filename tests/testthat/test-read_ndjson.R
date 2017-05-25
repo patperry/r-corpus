@@ -10,8 +10,9 @@ test_that("reading a non-existent file should fail", {
 
 test_that("reading a factor with escapes should work", {
     file <- tempfile()
-    writeLines(c('"an\\nescape"', '"an\\u000aescape"'), file)
-    x <- read_ndjson(file)
+    writeLines(c('{"x": "an\\nescape"}', '{"x": "an\\u000aescape"}'), file)
+    ds <- read_ndjson(file)
+    x <- ds$x
     expect_equal(levels(x), "an\nescape")
     expect_equal(as.integer(x), c(1, 1))
 })
@@ -19,8 +20,9 @@ test_that("reading a factor with escapes should work", {
 
 test_that("reading a factor with nulls should work", {
     file <- tempfile()
-    writeLines(c('"A"', 'null', '"B"'), file)
-    x <- read_ndjson(file)
+    writeLines(c('{"x": "A"}', '{}', '{"x": "B"}'), file)
+    ds <- read_ndjson(file)
+    x <- ds$x
     expect_equal(levels(x), c("A", "B"))
     expect_equal(as.integer(x), c(1, NA, 2))
 })

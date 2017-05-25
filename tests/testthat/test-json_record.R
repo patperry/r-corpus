@@ -1,4 +1,4 @@
-context("jsondata_record")
+context("json_record")
 
 
 test_that("converting to list works", {
@@ -11,6 +11,4 @@ test_that("converting to list works", {
     l <- as.list(ds)
 
     expect_equal(l, list(x=x, y=y))
-
-    rm("ds", "l"); gc(); file.remove(file)
 })

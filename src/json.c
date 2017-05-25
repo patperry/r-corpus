@@ -508,7 +508,7 @@ SEXP print_json(SEXP sdata)
 			" of the following type:\n%s\n",
 			(uint64_t)d->nrow, r.string);
 	} else {
-		Rprintf("JSON json with %"PRIu64" rows"
+		Rprintf("JSON data set with %"PRIu64" rows"
 			" of type %s\n", (uint64_t)d->nrow, r.string);
 	}
 
@@ -1126,8 +1126,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext,
 						 STRING_ELT(names, j))) {
 			ans_j = as_text_json(ans_j);
 		} else {
-			ans_j = simplify_json(ans_j, stext,
-						  stringsAsFactors);
+			ans_j = simplify_json(ans_j, stext, stringsAsFactors);
 		}
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}

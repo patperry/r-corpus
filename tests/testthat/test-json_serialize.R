@@ -1,25 +1,35 @@
-context("jsondata_serialize")
+context("json_serialize")
 
 
-test_that("serializing jsondata works", {
+test_that("serializing json works", {
     x <- c("S", "P", "Q", "R")
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
-    ds <- read_ndjson(file)
+    ds <- read_ndjson(file, simplify=FALSE)
 
     file2 <- tempfile()
     saveRDS(ds, file2)
     ds2 <- readRDS(file2)
-    
-    expect_equal(as.character(ds), as.character(ds2))
 
-    rm("ds", "ds2"); gc()
-    file.remove(file)
-    file.remove(file2)
+    expect_equal(as.character(ds), as.character(ds2))
 })
 
 
-test_that("serializing jsondata should use relative, not absolute path", {
+test_that("serializing mmapped json works", {
+    x <- c("S", "P", "Q", "R")
+    file <- tempfile()
+    writeLines(paste0('"', x, '"'), file)
+    ds <- read_ndjson(file, mmap=TRUE, simplify=FALSE)
+
+    file2 <- tempfile()
+    saveRDS(ds, file2)
+    ds2 <- readRDS(file2)
+
+    expect_equal(as.character(ds), as.character(ds2))
+})
+
+
+test_that("serializing mmapped json should use relative, not absolute path", {
     wd <- getwd()
     on.exit(setwd(wd))
 
@@ -35,9 +45,8 @@ test_that("serializing jsondata should use relative, not absolute path", {
     # save dir/a/data.json
     # save dir/a/obj.rds
     writeLines(paste0('{"x": "', x, '"}'), "data.json")
-    ds <- read_ndjson("data.json")
+    ds <- read_ndjson("data.json", mmap=TRUE, simplify=FALSE)
     saveRDS(ds, "obj.rds")
-    rm("ds"); gc()
 
     # move the files to
     # dir/data.json
@@ -52,18 +61,14 @@ test_that("serializing jsondata should use relative, not absolute path", {
     # read obj.rds
     ds2 <- readRDS("obj.rds")
     expect_equal(as.character(ds2$x), x)
-
-    rm("ds2"); gc()
-    file.remove(file.path(dir, "data.json"))
-    file.remove(file.path(dir, "obj.rds"))
 })
 
 
-test_that("serializing jsondata subset works", {
+test_that("serializing json subset works", {
     x <- LETTERS
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
-    ds <- read_ndjson(file)
+    ds <- read_ndjson(file, simplify=FALSE)
 
     i <- seq(2, 26, 2)
     ds <- ds[i]
@@ -73,19 +78,15 @@ test_that("serializing jsondata subset works", {
     ds2 <- readRDS(file2)
 
     expect_equal(as.character(ds), as.character(ds2))
-
-    rm("ds", "ds2"); gc()
-    file.remove(file)
-    file.remove(file2)
 })
 
 
-test_that("serializing jsondata field works", {
+test_that("serializing json field works", {
     x <- LETTERS
     y <- 3.14 * seq_along(LETTERS) - 10
     file <- tempfile()
     writeLines(paste0('{"x": "', x, '", "z": { "y": ', y, "} }"), file)
-    ds <- read_ndjson(file)
+    ds <- read_ndjson(file, simplify=FALSE)
 
     ds <- ds$z
 
@@ -94,18 +95,14 @@ test_that("serializing jsondata field works", {
     ds2 <- readRDS(file2)
 
     expect_equal(as.numeric(ds$y), as.numeric(ds2$y))
-
-    rm("ds", "ds2"); gc()
-    file.remove(file)
-    file.remove(file2)
 })
 
 
-test_that("serializing jsondata nested fields works", {
+test_that("serializing json nested fields works", {
     x <- 1:10
     file <- tempfile()
     writeLines(paste0('{"f1": {"f2": {"f3": {"x": ', x, '}}}}'), file)
-    ds <- read_ndjson(file)
+    ds <- read_ndjson(file, simplify=FALSE)
 
     ds <- ds$f1$f2$f3
 
@@ -114,19 +111,15 @@ test_that("serializing jsondata nested fields works", {
     ds2 <- readRDS(file2)
 
     expect_equal(as.integer(ds$x), as.numeric(ds2$x))
-
-    rm("ds", "ds2"); gc()
-    file.remove(file)
-    file.remove(file2)
 })
 
 
-test_that("serializing jsondata field subset works", {
+test_that("serializing json field subset works", {
     x <- LETTERS
     y <- 3.14 * seq_along(LETTERS) - 10
     file <- tempfile()
     writeLines(paste0('{"z": {"x": "', x, '"}, "y": ', y, "}"), file)
-    ds <- read_ndjson(file)
+    ds <- read_ndjson(file, simplify=FALSE)
 
     ds <- ds$z
     i <- c(20, 2, 9, 4, 6, 2)
@@ -137,8 +130,4 @@ test_that("serializing jsondata field subset works", {
     ds2 <- readRDS(file2)
 
     expect_equal(as.character(ds$x), as.character(ds2$x))
-
-    rm("ds", "ds2"); gc()
-    file.remove(file)
-    file.remove(file2)
 })
