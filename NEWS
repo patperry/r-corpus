@@ -2,6 +2,10 @@ Changes in version 0.5.1
 
  * Rename "text" class to "corpus_text" to avoid name classes with grid.
 
+ * Rename "jsondata" to "corpus_json" for consistency.
+
+ * Fix bug in read_ndjson() for reading factors with missing values.
+
 
 Changes in version 0.5.0 (2017-05-23)
 
