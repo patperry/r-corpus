@@ -1,5 +1,17 @@
 Changes in version 0.6.0
 
+ * Rename text_filter() to token_filter().
+
+ * Add more refined control over token_filter() drop cateogries:
+   merged "kana", and "ideo" into "letter"; split off "punct", "mark",
+   and "other" from "symbol".
+
+ * Remove "remove_control", "map_dash", and "remove_space" type
+   normalization options from text_filter().
+
+ * Remove "ignore_empty" token filter option, adding "ignore_space" option
+   in its place.
+
 
 Changes in version 0.5.1 (2017-05-25)
 
