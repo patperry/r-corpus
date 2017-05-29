@@ -118,7 +118,7 @@ SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
 
-/* text filter */
+/* token filter */
 SEXP alloc_filter(SEXP props);
 int is_filter(SEXP filter);
 struct corpus_filter *as_filter(SEXP filter);

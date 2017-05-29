@@ -32,34 +32,31 @@ stopwords <- function(kind = "english")
 }
 
 
-text_filter <- function(map_case = TRUE, map_compat = TRUE,
-                        map_dash = TRUE, map_quote = TRUE,
-                        remove_control = TRUE, remove_ignorable = TRUE,
-                        remove_space = TRUE, ignore_empty = TRUE,
-                        stemmer = NULL, stem_except = drop, combine = NULL,
-                        drop_symbol = FALSE, drop_number = FALSE,
-                        drop_letter = FALSE, drop_kana = FALSE,
-                        drop_ideo = FALSE, drop = NULL, drop_except = select,
-                        select = NULL)
+token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
+                         remove_ignorable = TRUE, ignore_space = TRUE,
+                         stemmer = NULL, stem_except = drop, combine = NULL,
+                         drop_letter = FALSE, drop_mark = FALSE,
+                         drop_number = FALSE, drop_punct = FALSE,
+                         drop_symbol = FALSE, drop_other = FALSE,
+                         drop = NULL,
+                         drop_except = select, select = NULL)
 {
-    ans <- structure(list(), class="text_filter")
+    ans <- structure(list(), class="corpus_token_filter")
 
     ans$map_case <- map_case
     ans$map_compat <- map_compat
-    ans$map_dash <- map_dash
     ans$map_quote <- map_quote
-    ans$remove_control <- remove_control
     ans$remove_ignorable <- remove_ignorable
-    ans$remove_space <- remove_space
-    ans$ignore_empty <- ignore_empty
+    ans$ignore_space <- ignore_space
     ans$stemmer <- stemmer
     ans$stem_except <- stem_except
     ans$combine <- combine
-    ans$drop_symbol <- drop_symbol
-    ans$drop_number <- drop_number
     ans$drop_letter <- drop_letter
-    ans$drop_kana <- drop_kana
-    ans$drop_ideo <- drop_ideo
+    ans$drop_mark <- drop_mark
+    ans$drop_number <- drop_number
+    ans$drop_symbol <- drop_symbol
+    ans$drop_punct <- drop_punct
+    ans$drop_other <- drop_other
     ans$drop <- drop
     ans$drop_except <- drop_except
     ans$select <- select
@@ -68,14 +65,14 @@ text_filter <- function(map_case = TRUE, map_compat = TRUE,
 }
 
 
-as_text_filter <- function(x)
+as_token_filter <- function(x)
 {
     if (is.null(x)) {
         return(NULL)
     }
 
-    ans <- structure(list(), class="text_filter")
-    keys <- names(text_filter())
+    ans <- structure(list(), class="corpus_token_filter")
+    keys <- names(token_filter())
     for (key in keys) {
         ans[[key]] <- x[[key]]
     }
@@ -83,7 +80,7 @@ as_text_filter <- function(x)
 }
 
 
-`[<-.text_filter` <- function(x, i, value)
+`[<-.corpus_token_filter` <- function(x, i, value)
 {
     if (anyNA(i)) {
         stop("NAs are not allowed in subscripted assignments")
@@ -110,29 +107,29 @@ as_text_filter <- function(x)
 }
 
 
-`$<-.text_filter` <- function(x, name, value)
+`$<-.corpus_token_filter` <- function(x, name, value)
 {
-    if (name %in% c("map_case", "map_compat", "map_dash", "map_quote",
-                    "remove_control", "remove_ignorable", "remove_space",
-                    "ignore_empty", "drop_symbol", "drop_number",
-                    "drop_letter", "drop_kana", "drop_ideo")) {
+    if (name %in% c("map_case", "map_compat", "map_quote",
+                    "remove_ignorable", "ignore_space", "drop_letter",
+                    "drop_mark", "drop_number", "drop_symbol",
+                    "drop_punct", "drop_other")) {
         if (!(is.logical(value) && length(value) == 1 && !is.na(value))) {
-            stop(paste0("invalid text_filter '", name, "' property;",
+            stop(paste0("invalid token filter '", name, "' property;",
                         " should be TRUE or FALSE"))
         }
     } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
                            "select")) {
         if (!is.null(value) && !is.character(value)) {
-            stop(paste0("invalid text_filter '", name, "' property;",
+            stop(paste0("invalid token filter '", name, "' property;",
                         " should be a character vector or NULL"))
         }
     } else if (name %in% c("stemmer")) {
         if (!is.null(value) && !(length(value) == 1 && is.character(value))) {
-            stop(paste0("invlaid text_filter '", name, "' property;",
+            stop(paste0("invlaid token filter '", name, "' property;",
                         " should be a character string or NULL"))
         }
     } else {
-        stop(paste0("unrecognized text_filter property: '", name, "'"))
+        stop(paste0("unrecognized token filter property: '", name, "'"))
     }
 
     if (name == "stemmer" && !is.null(value) && !(value %in% stemmers)) {
@@ -153,10 +150,10 @@ as_text_filter <- function(x)
 }
 
 
-`[[<-.text_filter` <- function(x, i, value)
+`[[<-.corpus_token_filter` <- function(x, i, value)
 {
     if (length(i) > 1) {
-        stop("no such text_filter property")
+        stop("no such token filter property")
     }
     if (!is.character(i)) {
         name <- names(x)[[i]]
@@ -164,16 +161,16 @@ as_text_filter <- function(x)
         name <- i
     }
     if (is.na(name)) {
-        stop(paste0("no such text_filter property (", i, ")"))
+        stop(paste0("no such token filter property (", i, ")"))
     }
 
-    `$<-.text_filter`(x, name, value)
+    `$<-.corpus_token_filter`(x, name, value)
 }
 
 
-print.text_filter <- function(x, ...)
+print.corpus_token_filter <- function(x, ...)
 {
-    cat("Text filter with the following options:\n\n")
+    cat("Token filter with the following options:\n\n")
     for (k in names(x)) {
         val <- x[[k]]
 
@@ -198,10 +195,10 @@ sentences <- function(x)
 }
 
 
-tokens <- function(x, filter = text_filter())
+tokens <- function(x, filter = token_filter())
 {
     x <- as_text(x)
-    filter <- as_text_filter(filter)
+    filter <- as_token_filter(filter)
     .Call(C_tokens_text, x, filter)
 }
 
@@ -245,21 +242,21 @@ as_group <- function(group, n)
 }
 
 
-term_counts <- function(x, filter = text_filter(), weights = NULL)
+term_counts <- function(x, filter = token_filter(), weights = NULL)
 {
     x <- as_text(x)
-    filter <- as_text_filter(filter)
+    filter <- as_token_filter(filter)
     weights <- as_weights(weights, length(x))
 
     .Call(C_term_counts_text, x, filter, weights);
 }
 
 
-term_matrix <- function(x, filter = text_filter(), weights = NULL,
+term_matrix <- function(x, filter = token_filter(), weights = NULL,
                         group = NULL)
 {
     x <- as_text(x)
-    filter <- as_text_filter(filter)
+    filter <- as_token_filter(filter)
     weights <- as_weights(weights, length(x))
     group <- as_group(group, length(x))
 

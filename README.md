@@ -20,11 +20,11 @@ it does enough to be useful. The package exports six main functions:
 
  + `sentences()` for segmenting text into sentences;
 
- + `text_filter()` for specifying the process by which a text gets transformed
+ + `token_filter()` for specifying the process by which a text gets transformed
     into a token sequence (normalization, stemming, stop word removal, etc.);
 
  + `tokens()` for segmenting text into tokens, each of which is an instance
-    of a particular term (formally, a word type);
+    of a particular type;
 
  + `term_counts()` for tabulating term occurrence frequencies;
 
@@ -153,17 +153,14 @@ Overall, *corpus* is about 3.7 times faster than *stringi*.
 
 The next benchmark performs a series of operations to transform each text into
 a sequence of normalized tokens. Formally, the value of a token is called a
-"type", but this name is heavily overloaded, so we refer to the value as a
-"term" instead. First, we segment each text into word tokens using the
-boundaries defined by [Unicode Standard Annex #29, Section 4][wordbreak]. Next,
-we normalize the text into [Unicode NFKC normal form][nfkc], and we
-[case fold][casefold] the text (for most languages, replacing uppercase with
-lowercase). Then, we remove non-white-space [control characters][cc], default
-ignorable characters like zero-width spaces, and we remove white space. We also
-"dash fold," replacing Unicode dashes with an ASCII dash (-), and we
-"quote fold," replacing Unicode quotes (single, double, apostrophe) with
-ASCII single quote ('). If, after normalization, the token is empty (for
-example if it started out as white space), then we discard it.
+"type".  First, we segment each text into word tokens using the
+boundaries defined by [Unicode Standard Annex #29, Section 4][wordbreak], and
+we discard white-space-only tokens. Next, we normalize the text into
+[Unicode NFKC normal form][nfkc], and we [case fold][casefold] the text
+(for most scripts, replacing uppercase with lowercase). Then, we remove
+default ignorable characters like zero-width spaces. We also "quote fold,"
+replacing Unicode quotes (single, double, apostrophe) with ASCII single
+quote (').
 
     system.time({
         toks <- tokens(data)
@@ -206,13 +203,13 @@ RAM, but only because we do not throw away punctuation-only tokens.
 We are now ready to compute some text statistics.  In the next benchmark, we
 tokenize the texts and compute the 5 most common terms. While tokenizing, we
 normalize the text as in the previous benchmark, stem the words, drop
-symbols and numbers, and drop common function words ("stop" words). We
-specify this tokenization behavior in a `text_filter` object that we pass
+punctuation and numbers, and drop common function words ("stop" words). We
+specify this tokenization behavior in a `token_filter` object that we pass
 to the `term_counts()` function.
 
     system.time({
-        f <- text_filter(stemmer = "english", drop_symbol = TRUE,
-                         drop_number = TRUE, drop = stopwords("english"))
+        f <- token_filter(stemmer = "english", drop_punct = TRUE,
+                          drop_number = TRUE, drop = stopwords("english"))
 
         stats <- term_counts(data, f)
 
@@ -238,7 +235,7 @@ this matrix.
     library("quanteda")
 
     system.time({
-        x <- quanteda::dfm(data$text, stem = TRUE, remove_symbol = TRUE,
+        x <- quanteda::dfm(data$text, stem = TRUE, remove_punct = TRUE,
                            remove_numbers = TRUE,
                            remove = quanteda::stopwords("english"))
         print(topfeatures(x, n = 5))
@@ -284,8 +281,8 @@ corpus.
 
     system.time({
         # compute all term frequencies
-        f <- text_filter(stemmer = "english", drop_symbol = TRUE,
-                         drop_number = TRUE, drop = stopwords("english"))
+        f <- token_filter(stemmer = "english", drop_punct = TRUE,
+                          drop_number = TRUE, drop = stopwords("english"))
         stats <- term_counts(data, f)
 
         # select terms appearing at least 5 times
@@ -309,7 +306,7 @@ filter. We construct the full term matrix, then drop columns for
 low-frequency terms:
 
     system.time({
-        x <- quanteda::dfm(data$text, stem = TRUE, remove_symbols = TRUE,
+        x <- quanteda::dfm(data$text, stem = TRUE, remove_punct = TRUE,
                            remove_numbers = TRUE,
                            remove = quanteda::stopwords("english"))
         x <- quanteda::dfm_trim(x, min_count = 5)
@@ -325,8 +322,8 @@ of operations instead:
     data <- read_ndjson("~/yelp-review.json")
     system.time({
         # compute all term frequencies
-        f <- text_filter(stemmer = "english", drop_symbol = TRUE,
-                         drop_number = TRUE, drop = stopwords("english"))
+        f <- token_filter(stemmer = "english", drop_punct = TRUE,
+                          drop_number = TRUE, drop = stopwords("english"))
 
         # compute the frequency matrix for the selected terms
         x <- term_matrix(data, f)

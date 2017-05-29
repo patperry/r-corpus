@@ -8,10 +8,10 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
     expect_equal(sentences(text),
         data.frame(parent = c(1L, 1L, 2L, 2L),
                    index  = c(1L, 2L, 1L, 2L),
-                   text   = text("He said, 'Are you going?' ",
-                                 "John Shook his head.",
-                                 "'Are you going?' ",
-                                 "John asked")))
+                   text   = as_text(c("He said, 'Are you going?' ",
+                                      "John Shook his head.",
+                                      "'Are you going?' ",
+                                      "John asked"))))
 })
 
 
@@ -22,8 +22,9 @@ test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
     expect_equal(sentences(text),
         data.frame(parent = c(1L, 2L, 3L, 4L, 5L),
                    index  = c(1L, 1L, 1L, 1L, 1L),
-                   text   = text("c.d", "3.4", "U.S.",
-                                 "the resp. leaders are", "etc.)' '(the")))
+                   text   = as_text(c("c.d", "3.4", "U.S.",
+                                      "the resp. leaders are",
+                                      "etc.)' '(the"))))
 })
 
 
@@ -35,26 +36,26 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
     expect_equal(sentences(text),
         data.frame(parent = c(1L, 1L, 2L, 2L, 3L, 3L),
                    index  = c(1L, 2L, 1L, 2L, 1L, 2L),
-                   text   = text("She said 'See spot run.'  ",
-                                 "John shook his head.",
-                                 "etc.",
-                                 "\u5b83\u4eec\u6307",
-                                 "\u7406\u6570\u5b57.",
-                                 "\u5b83\u4eec\u6307")))
+                   text   = as_text(c("She said 'See spot run.'  ",
+                                      "John shook his head.",
+                                      "etc.",
+                                      "\u5b83\u4eec\u6307",
+                                      "\u7406\u6570\u5b57.",
+                                      "\u5b83\u4eec\u6307"))))
 })
 
 
 test_that("'sentences' cannot handle abbreviations", {
     expect_equal(sentences("Mr. Jones"),
         data.frame(parent = c(1L, 1L), index = c(1L, 2L),
-                   text = text("Mr. ", "Jones")))
+                   text = as_text(c("Mr. ", "Jones"))))
 })
 
 
 test_that("'sentences' works on length-0 arguments values", {
     expect_equal(sentences(c()),
         data.frame(parent = numeric(), index = integer(),
-                   text = text()))
+                   text = as_text(c())))
 })
 
 
@@ -62,17 +63,17 @@ test_that("'sentences' works on empty and missing values", {
     expect_equal(sentences(c("1", "2", NA, "", "5")),
         data.frame(parent = c(1L, 2L, 4L, 5L),
                    index  = c(1L, 1L, 1L, 1L),
-                   text   = text("1", "2", "", "5")))
+                   text   = as_text(c("1", "2", "", "5"))))
 })
 
 
 test_that("'sentences' ignores names if its argument has them", {
-    text <- text(a="First sentence.", b="Second sentence!")
+    text <- as_text(c(a="First sentence.", b="Second sentence!"))
 
     sents <- sentences(text)
     expect_equal(sents,
         data.frame(parent = c(1L, 2L), index = c(1L, 1L),
-                   text = text("First sentence.", "Second sentence!")))
+                   text = as_text(c("First sentence.", "Second sentence!"))))
 })
 
 

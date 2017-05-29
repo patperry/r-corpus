@@ -67,7 +67,7 @@ static void free_filter(SEXP sfilter)
 }
 
 
-static int text_filter_logical(SEXP filter, const char *key, int nullval)
+static int token_filter_logical(SEXP filter, const char *key, int nullval)
 {
 	SEXP val = getListElement(filter, key);
 	int ans;
@@ -79,7 +79,7 @@ static int text_filter_logical(SEXP filter, const char *key, int nullval)
 	PROTECT(val = coerceVector(val, LGLSXP));
 
 	if (XLENGTH(val) > 1) {
-		error("invalid value for text_filter$%s", key);
+		error("invalid token filter '%s' value", key);
 	}
 
 	if (XLENGTH(val) == 0 || INTEGER(val)[0] == NA_LOGICAL) {
@@ -93,7 +93,7 @@ static int text_filter_logical(SEXP filter, const char *key, int nullval)
 }
 
 
-static int text_filter_type_kind(SEXP filter)
+static int token_filter_type_kind(SEXP filter)
 {
 	int kind;
 
@@ -103,33 +103,24 @@ static int text_filter_type_kind(SEXP filter)
 
 	kind = 0;
 
-	if (text_filter_logical(filter, "map_case", 0)) {
-		kind |= CORPUS_TYPE_CASEFOLD;
+	if (token_filter_logical(filter, "map_case", 0)) {
+		kind |= CORPUS_TYPE_MAPCASE;
 	}
-	if (text_filter_logical(filter, "map_compat", 0)) {
-		kind |= CORPUS_TYPE_COMPAT;
+	if (token_filter_logical(filter, "map_compat", 0)) {
+		kind |= CORPUS_TYPE_MAPCOMPAT;
 	}
-	if (text_filter_logical(filter, "map_dash", 0)) {
-		kind |= CORPUS_TYPE_DASHFOLD;
+	if (token_filter_logical(filter, "map_quote", 0)) {
+		kind |= CORPUS_TYPE_MAPQUOTE;
 	}
-	if (text_filter_logical(filter, "map_quote", 0)) {
-		kind |= CORPUS_TYPE_QUOTFOLD;
-	}
-	if (text_filter_logical(filter, "remove_control", 0)) {
-		kind |= CORPUS_TYPE_RMCC;
-	}
-	if (text_filter_logical(filter, "remove_ignorable", 0)) {
+	if (token_filter_logical(filter, "remove_ignorable", 0)) {
 		kind |= CORPUS_TYPE_RMDI;
-	}
-	if (text_filter_logical(filter, "remove_space", 0)) {
-		kind |= CORPUS_TYPE_RMWS;
 	}
 
 	return kind;
 }
 
 
-static const char *text_filter_stemmer(SEXP filter)
+static const char *token_filter_stemmer(SEXP filter)
 {
 	SEXP alg = getListElement(filter, "stemmer");
 	SEXP val;
@@ -139,7 +130,7 @@ static const char *text_filter_stemmer(SEXP filter)
 	}
 
 	if (TYPEOF(alg) != STRSXP || XLENGTH(alg) != 1) {
-		error("invalid text filter 'stemmer' value");
+		error("invalid token filter 'stemmer' value");
 	}
 
 	val = STRING_ELT(alg, 0);
@@ -151,32 +142,36 @@ static const char *text_filter_stemmer(SEXP filter)
 }
 
 
-static int text_filter_flags(SEXP filter)
+static int token_filter_flags(SEXP filter)
 {
 	int flags = 0;
 
-	if (text_filter_logical(filter, "ignore_empty", 0)) {
-		flags |= CORPUS_FILTER_IGNORE_EMPTY;
+	if (token_filter_logical(filter, "ignore_space", 0)) {
+		flags |= CORPUS_FILTER_IGNORE_SPACE;
 	}
 
-	if (text_filter_logical(filter, "drop_symbol", 0)) {
-		flags |= CORPUS_FILTER_DROP_SYMBOL;
-	}
-
-	if (text_filter_logical(filter, "drop_number", 0)) {
-		flags |= CORPUS_FILTER_DROP_NUMBER;
-	}
-
-	if (text_filter_logical(filter, "drop_letter", 0)) {
+	if (token_filter_logical(filter, "drop_letter", 0)) {
 		flags |= CORPUS_FILTER_DROP_LETTER;
 	}
 
-	if (text_filter_logical(filter, "drop_kana", 0)) {
-		flags |= CORPUS_FILTER_DROP_KANA;
+	if (token_filter_logical(filter, "drop_mark", 0)) {
+		flags |= CORPUS_FILTER_DROP_MARK;
 	}
 
-	if (text_filter_logical(filter, "drop_ideo", 0)) {
-		flags |= CORPUS_FILTER_DROP_IDEO;
+	if (token_filter_logical(filter, "drop_number", 0)) {
+		flags |= CORPUS_FILTER_DROP_NUMBER;
+	}
+
+	if (token_filter_logical(filter, "drop_punct", 0)) {
+		flags |= CORPUS_FILTER_DROP_PUNCT;
+	}
+
+	if (token_filter_logical(filter, "drop_symbol", 0)) {
+		flags |= CORPUS_FILTER_DROP_SYMBOL;
+	}
+
+	if (token_filter_logical(filter, "drop_other", 0)) {
+		flags |= CORPUS_FILTER_DROP_OTHER;
 	}
 
 	return flags;
@@ -202,7 +197,7 @@ static void stem_except_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_stem_except(f, &terms[i]))) {
-			error("failed adding term to text_filter "
+			error("failed adding term to token filter "
 			      "stem exception list");
 		}
 	}
@@ -230,7 +225,7 @@ static void drop_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_drop(f, &terms[i]))) {
-			error("failed adding term to text_filter "
+			error("failed adding term to token filter "
 			      "drop list");
 		}
 	}
@@ -258,7 +253,7 @@ static void drop_except_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_drop_except(f, &terms[i]))) {
-			error("failed adding term to text_filter "
+			error("failed adding term to token filter "
 			      "drop exception list");
 		}
 	}
@@ -286,7 +281,7 @@ static void combine_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_combine(f, &terms[i]))) {
-			error("failed adding term to text_filter "
+			error("failed adding term to token filter "
 			      " combine list");
 		}
 	}
@@ -314,7 +309,7 @@ static void select_terms(struct corpus_filter *f, SEXP sterms)
 		}
 
 		if ((err = corpus_filter_select(f, &terms[i], NULL))) {
-			error("failed adding term to text_filter "
+			error("failed adding term to token filter "
 			      " select list");
 		}
 	}
@@ -330,9 +325,9 @@ SEXP alloc_filter(SEXP props)
 	const char *stemmer;
 	int type_kind, flags;
 
-	type_kind = text_filter_type_kind(props);
-	stemmer = text_filter_stemmer(props);
-	flags = text_filter_flags(props);
+	type_kind = token_filter_type_kind(props);
+	stemmer = token_filter_stemmer(props);
+	flags = token_filter_flags(props);
 
 	f = filter_new(type_kind, stemmer, flags);
 	PROTECT(sfilter = R_MakeExternalPtr(f, FILTER_TAG, R_NilValue));

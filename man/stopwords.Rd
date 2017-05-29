@@ -29,7 +29,7 @@
     \code{NULL} if \code{kind = NULL}.
 }
 \seealso{
-    \code{\link{text_filter}}
+    \code{\link{token_filter}}
 }
 \examples{
     head(stopwords("english"))

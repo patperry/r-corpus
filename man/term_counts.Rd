@@ -5,12 +5,12 @@
     Tokenize a set of texts and tabulate the term occurrence frequencies.
 }
 \usage{
-    term_counts(x, filter = text_filter(), weights = NULL)
+    term_counts(x, filter = token_filter(), weights = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
 
-    \item{filter}{a \code{text_filter} specifying the tokenization rules.}
+    \item{filter}{a token filter specifying the tokenization rules.}
 
     \item{weights}{a numeric vector the same length of \code{x} assigning
         weights to each text, or \code{NULL} for unit weights.}
@@ -35,7 +35,7 @@
 
     # remove punctuation and stop words
     term_counts("A rose is a rose is a rose.",
-                text_filter(drop_symbol = TRUE, drop = stopwords("english")))
+                token_filter(drop_symbol = TRUE, drop = stopwords("english")))
 
     # weight the texts
     term_counts(c("A rose is a rose is a rose.",

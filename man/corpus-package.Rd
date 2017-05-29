@@ -13,7 +13,7 @@ This package contains functions for text corpus analysis. To create a
 \code{\link{text}} object, use the \code{\link{read_ndjson}} or
 \code{\link{as_text}} function. To specify preprocessing behavior for
 transforming a text into a token sequence, use the
-\code{\link{text_filter}} function. To tokenize text
+\code{\link{token_filter}} function. To tokenize text
 or compute term frequencies, use the \code{\link{tokens}},
 \code{\link{term_counts}}, or \code{\link{term_matrix}} function.
 

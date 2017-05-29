@@ -6,12 +6,12 @@
     one column for each term.
 }
 \usage{
-    term_matrix(x, filter = text_filter(), weights = NULL, group = NULL)
+    term_matrix(x, filter = token_filter(), weights = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
 
-    \item{filter}{a \code{text_filter} specifying the tokenization rules.}
+    \item{filter}{a token filter specifying the tokenization rules.}
 
     \item{weights}{a numeric vector the same length of \code{x} assigning
         weights to each text, or \code{NULL} for unit weights.}
@@ -51,7 +51,7 @@
     term_matrix(text)
 
     # select certain terms
-    f <- text_filter(select = c("rose", "red", "violet", "sweet"))
+    f <- token_filter(select = c("rose", "red", "violet", "sweet"))
     term_matrix(text, f)
 
     # specify a grouping factor

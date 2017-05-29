@@ -16,13 +16,13 @@ test_that("`format` should handle NAs", {
 
 
 test_that("`as.data.frame` should work", {
-    x <- text(a="1", b="2", c="foo", d="bar")
+    x <- as_text(c(a="1", b="2", c="foo", d="bar"))
     d <- as.data.frame(x)
 
     expect_equal(nrow(d), length(x))
     expect_equal(names(d), "x")
     expect_equal(rownames(d), names(x))
-    expect_equal(d[["x"]], text("1", "2", "foo", "bar")) # drop names
+    expect_equal(d[["x"]], as_text(c("1", "2", "foo", "bar"))) # drop names
 })
 
 

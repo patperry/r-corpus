@@ -12,12 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-text <- function(...)
-{
-    x <- c(...)
-    as_text(x)
-}
-
 as_text <- function(x, ...)
 {
     UseMethod("as_text")
