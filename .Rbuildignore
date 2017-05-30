@@ -7,5 +7,6 @@
 ^README.md$
 ^TODO.md$
 ^shell.sh$
-^src/corpus/.git
-^src/corpus/data
+^src/corpus/.git$
+^src/corpus/Makefile$
+^src/corpus/data$
