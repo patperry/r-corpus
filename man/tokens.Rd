@@ -82,7 +82,7 @@
         \code{"symbol"} tokens (emoji, math, currency, and other symbols)
         with \code{NA}.}
 
-    \item{drop_ideo}{a logical value indicating whether to replace
+    \item{drop_other}{a logical value indicating whether to replace
         \code{"other"} tokens (types that do not fall into any other
         categories) with \code{NA}.}
 
