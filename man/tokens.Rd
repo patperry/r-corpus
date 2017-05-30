@@ -90,10 +90,11 @@
         or \code{NULL}.}
 
     \item{drop_except}{a character of types to exempt from the drop
-        rules specified by the \code{drop_symbol}, \code{drop_number},
-        \code{drop_letter}, \code{drop_kana}, \code{drop_ideo}, and
-        \code{drop} arguments, or \code{NULL}. If left unspecified,
-        \code{drop_except} is set equal to the \code{select} argument.}
+        rules specified by the \code{drop_letter}, \code{drop_mark},
+        \code{drop_number}, \code{drop_punct}, \code{drop_symbol},
+        \code{drop_other}, and \code{drop} arguments, or \code{NULL}.
+        If left unspecified, \code{drop_except} is set equal to the
+        \code{select} argument.}
 
     \item{select}{a character vector of types to keep, or
         \code{NULL}; if non-\code{NULL}, types that are not on
