@@ -1,6 +1,6 @@
-.*[.]a$
-.*[.]o$
-.*[.]so$
+[.]a$
+[.]o$
+[.]so$
 ^[.]git
 ^[.]travis[.]yml$
 ^Makefile$
