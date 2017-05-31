@@ -271,7 +271,7 @@ SEXP as_text_character(SEXP x)
 	R_xlen_t i, nrow, len;
 	int err, iname, duped = 0;
 
-	if (TYPEOF(x) != STRSXP) {
+	if (x == R_NilValue || TYPEOF(x) != STRSXP) {
 	       error("invalid 'character' object");
 	}
 
