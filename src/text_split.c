@@ -21,36 +21,54 @@
 #include "corpus/src/sentfilter.h"
 #include "rcorpus.h"
 
+// the R 'error' is a #define (to Rf_error) that clashes with the 'error'
+// member of struct corpus_sentfilter
+#ifdef error
+#  undef error
+#endif
+
+
 
 SEXP abbreviations(SEXP skind)
 {
 	SEXP ans;
-	const char **words;
+	const char **strs;
 	const char *kind;
 	int i, n;
 
-        PROTECT(skind = coerceVector(skind, STRSXP));
+	if (skind == R_NilValue) {
+		return R_NilValue;
+	}
 
+        PROTECT(skind = coerceVector(skind, STRSXP));
 	if (STRING_ELT(skind, 0) == NA_STRING) {
 		UNPROTECT(1);
 		return R_NilValue;
 	}
 
 	kind = translateCharUTF8(STRING_ELT(skind, 0));
-	words = (const char **)corpus_sentsuppress_list(kind, &n);
+	strs = (const char **)corpus_sentsuppress_list(kind, &n);
 
-	if (!words) {
-		error("unknown abbreviations kind: '%s'", kind);
+	if (!strs) {
+		Rf_error("unknown abbreviations kind: '%s'", kind);
 	}
 
 	PROTECT(ans = allocVector(STRSXP, n));
 	for (i = 0; i < n; i++) {
-		SET_STRING_ELT(ans, i, mkCharCE(words[i], CE_UTF8));
+		SET_STRING_ELT(ans, i, mkCharCE(strs[i], CE_UTF8));
 	}
 
 	UNPROTECT(2);
 	return ans;
 }
+
+#define BAIL(msg) \
+	do { \
+		free(block); \
+		free(parent); \
+		corpus_sentfilter_destroy(&filter); \
+		Rf_error(msg); \
+	} while (0)
 
 
 SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
@@ -58,15 +76,18 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 	SEXP ans, handle, sources, psource, prow, pstart,
 	     ptable, source, row, start, stop, index, sparent, stext, names,
 	     sclass, row_names;
-	const struct corpus_text *text;
-	struct corpus_text *sent, *sent1;
+	const struct corpus_text *text, *suppress;
+	struct corpus_text *block, *block1;
 	R_xlen_t *parent, *parent1;
-	struct corpus_sentscan scan;
-	R_xlen_t i, src, n, isent, nsent, nsent_max;
-	double r;
-	int j, off, len;
+	struct corpus_sentfilter filter;
+	R_xlen_t src, i, n, isupp, nsupp, iblock, nblock, nblock_max;
+	double r, size;
+	int j, flags, off, len, nprot, err;
 
-	PROTECT(sx = coerce_text(sx));
+	nprot = 0;
+
+	// x
+	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
 	sources = getListElement(sx, "sources");
 	ptable = getListElement(sx, "table");
@@ -74,14 +95,51 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 	prow = getListElement(ptable, "row");
 	pstart = getListElement(ptable, "start");
 
-	nsent = 0;
-	nsent_max = 256;
-	sent = malloc(nsent_max * sizeof(*sent));
-	parent = malloc(nsent_max * sizeof(*parent));;
-	if (sent == NULL || parent == NULL) {
-		free(sent);
-		free(parent);
-		error("memory allocation failure");
+	// size
+        PROTECT(ssize = coerceVector(ssize, REALSXP)); nprot++;
+	size = REAL(ssize)[0];
+	if (!(size >= 1)) {
+		size = 1;
+	}
+
+	// crlf_break
+	PROTECT(scrlf_break = coerceVector(scrlf_break, LGLSXP)); nprot++;
+	if (LOGICAL(scrlf_break)[0] == TRUE) {
+		flags = CORPUS_SENTSCAN_STRICT;
+	} else {
+		flags = CORPUS_SENTSCAN_SPCRLF;
+	}
+
+	if ((err = corpus_sentfilter_init(&filter, flags))) {
+		Rf_error("memory allocation failure");
+	}
+
+	// suppress
+	if (ssuppress != R_NilValue) {
+		PROTECT(ssuppress = coerce_text(ssuppress)); nprot++;
+		suppress = as_text(ssuppress, &nsupp);
+
+		for (isupp = 0; isupp < nsupp; isupp++) {
+			if (!suppress[isupp].ptr) {
+				continue;
+			}
+
+			err = corpus_sentfilter_suppress(&filter,
+							 &suppress[isupp]);
+			if (err) {
+				corpus_sentfilter_destroy(&filter);
+				Rf_error("failed adding break suppression"
+					 " to sentence filter");
+			}
+		}
+	}
+
+	nblock = 0;
+	nblock_max = 256;
+	block = malloc(nblock_max * sizeof(*block));
+	parent = malloc(nblock_max * sizeof(*parent));;
+	if (block == NULL || parent == NULL) {
+		BAIL("memory allocation failure");
 	}
 
 	for (i = 0; i < n; i++) {
@@ -89,46 +147,49 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 			continue;
 		}
 
-		corpus_sentscan_make(&scan, &text[i], CORPUS_SENTSCAN_STRICT);
-		while (corpus_sentscan_advance(&scan)) {
-			if (nsent == nsent_max) {
-				nsent_max = 2 * nsent_max;
+		if ((err = corpus_sentfilter_start(&filter, &text[i]))) {
+			BAIL("memory allocation failure");
+		}
 
-				sent1 = realloc(sent,
-						nsent_max * sizeof(*sent));
-				if (!sent1) {
-					free(sent);
-					free(parent);
-					error("memory allocation failure");
+		while (corpus_sentfilter_advance(&filter)) {
+			if (nblock == nblock_max) {
+				nblock_max = 2 * nblock_max;
+
+				block1 = realloc(block,
+						nblock_max * sizeof(*block));
+				if (!block1) {
+					BAIL("memory allocation failure");
 				}
-				sent = sent1;
+				block = block1;
 
 				parent1 = realloc(parent,
-						  nsent_max * sizeof(*parent));
+						  nblock_max * sizeof(*parent));
 				if (!parent1) {
-					free(sent);
-					free(parent);
-					error("memory allocation failure");
+					BAIL("memory allocation failure");
 				}
 				parent = parent1;
 			}
 
-			sent[nsent] = scan.current;
-			parent[nsent] = i;
-			nsent++;
+			block[nblock] = filter.current;
+			parent[nblock] = i;
+			nblock++;
+		}
+
+		if (filter.error) {
+			BAIL("memory allocation failure");
 		}
 	}
 
 	// free excess memory
-	sent = realloc(sent, nsent * sizeof(*sent));
-	parent = realloc(parent, nsent * sizeof(*parent));
+	block = realloc(block, nblock * sizeof(*block));
+	parent = realloc(parent, nblock * sizeof(*parent));
 
-	PROTECT(source = allocVector(INTSXP, nsent));
-	PROTECT(row = allocVector(REALSXP, nsent));
-	PROTECT(start = allocVector(INTSXP, nsent));
-	PROTECT(stop = allocVector(INTSXP, nsent));
-	PROTECT(sparent = allocVector(REALSXP, nsent));
-	PROTECT(index = allocVector(INTSXP, nsent));
+	PROTECT(source = allocVector(INTSXP, nblock)); nprot++;
+	PROTECT(row = allocVector(REALSXP, nblock)); nprot++;
+	PROTECT(start = allocVector(INTSXP, nblock)); nprot++;
+	PROTECT(stop = allocVector(INTSXP, nblock)); nprot++;
+	PROTECT(sparent = allocVector(REALSXP, nblock)); nprot++;
+	PROTECT(index = allocVector(INTSXP, nblock)); nprot++;
 
 	i = -1;
 	j = 0;
@@ -136,53 +197,55 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 	r = NA_REAL;
 	src = NA_INTEGER;
 
-	for (isent = 0; isent < nsent; isent++) {
-		if (parent[isent] != i) {
-			i = parent[isent];
+	for (iblock = 0; iblock < nblock; iblock++) {
+		if (parent[iblock] != i) {
+			i = parent[iblock];
 			j = 0;
 			src = INTEGER(psource)[i];
 			r = REAL(prow)[i];
 			off = INTEGER(pstart)[i];
 		}
-		len = (int)CORPUS_TEXT_SIZE(&sent[isent]);
+		len = (int)CORPUS_TEXT_SIZE(&block[iblock]);
 
-		INTEGER(source)[isent] = src;
-		REAL(row)[isent] = r;
-		INTEGER(start)[isent] = off;
-		INTEGER(stop)[isent] = off + (len - 1);
-		INTEGER(index)[isent] = j + 1;
-		REAL(sparent)[isent] = (double)i + 1;
+		INTEGER(source)[iblock] = src;
+		REAL(row)[iblock] = r;
+		INTEGER(start)[iblock] = off;
+		INTEGER(stop)[iblock] = off + (len - 1);
+		INTEGER(index)[iblock] = j + 1;
+		REAL(sparent)[iblock] = (double)i + 1;
 
 		j++;
 		off += len;
 	}
 	free(parent);
+	corpus_sentfilter_destroy(&filter);
 
-	PROTECT(stext = alloc_text(sources, source, row, start, stop));
+	PROTECT(stext = alloc_text(sources, source, row, start, stop)); nprot++;
+
 	handle = getListElement(stext, "handle");
-	R_SetExternalPtrAddr(handle, sent);
+	R_SetExternalPtrAddr(handle, block);
 
-	PROTECT(ans = allocVector(VECSXP, 3));
+	PROTECT(ans = allocVector(VECSXP, 3)); nprot++;
 	SET_VECTOR_ELT(ans, 0, sparent);
 	SET_VECTOR_ELT(ans, 1, index);
 	SET_VECTOR_ELT(ans, 2, stext);
 
-	PROTECT(names = allocVector(STRSXP, 3));
+	PROTECT(names = allocVector(STRSXP, 3)); nprot++;
 	SET_STRING_ELT(names, 0, mkChar("parent"));
 	SET_STRING_ELT(names, 1, mkChar("index"));
 	SET_STRING_ELT(names, 2, mkChar("text"));
 	setAttrib(ans, R_NamesSymbol, names);
 
-	PROTECT(row_names = allocVector(REALSXP, 2));
+	PROTECT(row_names = allocVector(REALSXP, 2)); nprot++;
 	REAL(row_names)[0] = NA_REAL;
-	REAL(row_names)[1] = -(double)nsent;
+	REAL(row_names)[1] = -(double)nblock;
 	setAttrib(ans, R_RowNamesSymbol, row_names);
 
-	PROTECT(sclass = allocVector(STRSXP, 1));
+	PROTECT(sclass = allocVector(STRSXP, 1)); nprot++;
         SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
         setAttrib(ans, R_ClassSymbol, sclass);
 
-	UNPROTECT(12);
+	UNPROTECT(nprot);
 	return ans;
 }
 
