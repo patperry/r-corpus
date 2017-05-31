@@ -25,7 +25,7 @@ stopwords <- function(kind = "english")
     }
 
     if (!(is.character(kind) && length(kind) == 1)) {
-        stop("'kind' must be a character string")
+        stop("stopwords 'kind' must be a character string")
     }
 
     .Call(C_stopwords, kind)
@@ -117,16 +117,25 @@ as_token_filter <- function(x)
             stop(paste0("invalid token filter '", name, "' property;",
                         " should be TRUE or FALSE"))
         }
+        if (!is.null(value)) {
+            value <- as.logical(value)
+        }
     } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
                            "select")) {
         if (!is.null(value) && !is.character(value)) {
             stop(paste0("invalid token filter '", name, "' property;",
                         " should be a character vector or NULL"))
         }
+        if (!is.null(value)) {
+            value <- as.character(value)
+        }
     } else if (name %in% c("stemmer")) {
         if (!is.null(value) && !(length(value) == 1 && is.character(value))) {
             stop(paste0("invlaid token filter '", name, "' property;",
                         " should be a character string or NULL"))
+        }
+        if (!is.null(value)) {
+            value <- as.character(value)
         }
     } else {
         stop(paste0("unrecognized token filter property: '", name, "'"))
@@ -188,13 +197,6 @@ print.corpus_token_filter <- function(x, ...)
 }
 
 
-sentences <- function(x)
-{
-    x <- as_text(x)
-    .Call(C_sentences_text, x)
-}
-
-
 tokens <- function(x, filter = token_filter())
 {
     x <- as_text(x)
@@ -248,7 +250,7 @@ term_counts <- function(x, filter = token_filter(), weights = NULL)
     filter <- as_token_filter(filter)
     weights <- as_weights(weights, length(x))
 
-    .Call(C_term_counts_text, x, filter, weights);
+    .Call(C_term_counts_text, x, filter, weights)
 }
 
 
