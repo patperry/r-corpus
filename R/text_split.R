@@ -93,6 +93,8 @@ as_suppress <- function(suppress)
     if (!is.null(suppress)) {
         suppress <- as.character(suppress)
     }
+
+    suppress
 }
 
 
