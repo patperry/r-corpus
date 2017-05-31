@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <stddef.h>
 #include <stdlib.h>
 #include "corpus/src/text.h"
 #include "corpus/src/tree.h"
@@ -27,6 +28,9 @@
 #  undef error
 #endif
 
+
+static SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
+			R_xlen_t nblock);
 
 
 SEXP abbreviations(SEXP skind)
@@ -62,6 +66,7 @@ SEXP abbreviations(SEXP skind)
 	return ans;
 }
 
+
 #define BAIL(msg) \
 	do { \
 		free(block); \
@@ -71,35 +76,50 @@ SEXP abbreviations(SEXP skind)
 	} while (0)
 
 
+#define GROW_BLOCK_ARRAYS() \
+	do { \
+		if (nblock == nblock_max) { \
+			nblock_max = 2 * nblock_max; \
+			block1 = realloc(block, \
+					 nblock_max * sizeof(*block)); \
+			if (!block1) { \
+				BAIL("memory allocation failure"); \
+			} \
+			block = block1; \
+			parent1 = realloc(parent, \
+					  nblock_max * sizeof(*parent)); \
+			if (!parent1) { \
+				BAIL("memory allocation failure"); \
+			} \
+			parent = parent1; \
+		} \
+	} while (0)
+
+
+
 SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 {
-	SEXP ans, handle, sources, psource, prow, pstart,
-	     ptable, source, row, start, stop, index, sparent, stext, names,
-	     sclass, row_names;
-	const struct corpus_text *text, *suppress;
-	struct corpus_text *block, *block1;
-	R_xlen_t *parent, *parent1;
+	SEXP ans;
 	struct corpus_sentfilter filter;
-	R_xlen_t src, i, n, isupp, nsupp, iblock, nblock, nblock_max;
-	double r, size;
-	int j, flags, off, len, nprot, err;
+	const struct corpus_text *text, *suppress;
+	struct corpus_text *block, *block1, current;
+	R_xlen_t *parent, *parent1;
+	R_xlen_t i, n, isupp, nsupp, nblock, nblock_max;
+	size_t attr, size;
+	double s, block_size;
+	int flags, nprot, err;
 
 	nprot = 0;
 
 	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
-	sources = getListElement(sx, "sources");
-	ptable = getListElement(sx, "table");
-	psource = getListElement(ptable, "source");
-	prow = getListElement(ptable, "row");
-	pstart = getListElement(ptable, "start");
 
 	// size
         PROTECT(ssize = coerceVector(ssize, REALSXP)); nprot++;
-	size = REAL(ssize)[0];
-	if (!(size >= 1)) {
-		size = 1;
+	block_size = REAL(ssize)[0];
+	if (!(block_size >= 1)) {
+		block_size = 1;
 	}
 
 	// crlf_break
@@ -151,38 +171,75 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 			BAIL("memory allocation failure");
 		}
 
+		s = 0;
+
 		while (corpus_sentfilter_advance(&filter)) {
-			if (nblock == nblock_max) {
-				nblock_max = 2 * nblock_max;
-
-				block1 = realloc(block,
-						nblock_max * sizeof(*block));
-				if (!block1) {
-					BAIL("memory allocation failure");
-				}
-				block = block1;
-
-				parent1 = realloc(parent,
-						  nblock_max * sizeof(*parent));
-				if (!parent1) {
-					BAIL("memory allocation failure");
-				}
-				parent = parent1;
+			if (s == 0) {
+				current.ptr = filter.current.ptr;
+				attr = 0;
+				size = 0;
 			}
 
-			block[nblock] = filter.current;
+			size += CORPUS_TEXT_SIZE(&filter.current);
+			attr |= CORPUS_TEXT_BITS(&filter.current);
+			s++;
+
+			if (s < block_size) {
+				continue;
+			}
+
+			GROW_BLOCK_ARRAYS();
+
+			current.attr = attr | size;
+			block[nblock] = current;
 			parent[nblock] = i;
 			nblock++;
+
+			s = 0;
 		}
 
 		if (filter.error) {
 			BAIL("memory allocation failure");
+		}
+
+		if (s > 0) {
+			GROW_BLOCK_ARRAYS();
+
+			current.attr = attr | size;
+			block[nblock] = current;
+			parent[nblock] = i;
+			nblock++;
 		}
 	}
 
 	// free excess memory
 	block = realloc(block, nblock * sizeof(*block));
 	parent = realloc(parent, nblock * sizeof(*parent));
+	corpus_sentfilter_destroy(&filter);
+
+	PROTECT(ans = make_blocks(sx, block, parent, nblock)); nprot++;
+	UNPROTECT(nprot);
+	return ans;
+}
+
+
+SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
+		 R_xlen_t nblock)
+{
+	SEXP ans, handle, sources, psource, prow, pstart,
+	     ptable, source, row, start, stop, index, sparent, stext, names,
+	     sclass, row_names;
+	R_xlen_t src, i, iblock;
+	double r;
+	int j, off, len, nprot;
+
+	nprot = 0;
+
+	sources = getListElement(sx, "sources");
+	ptable = getListElement(sx, "table");
+	psource = getListElement(ptable, "source");
+	prow = getListElement(ptable, "row");
+	pstart = getListElement(ptable, "start");
 
 	PROTECT(source = allocVector(INTSXP, nblock)); nprot++;
 	PROTECT(row = allocVector(REALSXP, nblock)); nprot++;
@@ -218,7 +275,6 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 		off += len;
 	}
 	free(parent);
-	corpus_sentfilter_destroy(&filter);
 
 	PROTECT(stext = alloc_text(sources, source, row, start, stop)); nprot++;
 
