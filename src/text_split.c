@@ -16,11 +16,44 @@
 
 #include <stdlib.h>
 #include "corpus/src/text.h"
+#include "corpus/src/tree.h"
 #include "corpus/src/sentscan.h"
+#include "corpus/src/sentfilter.h"
 #include "rcorpus.h"
 
 
-SEXP sentences_text(SEXP sx)
+SEXP abbreviations(SEXP skind)
+{
+	SEXP ans;
+	const char **words;
+	const char *kind;
+	int i, n;
+
+        PROTECT(skind = coerceVector(skind, STRSXP));
+
+	if (STRING_ELT(skind, 0) == NA_STRING) {
+		UNPROTECT(1);
+		return R_NilValue;
+	}
+
+	kind = translateCharUTF8(STRING_ELT(skind, 0));
+	words = (const char **)corpus_sentsuppress_list(kind, &n);
+
+	if (!words) {
+		error("unknown abbreviations kind: '%s'", kind);
+	}
+
+	PROTECT(ans = allocVector(STRSXP, n));
+	for (i = 0; i < n; i++) {
+		SET_STRING_ELT(ans, i, mkCharCE(words[i], CE_UTF8));
+	}
+
+	UNPROTECT(2);
+	return ans;
+}
+
+
+SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 {
 	SEXP ans, handle, sources, psource, prow, pstart,
 	     ptable, source, row, start, stop, index, sparent, stext, names,
@@ -151,4 +184,13 @@ SEXP sentences_text(SEXP sx)
 
 	UNPROTECT(12);
 	return ans;
+}
+
+
+SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
+{
+	(void)sx;
+	(void)ssize;
+	(void)sfilter;
+	return R_NilValue;
 }

@@ -24,6 +24,7 @@
 
 
 static const R_CallMethodDef CallEntries[] = {
+	CALLDEF(abbreviations, 1),
 	CALLDEF(anyNA_text, 1),
 	CALLDEF(as_character_json, 1),
 	CALLDEF(as_character_text, 1),
@@ -45,7 +46,6 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(names_json, 1),
 	CALLDEF(print_json, 1),
 	CALLDEF(read_ndjson, 1),
-	CALLDEF(sentences_text, 1),
 	CALLDEF(simplify_json, 3),
 	CALLDEF(stopwords, 1),
 	CALLDEF(subscript_json, 2),
@@ -54,6 +54,8 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(tokens_text, 2),
 	CALLDEF(term_counts_text, 3),
 	CALLDEF(term_matrix_text, 4),
+	CALLDEF(text_split_sentences, 4),
+	CALLDEF(text_split_tokens, 3),
         {NULL, NULL, 0}
 };
 

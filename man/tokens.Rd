@@ -177,7 +177,7 @@
     element of \code{x}.
 }
 \seealso{
-    \code{\link{sentences}}, \code{\link{stopwords}},
+    \code{\link{text_split}}, \code{\link{stopwords}},
     \code{\link{term_counts}}, \code{\link{term_matrix}}.
 }
 \examples{

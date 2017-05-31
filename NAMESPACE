@@ -5,16 +5,17 @@ importFrom(Matrix, sparseMatrix)
 importFrom(utils, str)
 
 ## Exports
+export(abbreviations)
 export(as_text)
 export(as_text.default)
 export(is_text)
 export(is_text.default)
 export(read_ndjson)
-export(sentences)
 export(stopwords)
 export(token_filter)
 export(term_counts)
 export(term_matrix)
+export(text_split)
 export(tokens)
 
 ## Methods

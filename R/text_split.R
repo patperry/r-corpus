@@ -74,7 +74,7 @@ as_units <- function(units, choices)
         stop("'units' should be a character string")
     }
 
-    i <- pmatch(arg, choices, nomatch = 0)
+    i <- pmatch(units, choices, nomatch = 0)
     if (all(i == 0)) {
         stop("'units' should be one of ",
              paste(dQuote(choices), collapse = ", "))

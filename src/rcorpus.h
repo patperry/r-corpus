@@ -124,7 +124,10 @@ int is_filter(SEXP filter);
 struct corpus_filter *as_filter(SEXP filter);
 
 /* text processing */
-SEXP sentences_text(SEXP x);
+SEXP abbreviations(SEXP kind);
+SEXP text_split_sentences(SEXP x, SEXP size, SEXP crlf_break, SEXP suppress);
+SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
+
 SEXP tokens_text(SEXP x, SEXP props);
 SEXP term_counts_text(SEXP x, SEXP props, SEXP weights);
 SEXP term_matrix_text(SEXP x, SEXP props, SEXP weights, SEXP group);
