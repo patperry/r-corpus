@@ -37,7 +37,7 @@ SEXP stopwords(SEXP skind)
 	}
 
 	kind = translateCharUTF8(STRING_ELT(skind, 0));
-	words = (const char **)corpus_stopwords(kind, &n);
+	words = (const char **)corpus_stopword_list(kind, &n);
 
 	if (!words) {
 		error("unknown stopwords kind: '%s'", kind);

@@ -56,7 +56,7 @@ SEXP sentences_text(SEXP sx)
 			continue;
 		}
 
-		corpus_sentscan_make(&scan, &text[i]);
+		corpus_sentscan_make(&scan, &text[i], CORPUS_SENTSCAN_STRICT);
 		while (corpus_sentscan_advance(&scan)) {
 			if (nsent == nsent_max) {
 				nsent_max = 2 * nsent_max;
