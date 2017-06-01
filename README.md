@@ -18,7 +18,7 @@ it does enough to be useful. The package exports six main functions:
 
  + `read_ndjson()` for reading data in newline-delimited JSON format;
 
- + `sentences()` for segmenting text into sentences;
+ + `text_split()` for segmenting text into sentences or blocks of tokens;
 
  + `token_filter()` for specifying the process by which a text gets transformed
     into a token sequence (normalization, stemming, stop word removal, etc.);
@@ -75,11 +75,11 @@ The raw data comes from the first round of the
     })
 
     ##   user  system elapsed
-    ##  2.146   0.108   2.257
+    ##  3.356   0.119   3.484
 
     pryr::mem_used()
 
-    ## 63.2 MB
+    ## 170 MB
 
 
     # Using the jsonlite library:
@@ -95,37 +95,39 @@ The raw data comes from the first round of the
 
     ## 335 MB
 
-We are about 16 times faster than *jsonlite*, and we use less than 20%
-of the RAM.  How are we reading a 286 MB file in only 63.2 MB?  We memory-map
-the file, letting the operating system move data from the file to RAM
-whenever necessary. We store the addresses of the text strings, but we
-do not load text values into RAM until they are needed.
+We are about 10 times faster than *jsonlite*, and we use about 50%
+of the RAM.  How are we reading a 286 MB file in only 170 MB?  We memory-map
+the text data, letting the operating system move data from the file to RAM
+whenever necessary. We store the addresses of the text strings, but we do
+not load text values into RAM until they are needed.
 
 (If we specify `mmap=FALSE`, the default, then we read the entire file
-into memory; in this case, `read_ndjson` is about 7 times faster than
-*jsonlite* and uses about 10% more memory.)
+into memory; in this case, `read_ndjson` is about 5 times faster than
+*jsonlite*.)
 
 
 ### Segmenting text into sentences
 
 The next benchmark segments each text into sentences, using the boundaries
-defined by [Unicode Standard Annex #29, Section 5][sentbreak].
+defined by [Unicode Standard Annex #29, Section 5][sentbreak] with some
+special tailoring to handle abbreviations correctly and to not treat
+carriage returns and line feeds as paragraph separators.
 
     # Using the corpus library:
 
     system.time({
-        sents <- sentences(data) # gets text from data$text
+        sents <- text_split(data, "sentences") # gets text from data$text
     })
 
     ##   user  system elapsed
-    ##  2.115   0.082   2.200
+    ##  2.963   0.056   3.024
 
     rm("data")
     pryr::mem_used()
-    ## 135 MB
+    ## 196 MB
 
 
-    # Using the stringi library:
+    # Using the stringi library (no special tailoring to the UAX 29 rules):
     system.time({
         sents <- stringi::stri_split_boundaries(data$text, type="sentence")
     })
@@ -146,7 +148,7 @@ the input text object is an array of memory-mapped values returned by the call
 to `read_ndjson`; in the *stringi* benchmark, the input text object is an
 in-memory array returned by *jsonlite*. The *stringi* package
 can read the values directly from RAM instead of from the hard drive.
-Overall, *corpus* is about 3.7 times faster than *stringi*.
+Overall, *corpus* is about 2.7 times faster than *stringi*.
 
 
 ### Tokenizing and normalizing text
