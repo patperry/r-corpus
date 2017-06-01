@@ -13,12 +13,13 @@
 \arguments{
     \item{x}{a text or character vector.}
 
-    \item{units}{the block unit, either \code{"sentences"} or \code{"tokens"}.}
+    \item{units}{the block size units, either \code{"sentences"} or
+        \code{"tokens"}.}
 
     \item{size}{the block size, a positive integer giving the number of
         units per block.}
 
-    \item{filter}{when \code{units = "tokens"}, a text filter defining
+    \item{filter}{when \code{units = "tokens"}, a token filter defining
         the token boundaries in the text.}
 
     \item{crlf_break}{when \code{units = "sentences"}, a logical value
@@ -37,21 +38,27 @@
         Standard Annex #29, Section 5}. When \code{units = "tokens"},
     blocks are measured in non-NA tokens.
 
-    The UAX 29 boundaries handle Unicode correctly and they give reasonable
-    behavior across a variety of languages.
+    The UAX 29 sentence boundaries handle Unicode correctly and they give
+    reasonable behavior across a variety of languages, but they do not
+    handle abbreviations correctly and by default they treat carriage
+    returns and line feeds as paragraph separators, often leading to
+    incorrect breaks. To get around these shortcomings, tailor the
+    UAX 29 rules using the \code{crlf_break} and the \code{suppress}
+    arguments.
 
-    Unfortunately, default UAX 29 sentence-breaking rules do not handle
-    abbreviations correctly. So, for example, without further tailoring to the
-    rules, the text \code{"I saw Mr. Jones today."} will get split into two
-    sentences.  To get around this, we allow a \code{suppress} argument, a
-    list of sentence break suppressions which, when followed by an uppercase
-    character, do not signal the end of a sentence.
+    The UAX 29 rules break after full stops (periods) whenever they are
+    followed by uppercase letters. Under these rules, the text
+    \code{"I saw Mr. Jones today."} gets split into two sentences. To get
+    around this, we allow a \code{suppress} argument, a list of sentence
+    break suppressions which, when followed by uppercase characters, do
+    not signal the end of a sentence.
 
-    Also, the by default, the UAX 29 rules dictate that carriage returns and
-    line feeds signal the end of a sentence. This often leads to incorrect
-    breaks, so by default we deviate from the UAX 29 rules and we treat
-    carriage return and line feed like ordinary spaces. To switch to the
-    strict UAX 29 behavior, specify \code{crlf_break = TRUE}.
+    The UAX 29 rules also specify that a carriage return (CR) or line
+    feed (LF) indicates the end of of a sentence, so that
+    \code{"A split\nsentence."} gets split into two sentences. This often
+    leads to incorrect breaks, so by default, with \code{crlf_break = FALSE},
+    we deviate from the UAX 29 rules and we treat CR and LF like spaces.
+    To break sentences on CRLF, CR, and LF, specify \code{crlf_break = TRUE}.
 }
 \value{
     A data frame with three columns: \code{parent}, \code{index}, and
@@ -65,8 +72,25 @@
     \code{\link{abbreviations}}, \code{\link{tokens}}.
 }
 \examples{
-    text_split("I saw Mr. Jones today.")
+    text_split(c("I saw Mr. Jones today.", 
+                 "Split across\na line.",
+                 "What. Are. You. Doing????",
+                 "She asked 'do you really mean that?' and I said 'yes.'"),
+               units = "sentences")
 
+    # disable the default sentence suppressions
+    text_split("I saw Mr. Jones today.", units = "sentences", suppress = NULL)
+
+    # break on CR and LF
+    text_split("Split across\na line.", units = "sentences", crlf_break = TRUE)
+
+    # 2-sentence blocks
     text_split(c("What. Are. You. Doing????",
-                "She asked 'do you really mean that?' and I said 'yes.'"))
+                "She asked 'do you really mean that?' and I said 'yes.'"),
+               units = "sentences", size = 2)
+
+    # 4-token blocks
+    text_split(c("What. Are. You. Doing????",
+                "She asked 'do you really mean that?' and I said 'yes.'"),
+               units = "tokens", size = 4)
 }
