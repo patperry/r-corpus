@@ -16,9 +16,15 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include "corpus/src/table.h"
 #include "corpus/src/text.h"
+#include "corpus/src/textset.h"
 #include "corpus/src/tree.h"
+#include "corpus/src/typemap.h"
+#include "corpus/src/symtab.h"
 #include "corpus/src/sentscan.h"
+#include "corpus/src/wordscan.h"
+#include "corpus/src/filter.h"
 #include "corpus/src/sentfilter.h"
 #include "rcorpus.h"
 
@@ -223,6 +229,112 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 }
 
 
+#undef BAIL
+#define BAIL(msg) \
+	do { \
+		free(block); \
+		free(parent); \
+		Rf_error(msg); \
+	} while (0)
+
+
+SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
+{
+	SEXP ans;
+	struct corpus_filter *filter;
+	const struct corpus_text *text;
+	struct corpus_text *block, *block1, current;
+	R_xlen_t *parent, *parent1;
+	R_xlen_t i, n, nblock, nblock_max;
+	size_t attr, size;
+	double s, block_size;
+	int nprot, err;
+
+	nprot = 0;
+
+	// x
+	PROTECT(sx = coerce_text(sx)); nprot++;
+	text = as_text(sx, &n);
+
+	// size
+        PROTECT(ssize = coerceVector(ssize, REALSXP)); nprot++;
+	block_size = REAL(ssize)[0];
+	if (!(block_size >= 1)) {
+		block_size = 1;
+	}
+
+	// filter
+	PROTECT(sfilter = alloc_filter(sfilter));
+	filter = as_filter(sfilter);
+
+	nblock = 0;
+	nblock_max = 256;
+	block = malloc(nblock_max * sizeof(*block));
+	parent = malloc(nblock_max * sizeof(*parent));;
+	if (block == NULL || parent == NULL) {
+		BAIL("memory allocation failure");
+	}
+
+	for (i = 0; i < n; i++) {
+		if (!text[i].ptr) { // missing value
+			continue;
+		}
+
+		if ((err = corpus_filter_start(filter, &text[i]))) {
+			BAIL("memory allocation failure");
+		}
+
+		s = 0;
+
+		while (corpus_filter_advance(filter, NULL)) {
+			if (s == 0) {
+				//current.ptr = filter->current.ptr;
+				attr = 0;
+				size = 0;
+			}
+
+			//size += CORPUS_TEXT_SIZE(&filter->current);
+			//attr |= CORPUS_TEXT_BITS(&filter->current);
+			s++;
+
+			if (s < block_size) {
+				continue;
+			}
+
+			GROW_BLOCK_ARRAYS();
+
+			current.attr = attr | size;
+			block[nblock] = current;
+			parent[nblock] = i;
+			nblock++;
+
+			s = 0;
+		}
+
+		if (filter->error) {
+			BAIL("memory allocation failure");
+		}
+
+		if (s > 0) {
+			GROW_BLOCK_ARRAYS();
+
+			current.attr = attr | size;
+			block[nblock] = current;
+			parent[nblock] = i;
+			nblock++;
+		}
+	}
+
+	// free excess memory
+	block = realloc(block, nblock * sizeof(*block));
+	parent = realloc(parent, nblock * sizeof(*parent));
+
+	PROTECT(ans = make_blocks(sx, block, parent, nblock)); nprot++;
+	UNPROTECT(nprot);
+	return ans;
+}
+
+
 SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
 		 R_xlen_t nblock)
 {
@@ -303,13 +415,4 @@ SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
 
 	UNPROTECT(nprot);
 	return ans;
-}
-
-
-SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
-{
-	(void)sx;
-	(void)ssize;
-	(void)sfilter;
-	return R_NilValue;
 }
