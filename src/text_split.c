@@ -39,40 +39,6 @@ static SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
 			R_xlen_t nblock);
 
 
-SEXP abbreviations(SEXP skind)
-{
-	SEXP ans;
-	const char **strs;
-	const char *kind;
-	int i, n;
-
-	if (skind == R_NilValue) {
-		return R_NilValue;
-	}
-
-        PROTECT(skind = coerceVector(skind, STRSXP));
-	if (STRING_ELT(skind, 0) == NA_STRING) {
-		UNPROTECT(1);
-		return R_NilValue;
-	}
-
-	kind = translateCharUTF8(STRING_ELT(skind, 0));
-	strs = (const char **)corpus_sentsuppress_list(kind, &n);
-
-	if (!strs) {
-		Rf_error("unknown abbreviations kind: '%s'", kind);
-	}
-
-	PROTECT(ans = allocVector(STRSXP, n));
-	for (i = 0; i < n; i++) {
-		SET_STRING_ELT(ans, i, mkCharCE(strs[i], CE_UTF8));
-	}
-
-	UNPROTECT(2);
-	return ans;
-}
-
-
 #define BAIL(msg) \
 	do { \
 		free(block); \
@@ -100,7 +66,6 @@ SEXP abbreviations(SEXP skind)
 			parent = parent1; \
 		} \
 	} while (0)
-
 
 
 SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
@@ -170,6 +135,15 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 
 	for (i = 0; i < n; i++) {
 		if (!text[i].ptr) { // missing value
+			continue;
+		}
+
+		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
+			GROW_BLOCK_ARRAYS();
+
+			block[nblock] = text[i];
+			parent[nblock] = i;
+			nblock++;
 			continue;
 		}
 
@@ -264,7 +238,7 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 	}
 
 	// filter
-	PROTECT(sfilter = alloc_filter(sfilter));
+	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
 	filter = as_filter(sfilter);
 
 	nblock = 0;
@@ -280,42 +254,59 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 			continue;
 		}
 
+		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
+			GROW_BLOCK_ARRAYS();
+
+			block[nblock] = text[i];
+			parent[nblock] = i;
+			nblock++;
+			continue;
+		}
+
 		if ((err = corpus_filter_start(filter, &text[i]))) {
 			BAIL("memory allocation failure");
 		}
 
+		// start with an empty block
 		s = 0;
+		size = 0;
 
 		while (corpus_filter_advance(filter)) {
-			if (s == 0) {
-				//current.ptr = filter->current.ptr;
-				attr = 0;
+			// if we encounter a non-dropped, non-ignored
+			// token and the block is already full, add it
+			if (filter->type_id >= 0 && s == block_size) {
+				GROW_BLOCK_ARRAYS();
+
+				current.attr = attr | size;
+				block[nblock] = current;
+				parent[nblock] = i;
+				nblock++;
 				size = 0;
+				s = 0;
 			}
 
-			//size += CORPUS_TEXT_SIZE(&filter->current);
-			//attr |= CORPUS_TEXT_BITS(&filter->current);
-			s++;
-
-			if (s < block_size) {
-				continue;
+			// if the block is empty, initialize it
+			if (size == 0) {
+				current.ptr = filter->current.ptr;
+				size = 0;
+				attr = 0;
 			}
 
-			GROW_BLOCK_ARRAYS();
+			// update the block size and attributes
+			size += CORPUS_TEXT_SIZE(&filter->current);
+			attr |= CORPUS_TEXT_BITS(&filter->current);
 
-			current.attr = attr | size;
-			block[nblock] = current;
-			parent[nblock] = i;
-			nblock++;
-
-			s = 0;
+			// possibly update the non-dropped token count
+			if (filter->type_id >= 0) {
+				s++;
+			}
 		}
 
 		if (filter->error) {
 			BAIL("memory allocation failure");
 		}
 
-		if (s > 0) {
+		if (size > 0) {
 			GROW_BLOCK_ARRAYS();
 
 			current.attr = attr | size;
