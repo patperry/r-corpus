@@ -1,4 +1,5 @@
 \name{read_ndjson}
+\alias{corpus_json}
 \alias{read_ndjson}
 \title{JSON Data Input}
 \description{
@@ -22,7 +23,7 @@
     \item{simplify}{whether to attempt to simplify the type of the return
        value. For example, if each line of the file stores an integer,
        if \code{simplify} is set to \code{TRUE} then the return value
-       will be an integer vector rather than a \code{jsondata} object.}
+       will be an integer vector rather than a \code{corpus_json} object.}
 
     \item{text}{a character vector of string fields to interpret as
        \code{text} instead of \code{character} or \code{factor}.}
@@ -57,7 +58,7 @@
     is active; on older versions, the behavior is undefined.)
 
     Another danger in memory-mapping is that if you serialize a
-    \code{jsondata} object or derived \code{text} object using
+    \code{corpus_json} object or derived \code{text} object using
     \code{\link{saveRDS}} or another similar function, and then you
     deserialize the object, then R will attempt create a new memory-map
     using the original \code{file} argument passed to the \code{read_ndjson}
@@ -72,7 +73,7 @@
     In the default usage, with argument \code{simplify = TRUE}, when
     the lines of the file are records (JSON object literals), the
     return value from \code{read_ndjson} is a data frame. With
-    \code{simplify = FALSE}, the result is a \code{jsondata} object.
+    \code{simplify = FALSE}, the result is a \code{corpus_json} object.
 }
 \seealso{
     \code{\link{text}}.

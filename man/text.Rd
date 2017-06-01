@@ -1,6 +1,7 @@
 \name{text}
 \alias{as_text}
 \alias{as_text.default}
+\alias{corpus_text}
 \alias{is_text}
 \alias{is_text.default}
 \alias{text}
