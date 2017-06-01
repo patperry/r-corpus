@@ -92,7 +92,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 		} else if (group[i] == NA_INTEGER) {
 			continue;
 		} else {
-			assert(0 < group[i] && group[i] < ngroup);
+			assert(0 < group[i] && group[i] <= ngroup);
 			g = (R_xlen_t)(group[i] - 1);
 		}
 
