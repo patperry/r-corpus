@@ -50,7 +50,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 	double w;
 	struct corpus_census *census;
 	R_xlen_t i, n, g, nc, ngroup, nz, off;
-	int err, term_id, type_id, nprot = 0;
+	int err, type_id, nprot = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
@@ -102,13 +102,13 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 			goto error;
 		}
 
-		while (corpus_filter_advance(filter, &term_id)) {
-			if (term_id < 0) {
+		while (corpus_filter_advance(filter)) {
+			type_id = filter->type_id;
+			if (type_id < 0) {
 				continue;
 			}
 
-			if ((err = corpus_census_add(&census[g],
-						     term_id, w))) {
+			if ((err = corpus_census_add(&census[g], type_id, w))) {
 				goto error;
 			}
 		}
@@ -148,11 +148,10 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 		}
 	}
 
-	PROTECT(scol_names = allocVector(STRSXP, filter->nterm)); nprot++;
+	PROTECT(scol_names = allocVector(STRSXP, filter->ntype)); nprot++;
 	mkchar_init(&mkchar);
-	for (i = 0; i < filter->nterm; i++) {
-		type_id = filter->type_ids[i];
-		type = &filter->symtab.types[type_id].text;
+	for (i = 0; i < filter->ntype; i++) {
+		type = corpus_filter_type(filter, i);
 		SET_STRING_ELT(scol_names, i, mkchar_get(&mkchar, type));
 	}
 	mkchar_destroy(&mkchar);

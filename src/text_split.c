@@ -286,7 +286,7 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 
 		s = 0;
 
-		while (corpus_filter_advance(filter, NULL)) {
+		while (corpus_filter_advance(filter)) {
 			if (s == 0) {
 				//current.ptr = filter->current.ptr;
 				attr = 0;

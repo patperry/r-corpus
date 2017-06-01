@@ -46,7 +46,7 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 	double wt;
 	struct corpus_census census;
 	R_xlen_t i, n;
-	int err, term_id, type_id, nprot = 0;
+	int err, type_id, nprot = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
@@ -78,12 +78,13 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 		}
 
 
-		while (corpus_filter_advance(filter, &term_id)) {
-			if (term_id < 0) {
+		while (corpus_filter_advance(filter)) {
+			type_id = filter->type_id;
+			if (type_id < 0) {
 				continue;
 			}
 
-			if ((err = corpus_census_add(&census, term_id, wt))) {
+			if ((err = corpus_census_add(&census, type_id, wt))) {
 				goto error;
 			}
 		}
@@ -103,9 +104,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 	mkchar_init(&mkchar);
 	
 	for (i = 0; i < census.nitem; i++) {
-		term_id = census.items[i];
-		type_id = filter->type_ids[term_id];
-		type = &filter->symtab.types[type_id].text;
+		type_id = census.items[i];
+		type = corpus_filter_type(filter, type_id);
 
 		SET_STRING_ELT(sterm, i, mkchar_get(&mkchar, type));
 		REAL(scount)[i] = census.weights[i];

@@ -66,9 +66,9 @@ void tokens_init(struct tokens *ctx, struct corpus_filter *filter)
 	ctx->types = (void *)R_alloc(ctx->ntype_max, sizeof(*ctx->types));
 
 	// add the terms in the filter
-	n = ctx->filter->nterm;
+	n = ctx->filter->ntype;
 	for (i = 0; i < n; i++) {
-		PROTECT(tokens_add(ctx, filter->type_ids[i]));
+		PROTECT(tokens_add(ctx, i));
 	}
 
 	ctx->nprot = n;
@@ -94,7 +94,7 @@ SEXP tokens_add(struct tokens *ctx, int type_id)
 					       sizeof(*ctx->types));
 	}
 
-	type = &ctx->filter->symtab.types[type_id].text;
+	type = corpus_filter_type(ctx->filter, type_id);
 	ans = mkCharLenCE((char *)type->ptr, CORPUS_TEXT_SIZE(type), CE_UTF8);
 	ctx->types[ctx->ntype] = ans;
 	ctx->ntype++;
@@ -106,7 +106,7 @@ SEXP tokens_add(struct tokens *ctx, int type_id)
 SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 {
 	SEXP ans;
-	int nadd, type_id, term_id, nterm;
+	int nadd, type_id, ntype;
 	int err, i, ntok;
 
 	if (!text->ptr) {
@@ -117,17 +117,21 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		Rf_error("error while tokenizing text");
 	}
 
-	nterm = ctx->filter->nterm;
+	ntype = ctx->filter->ntype;
 	nadd = 0;
 	ntok = 0;
 
-	while (corpus_filter_advance(ctx->filter, &term_id)) {
-		// add the new terms
-		while (nterm < ctx->filter->nterm) {
-			type_id = ctx->filter->type_ids[nterm];
-			PROTECT(tokens_add(ctx, type_id));
+	while (corpus_filter_advance(ctx->filter)) {
+		type_id = ctx->filter->type_id;
+		if (type_id == CORPUS_FILTER_IGNORED) {
+			continue;
+		}
+
+		// add the new types
+		while (ntype < ctx->filter->ntype) {
+			PROTECT(tokens_add(ctx, ntype));
 			nadd++;
-			nterm++;
+			ntype++;
 		}
 
 		if (ntok == ctx->nbuf_max) {
@@ -136,7 +140,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 						     ctx->nbuf_max,
 						     ntok, sizeof(*ctx->buf));
 		}
-		ctx->buf[ntok] = term_id;
+		ctx->buf[ntok] = type_id;
 		ntok++;
 	}
 
@@ -146,9 +150,9 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 
 	PROTECT(ans = allocVector(STRSXP, ntok));
 	for (i = 0; i < ntok; i++) {
-		term_id =  ctx->buf[i];
-		if (term_id >= 0) {
-			SET_STRING_ELT(ans, i, ctx->types[term_id]);
+		type_id =  ctx->buf[i];
+		if (type_id >= 0) {
+			SET_STRING_ELT(ans, i, ctx->types[type_id]);
 		} else {
 			SET_STRING_ELT(ans, i, NA_STRING);
 		}
