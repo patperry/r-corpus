@@ -261,29 +261,27 @@ as_ngrams <- function(ngrams)
 }
 
 
-as_min_count <- function(min_count)
+as_min <- function(min)
 {
-    if (!(is.numeric(min_count) && length(min_count) == 1
-          && !is.nan(min_count))) {
-        stop("'min_count' should be a numeric value")
+    if (!(is.numeric(min) && length(min) == 1 && !is.nan(min))) {
+        stop("'min' should be a numeric value")
     }
-    if (is.na(min_count)) {
-        min_count <- 0
+    if (is.na(min)) {
+        min <- 0
     }
-    as.double(min_count)
+    as.double(min)
 }
 
 
-as_max_count <- function(max_count)
+as_max <- function(max)
 {
-     if (!(is.numeric(max_count) && length(max_count) == 1
-          && !is.nan(max_count))) {
-        stop("'max_count' should be a numeric value")
+     if (!(is.numeric(max) && length(max) == 1 && !is.nan(max))) {
+        stop("'max' should be a numeric value")
     }
-    if (is.na(max_count)) {
-        max_count <- Inf
+    if (is.na(max)) {
+        max <- Inf
     }
-    as.double(max_count)
+    as.double(max)
 }
 
 
@@ -302,15 +300,14 @@ as_select <- function(select)
 
 
 term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
-                        min_count = 0, max_count = Inf, select = NULL,
-                        types = FALSE)
+                        min = 0, max = Inf, select = NULL, types = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
     ngrams <- as_ngrams(ngrams)
     weights <- as_weights(weights, length(x))
-    min_count <- as_min_count(min_count)
-    max_count <- as_max_count(max_count)
+    min <- as_min(min)
+    max <- as_max(max)
     select <- as_select(select)
 
     if (!(is.logical(types) && length(types) == 1 && !is.na(types))) {
@@ -318,8 +315,8 @@ term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
     }
     types <- as.logical(types)
 
-    ans <- .Call(C_term_counts_text, x, filter, ngrams, weights, min_count,
-                 max_count, select, types)
+    ans <- .Call(C_term_counts_text, x, filter, ngrams, weights, min, max,
+                 select, types)
     o <- order(-ans$count, ans$term)
     ans <- ans[o,]
     row.names(ans) <- NULL
