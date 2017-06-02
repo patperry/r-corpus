@@ -73,3 +73,12 @@ test_that("'term_counts' can count ngrams", {
                             count = c(3, 2, 2, 1),
                             stringsAsFactors = FALSE))
 })
+
+
+test_that("'term_counts' can count select ngrams", {
+    expect_equal(term_counts("A rose is a rose is a rose.", ngrams = 2,
+                             select = c("a rose", "rose is")),
+                 data.frame(term = c("a rose", "rose is"),
+                            count = c(3, 2),
+                            stringsAsFactors = FALSE))
+})
