@@ -54,7 +54,7 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	const double *weights;
 	const int *ngrams;
 	int ng_max, w, width;
-	double wt;
+	double wt, min_count, max_count;
 	R_xlen_t i, n, k, nk, ngrams_len, nterm;
 	int output_types;
 	int err, type_id, nprot = 0;
@@ -89,6 +89,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	} else {
 		weights = NULL;
 	}
+	min_count = REAL(smin_count)[0];
+	max_count = REAL(smax_count)[0];
 
 	if (LOGICAL(soutput_types)[0] == TRUE) {
 		output_types = 1;
@@ -138,7 +140,16 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		if (ngrams[k] == NA_INTEGER) {
 			continue;
 		}
-		nk = (R_xlen_t)corpus_ngram_count(&ngram, ngrams[k]);
+
+		nk = 0;
+		corpus_ngram_iter_make(&it, &ngram, ngrams[k]);
+		while (corpus_ngram_iter_advance(&it)) {
+			if (min_count <= it.weight
+					&& it.weight <= max_count) {
+				nk++;
+			}
+		}
+
 		if (nk > R_XLEN_T_MAX - nterm) {
 			err = CORPUS_ERROR_OVERFLOW;
 			corpus_log(err, "number of terms exceeds maximum"
@@ -172,6 +183,11 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 
 		corpus_ngram_iter_make(&it, &ngram, width);
 		while (corpus_ngram_iter_advance(&it)) {
+			if (!(min_count <= it.weight
+						&& it.weight <= max_count)) {
+				continue;
+			}
+
 			if (width == 1) {
 				type_id = it.type_ids[0];
 				type = corpus_filter_type(filter, type_id);
