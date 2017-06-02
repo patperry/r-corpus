@@ -5,7 +5,8 @@
     Tokenize a set of texts and tabulate the term occurrence frequencies.
 }
 \usage{
-    term_counts(x, filter = token_filter(), weights = NULL)
+    term_counts(x, filter = token_filter(), ngrams = 1, select = NULL,
+                weights = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}

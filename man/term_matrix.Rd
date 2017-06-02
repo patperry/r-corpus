@@ -6,7 +6,8 @@
     one column for each term.
 }
 \usage{
-    term_matrix(x, filter = token_filter(), weights = NULL, group = NULL)
+    term_matrix(x, filter = token_filter(), ngrams = 1, select = NULL,
+                weights = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}

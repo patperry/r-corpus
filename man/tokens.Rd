@@ -13,8 +13,7 @@
                  stemmer = NULL, stem_except = drop, combine = NULL,
                  drop_letter = FALSE, drop_mark = FALSE, drop_number = FALSE,
                  drop_punct = FALSE, drop_symbol = FALSE, drop_other = FALSE,
-                 drop = NULL, drop_except = select,
-                 select = NULL)
+                 drop = NULL, drop_except = NULL)
 
     tokens(x, filter = token_filter())
 }
@@ -92,13 +91,7 @@
     \item{drop_except}{a character of types to exempt from the drop
         rules specified by the \code{drop_letter}, \code{drop_mark},
         \code{drop_number}, \code{drop_punct}, \code{drop_symbol},
-        \code{drop_other}, and \code{drop} arguments, or \code{NULL}.
-        If left unspecified, \code{drop_except} is set equal to the
-        \code{select} argument.}
-
-    \item{select}{a character vector of types to keep, or
-        \code{NULL}; if non-\code{NULL}, types that are not on
-        this list get replaced with \code{NA}.}
+        \code{drop_other}, and \code{drop} arguments, or \code{NULL}.}
 }
 \details{
     \code{tokens} splits texts into token sequences. Each token is an instance
@@ -155,10 +148,6 @@
             \code{drop_except} is a character vector, then we we restore
             tokens that match elements of vector to their values prior to
             dropping.
-
-        \item Finally, if \code{select} is non-\code{NULL}, we replace
-            tokens that do not match elements of this character vector
-            with \code{NA}.
     }
 
     When \code{filter = NULL}, we treat all logical properties as

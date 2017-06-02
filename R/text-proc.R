@@ -38,8 +38,7 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
                          drop_letter = FALSE, drop_mark = FALSE,
                          drop_number = FALSE, drop_punct = FALSE,
                          drop_symbol = FALSE, drop_other = FALSE,
-                         drop = NULL,
-                         drop_except = select, select = NULL)
+                         drop = NULL, drop_except = NULL)
 {
     ans <- structure(list(), class="corpus_token_filter")
 
@@ -59,7 +58,6 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
     ans$drop_other <- drop_other
     ans$drop <- drop
     ans$drop_except <- drop_except
-    ans$select <- select
 
     ans
 }
@@ -120,8 +118,7 @@ as_token_filter <- function(x)
         if (!is.null(value)) {
             value <- as.logical(value)
         }
-    } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
-                           "select")) {
+    } else if (name %in% c("stem_except", "combine", "drop", "drop_except")) {
         if (!is.null(value) && !is.character(value)) {
             stop(paste0("invalid token filter '", name, "' property;",
                         " should be a character vector or NULL"))
@@ -244,21 +241,99 @@ as_group <- function(group, n)
 }
 
 
-term_counts <- function(x, filter = token_filter(), weights = NULL)
+as_ngrams <- function(ngrams)
 {
-    x <- as_text(x)
-    filter <- as_token_filter(filter)
-    weights <- as_weights(weights, length(x))
+    if (!is.numeric(ngrams)) {
+        stop("'ngrams' argument must be an integer vector")
+    }
 
-    .Call(C_term_counts_text, x, filter, weights)
+    ngrams <- ngrams[is.finite(ngrams) & ngrams >= 1]
+    if (length(ngrams) == 0) {
+        stop("'ngrams' argument must contain at least one positive value")
+    }
+    if (any(ngrams > 127)) {
+        stop("'ngrams' values cannot exceed 127")
+    }
+
+    ngrams <- unique(sort(ngrams))
+
+    as.integer(ngrams)
 }
 
 
-term_matrix <- function(x, filter = token_filter(), weights = NULL,
-                        group = NULL)
+as_min_count <- function(min_count)
+{
+    if (!(is.numeric(min_count) && length(min_count) == 1
+          && !is.nan(min_count))) {
+        stop("'min_count' should be a numeric value")
+    }
+    if (is.na(min_count)) {
+        min_count <- 0
+    }
+    as.double(min_count)
+}
+
+
+as_max_count <- function(max_count)
+{
+     if (!(is.numeric(max_count) && length(max_count) == 1
+          && !is.nan(max_count))) {
+        stop("'max_count' should be a numeric value")
+    }
+    if (is.na(max_count)) {
+        max_count <- Inf
+    }
+    as.double(max_count)
+}
+
+
+as_select <- function(select)
+{
+    if (is.null(select)) {
+        return(NULL)
+    }
+
+    if (!is.character(select)) {
+        stop(paste0("'select' argument should be a character vector or NULL"))
+    }
+
+    as.character(select)
+}
+
+
+term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
+                        min_count = 0, max_count = Inf, select = NULL,
+                        types = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
+    ngrams <- as_ngrams(ngrams)
+    weights <- as_weights(weights, length(x))
+    min_count <- as_min_count(min_count)
+    max_count <- as_max_count(max_count)
+    select <- as_select(select)
+
+    if (!(is.logical(types) && length(types) == 1 && !is.na(types))) {
+        stop("'types' should be TRUE or FALSE")
+    }
+    types <- as.logical(types)
+
+    ans <- .Call(C_term_counts_text, x, filter, ngrams, weights, min_count,
+                 max_count, select, types)
+    o <- order(-ans$count, ans$term)
+    ans <- ans[o,]
+    row.names(ans) <- NULL
+    ans
+}
+
+
+term_matrix <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
+                        select = NULL, group = NULL)
+{
+    x <- as_text(x)
+    filter <- as_token_filter(filter)
+    ngrams <- as_ngrams(ngrams)
+    select <- as_select(select)
     weights <- as_weights(weights, length(x))
     group <- as_group(group, length(x))
 

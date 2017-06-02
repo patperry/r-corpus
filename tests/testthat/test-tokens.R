@@ -136,28 +136,3 @@ test_that("'tokens' combines the longest match", {
     expect_equal(tokens(x, f),
                  list(c("i", "live", "in", "new york city", ",", "new york")))
 })
-
-
-test_that("'tokens' can select", {
-    x <- c("a b c d e f g h i j",
-           "k l m n o p q r s t",
-           "u v w x y z")
-    f <- token_filter(select = c("a", "e", "i", "o", "u"))
-    expect_equal(tokens(x, f),
-                 list(c("a", NA, NA, NA, "e", NA, NA, NA, "i", NA),
-                      c(NA, NA, NA, NA, "o", NA, NA, NA, NA, NA),
-                      c("u", NA, NA, NA, NA, NA)))
-})
-
-
-test_that("'tokens' can select combined tokens", {
-    x <- c("New York City, New York",
-           "Austin, Texas",
-           "Sacramento, California")
-    f <- token_filter(combine = "new york city",
-                     select = c("new york city", "austin", "sacramento"))
-    expect_equal(tokens(x, f),
-                 list(c("new york city", NA, NA),
-                      c("austin", NA, NA),
-                      c("sacramento", NA, NA)))
-})

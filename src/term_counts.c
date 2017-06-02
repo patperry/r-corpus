@@ -17,8 +17,10 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "corpus/src/error.h"
+#include "corpus/src/render.h"
 #include "corpus/src/table.h"
-#include "corpus/src/census.h"
+#include "corpus/src/ngram.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
 #include "corpus/src/tree.h"
@@ -36,16 +38,25 @@
 #endif
 
 
-SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
+SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights, 
+		      SEXP smin_count, SEXP smax_count, SEXP sselect,
+		      SEXP soutput_types)
 {
-	SEXP ans, sterm, scount, stext, sfilter, sclass, snames, srow_names;
+	SEXP ans, stype, sterm, scount, stext, sfilter, sclass, snames,
+	     srow_names;
+	SEXP *stypes;
 	const struct corpus_text *text, *type;
 	struct mkchar mkchar;
+	struct corpus_render render;
+	struct corpus_ngram ngram;
+	struct corpus_ngram_iter it;
 	struct corpus_filter *filter;
 	const double *weights;
+	const int *ngrams;
+	int ng_max, w, width;
 	double wt;
-	struct corpus_census census;
-	R_xlen_t i, n;
+	R_xlen_t i, n, k, nk, ngrams_len, nterm;
+	int output_types;
 	int err, type_id, nprot = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
@@ -53,6 +64,19 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 
 	PROTECT(sfilter = alloc_filter(sprops)); nprot++;
 	filter = as_filter(sfilter);
+
+	PROTECT(sngrams = coerceVector(sngrams, INTSXP)); nprot++;
+	ngrams = INTEGER(sngrams);
+	ngrams_len = XLENGTH(sngrams);
+	ng_max = 1;
+	for (k = 0; k < ngrams_len; k++) {
+		if (ngrams[k] == NA_INTEGER) {
+			continue;
+		}
+		if (ngrams[k] > ng_max) {
+			ng_max = ngrams[k];
+		}
+	}
 
 	if (sweights != R_NilValue) {
 		PROTECT(sweights = coerceVector(sweights, REALSXP)); nprot++;
@@ -66,8 +90,18 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 		weights = NULL;
 	}
 
-	if ((err = corpus_census_init(&census))) {
-		goto error_census;
+	if (LOGICAL(soutput_types)[0] == TRUE) {
+		output_types = 1;
+	} else {
+		output_types = 0;
+	}
+
+	if ((err = corpus_render_init(&render, CORPUS_ESCAPE_NONE))) {
+		goto error_render;
+	}
+
+	if ((err = corpus_ngram_init(&ngram, ng_max))) {
+		goto error_ngram;
 	}
 
 	for (i = 0; i < n; i++) {
@@ -80,11 +114,16 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
-			if (type_id < 0) {
+			if (type_id == CORPUS_FILTER_IGNORED) {
+				continue;
+			} else if (type_id < 0) {
+				if ((err = corpus_ngram_break(&ngram))) {
+					goto error;
+				}
 				continue;
 			}
 
-			if ((err = corpus_census_add(&census, type_id, wt))) {
+			if ((err = corpus_ngram_add(&ngram, type_id, wt))) {
 				goto error;
 			}
 		}
@@ -94,37 +133,120 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 		}
 	}
 
-	if ((err = corpus_census_sort(&census))) {
-		goto error;
+	nterm = 0;
+	for (k = 0; k < ngrams_len; k++) {
+		if (ngrams[k] == NA_INTEGER) {
+			continue;
+		}
+		nk = (R_xlen_t)corpus_ngram_count(&ngram, ngrams[k]);
+		if (nk > R_XLEN_T_MAX - nterm) {
+			err = CORPUS_ERROR_OVERFLOW;
+			corpus_log(err, "number of terms exceeds maximum"
+				   " (%"PRIu64")",
+				   (uint64_t)R_XLEN_T_MAX);
+		}
+		nterm += nk;
 	}
 
-	PROTECT(sterm = allocVector(STRSXP, census.nitem)); nprot++;
-	PROTECT(scount = allocVector(REALSXP, census.nitem)); nprot++;
+	PROTECT(sterm = allocVector(STRSXP, nterm)); nprot++;
+	if (output_types) {
+		stypes = (void *)R_alloc(ng_max, sizeof(*stypes));
+		for (w = 0; w < ng_max; w++) {
+			PROTECT(stypes[w] = allocVector(STRSXP, nterm));
+			nprot++;
+			for (i = 0; i < nterm; i++) {
+				SET_STRING_ELT(stypes[w], i, NA_STRING);
+			}
+		}
+	}
+	PROTECT(scount = allocVector(REALSXP, nterm)); nprot++;
 
 	mkchar_init(&mkchar);
+	i = 0;
 	
-	for (i = 0; i < census.nitem; i++) {
-		type_id = census.items[i];
-		type = corpus_filter_type(filter, type_id);
+	for (k = 0; k < ngrams_len; k++) {
+		if (ngrams[k] == NA_INTEGER) {
+			continue;
+		}
+		width = ngrams[k];
 
-		SET_STRING_ELT(sterm, i, mkchar_get(&mkchar, type));
-		REAL(scount)[i] = census.weights[i];
+		corpus_ngram_iter_make(&it, &ngram, width);
+		while (corpus_ngram_iter_advance(&it)) {
+			if (width == 1) {
+				type_id = it.type_ids[0];
+				type = corpus_filter_type(filter, type_id);
+				stype = mkchar_get(&mkchar, type);
+				SET_STRING_ELT(sterm, i, stype);
+				if (output_types) {
+					SET_STRING_ELT(stypes[0], i, stype);
+				}
+			} else {
+				corpus_render_clear(&render);
+
+				for (w = 0; w < width; w++) {
+					type_id = it.type_ids[w];
+					type = corpus_filter_type(filter,
+								  type_id);
+					if (output_types) {
+						stype = mkchar_get(&mkchar,
+								   type);
+						SET_STRING_ELT(stypes[w], i,
+							       stype);
+					}
+
+					if (w > 0) {
+						corpus_render_char(&render,
+								   ' ');
+					}
+					corpus_render_text(&render, type);
+				}
+				if ((err = render.error)) {
+					goto error;
+				}
+				SET_STRING_ELT(sterm, i,
+					       mkCharLenCE(render.string,
+						           render.length,
+							   CE_UTF8));
+			}
+			REAL(scount)[i] = it.weight;
+			i++;
+		}
 	}
 
 	mkchar_destroy(&mkchar);
 
-	PROTECT(ans = allocVector(VECSXP, 2)); nprot++;
-	SET_VECTOR_ELT(ans, 0, sterm);
-	SET_VECTOR_ELT(ans, 1, scount);
+	if (output_types) {
+		PROTECT(ans = allocVector(VECSXP, 2 + ng_max)); nprot++;
+		SET_VECTOR_ELT(ans, 0, sterm);
+		for (w = 0; w < ng_max; w++) {
+			SET_VECTOR_ELT(ans, w + 1, stypes[w]);
+		}
+		SET_VECTOR_ELT(ans, ng_max + 1, scount);
 
-	PROTECT(snames = allocVector(STRSXP, 2)); nprot++;
-	SET_STRING_ELT(snames, 0, mkChar("term"));
-	SET_STRING_ELT(snames, 1, mkChar("count"));
+		PROTECT(snames = allocVector(STRSXP, 2 + ng_max)); nprot++;
+		SET_STRING_ELT(snames, 0, mkChar("term"));
+		for (w = 0; w < ng_max; w++) {
+			corpus_render_clear(&render);
+			corpus_render_printf(&render, "type%d", w + 1);
+			if ((err = render.error)) {
+				goto error;
+			}
+			SET_STRING_ELT(snames, w + 1, mkChar(render.string));
+		}
+		SET_STRING_ELT(snames, ng_max + 1, mkChar("count"));
+	} else {
+		PROTECT(ans = allocVector(VECSXP, 2)); nprot++;
+		SET_VECTOR_ELT(ans, 0, sterm);
+		SET_VECTOR_ELT(ans, 1, scount);
+		PROTECT(snames = allocVector(STRSXP, 2)); nprot++;
+		SET_STRING_ELT(snames, 0, mkChar("term"));
+		SET_STRING_ELT(snames, 1, mkChar("count"));
+	}
 	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(srow_names = allocVector(REALSXP, 2)); nprot++;
 	REAL(srow_names)[0] = NA_REAL;
-	REAL(srow_names)[1] = -(double)census.nitem;
+	REAL(srow_names)[1] = -(double)nterm;
 	setAttrib(ans, R_RowNamesSymbol, srow_names);
 
 	PROTECT(sclass = allocVector(STRSXP, 1)); nprot++;
@@ -133,8 +255,10 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights)
 
 	err = 0;
 error:
-	corpus_census_destroy(&census);
-error_census:
+	corpus_ngram_destroy(&ngram);
+error_ngram:
+	corpus_render_destroy(&render);
+error_render:
 	if (err) {
 		Rf_error("failed computing term counts");
 		ans = R_NilValue;
