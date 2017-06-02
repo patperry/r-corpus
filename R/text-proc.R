@@ -358,8 +358,8 @@ term_matrix <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
     x <- as_text(x)
     filter <- as_token_filter(filter)
     ngrams <- as_ngrams(ngrams)
-    select <- as_select(select)
     weights <- as_weights(weights, length(x))
+    select <- as_select(select)
     group <- as_group(group, length(x))
 
     if (is.null(group)) {
