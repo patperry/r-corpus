@@ -261,30 +261,6 @@ as_ngrams <- function(ngrams)
 }
 
 
-as_min <- function(min)
-{
-    if (!(is.numeric(min) && length(min) == 1 && !is.nan(min))) {
-        stop("'min' should be a numeric value")
-    }
-    if (is.na(min)) {
-        min <- 0
-    }
-    as.double(min)
-}
-
-
-as_max <- function(max)
-{
-     if (!(is.numeric(max) && length(max) == 1 && !is.nan(max))) {
-        stop("'max' should be a numeric value")
-    }
-    if (is.na(max)) {
-        max <- Inf
-    }
-    as.double(max)
-}
-
-
 as_select <- function(select)
 {
     if (is.null(select)) {
@@ -299,16 +275,60 @@ as_select <- function(select)
 }
 
 
+as_min <- function(min)
+{
+    if (!((is.na(min) || is.numeric(min))
+          && length(min) == 1 && !is.nan(min))) {
+        stop("'min' should be a numeric value")
+    }
+    if (is.na(min)) {
+        min <- -Inf
+    }
+    as.double(min)
+}
+
+
+as_max <- function(max)
+{
+    if (!((is.na(max) || is.numeric(max))
+          && length(max) == 1 && !is.nan(max))) {
+        stop("'max' should be a numeric value")
+    }
+    if (is.na(max)) {
+        max <- Inf
+    }
+    as.double(max)
+}
+
+
+as_limit <- function(limit)
+{
+    if (!((is.na(limit) || is.numeric(limit))
+          && length(limit) == 1 && !is.nan(limit))) {
+        stop("'limit' should be a numeric value")
+    }
+    if (is.na(limit)) {
+        limit <- Inf
+    }
+    if (limit < 0) {
+        limit <- 0
+    }
+    floor(as.double(limit))
+}
+
+
 term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
-                        min = 0, max = Inf, select = NULL, types = FALSE)
+                        select = NULL, min = NA, max = NA, limit = NA,
+                        types = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
     ngrams <- as_ngrams(ngrams)
     weights <- as_weights(weights, length(x))
+    select <- as_select(select)
     min <- as_min(min)
     max <- as_max(max)
-    select <- as_select(select)
+    limit <- as_limit(limit)
 
     if (!(is.logical(types) && length(types) == 1 && !is.na(types))) {
         stop("'types' should be TRUE or FALSE")
@@ -317,8 +337,16 @@ term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
 
     ans <- .Call(C_term_counts_text, x, filter, ngrams, weights, min, max,
                  select, types)
+
+    # order descending by count, then ascending by term
     o <- order(-ans$count, ans$term)
-    ans <- ans[o,]
+
+    # limit output if desired
+    if (length(o) > limit) {
+        o <- o[seq_len(limit)]
+    }
+
+    ans <- ans[o, , drop = FALSE]
     row.names(ans) <- NULL
     ans
 }
