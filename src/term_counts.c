@@ -45,8 +45,9 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	SEXP ans, stype, sterm, scount, stext, sfilter, sclass, snames,
 	     srow_names;
 	SEXP *stypes;
-	const struct corpus_text *text, *type;
+	const struct corpus_text *select_text, *text, *type;
 	struct mkchar mkchar;
+	struct corpus_textset select;
 	struct corpus_render render;
 	struct corpus_ngram ngram;
 	struct corpus_ngram_iter it;
@@ -55,8 +56,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	const int *ngrams;
 	int ng_max, w, width;
 	double wt, min_count, max_count;
-	R_xlen_t i, n, k, nk, ngrams_len, nterm;
-	int output_types;
+	R_xlen_t i, n, k, nk, ngrams_len, nterm, nselect;
+	int output_types, has_select;
 	int err, type_id, nprot = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
@@ -98,6 +99,27 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		output_types = 0;
 	}
 
+	if ((err = corpus_textset_init(&select))) {
+		goto error_select;
+	}
+
+	if (sselect != R_NilValue) {
+		PROTECT(sselect = coerce_text(sselect)); nprot++;
+		select_text = as_text(sselect, &nselect);
+
+		for (i = 0; i < nselect; i++) {
+			if ((err = corpus_textset_add(&select,
+						      &select_text[i],
+						      NULL))) {
+				goto error_select_add;
+			}
+		}
+		
+		has_select = 1;
+	} else {
+		has_select = 0;
+	}
+
 	if ((err = corpus_render_init(&render, CORPUS_ESCAPE_NONE))) {
 		goto error_render;
 	}
@@ -112,7 +134,6 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		if ((err = corpus_filter_start(filter, &text[i]))) {
 			goto error;
 		}
-
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
@@ -144,10 +165,21 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		nk = 0;
 		corpus_ngram_iter_make(&it, &ngram, ngrams[k]);
 		while (corpus_ngram_iter_advance(&it)) {
-			if (min_count <= it.weight
-					&& it.weight <= max_count) {
-				nk++;
+			if (!(min_count <= it.weight
+						&& it.weight <= max_count)) {
+				continue;
 			}
+			
+			if (has_select) {
+				type_id = it.type_ids[0];
+				type = corpus_filter_type(filter, type_id);
+				if (!corpus_textset_has(&select, type,
+							NULL)) {
+					continue;
+				}
+			}
+
+			nk++;
 		}
 
 		if (nk > R_XLEN_T_MAX - nterm) {
@@ -186,6 +218,15 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 			if (!(min_count <= it.weight
 						&& it.weight <= max_count)) {
 				continue;
+			}
+
+			if (has_select) {
+				type_id = it.type_ids[0];
+				type = corpus_filter_type(filter, type_id);
+				if (!corpus_textset_has(&select, type,
+							NULL)) {
+					continue;
+				}
 			}
 
 			if (width == 1) {
@@ -275,6 +316,9 @@ error:
 error_ngram:
 	corpus_render_destroy(&render);
 error_render:
+error_select_add:
+	corpus_textset_destroy(&select);
+error_select:
 	if (err) {
 		Rf_error("failed computing term counts");
 		ans = R_NilValue;
