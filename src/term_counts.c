@@ -18,8 +18,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "corpus/src/error.h"
+#include "corpus/src/memory.h"
 #include "corpus/src/render.h"
 #include "corpus/src/table.h"
+#include "corpus/src/termset.h"
 #include "corpus/src/ngram.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
@@ -37,6 +39,87 @@
 #  undef error
 #endif
 
+static int add_select(struct corpus_termset *set,
+		       struct corpus_filter *filter, SEXP sselect)
+{
+	const struct corpus_text *text;
+	int *buf, *buf2;
+	R_xlen_t i, n;
+	int err, length, nprot, nbuf, id, type_id;
+
+	buf = NULL;
+	nprot = 0;
+	err = 0;
+
+	if (sselect == R_NilValue) {
+		goto out;
+	}
+
+	PROTECT(sselect = coerce_text(sselect)); nprot++;
+	text = as_text(sselect, &n);
+
+	nbuf = 32;
+	if (!(buf = corpus_malloc(nbuf * sizeof(*buf)))) {
+		err = CORPUS_ERROR_NOMEM;
+		goto out;
+	}
+
+	for (i = 0; i < n; i++) {
+		if ((err = corpus_filter_start(filter, &text[i]))) {
+			goto out;
+		}
+
+		length = 0;
+
+		while (corpus_filter_advance(filter)) {
+			type_id = filter->type_id;
+
+			// skip ignored types
+			if (type_id == CORPUS_FILTER_IGNORED) {
+				continue;
+			}
+
+			// keep dropped types (with negative IDs),
+			// even though we will never see them
+
+			// expand the buffer if necessary
+			if (length == nbuf) {
+				nbuf = nbuf * 2;
+				buf2 = corpus_realloc(buf,
+						      nbuf * sizeof(*buf));
+				if (!buf2) {
+					err = CORPUS_ERROR_NOMEM;
+					goto out;
+				}
+				buf = buf2;
+			}
+
+			// add the type to the buffer
+			buf[length] = type_id;
+			length++;
+		}
+
+		if ((err = filter->error)) {
+			goto out;
+		}
+
+		if ((err = corpus_termset_add(set, buf, length, &id))) {
+			goto out;
+		}
+	}
+
+	err = 0;
+
+out:
+	if (err) {
+		corpus_log(err, "failed initializing selection set");
+	}
+	corpus_free(buf);
+
+	UNPROTECT(nprot);
+	return err;
+}
+
 
 SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights, 
 		      SEXP smin_count, SEXP smax_count, SEXP sselect,
@@ -45,9 +128,9 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	SEXP ans, stype, sterm, scount, stext, sfilter, sclass, snames,
 	     srow_names;
 	SEXP *stypes;
-	const struct corpus_text *select_text, *text, *type;
+	const struct corpus_text *text, *type;
 	struct mkchar mkchar;
-	struct corpus_textset select;
+	struct corpus_termset select;
 	struct corpus_render render;
 	struct corpus_ngram ngram;
 	struct corpus_ngram_iter it;
@@ -56,7 +139,7 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	const int *ngrams;
 	int ng_max, w, width;
 	double wt, min_count, max_count;
-	R_xlen_t i, n, k, nk, ngrams_len, nterm, nselect;
+	R_xlen_t i, n, k, nk, ngrams_len, nterm;
 	int output_types, has_select;
 	int err, type_id, nprot = 0;
 
@@ -99,22 +182,14 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		output_types = 0;
 	}
 
-	if ((err = corpus_textset_init(&select))) {
+	if ((err = corpus_termset_init(&select))) {
 		goto error_select;
 	}
 
 	if (sselect != R_NilValue) {
-		PROTECT(sselect = coerce_text(sselect)); nprot++;
-		select_text = as_text(sselect, &nselect);
-
-		for (i = 0; i < nselect; i++) {
-			if ((err = corpus_textset_add(&select,
-						      &select_text[i],
-						      NULL))) {
-				goto error_select_add;
-			}
+		if ((err = add_select(&select, filter, sselect))) {
+			goto error_select_add;
 		}
-		
 		has_select = 1;
 	} else {
 		has_select = 0;
@@ -171,10 +246,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 			}
 			
 			if (has_select) {
-				type_id = it.type_ids[0];
-				type = corpus_filter_type(filter, type_id);
-				if (!corpus_textset_has(&select, type,
-							NULL)) {
+				if (!corpus_termset_has(&select, it.type_ids,
+							ngrams[k], NULL)) {
 					continue;
 				}
 			}
@@ -221,10 +294,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 			}
 
 			if (has_select) {
-				type_id = it.type_ids[0];
-				type = corpus_filter_type(filter, type_id);
-				if (!corpus_textset_has(&select, type,
-							NULL)) {
+				if (!corpus_termset_has(&select, it.type_ids,
+							width, NULL)) {
 					continue;
 				}
 			}
@@ -317,7 +388,7 @@ error_ngram:
 	corpus_render_destroy(&render);
 error_render:
 error_select_add:
-	corpus_textset_destroy(&select);
+	corpus_termset_destroy(&select);
 error_select:
 	if (err) {
 		Rf_error("failed computing term counts");
