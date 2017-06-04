@@ -17,15 +17,16 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include "corpus/src/error.h"
 #include "corpus/src/memory.h"
 #include "corpus/src/render.h"
 #include "corpus/src/table.h"
 #include "corpus/src/termset.h"
+#include "corpus/src/tree.h"
 #include "corpus/src/ngram.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
-#include "corpus/src/tree.h"
 #include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/wordscan.h"
@@ -137,9 +138,10 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	struct corpus_filter *filter;
 	const double *weights;
 	const int *ngrams;
-	int ng_max, w, width;
+	int *buffer, *ngram_set;
+	int ng_max, w;
 	double wt, min_count, max_count;
-	R_xlen_t i, n, k, nk, ngrams_len, nterm;
+	R_xlen_t i, n, k, ngrams_len, nterm;
 	int output_types, has_select;
 	int err, type_id, nprot = 0;
 
@@ -161,6 +163,16 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 			ng_max = ngrams[k];
 		}
 	}
+
+	ngram_set = (void *)R_alloc(ng_max + 1, sizeof(*ngram_set));
+	memset(ngram_set, 0, (ng_max + 1) * sizeof(*ngram_set));
+	for (k = 0; k < ngrams_len; k++) {
+		if (ngrams[k] == NA_INTEGER) {
+			continue;
+		}
+		ngram_set[ngrams[k]] = 1;
+	}
+	buffer = (void *)R_alloc(ng_max, sizeof(*buffer));
 
 	if (sweights != R_NilValue) {
 		PROTECT(sweights = coerceVector(sweights, REALSXP)); nprot++;
@@ -235,37 +247,35 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		}
 	}
 
+	if (!has_select) {
+		if ((err = corpus_ngram_sort(&ngram))) {
+			goto error;
+		}
+	}
+
 	nterm = 0;
-	for (k = 0; k < ngrams_len; k++) {
-		if (ngrams[k] == NA_INTEGER) {
+	corpus_ngram_iter_make(&it, &ngram, buffer);
+	while (corpus_ngram_iter_advance(&it)) {
+		if (!ngram_set[it.length]) {
 			continue;
 		}
-
-		nk = 0;
-		corpus_ngram_iter_make(&it, &ngram, ngrams[k]);
-		while (corpus_ngram_iter_advance(&it)) {
-			if (!(min_count <= it.weight
-						&& it.weight <= max_count)) {
+		if (!(min_count <= it.weight && it.weight <= max_count)) {
+			continue;
+		}
+		if (has_select) {
+			if (!corpus_termset_has(&select, it.type_ids,
+						it.length, NULL)) {
 				continue;
 			}
-			
-			if (has_select) {
-				if (!corpus_termset_has(&select, it.type_ids,
-							ngrams[k], NULL)) {
-					continue;
-				}
-			}
-
-			nk++;
 		}
 
-		if (nk > R_XLEN_T_MAX - nterm) {
+		if (nterm == R_XLEN_T_MAX) {
 			err = CORPUS_ERROR_OVERFLOW;
 			corpus_log(err, "number of terms exceeds maximum"
 				   " (%"PRIu64")",
 				   (uint64_t)R_XLEN_T_MAX);
 		}
-		nterm += nk;
+		nterm++;
 	}
 
 	PROTECT(sterm = allocVector(STRSXP, nterm)); nprot++;
@@ -284,65 +294,57 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 	mkchar_init(&mkchar);
 	i = 0;
 	
-	for (k = 0; k < ngrams_len; k++) {
-		if (ngrams[k] == NA_INTEGER) {
+	corpus_ngram_iter_make(&it, &ngram, buffer);
+	while (corpus_ngram_iter_advance(&it)) {
+		if (!ngram_set[it.length]) {
 			continue;
 		}
-		width = ngrams[k];
-
-		corpus_ngram_iter_make(&it, &ngram, width);
-		while (corpus_ngram_iter_advance(&it)) {
-			if (!(min_count <= it.weight
-						&& it.weight <= max_count)) {
+		if (!(min_count <= it.weight && it.weight <= max_count)) {
+			continue;
+		}
+		if (has_select) {
+			if (!corpus_termset_has(&select, it.type_ids,
+						it.length, NULL)) {
 				continue;
 			}
-
-			if (has_select) {
-				if (!corpus_termset_has(&select, it.type_ids,
-							width, NULL)) {
-					continue;
-				}
-			}
-
-			if (width == 1) {
-				type_id = it.type_ids[0];
-				type = corpus_filter_type(filter, type_id);
-				stype = mkchar_get(&mkchar, type);
-				SET_STRING_ELT(sterm, i, stype);
-				if (output_types) {
-					SET_STRING_ELT(stypes[0], i, stype);
-				}
-			} else {
-				corpus_render_clear(&render);
-
-				for (w = 0; w < width; w++) {
-					type_id = it.type_ids[w];
-					type = corpus_filter_type(filter,
-								  type_id);
-					if (output_types) {
-						stype = mkchar_get(&mkchar,
-								   type);
-						SET_STRING_ELT(stypes[w], i,
-							       stype);
-					}
-
-					if (w > 0) {
-						corpus_render_char(&render,
-								   ' ');
-					}
-					corpus_render_text(&render, type);
-				}
-				if ((err = render.error)) {
-					goto error;
-				}
-				SET_STRING_ELT(sterm, i,
-					       mkCharLenCE(render.string,
-						           render.length,
-							   CE_UTF8));
-			}
-			REAL(scount)[i] = it.weight;
-			i++;
 		}
+
+		if (it.length == 1) {
+			type_id = it.type_ids[0];
+			type = corpus_filter_type(filter, type_id);
+			stype = mkchar_get(&mkchar, type);
+			SET_STRING_ELT(sterm, i, stype);
+			if (output_types) {
+				SET_STRING_ELT(stypes[0], i, stype);
+			}
+		} else {
+			corpus_render_clear(&render);
+
+			for (w = 0; w < it.length; w++) {
+				type_id = it.type_ids[w];
+				type = corpus_filter_type(filter, type_id);
+				if (output_types) {
+					stype = mkchar_get(&mkchar, type);
+					SET_STRING_ELT(stypes[w], i, stype);
+				}
+
+				if (w > 0) {
+					corpus_render_char(&render, ' ');
+				}
+				corpus_render_text(&render, type);
+			}
+
+			if ((err = render.error)) {
+				goto error;
+			}
+
+			SET_STRING_ELT(sterm, i,
+				       mkCharLenCE(render.string,
+					           render.length, CE_UTF8));
+		}
+
+		REAL(scount)[i] = it.weight;
+		i++;
 	}
 
 	mkchar_destroy(&mkchar);
@@ -370,6 +372,7 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sngrams, SEXP sweights,
 		PROTECT(ans = allocVector(VECSXP, 2)); nprot++;
 		SET_VECTOR_ELT(ans, 0, sterm);
 		SET_VECTOR_ELT(ans, 1, scount);
+
 		PROTECT(snames = allocVector(STRSXP, 2)); nprot++;
 		SET_STRING_ELT(snames, 0, mkChar("term"));
 		SET_STRING_ELT(snames, 1, mkChar("count"));
