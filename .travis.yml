@@ -5,4 +5,5 @@ r_github_packages:
   - jimhester/covr
 
 after_success:
-  - Rscript -e 'Sys.setlocale("LC_ALL", "C"); covr::codecov(line_exclusions=list.files("src/corpus", recursive=TRUE, full.names=TRUE))'
+  - export LC_ALL="C"
+  - Rscript -e 'Sys.getlocale(); covr::codecov(line_exclusions=list.files("src/corpus", recursive=TRUE, full.names=TRUE))'
