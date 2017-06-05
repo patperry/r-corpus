@@ -980,6 +980,7 @@ SEXP as_factor_json(SEXP sdata)
 
 	setAttrib(ans, R_LevelsSymbol, levels);
 	setAttrib(ans, R_ClassSymbol, mkString("factor"));
+	err = 0;
 
 error_add:
 	corpus_textset_destroy(&set);
