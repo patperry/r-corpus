@@ -290,34 +290,6 @@ static void combine_terms(struct corpus_filter *f, SEXP sterms)
 }
 
 
-static void select_terms(struct corpus_filter *f, SEXP sterms)
-{
-	const struct corpus_text *terms;
-	R_xlen_t i, n;
-	int err;
-
-	if (sterms == R_NilValue) {
-		return;
-	}
-
-	PROTECT(sterms = coerce_text(sterms));
-	terms = as_text(sterms, &n);
-
-	for (i = 0; i < n; i++) {
-		if (!terms[i].ptr) {
-			continue;
-		}
-
-		if ((err = corpus_filter_select(f, &terms[i], NULL))) {
-			error("failed adding term to token filter "
-			      " select list");
-		}
-	}
-
-	UNPROTECT(1);
-}
-
-
 SEXP alloc_filter(SEXP props)
 {
 	SEXP sfilter;
@@ -337,7 +309,6 @@ SEXP alloc_filter(SEXP props)
 	drop_terms(f, getListElement(props, "drop"));
 	drop_except_terms(f, getListElement(props, "drop_except"));
 	combine_terms(f, getListElement(props, "combine"));
-	select_terms(f, getListElement(props, "select"));
 
 	UNPROTECT(1);
 	return sfilter;

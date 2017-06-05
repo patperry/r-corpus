@@ -129,7 +129,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	for (i = 0; i < n; i++) {
 		wt = weights ? weights[i] : 1;
 
-		if ((err = corpus_filter_start(filter, &text[i]))) {
+		if ((err = corpus_filter_start(filter, &text[i],
+					       CORPUS_FILTER_SCAN_TOKENS))) {
 			goto error;
 		}
 

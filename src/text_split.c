@@ -263,7 +263,8 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 			continue;
 		}
 
-		if ((err = corpus_filter_start(filter, &text[i]))) {
+		if ((err = corpus_filter_start(filter, &text[i],
+					       CORPUS_FILTER_SCAN_TOKENS))) {
 			BAIL("memory allocation failure");
 		}
 

@@ -90,7 +90,8 @@ static int add_select(struct corpus_termset *set,
 	has_render = 1;
 
 	for (i = 0; i < n; i++) {
-		if ((err = corpus_filter_start(filter, &text[i]))) {
+		if ((err = corpus_filter_start(filter, &text[i],
+					       CORPUS_FILTER_SCAN_TYPES))) {
 			goto out;
 		}
 
@@ -328,7 +329,8 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 
 		w = weights ? weights[i] : 1;
 
-		if ((err = corpus_filter_start(filter, &text[i]))) {
+		if ((err = corpus_filter_start(filter, &text[i],
+					       CORPUS_FILTER_SCAN_TOKENS))) {
 			goto out;
 		}
 

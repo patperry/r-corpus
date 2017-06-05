@@ -113,7 +113,8 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		return ScalarString(NA_STRING);
 	}
 
-	if ((err = corpus_filter_start(ctx->filter, text))) {
+	if ((err = corpus_filter_start(ctx->filter, text,
+				       CORPUS_FILTER_SCAN_TOKENS))) {
 		Rf_error("error while tokenizing text");
 	}
 
