@@ -129,9 +129,8 @@ SEXP text_split_sentences(SEXP x, SEXP size, SEXP crlf_break, SEXP suppress);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 
 SEXP tokens_text(SEXP x, SEXP props);
-SEXP term_counts_text(SEXP x, SEXP props, SEXP ngrams, SEXP weights,
-		      SEXP min_count, SEXP max_count, SEXP select,
-		      SEXP types);
+SEXP term_counts_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
+		      SEXP min_count, SEXP max_count, SEXP output_types);
 SEXP term_matrix_text(SEXP x, SEXP props, SEXP weights, SEXP group);
 SEXP stopwords(SEXP kind);
 

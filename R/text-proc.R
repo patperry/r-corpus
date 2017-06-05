@@ -243,16 +243,17 @@ as_group <- function(group, n)
 
 as_ngrams <- function(ngrams)
 {
+    if (is.null(ngrams)) {
+        return(NULL)
+    }
+
     if (!is.numeric(ngrams)) {
-        stop("'ngrams' argument must be an integer vector")
+        stop("'ngrams' argument must be NULL or an integer vector")
     }
 
     ngrams <- ngrams[is.finite(ngrams) & ngrams >= 1]
     if (length(ngrams) == 0) {
         stop("'ngrams' argument must contain at least one positive value")
-    }
-    if (any(ngrams > 127)) {
-        stop("'ngrams' values cannot exceed 127")
     }
 
     ngrams <- unique(sort(ngrams))
@@ -308,7 +309,7 @@ as_limit <- function(limit)
         stop("'limit' should be a numeric value")
     }
     if (is.na(limit)) {
-        limit <- Inf
+        return(NA)
     }
     if (limit < 0) {
         limit <- 0
@@ -317,15 +318,14 @@ as_limit <- function(limit)
 }
 
 
-term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
-                        select = NULL, min = NA, max = NA, limit = NA,
-                        types = FALSE)
+term_counts <- function(x, filter = token_filter(), weights = NULL, 
+                        ngrams = NULL, min = NA, max = NA,
+                        limit = NA, types = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
-    ngrams <- as_ngrams(ngrams)
     weights <- as_weights(weights, length(x))
-    select <- as_select(select)
+    ngrams <- as_ngrams(ngrams)
     min <- as_min(min)
     max <- as_max(max)
     limit <- as_limit(limit)
@@ -335,14 +335,14 @@ term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
     }
     types <- as.logical(types)
 
-    ans <- .Call(C_term_counts_text, x, filter, ngrams, weights, min, max,
-                 select, types)
+    ans <- .Call(C_term_counts_text, x, filter, weights, ngrams, min, max,
+                 types)
 
     # order descending by count, then ascending by term
     o <- order(-ans$count, ans$term)
 
     # limit output if desired
-    if (length(o) > limit) {
+    if (!is.na(limit) && length(o) > limit) {
         o <- o[seq_len(limit)]
     }
 
@@ -352,13 +352,13 @@ term_counts <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
 }
 
 
-term_matrix <- function(x, filter = token_filter(), ngrams = 1, weights = NULL,
-                        select = NULL, group = NULL)
+term_matrix <- function(x, filter = token_filter(), weights = NULL,
+                        ngrams = NULL, select = NULL, group = NULL)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
-    ngrams <- as_ngrams(ngrams)
     weights <- as_weights(weights, length(x))
+    ngrams <- as_ngrams(ngrams)
     select <- as_select(select)
     group <- as_group(group, length(x))
 

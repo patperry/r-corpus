@@ -38,6 +38,91 @@
 #endif
 
 
+#if 0
+
+static int add_select(struct corpus_termset *set,
+		       struct corpus_filter *filter, SEXP sselect)
+{
+	const struct corpus_text *text;
+	int *buf, *buf2;
+	R_xlen_t i, n;
+	int err, length, nprot, nbuf, id, type_id;
+
+	buf = NULL;
+	nprot = 0;
+	err = 0;
+
+	if (sselect == R_NilValue) {
+		goto out;
+	}
+
+	PROTECT(sselect = coerce_text(sselect)); nprot++;
+	text = as_text(sselect, &n);
+
+	nbuf = 32;
+	if (!(buf = corpus_malloc(nbuf * sizeof(*buf)))) {
+		err = CORPUS_ERROR_NOMEM;
+		goto out;
+	}
+
+	for (i = 0; i < n; i++) {
+		if ((err = corpus_filter_start(filter, &text[i]))) {
+			goto out;
+		}
+
+		length = 0;
+
+		while (corpus_filter_advance(filter)) {
+			type_id = filter->type_id;
+
+			// skip ignored types
+			if (type_id == CORPUS_FILTER_IGNORED) {
+				continue;
+			}
+
+			// keep dropped types (with negative IDs),
+			// even though we will never see them
+
+			// expand the buffer if necessary
+			if (length == nbuf) {
+				nbuf = nbuf * 2;
+				buf2 = corpus_realloc(buf,
+						      nbuf * sizeof(*buf));
+				if (!buf2) {
+					err = CORPUS_ERROR_NOMEM;
+					goto out;
+				}
+				buf = buf2;
+			}
+
+			// add the type to the buffer
+			buf[length] = type_id;
+			length++;
+		}
+
+		if ((err = filter->error)) {
+			goto out;
+		}
+
+		if ((err = corpus_termset_add(set, buf, length, &id))) {
+			goto out;
+		}
+	}
+
+	err = 0;
+
+out:
+	if (err) {
+		corpus_log(err, "failed initializing selection set");
+	}
+	corpus_free(buf);
+
+	UNPROTECT(nprot);
+	return err;
+}
+
+#endif
+
 SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 {
 	SEXP ans = R_NilValue, snames, si, sj, scount, stext, sfilter,

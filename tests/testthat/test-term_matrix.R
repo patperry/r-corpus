@@ -54,13 +54,13 @@ test_that("'term_maxtrix' group works", {
     x0 <- term_matrix(text)
     x <- term_matrix(text, group = g)
     gmat <- Matrix::sparseMatrix(i = as.integer(factor(g)),
-                                 j = seq_along(g), , x = 1,
+                                 j = seq_along(g), x = 1,
                                  dimnames = list(levels(factor(g)), NULL))
     expect_equal(x,  gmat %*% x0)
 })
 
 
-test_that("'term_maxtrix' weights and group works", {
+test_that("'term_matrix' weights and group works", {
     text <- c("A rose is a rose is a rose.",
               "A Rose is red, a violet is blue!",
               "A rose by any other name would smell as sweet.")
@@ -69,7 +69,7 @@ test_that("'term_maxtrix' weights and group works", {
     x0 <- term_matrix(text)
     x <- term_matrix(text, weights = w, group = g)
     gmat <- Matrix::sparseMatrix(i = as.integer(factor(g)),
-                                 j = seq_along(g), , x = 1,
+                                 j = seq_along(g), x = 1,
                                  dimnames = list(levels(factor(g)), NULL))
     expect_equal(x,  gmat %*% (w * x0))
 })
