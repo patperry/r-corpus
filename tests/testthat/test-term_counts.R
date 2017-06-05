@@ -24,7 +24,7 @@ test_that("'term_counts' can use weights", {
 
     expect_equal(term_counts(x, weights = weights),
                  data.frame(term = c("a", "rose", "is", ".",
-                                     ",", "!", "blue", "red", "violet"),
+                                     "!", ",", "blue", "red", "violet"),
                             count = c(302, 301, 202, 100, 1, 1, 1, 1, 1),
                             stringsAsFactors = FALSE))
 })

@@ -47,7 +47,8 @@
     A data frame with columns named \code{term} and \code{count}, with one
     row for each appearing term. Rows are sorted in descending order
     according to \code{count}, with ties broken lexicographically using
-    the \code{term}.
+    the \code{term}, using the character ordering determined by the current
+    locale (see \code{\link{Comparison}} for details).
 
     If \code{types = TRUE}, then the result also includes columns named
     \code{type1}, \code{type2}, etc. for the types that make up the

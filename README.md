@@ -358,8 +358,16 @@ sequence of commands in R:
                      shQuote(dir))
         system(cmd)
         devtools::install(dir)
+
+        # optional: run the tests
+        # must be in C locale for consistent string sorting
+        collate <- Sys.getlocale("LC_COLLATE")
+        Sys.setlocale("LC_COLLATE", "C")
         devtools::test(dir) # run the tests (optional)
-        unlink(dir, recursive=TRUE)
+        Sys.setlocale("LC_COLLATE", collate) # restore the original locale
+
+        # optional: remove the temporary files
+        unlink(dir, recursive = TRUE)
     })
 
 Note that the package uses a git submodule, so you cannot use
