@@ -6,8 +6,8 @@
     one column for each term.
 }
 \usage{
-    term_matrix(x, filter = token_filter(), ngrams = 1, select = NULL,
-                weights = NULL, group = NULL)
+    term_matrix(x, filter = token_filter(), weights = NULL,
+                ngrams = NULL, select = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
@@ -17,6 +17,13 @@
     \item{weights}{a numeric vector the same length of \code{x} assigning
         weights to each text, or \code{NULL} for unit weights.}
 
+    \item{ngrams}{ an integer vector of n-gram lengths to include, or
+        \code{NULL} to use the \code{select} argument to determine the
+        n-gram lengths.}
+
+    \item{select}{a character vector of terms to count, or \code{NULL} to
+        count all terms that appear in \code{x}.}
+
     \item{group}{if non-\code{NULL}, a factor, character string, or
         integer vector the same length of \code{x} specifying the grouping
         behavior.}
@@ -24,9 +31,16 @@
 \details{
     \code{term_matrix} tokenizes a set of texts and computes the occurrence
     counts for each term. If \code{weights} is non-\code{NULL}, then each
-    token in text \code{i} increments the count for the corresponding term
+    token in text \code{i} increments the count for the corresponding terms
     by \code{weights[i]}; otherwise, each appearance increments the count
     by one.
+
+    If \code{ngrams} is non-\code{NULL}, then multi-type n-grams are
+    included in the output for all lengths appearing in the \code{ngrams}
+    argument. If \code{ngrams} is \code{NULL} but \code{select} is
+    non-\code{NULL}, then all n-grams appearing in the \code{select} set
+    are included. If both \code{ngrams} and \code{select} are \code{NULL},
+    then only unigrams (single type terms) are included.
 
     If \code{group} is \code{NULL}, then the output has one row for each
     input text. Otherwise, we convert \code{group} to a \code{factor} and
@@ -52,13 +66,18 @@
     term_matrix(text)
 
     # select certain terms
-    f <- token_filter(select = c("rose", "red", "violet", "sweet"))
-    term_matrix(text, f)
+    term_matrix(text, select = c("rose", "red", "violet", "sweet"))
 
     # specify a grouping factor
-    term_matrix(text, f, group = c("Good", "Bad", "Good"))
+    term_matrix(text, group = c("Good", "Bad", "Good"))
 
     # weight the texts
-    term_matrix(text, f, weights = c(1, 2, 10),
+    term_matrix(text, weights = c(1, 2, 10),
                 group = c("Good", "Bad", "Good"))
+
+    # include higher-order n-grams
+    term_matrix(text, ngrams = 1:3)
+
+    # select certain multi-type terms
+    term_matrix(text, select = c("a rose", "a violet", "sweet", "smell"))
 }
