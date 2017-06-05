@@ -3,7 +3,7 @@
 spawn R --quiet --vanilla
 
 expect {
-  "> " { send "library('devtools'); load_all('.')\n" }
+  "> " { send "Sys.setlocale(locale = 'C'); devtools::load_all('.')\n" }
 }
 
 interact

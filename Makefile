@@ -10,7 +10,7 @@ clean:
 	Rscript -e 'devtools::clean_dll(".")'
 
 check: $(CORPUS_LIB)
-	Rscript -e 'devtools::test(".")'
+	Rscript -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
 
 install: $(CORPUS_LIB)
 	Rscript -e 'devtools::install(".")'
