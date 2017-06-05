@@ -368,8 +368,7 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
         n <- nlevels(group)
     }
 
-    mat <- .Call(C_term_matrix_text, x, filter, weights, group);
-
+    mat <- .Call(C_term_matrix_text, x, filter, weights, ngrams, select, group)
     Matrix::sparseMatrix(i = mat$i, j = mat$j, x = mat$count,
                          dims = c(n, length(mat$col_names)),
                          dimnames = list(mat$row_names, mat$col_names),

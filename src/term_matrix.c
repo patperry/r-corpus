@@ -19,8 +19,12 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+#include "corpus/src/error.h"
+#include "corpus/src/memory.h"
+#include "corpus/src/render.h"
 #include "corpus/src/table.h"
-#include "corpus/src/census.h"
+#include "corpus/src/termset.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
 #include "corpus/src/tree.h"
@@ -28,6 +32,7 @@
 #include "corpus/src/symtab.h"
 #include "corpus/src/wordscan.h"
 #include "corpus/src/filter.h"
+#include "corpus/src/ngram.h"
 #include "rcorpus.h"
 
 
@@ -37,20 +42,34 @@
 #  undef error
 #endif
 
-
-#if 0
+#define CLEANUP() \
+	do { \
+		corpus_free(buf); \
+		buf = NULL; \
+		if (has_render) { \
+			corpus_render_destroy(&render); \
+			has_render = 0; \
+		} \
+	} while (0)
 
 static int add_select(struct corpus_termset *set,
-		       struct corpus_filter *filter, SEXP sselect)
+		      struct corpus_filter *filter, SEXP sselect,
+		      int *lenptr)
 {
+	struct corpus_render render;
 	const struct corpus_text *text;
 	int *buf, *buf2;
+	char *errstr;
 	R_xlen_t i, n;
-	int err, length, nprot, nbuf, id, type_id;
+	int err, length, max_length, nprot, nbuf, id, type_id;
+	int has_render, rendered_error;
 
+	has_render = 0;
 	buf = NULL;
 	nprot = 0;
 	err = 0;
+	max_length = 1;
+	rendered_error = 0;
 
 	if (sselect == R_NilValue) {
 		goto out;
@@ -64,6 +83,11 @@ static int add_select(struct corpus_termset *set,
 		err = CORPUS_ERROR_NOMEM;
 		goto out;
 	}
+
+	if ((err = corpus_render_init(&render, CORPUS_ESCAPE_CONTROL))) {
+		goto out;
+	}
+	has_render = 1;
 
 	for (i = 0; i < n; i++) {
 		if ((err = corpus_filter_start(filter, &text[i]))) {
@@ -80,8 +104,10 @@ static int add_select(struct corpus_termset *set,
 				continue;
 			}
 
-			// keep dropped types (with negative IDs),
-			// even though we will never see them
+			// error on dropped types
+			if (type_id < 0) {
+				break;
+			}
 
 			// expand the buffer if necessary
 			if (length == nbuf) {
@@ -104,6 +130,40 @@ static int add_select(struct corpus_termset *set,
 			goto out;
 		}
 
+		if (length > max_length) {
+			max_length = length;
+		}
+
+		if (length == 0 || type_id < 0) {
+			corpus_render_printf(&render,
+				"select term in position %"PRIu64" ('",
+				(uint64_t)(i+1));
+			corpus_render_text(&render, &text[i]);
+			corpus_render_string(&render, "') ");
+			if (length == 0) {
+				corpus_render_string(&render,
+						"has empty type (''))");
+			} else {
+				corpus_render_string(&render,
+						"contains a dropped type");
+			}
+			rendered_error = 1;
+			goto out;
+		}
+
+		if (corpus_termset_has(set, buf, length, &id)) {
+			corpus_render_printf(&render,
+				"select terms in positions %"PRIu64
+				" and %"PRIu64" ('",
+				(uint64_t)(id + 1), (uint64_t)(i + 1));
+			corpus_render_text(&render, &text[id]);
+			corpus_render_string(&render, "' and '");
+			corpus_render_text(&render, &text[i]);
+			corpus_render_string(&render, "') have the same type");
+			rendered_error = 1;
+			goto out;
+		}
+
 		if ((err = corpus_termset_add(set, buf, length, &id))) {
 			goto out;
 		}
@@ -112,30 +172,69 @@ static int add_select(struct corpus_termset *set,
 	err = 0;
 
 out:
-	if (err) {
-		corpus_log(err, "failed initializing selection set");
+	if (rendered_error && !((err = render.error))) {
+		errstr = (void *)R_alloc(render.length + 1, 1);
+		memcpy(errstr, render.string, render.length + 1);
+		CLEANUP();
+		Rf_error(errstr);
 	}
-	corpus_free(buf);
+
+	CLEANUP();
+	if (err) {
+		Rf_error("failed initializing selection set");
+	}
+	if (lenptr) {
+		*lenptr = max_length;
+	}
 
 	UNPROTECT(nprot);
 	return err;
 }
 
-#endif
+#undef CLEANUP
 
-SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
+
+#define CLEANUP() \
+	do { \
+		if (has_render) { \
+			corpus_render_destroy(&render); \
+			has_render = 0; \
+		} \
+		if (has_termset) { \
+			corpus_termset_destroy(&termset); \
+			has_termset = 0; \
+		} \
+		while (has_ngram-- > 0) { \
+			corpus_ngram_destroy(&ngram[has_ngram]); \
+		} \
+		free(ngram); \
+		ngram = NULL; \
+	} while (0)
+
+
+SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
+		      SEXP sselect, SEXP sgroup)
 {
 	SEXP ans = R_NilValue, snames, si, sj, scount, stext, sfilter,
-	     scol_names, srow_names;
+	     scol_names, srow_names, sterm;
 	const struct corpus_text *text, *type;
-	struct mkchar mkchar;
+	struct corpus_render render;
 	struct corpus_filter *filter;
+	struct corpus_termset termset;
 	const double *weights;
+	const int *ngrams, *type_ids;
+	int *buffer, *ngram_set;
 	const int *group;
 	double w;
-	struct corpus_census *census;
-	R_xlen_t i, n, g, nc, ngroup, nz, off;
-	int err, type_id, nprot = 0;
+	struct corpus_ngram *ngram;
+	struct corpus_ngram_iter it;
+	R_xlen_t i, n, g, ngroup, nz, off;
+	int err, j, m, ngram_max, term_id, type_id, nprot = 0;
+	int has_render, has_termset, has_ngram, select, select_max;
+
+	has_render = 0;
+	has_termset = 0;
+	has_ngram = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
@@ -143,10 +242,53 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 	PROTECT(sfilter = alloc_filter(sprops)); nprot++;
 	filter = as_filter(sfilter);
 
+	if ((err = corpus_termset_init(&termset))) {
+		goto out;
+	}
+	has_termset = 1;
+
+	select = 0;
+	select_max = 1;
+	if (sselect != R_NilValue) {
+		select = 1;
+		add_select(&termset, filter, sselect, &select_max);
+	}
+
+	if (sngrams != R_NilValue) {
+		PROTECT(sngrams = coerceVector(sngrams, INTSXP)); nprot++;
+		ngrams = INTEGER(sngrams);
+		ngram_max = 1;
+		for (i = 0; i < XLENGTH(sngrams); i++) {
+			if (ngrams[i] == NA_INTEGER) {
+				continue;
+			}
+			if (ngrams[i] > ngram_max) {
+				ngram_max = ngrams[i];
+			}
+		}
+	} else if (select) {
+		ngram_max = select_max;
+	} else {
+		ngram_max = 1;
+	}
+
+	buffer = (void *)R_alloc(ngram_max, sizeof(*buffer));
+	ngram_set = (void *)R_alloc(ngram_max + 1, sizeof(*ngram_set));
+	memset(ngram_set, 0, (ngram_max + 1) * sizeof(*ngram_set));
+	if (sngrams != R_NilValue) {
+		for (i = 0; i < XLENGTH(sngrams); i++) {
+			if (ngrams[i] == NA_INTEGER) {
+				continue;
+			}
+			ngram_set[ngrams[i]] = 1;
+		}
+	} else {
+		ngram_set[1] = 1;
+	}
+
+	weights = NULL;
 	if (sweights != R_NilValue) {
 		weights = REAL(sweights);
-	} else {
-		weights = NULL;
 	}
 
 	if (sgroup != R_NilValue) {
@@ -159,15 +301,18 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 		group = NULL;
 	}
 
-	census = malloc(ngroup * sizeof(*census));
-	if (ngroup && !census) {
-		Rf_error("failed allocating %d objects of size %d byres",
-			 ngroup, sizeof(*census));
+	ngram = NULL;
+	if (ngroup > 0) {
+		if (!(ngram = malloc(ngroup * sizeof(*ngram)))) {
+			CLEANUP();
+			Rf_error("failed allocating %d objects"
+				 " of size %d bytes", ngroup, sizeof(*ngram));
+		}
 	}
 
-	for (nc = 0; nc < ngroup; nc++) {
-		if ((err = corpus_census_init(&census[nc]))) {
-			goto error;
+	for (has_ngram = 0; has_ngram < ngroup; has_ngram++) {
+		if ((err = corpus_ngram_init(&ngram[has_ngram], ngram_max))) {
+			goto out;
 		}
 	}
 
@@ -184,39 +329,65 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 		w = weights ? weights[i] : 1;
 
 		if ((err = corpus_filter_start(filter, &text[i]))) {
-			goto error;
+			goto out;
+		}
+
+		if ((err = corpus_ngram_break(&ngram[g]))) {
+			goto out;
 		}
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
-			if (type_id < 0) {
+			if (type_id == CORPUS_FILTER_IGNORED) {
+				continue;
+			} else if (type_id < 0) {
+				if ((err = corpus_ngram_break(&ngram[g]))) {
+					goto out;
+				}
 				continue;
 			}
 
-			if ((err = corpus_census_add(&census[g], type_id, w))) {
-				goto error;
+			if ((err = corpus_ngram_add(&ngram[g], type_id, w))) {
+				goto out;
 			}
 		}
 
 		if ((err = filter->error)) {
-			goto error;
+			goto out;
 		}
 	}
 
 	nz = 0;
 	for (g = 0; g < ngroup; g++) {
-		if (census[g].nitem > R_XLEN_T_MAX - nz) {
-			while (nc-- > 0) {
-				corpus_census_destroy(&census[nc]);
+		corpus_ngram_iter_make(&it, &ngram[g], buffer);
+		while (corpus_ngram_iter_advance(&it)) {
+			if (!ngram_set[it.length]) {
+				continue;
 			}
-			free(census);
 
-			Rf_error("overflow error; number of matrix elements"
-				 " exceeds maximum (%"PRIu64")",
-				 (uint64_t)R_XLEN_T_MAX);
+			if (select) {
+			       if (!corpus_termset_has(&termset, it.type_ids,
+						       it.length, NULL)) {
+				       continue;
+			       }
+			} else {
+			       if ((err = corpus_termset_add(&termset,
+							     it.type_ids,
+							     it.length,
+							     NULL))) {
+				       goto out;
+			       }
+			}
+
+			if (nz == R_XLEN_T_MAX) {
+				CLEANUP();
+				Rf_error("overflow error;"
+					 " number of matrix elements"
+					 " exceeds maximum (%"PRIu64")",
+					 (uint64_t)R_XLEN_T_MAX);
+			}
+			nz++;
 		}
-
-		nz += census[g].nitem;
 	}
 
 	PROTECT(si = allocVector(REALSXP, nz)); nprot++;
@@ -225,21 +396,49 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 
 	off = 0;
 	for (g = 0; g < ngroup; g++) {
-		for (i = 0; i < census[g].nitem; i++) {
+		corpus_ngram_iter_make(&it, &ngram[g], buffer);
+		while (corpus_ngram_iter_advance(&it)) {
+			if (!ngram_set[it.length]) {
+				continue;
+			}
+
+			if (!corpus_termset_has(&termset, it.type_ids,
+						it.length, &term_id)) {
+				continue;
+			}
+
 			REAL(si)[off] = (double)g;
-			INTEGER(sj)[off] = census[g].items[i];
-			REAL(scount)[off] = census[g].weights[i];
+			INTEGER(sj)[off] = term_id;
+			REAL(scount)[off] = it.weight;
 			off++;
 		}
 	}
 
-	PROTECT(scol_names = allocVector(STRSXP, filter->ntype)); nprot++;
-	mkchar_init(&mkchar);
-	for (i = 0; i < filter->ntype; i++) {
-		type = corpus_filter_type(filter, i);
-		SET_STRING_ELT(scol_names, i, mkchar_get(&mkchar, type));
+	PROTECT(scol_names = allocVector(STRSXP, termset.nitem)); nprot++;
+
+	if ((err = corpus_render_init(&render, CORPUS_ESCAPE_NONE))) {
+		goto out;
 	}
-	mkchar_destroy(&mkchar);
+	has_render = 1;
+
+	for (i = 0; i < termset.nitem; i++) {
+		type_ids = termset.items[i].type_ids;
+		m = termset.items[i].length;
+		for (j = 0; j < m; j++) {
+			type = corpus_filter_type(filter, type_ids[j]);
+			if (j > 0) {
+				corpus_render_char(&render, ' ');
+			}
+			corpus_render_text(&render, type);
+		}
+		if ((err = render.error)) {
+			goto out;
+		}
+		sterm = mkCharLenCE(render.string, render.length, CE_UTF8);
+		corpus_render_clear(&render);
+
+		SET_STRING_ELT(scol_names, i, sterm);
+	}
 
 	PROTECT(ans = allocVector(VECSXP, 5)); nprot++;
 	SET_VECTOR_ELT(ans, 0, si);
@@ -257,12 +456,8 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sgroup)
 	setAttrib(ans, R_NamesSymbol, snames);
 
 	err = 0;
-error:
-	while (nc-- > 0) {
-		corpus_census_destroy(&census[nc]);
-	}
-	free(census);
-
+out:
+	CLEANUP();
 	if (err) {
 		Rf_error("failed computing term counts");
 	}
