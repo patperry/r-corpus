@@ -1,10 +1,9 @@
 language: R
 cache: packages
-env:
-  - LC_ALL="C"
 
 r_github_packages:
   - jimhester/covr
 
 after_success:
+  - export LC_ALL="C"
   - Rscript -e 'covr::codecov(line_exclusions=list.files("src/corpus", recursive=TRUE, full.names=TRUE))'
