@@ -11,8 +11,9 @@
     token_filter(map_case = TRUE, map_compat = TRUE, map_quote = TRUE, 
                  remove_ignorable = TRUE, ignore_space = TRUE,
                  stemmer = NULL, stem_except = drop, combine = NULL,
-                 drop_letter = FALSE, drop_mark = FALSE, drop_number = FALSE,
-                 drop_punct = FALSE, drop_symbol = FALSE, drop_other = FALSE,
+                 drop_letter = FALSE, drop_mark = FALSE,
+                 drop_number = FALSE, drop_punct = FALSE,
+                 drop_symbol = FALSE, drop_other = FALSE,
                  drop = NULL, drop_except = NULL)
 
     tokens(x, filter = token_filter())
