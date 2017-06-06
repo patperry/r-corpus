@@ -56,6 +56,11 @@ version, run the following command in R:
 Alternatively, use any other installation method supported by your R
 development environment.
 
+*Note: This package uses a git submodule, so `install_git` and
+`install_github` won't work.  See the section on
+[Building from source](#building-from-source) below if you want to
+install the development version.*
+
 
 Demonstration
 -------------
