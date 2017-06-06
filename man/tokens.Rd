@@ -120,7 +120,8 @@
         \item In the third stage, if the \code{stemmer} property is
             non-\code{NULL}, we apply the indicated stemming algorithm to
             each word that does not match one of the elements of the
-            \code{stem_except} character vector.
+            \code{stem_except} character vector. See the
+            \sQuote{Stemming} section below for more information.
 
         \item Next, if the \code{combine} property is non-\code{NULL},
             we scan the word sequence from left to right, searching for
@@ -148,6 +149,21 @@
 
     When \code{filter = NULL}, we treat all logical properties as
     \code{FALSE} and all other properties as \code{NULL}.
+}
+\section{Stemming}{
+    We use the stemming algorithms provided by the Snowball library. These
+    algorithms are also available in the \code{SnowballC} R package. Unlike
+    that package, we provide the ability to exempt certain words from stemming,
+    using the \code{stem_except} argument; see the examples below.
+    If you do not specify the \code{stem_except} argument, then we set its
+    value equal to the \code{drop} argument.
+
+    We also exempt from stemming any case that would turn internal
+    punctuation like the full stop in \code{"u.s"} into boundary punctuation
+    like at the end of \code{"u."}; otherwise, in examples like this, the
+    stemming procedure would turn single-word tokens into a multi-word
+    tokens (compare \code{tokens("u.s")} with \code{tokens("u.")}). For
+    English, this likely only affects words ending in \code{".s"}.
 }
 \section{Combining words}{
     The \code{combine} property of a \code{token_filter} enables
@@ -178,4 +194,11 @@
     # drop numbers, with some exceptions:"
     tokens("0, 1, 2, 3, 4, 5",
            token_filter(drop_number = TRUE, drop_except = c("0", "2", "4")))
+
+    # apply stemming...
+    tokens("Mary is running", token_filter(stemmer = "english"))
+
+    # ...except for certain words
+    tokens("Mary is running",
+           token_filter(stemmer = "english", stem_except = "mary"))
 }
