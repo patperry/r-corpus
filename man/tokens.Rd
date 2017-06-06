@@ -161,7 +161,7 @@
     We also exempt from stemming any case that would turn internal
     punctuation like the full stop in \code{"u.s"} into boundary punctuation
     like at the end of \code{"u."}; otherwise, in examples like this, the
-    stemming procedure would turn single-word tokens into a multi-word
+    stemming procedure would turn single-word tokens into multi-word
     tokens (compare \code{tokens("u.s")} with \code{tokens("u.")}). For
     English, this likely only affects words ending in \code{".s"}.
 }
