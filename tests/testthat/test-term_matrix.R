@@ -74,3 +74,17 @@ test_that("'term_matrix' weights and group works", {
     expect_equal(sort(colnames(x)), sort(colnames(x0)))
     expect_equal(x[, colnames(x0), drop = FALSE],  gmat %*% (w * x0))
 })
+
+
+test_that("'term_matrix' can select stemmed bigrams", {
+    text <- "A sentence. Another sentence. Others..."
+    f <- token_filter(stemmer = "english", drop_punct = TRUE,
+                      drop = stopwords("english"))
+    select <- c("sentenc", "anoth", "anoth sentenc")
+    x0 <- term_matrix(text, f, select = select)
+    x <- Matrix::sparseMatrix(i = c(1, 1, 1),
+                              j = c(1, 2, 3),
+                              x = c(2, 1, 1),
+                              dimnames = list(NULL, select))
+    expect_equal(x, x0)
+})

@@ -284,7 +284,9 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 			ngram_set[ngrams[i]] = 1;
 		}
 	} else {
-		ngram_set[1] = 1;
+		for (i = 0; i < ngram_max; i++) {
+			ngram_set[i + 1] = 1;
+		}
 	}
 
 	weights = NULL;
