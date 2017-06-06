@@ -1,6 +1,33 @@
-Changes in version 0.6.0
+Changes in version 0.6.0 (2017-06-06)
 
  * Rename text_filter() to token_filter().
+
+ * Add "ngrams" options for term_counts() and term_matrix().
+
+ * Add term_counts() "min" and "max" options for excluding terms with
+   counts below or above specified limits.
+
+ * Add term_counts() "limit" option to limit the number of reported terms.
+
+ * Add term_counts() "types" option for reporting the types that make up
+   a term.
+
+ * Remove "select" argument from token_filter(), but add "select" to
+   term_matrix() arguments.
+
+ * Replace sentences() function with text_split(), which has options for
+   breaking into multi-sentence blocks or multi-token blocks.
+
+ * Add sentence break suppressions (special handling for abbreviations);
+   the default behavior for text_split(, "sentences") is to use a set of
+   English abbreviations as suppressions.
+
+ * Add option to treat CR and LF like spaces when determining sentence
+   boundaries; this is now the default.
+
+ * Add abbreviations() function with abbreviation lists for English,
+   French, German, Italian, Portuguese, and Russian (from the Unicode
+   Common Locale Data Repository).
 
  * Add more refined control over token_filter() drop cateogries:
    merged "kana", and "ideo" into "letter"; split off "punct", "mark",
@@ -9,8 +36,7 @@ Changes in version 0.6.0
  * Remove "remove_control", "map_dash", and "remove_space" type
    normalization options from text_filter().
 
- * Remove "ignore_empty" token filter option, adding "ignore_space" option
-   in its place.
+ * Remove "ignore_empty" token filter option.
 
 
 Changes in version 0.5.1 (2017-05-25)
