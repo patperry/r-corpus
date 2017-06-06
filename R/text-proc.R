@@ -33,7 +33,7 @@ stopwords <- function(kind = "english")
 
 
 token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
-                         remove_ignorable = TRUE, ignore_space = TRUE,
+                         remove_ignorable = TRUE,
                          stemmer = NULL, stem_except = drop, combine = NULL,
                          drop_letter = FALSE, drop_mark = FALSE,
                          drop_number = FALSE, drop_punct = FALSE,
@@ -46,7 +46,6 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
     ans$map_compat <- map_compat
     ans$map_quote <- map_quote
     ans$remove_ignorable <- remove_ignorable
-    ans$ignore_space <- ignore_space
     ans$stemmer <- stemmer
     ans$stem_except <- stem_except
     ans$combine <- combine
@@ -108,9 +107,9 @@ as_token_filter <- function(x)
 `$<-.corpus_token_filter` <- function(x, name, value)
 {
     if (name %in% c("map_case", "map_compat", "map_quote",
-                    "remove_ignorable", "ignore_space", "drop_letter",
-                    "drop_mark", "drop_number", "drop_symbol",
-                    "drop_punct", "drop_other")) {
+                    "remove_ignorable", "drop_letter", "drop_mark",
+                    "drop_number", "drop_symbol", "drop_punct",
+                    "drop_other")) {
         if (!(is.logical(value) && length(value) == 1 && !is.na(value))) {
             stop(paste0("invalid token filter '", name, "' property;",
                         " should be TRUE or FALSE"))

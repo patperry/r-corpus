@@ -5,12 +5,11 @@ test_that("'tokens' splits according to UAX #29", {
     text <- paste0("The quick (\u201cbrown\u201d) fox can\u2019t",
                    " jump 32.3 feet, right?")
 
-    toks <- tokens(text, filter=NULL)
+    toks <- tokens(text, filter = NULL)
 
     expect_equal(toks, list(
-        c("The", " ", "quick", " ", "(", "\u201c", "brown", "\u201d", ")",
-         " ", "fox", " ", "can\u2019t", " ", "jump", " ", "32.3", " ",
-         "feet", ",", " ", "right", "?")))
+        c("The", "quick", "(", "\u201c", "brown", "\u201d", ")",
+          "fox", "can\u2019t", "jump", "32.3", "feet", ",", "right", "?")))
 })
 
 

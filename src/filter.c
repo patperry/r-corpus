@@ -144,11 +144,7 @@ static const char *token_filter_stemmer(SEXP filter)
 
 static int token_filter_flags(SEXP filter)
 {
-	int flags = 0;
-
-	if (token_filter_logical(filter, "ignore_space", 0)) {
-		flags |= CORPUS_FILTER_IGNORE_SPACE;
-	}
+	int flags = CORPUS_FILTER_IGNORE_SPACE;
 
 	if (token_filter_logical(filter, "drop_letter", 0)) {
 		flags |= CORPUS_FILTER_DROP_LETTER;

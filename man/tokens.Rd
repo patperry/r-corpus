@@ -8,9 +8,10 @@
    a particular \sQuote{type}.
 }
 \usage{
-    token_filter(map_case = TRUE, map_compat = TRUE, map_quote = TRUE, 
-                 remove_ignorable = TRUE, ignore_space = TRUE,
-                 stemmer = NULL, stem_except = drop, combine = NULL,
+    token_filter(map_case = TRUE, map_compat = TRUE,
+                 map_quote = TRUE, remove_ignorable = TRUE,
+                 stemmer = NULL, stem_except = drop,
+                 combine = NULL,
                  drop_letter = FALSE, drop_mark = FALSE,
                  drop_number = FALSE, drop_punct = FALSE,
                  drop_symbol = FALSE, drop_other = FALSE,
@@ -39,9 +40,6 @@
     \item{remove_ignorable}{a logical value indicating whether to remove
         Unicode "default ignorable" characters like zero-width spaces
         and soft hyphens.}
-
-    \item{ignore_space}{a logical value indicating whether to ignore
-        white-space-only tokens.}
 
     \item{stemmer}{a character value giving the name of the stemming
         algorithm, or \code{NULL} to leave words unchanged. The stemming
@@ -104,15 +102,12 @@
             defined by
             \href{http://unicode.org/reports/tr29/#Word_Boundaries}{Unicode
                 Standard Annex #29, Section 4}. We categorize each word as
-            \code{"space"}, \code{"letter"}, \code{"mark"}, \code{"number"},
+            \code{"letter"}, \code{"mark"}, \code{"number"},
             \code{"punct"}, \code{"symbol"}, or \code{"other"} according
             to the first character in the word.  For words with two or
             more characters that start with extenders like underscore
             (\code{_}), we use the second character in the word to
             categorize it, treating a second extender as a letter.
-
-        \item If \code{ignore_space} is \code{TRUE}, the we delete all
-            \code{"space"} words.
 
         \item Next, we normalize the remaining words by applying the
             character mappings indicated by the \code{map_case},
