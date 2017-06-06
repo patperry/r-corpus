@@ -112,3 +112,14 @@ test_that("'term_matrix' errors for duplicated select terms", {
                         " have the same type"),
                  fixed = TRUE)
 })
+
+
+test_that("'term_matrix' can select really long terms", {
+    term <- paste(rep(letters, 4), collapse = " ")
+    TERM <- paste(rep(LETTERS, 4), collapse = " ")
+    x0 <- term_matrix(paste(term, TERM, term, term, TERM, sep = "|"),
+                      select = term)
+    x <- Matrix::sparseMatrix(i = 1, j = 1, x = 5,
+                              dimnames = list(NULL, term))
+    expect_equal(x, x0)
+})
