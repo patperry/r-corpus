@@ -58,8 +58,7 @@ development environment.
 
 *Note: This package uses a git submodule, so `install_git` and
 `install_github` won't work.  See the section on
-[Building from source](#building-from-source) below if you want to
-install the development version.*
+[Building from source](https://github.com/patperry/r-corpus#building-from-source) below if you want to install the development version.*
 
 
 Demonstration
