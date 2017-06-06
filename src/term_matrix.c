@@ -144,10 +144,12 @@ static int add_select(struct corpus_termset *set,
 			corpus_render_string(&render, "') ");
 			if (length == 0) {
 				corpus_render_string(&render,
-						"has empty type (''))");
+						"does not contain a type");
 			} else {
 				corpus_render_string(&render,
-						"contains a dropped type");
+						"contains a dropped type ('");
+				corpus_render_text(&render, &filter->current);
+				corpus_render_string(&render, "')");
 			}
 			rendered_error = 1;
 			goto out;
@@ -178,11 +180,13 @@ out:
 		errstr = (void *)R_alloc(render.length + 1, 1);
 		memcpy(errstr, render.string, render.length + 1);
 		CLEANUP();
+		corpus_termset_destroy(set);
 		Rf_error(errstr);
 	}
 
 	CLEANUP();
 	if (err) {
+		corpus_termset_destroy(set);
 		Rf_error("failed initializing selection set");
 	}
 	if (lenptr) {
