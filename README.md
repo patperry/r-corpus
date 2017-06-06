@@ -32,11 +32,13 @@ it does enough to be useful. The package exports six main functions:
  + `term_matrix()` for computing a term frequency matrix (also known as
     a "document-by-term matrix").
 
-The package also provides two new data types:
+The package also provides three new data types:
 
  + `corpus_json` for storing JSON-encoded data;
 
- + `corpus_text` for storing text.
+ + `corpus_text` for storing text;
+
+ + `corpus_token_filter` for specifying token pre-processing decisions.
 
 That's it. There's no "key words in context," no part-of-speech tagging,
 no topic models, and no word vectors.  Some of these features are planned
