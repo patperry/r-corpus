@@ -3,6 +3,7 @@
 [.]so$
 ^[.]git
 ^[.]travis[.]yml$
+^bench
 ^Makefile$
 ^README[.]md$
 ^TODO[.]md$
