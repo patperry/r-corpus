@@ -230,7 +230,7 @@ to the `term_counts()` function.
     ## 5   get 170033
 
     ##   user  system elapsed
-    ##  5.499   0.032   5.536
+    ##  6.782   0.053   6.854
 
 We compare against the *quateda* package. This isn't a fair comparison
 because *quanteda* doesn't have a way of getting the term counts directly.
@@ -275,7 +275,7 @@ and the *quanteda* tokenization rules (as of *quanteda* version 0.9.9-50):
    that I do not understand.
 
 Despite these differences, we agree with *quanteda* on the most frequent
-terms, and we are about 10 times faster.
+terms, and we are about 8 times faster.
 
 
 ### Computing a term frequency matrix
@@ -286,26 +286,24 @@ as before, but we only retain terms occurring at least five times in the
 corpus.
 
     system.time({
-        # compute all term frequencies
+        # compute frequencies for terms appearing at least 5 times
         f <- token_filter(stemmer = "english", drop_punct = TRUE,
                           drop_number = TRUE, drop = stopwords("english"))
-        stats <- term_counts(data, f)
-
-        # select terms appearing at least 5 times
-        f$select <- subset(stats, count >= 5)$term
+        stats <- term_counts(data, f, min = 5)
 
         # compute the frequency matrix for the selected terms
-        x <- term_matrix(data, f)
+        terms <- stats$term
+        x <- term_matrix(data, f, select = terms)
     })
 
     ##   user  system elapsed
-    ## 14.424   0.665  15.096
+    ## 16.464   1.067  17.648
 
 Note that we first set the properties of the text filter, `f`, and then
-we build the term matrix. The text filter records all of the
-pre-processing and feature selection. If we need to, we we can call
-`term_matrix` on a new text vector to get a matrix with the same columns
-as `x`.
+we build the term matrix. The token filter records all of the
+pre-processing. If we need to, we we can call `term_matrix` on a new text
+vector using the same filter and select argument to get a term matrix with
+the same columns as `x`.
 
 The *quanteda* package does not have an object analogous to a text
 filter. We construct the full term matrix, then drop columns for
@@ -321,11 +319,10 @@ low-frequency terms:
     ##   user  system elapsed
     ## 62.047   4.319  66.576
 
-*Corpus* is about 4 times faster than *quanteda*. If we really care about
+*Corpus* is about 3.5 times faster than *quanteda*. If we really care about
 efficiency, we can widen the gap by performing the following sequence
 of operations instead:
 
-    data <- read_ndjson("~/yelp-review.json")
     system.time({
         # compute all term frequencies
         f <- token_filter(stemmer = "english", drop_punct = TRUE,
@@ -334,19 +331,16 @@ of operations instead:
         # compute the frequency matrix for the selected terms
         x <- term_matrix(data, f)
         x <- x[, Matrix::colSums(x) >= 5, drop = FALSE]
-
-        # update the text filter
-        f$select <- colnames(x)
     })
 
     ##   user  system elapsed
-    ##  9.200   0.986  10.240
+    ##  9.967   1.183  11.203
 
-The latter approach is about 6.5 times faster than *quanteda* but it's
+The latter approach is almost 6 times faster than *quanteda* but it's
 more error-prone and I do not recommend it. In the first approach,
-the pre-processing decisions come before the text matrix. (Also, as a
-side benefit, using the first approach, the columns of `x` get ordered
-in descending order according to overall term count.)
+the pre-processing and feature selection decisions come before the term
+matrix. (Also, as a side benefit, using the first approach, the columns
+of `x` get ordered in descending order according to overall term count.)
 
 
 Building from source
