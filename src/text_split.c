@@ -152,6 +152,8 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 		}
 
 		s = 0;
+		size = 0;
+		attr = 0;
 
 		while (corpus_sentfilter_advance(&filter)) {
 			if (s == 0) {
@@ -271,6 +273,7 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 		// start with an empty block
 		s = 0;
 		size = 0;
+		attr = 0;
 
 		while (corpus_filter_advance(filter)) {
 			// if we encounter a non-dropped, non-ignored

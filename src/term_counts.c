@@ -188,6 +188,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 				SET_STRING_ELT(stypes[w], i, NA_STRING);
 			}
 		}
+	} else {
+		stypes = NULL;
 	}
 	PROTECT(scount = allocVector(REALSXP, nterm)); nprot++;
 

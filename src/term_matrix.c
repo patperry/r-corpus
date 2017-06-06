@@ -96,6 +96,7 @@ static int add_select(struct corpus_termset *set,
 		}
 
 		length = 0;
+		type_id = CORPUS_FILTER_IGNORED;
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
@@ -236,6 +237,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	has_render = 0;
 	has_termset = 0;
 	has_ngram = 0;
+	ngram = NULL;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
@@ -267,10 +269,13 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 				ngram_max = ngrams[i];
 			}
 		}
-	} else if (select) {
-		ngram_max = select_max;
 	} else {
-		ngram_max = 1;
+		ngrams = NULL;
+		if (select) {
+			ngram_max = select_max;
+		} else {
+			ngram_max = 1;
+		}
 	}
 
 	buffer = (void *)R_alloc(ngram_max, sizeof(*buffer));
