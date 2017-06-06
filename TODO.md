@@ -4,10 +4,6 @@ To Do
 Features
 --------
 
- * `ngram_counts()`, analogous to `term_counts()`
-
- * `ngram_matrix()`, analogous to `term_matrix()`
-
  * Concat operator `c()` for text.
 
  * Need implementations for the `.S3PrimitiveGenerics` for `text`.
@@ -17,10 +13,9 @@ Features
 
  * `summary.text`
 
- * `vocab()` for type/token frequencies
+ * `vocab()` for type/token frequencies (?)
 
- * `textblocks()` for fixed-length chunks of words. Read up on time series block
-   bootstrap to get inspiration for interface.
+ * Some sort of key words in context (KWIC) function
 
- * Bootstrapping. Not sure what the interface should look like, but should
-   support sentence-level, word-level, block-level.
+ * Need calls to `R_CheckUserInterrupt()` in long-running computations
+   (without leaking memory).
