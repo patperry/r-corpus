@@ -271,11 +271,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		}
 	} else {
 		ngrams = NULL;
-		if (select) {
-			ngram_max = select_max;
-		} else {
-			ngram_max = 1;
-		}
+		ngram_max = select ? select_max : 1;
 	}
 
 	buffer = (void *)R_alloc(ngram_max, sizeof(*buffer));
