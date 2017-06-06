@@ -26,7 +26,8 @@ it does enough to be useful. The package exports six main functions:
  + `tokens()` for segmenting text into tokens, each of which is an instance
     of a particular type;
 
- + `term_counts()` for tabulating term occurrence frequencies;
+ + `term_counts()` for tabulating term occurrence frequencies (types or
+    n-grams);
 
  + `term_matrix()` for computing a term frequency matrix (also known as
     a "document-by-term matrix").
@@ -37,8 +38,9 @@ The package also provides two new data types:
 
  + `corpus_text` for storing text.
 
-That's it. There are no n-grams, no part-of-speech tagging, no topic models,
-and no word vectors.  Some of these features are planned for future releases.
+That's it. There's no "key words in context," no part-of-speech tagging,
+no topic models, and no word vectors.  Some of these features are planned
+for future releases.
 
 
 Installing
