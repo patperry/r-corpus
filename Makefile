@@ -6,6 +6,9 @@ all: $(CORPUS_LIB)
 $(CORPUS_LIB):
 	Rscript -e 'devtools::compile_dll(".")'
 
+bench:
+	Rscript -e 'devtools::load_all("."); source("bench/bench.R")'
+
 clean:
 	Rscript -e 'devtools::clean_dll(".")'
 
@@ -15,4 +18,4 @@ check: $(CORPUS_LIB)
 install: $(CORPUS_LIB)
 	Rscript -e 'devtools::install(".")'
 
-.PHONY: all clean check
+.PHONY: all bench clean check install
