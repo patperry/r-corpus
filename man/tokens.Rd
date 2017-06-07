@@ -10,7 +10,7 @@
 \usage{
     token_filter(map_case = TRUE, map_compat = TRUE,
                  map_quote = TRUE, remove_ignorable = TRUE,
-                 stemmer = NULL, stem_except = drop,
+                 stemmer = NA, stem_except = drop,
                  combine = NULL,
                  drop_letter = FALSE, drop_mark = FALSE,
                  drop_number = FALSE, drop_punct = FALSE,
@@ -42,7 +42,7 @@
         and soft hyphens.}
 
     \item{stemmer}{a character value giving the name of the stemming
-        algorithm, or \code{NULL} to leave words unchanged. The stemming
+        algorithm, or \code{NA} to leave words unchanged. The stemming
         algorithms are provided by the
         \href{http://snowballstem.org/algorithms/}{Snowball stemming library};
         the following stemming algorithms are available:
@@ -148,7 +148,7 @@
     }
 
     When \code{filter = NULL}, we treat all logical properties as
-    \code{FALSE} and all other properties as \code{NULL}.
+    \code{FALSE} and all other properties as \code{NA} or \code{NULL}.
 }
 \section{Stemming}{
     We use the stemming algorithms provided by the Snowball library. These

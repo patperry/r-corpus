@@ -13,14 +13,9 @@
 #  limitations under the License.
 
 
-stemmers <- c("arabic", "danish", "dutch", "english", "finnish", "french",
-	"german", "hungarian", "italian", "norwegian", "porter", "portuguese",
-	"romanian", "russian", "spanish", "swedish", "tamil", "turkish")
-
-
 token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
                          remove_ignorable = TRUE,
-                         stemmer = NULL, stem_except = drop, combine = NULL,
+                         stemmer = NA, stem_except = drop, combine = NULL,
                          drop_letter = FALSE, drop_mark = FALSE,
                          drop_number = FALSE, drop_punct = FALSE,
                          drop_symbol = FALSE, drop_other = FALSE,
@@ -96,35 +91,13 @@ as_token_filter <- function(filter)
                     "remove_ignorable", "drop_letter", "drop_mark",
                     "drop_number", "drop_symbol", "drop_punct",
                     "drop_other")) {
-        if (!(is.logical(value) && length(value) == 1 && !is.na(value))) {
-            stop(paste0("invalid token filter '", name, "' property;",
-                        " should be TRUE or FALSE"))
-        }
-        if (!is.null(value)) {
-            value <- as.logical(value)
-        }
+        value <- as_option(name, value)
     } else if (name %in% c("stem_except", "combine", "drop", "drop_except")) {
-        if (!is.null(value) && !is.character(value)) {
-            stop(paste0("invalid token filter '", name, "' property;",
-                        " should be a character vector or NULL"))
-        }
-        if (!is.null(value)) {
-            value <- as.character(value)
-        }
-    } else if (name %in% c("stemmer")) {
-        if (!is.null(value) && !(length(value) == 1 && is.character(value))) {
-            stop(paste0("invlaid token filter '", name, "' property;",
-                        " should be a character string or NULL"))
-        }
-        if (!is.null(value)) {
-            value <- as.character(value)
-        }
+        value <- as_character_vector(name, value)
+    } else if (name == "stemmer") {
+        value <- as_stemmer(value)
     } else {
         stop(paste0("unrecognized token filter property: '", name, "'"))
-    }
-
-    if (name == "stemmer" && !is.null(value) && !(value %in% stemmers)) {
-        stop(paste0("unrecognized stemmer: '", value, "'"))
     }
 
     y <- unclass(x)
@@ -185,6 +158,3 @@ tokens <- function(x, filter = token_filter())
     filter <- as_token_filter(filter)
     .Call(C_tokens_text, x, filter)
 }
-
-
-
