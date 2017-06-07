@@ -15,15 +15,24 @@
 
 abbreviations <- function(kind = "english")
 {
-    if (is.null(kind)) {
+    if (is.null(kind) || all(is.na(kind))) {
         return(NULL)
     }
 
-    if (!(is.character(kind) && length(kind) == 1 && !is.na(kind))) {
-        stop("abbreviations 'kind' must be a character string")
+    if (!is.character(kind)) {
+        stop("abbreviations 'kind' must be a character vector")
     }
 
-    .Call(C_abbreviations, kind)
+    abbrev <- character()
+    for (k in unique(kind)) {
+        if (!is.na(k)) {
+            ak <- .Call(C_abbreviations, k)
+            abbrev <- c(abbrev, ak)
+        }
+    }
+
+    abbrev <- sort(abbrev)
+    abbrev
 }
 
 

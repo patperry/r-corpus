@@ -8,10 +8,11 @@
     abbreviations(kind = "english")
 }
 \arguments{
-    \item{kind}{the name of the abbreviation list, or \code{NULL}. Allowed
-        values are \code{"english"}, \code{"french"}, \code{"german"},
-        \code{"italian"}, \code{"portuguese"}, and \code{"russian"}; these
-        values retrieve the language-specific sentence break suppression
+    \item{kind}{the name (or names) of the abbreviation list(s),
+        or \code{NULL}. Allowed values are \code{"english"},
+        \code{"french"}, \code{"german"}, \code{"italian"},
+        \code{"portuguese"}, and \code{"russian"}; these values
+        retrieve the language-specific sentence break suppression
         lists compiled by the
         \href{http://cldr.unicode.org/}{Unicode Common Locale Data
             Repository},
@@ -29,8 +30,9 @@
     task.
 }
 \value{
-    A character vector of abbreviations of the specified kind, or
-    \code{NULL} if \code{kind = NULL}.
+    A sorted character vector of unique abbreviations of the specified
+    kind (or kinds if the \code{kind} argument is a vector), or \code{NULL}
+    if \code{kind = NULL} or \code{kind = NA}.
 }
 \seealso{
     \code{\link{text_split}}.
@@ -39,6 +41,9 @@
     head(abbreviations("english"))
     head(abbreviations("french"))
     abbreviations(NULL)
+
+    # multiple kinds:
+    head(abbreviations(c("italian", "portuguese")))
 
     # add words to the default list:
     my_abbrev <- c(abbreviations("english"), "Mon.", "Tues.", "Weds.")
