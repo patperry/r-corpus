@@ -8,7 +8,8 @@
     stopwords(kind = "english")
 }
 \arguments{
-    \item{kind}{the name of the stop word list, or \code{NULL}. Allowed
+    \item{kind}{a character vector giving the desired name or names
+        of the stop word list(s), \code{NA}, or \code{NULL}. Allowed
         values are \code{"danish"}, \code{"dutch"}, \code{"english"},
         \code{"finnish"}, \code{"french"}, \code{"german"},
         \code{"hungarian"}, \code{"italian"}, \code{"norwegian"},
@@ -25,8 +26,8 @@
     but they may require further tailoring to suit your particular task.
 }
 \value{
-    A character vector of stop words of the specified kind, or
-    \code{NULL} if \code{kind = NULL}.
+    A character vector of unique stop words of the specified kind (or kinds
+    if \code{kind} is a vector), or \code{NULL} if \code{kind = NULL}.
 }
 \seealso{
     \code{\link{token_filter}}
@@ -35,6 +36,9 @@
     head(stopwords("english"))
     head(stopwords("russian"))
     stopwords(NULL)
+
+    # combine multiple lists, removing duplicates
+    head(stopwords(c("spanish", "portuguese")))
 
     # add words to the default list:
     my_stopwords <- c(stopwords("english"), "will", "mr", "mrs", "ms")

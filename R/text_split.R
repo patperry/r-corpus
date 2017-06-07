@@ -13,29 +13,6 @@
 #  limitations under the License.
 
 
-abbreviations <- function(kind = "english")
-{
-    if (is.null(kind) || all(is.na(kind))) {
-        return(NULL)
-    }
-
-    if (!is.character(kind)) {
-        stop("abbreviations 'kind' must be a character vector")
-    }
-
-    abbrev <- character()
-    for (k in unique(kind)) {
-        if (!is.na(k)) {
-            ak <- .Call(C_abbreviations, k)
-            abbrev <- c(abbrev, ak)
-        }
-    }
-
-    abbrev <- sort(abbrev)
-    abbrev
-}
-
-
 text_split <- function(x, units = "sentences", size = 1,
                        filter = token_filter(),
                        crlf_break = FALSE,

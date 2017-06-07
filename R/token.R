@@ -18,20 +18,6 @@ stemmers <- c("arabic", "danish", "dutch", "english", "finnish", "french",
 	"romanian", "russian", "spanish", "swedish", "tamil", "turkish")
 
 
-stopwords <- function(kind = "english")
-{
-    if (is.null(kind)) {
-        return(NULL)
-    }
-
-    if (!(is.character(kind) && length(kind) == 1)) {
-        stop("stopwords 'kind' must be a character string")
-    }
-
-    .Call(C_stopwords, kind)
-}
-
-
 token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
                          remove_ignorable = TRUE,
                          stemmer = NULL, stem_except = drop, combine = NULL,

@@ -9,7 +9,7 @@
 }
 \arguments{
     \item{kind}{the name (or names) of the abbreviation list(s),
-        or \code{NULL}. Allowed values are \code{"english"},
+        \code{NA}, or \code{NULL}. Allowed values are \code{"english"},
         \code{"french"}, \code{"german"}, \code{"italian"},
         \code{"portuguese"}, and \code{"russian"}; these values
         retrieve the language-specific sentence break suppression
