@@ -123,3 +123,11 @@ test_that("'term_matrix' can select really long terms", {
                               dimnames = list(NULL, term))
     expect_equal(x, x0)
 })
+
+
+test_that("'term_matrix' can select types ending in '.s", {
+    f <- token_filter(stemmer = "english", drop_punct = TRUE)
+    expect_equal(term_matrix("u.s.", f, select = "u.s"),
+                 Matrix::sparseMatrix(i = 1, j = 1, x = 1,
+                                      dimnames = list(NULL, "u.s")))
+})
