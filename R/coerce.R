@@ -27,6 +27,22 @@ as_character_vector <- function(name, value)
 }
 
 
+as_enum <- function(name, value, choices)
+{
+    if (!(is.character(value) && length(value) == 1 && !is.na(value))) {
+        stop(paste0("'", name, "' should be a character string"))
+    }
+
+    i <- pmatch(value, choices, nomatch = 0)
+    if (all(i == 0)) {
+        stop(paste0("'", name, "' should be one of ",
+             paste(dQuote(choices), collapse = ", ")))
+    }
+    i <- i[i > 0]
+    choices[[i]]
+}
+
+
 as_group <- function(group, n)
 {
     if (!is.null(group)) {
@@ -39,6 +55,19 @@ as_group <- function(group, n)
     }
 
     group
+}
+
+
+as_kind <- function(type, kind)
+{
+    if (is.null(kind) || all(is.na(kind))) {
+        return(NULL)
+    } else if (!is.character(kind)) {
+        stop(paste(type, "'kind' must be a character vector"))
+    }
+    kind <- as.character(kind)
+    kind <- unique(kind[!is.na(kind)])
+    kind
 }
 
 
@@ -111,6 +140,21 @@ as_option <- function(name, value)
         stop(paste0("'", name, "' argument must be TRUE or FALSE"))
     }
     as.logical(value)
+}
+
+
+as_size <- function(size)
+{
+    if (!(is.numeric(size) && length(size) == 1 && !is.na(size))) {
+        stop("'size' should be a finite numeric scalar")
+    }
+
+    if (is.nan(size) || !(size >= 1)) {
+        stop("'size' should be at least 1")
+    }
+
+    size <- floor(size)
+    as.double(size)
 }
 
 

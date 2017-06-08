@@ -42,16 +42,3 @@ wordlist <- function(type, kind, call)
     words <- sort(unique(words))
     words
 }
-
-
-as_kind <- function(type, kind)
-{
-    if (is.null(kind) || all(is.na(kind))) {
-        return(NULL)
-    } else if (!is.character(kind)) {
-        stop(paste(type, "'kind' must be a character vector"))
-    }
-    kind <- as.character(kind)
-    kind <- unique(kind[!is.na(kind)])
-    kind
-}
