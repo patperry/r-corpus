@@ -1,4 +1,8 @@
-Changes in version 0.7.0
+Changes in version 0.6.1
+
+ * Fixed bug where "u.s" (a unigram) stems to "u.s" (a bigram), and then
+   causes for term_matrix() select.  Thanks to Dmitriy Selivanov for
+   reporting: https://github.com/patperry/r-corpus/issues/3 .
 
 
 Changes in version 0.6.0 (2017-06-06)
@@ -45,6 +49,8 @@ Changes in version 0.6.0 (2017-06-06)
 Changes in version 0.5.1 (2017-05-25)
 
  * Rename "text" class to "corpus_text" to avoid name classes with grid.
+   Thanks to Jeroen Ooms for reporting:
+   https://github.com/patperry/corpus/issues/1
 
  * Rename "jsondata" to "corpus_json" for consistency.
 
