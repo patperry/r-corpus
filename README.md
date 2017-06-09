@@ -14,11 +14,13 @@ Overview
 --------
 
 This is an R text processing package that currently does very little, but
-it does enough to be useful. The package exports six main functions:
+it does enough to be useful. The package exports seven main functions:
 
  + `read_ndjson()` for reading data in newline-delimited JSON format;
 
  + `text_split()` for segmenting text into sentences or blocks of tokens;
+
+ + `text_count()` for counting sentences or tokens;
 
  + `token_filter()` for specifying the process by which a text gets transformed
     into a token sequence (normalization, stemming, stop word removal, etc.);
