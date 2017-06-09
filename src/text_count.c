@@ -16,6 +16,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
@@ -41,12 +42,17 @@
 	} while (0)
 
 
-SEXP text_count_sentences(SEXP sx, SEXP sfilter)
+SEXP text_count_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 {
-	SEXP ans;
+	SEXP ans, names;
 	struct corpus_sentfilter *filter;
 	const struct corpus_text *text;
-	R_xlen_t i, n, nunit;
+	const double *weights;
+	double *count;
+	double w;
+	const int *group;
+	int *is_na;
+	R_xlen_t i, n, nunit, g, ngroup;
 	int nprot, err;
 
 	nprot = 0;
@@ -59,17 +65,45 @@ SEXP text_count_sentences(SEXP sx, SEXP sfilter)
 	PROTECT(sfilter = alloc_sentfilter(sfilter)); nprot++;
 	filter = as_sentfilter(sfilter);
 
-	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
-	setAttrib(ans, R_NamesSymbol, names_text(sx));
+	// weights
+	weights = as_weights(sweights, n);
+
+	// group
+	if (sgroup != R_NilValue) {
+		names = getAttrib(sgroup, R_LevelsSymbol);
+		ngroup = XLENGTH(names);
+		group = INTEGER(sgroup);
+	} else {
+		names = names_text(sx);
+		ngroup = n;
+		group = NULL;
+	}
+
+	PROTECT(ans = allocVector(REALSXP, ngroup)); nprot++;
+	setAttrib(ans, R_NamesSymbol, names);
+	count = REAL(ans);
+	memset(count, 0, ngroup * sizeof(*count));
+
+	is_na = (void *)R_alloc(ngroup, sizeof(*is_na));
+	memset(is_na, 0, ngroup * sizeof(*is_na));
 
 	for (i = 0; i < n; i++) {
+		w = weights ? weights[i] : 1;
+		if (w == 0) {
+			continue;
+		}
+
+		g = group ? group[i] : i;
+		if (g == NA_INTEGER) {
+			continue;
+		}
+
 		if (!text[i].ptr) { // missing value
-			REAL(ans)[i] = NA_REAL;
+			is_na[g] = 1;
 			continue;
 		}
 
 		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
-			REAL(ans)[i] = 0;
 			continue;
 		}
 
@@ -85,7 +119,13 @@ SEXP text_count_sentences(SEXP sx, SEXP sfilter)
 			BAIL("memory allocation failure");
 		}
 
-		REAL(ans)[i] = (double)nunit;
+		count[g] += w * (double)nunit;
+	}
+
+	for (g = 0; g < ngroup; g++) {
+		if (is_na[g]) {
+			count[g] = NA_REAL;
+		}
 	}
 
 	UNPROTECT(nprot);
@@ -100,12 +140,17 @@ SEXP text_count_sentences(SEXP sx, SEXP sfilter)
 	} while (0)
 
 
-SEXP text_count_tokens(SEXP sx, SEXP sfilter)
+SEXP text_count_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 {
-	SEXP ans;
+	SEXP ans, names;
 	struct corpus_filter *filter;
 	const struct corpus_text *text;
-	R_xlen_t i, n, nunit;
+	const double *weights;
+	double w;
+	double *count;
+	R_xlen_t i, n, nunit, g, ngroup;
+	const int *group;
+	int *is_na;
 	int nprot, err;
 
 	nprot = 0;
@@ -118,17 +163,41 @@ SEXP text_count_tokens(SEXP sx, SEXP sfilter)
 	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
 	filter = as_filter(sfilter);
 
-	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
-	setAttrib(ans, R_NamesSymbol, names_text(sx));
+	// weights
+	weights = as_weights(sweights, n);
+
+	// group
+	if (sgroup != R_NilValue) {
+		names = getAttrib(sgroup, R_LevelsSymbol);
+		ngroup = XLENGTH(names);
+		group = INTEGER(sgroup);
+	} else {
+		names = names_text(sx);
+		ngroup = n;
+		group = NULL;
+	}
+
+	PROTECT(ans = allocVector(REALSXP, ngroup)); nprot++;
+	setAttrib(ans, R_NamesSymbol, names);
+	count = REAL(ans);
+	memset(count, 0, ngroup * sizeof(*count));
+
+	is_na = (void *)R_alloc(ngroup, sizeof(*is_na));
+	memset(is_na, 0, ngroup * sizeof(*is_na));
 
 	for (i = 0; i < n; i++) {
-		if (!text[i].ptr) { // missing value
-			REAL(ans)[i] = NA_REAL;
+		w = weights ? weights[i] : 1;
+		if (w == 0) { // no weight
 			continue;
 		}
 
-		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
-			REAL(ans)[i] = 0;
+		g = group ? group[i] : i;
+		if (g == NA_INTEGER) { // missing group
+			continue;
+		}
+
+		if (!text[i].ptr) { // missing text
+			is_na[g] = 1;
 			continue;
 		}
 
@@ -151,7 +220,13 @@ SEXP text_count_tokens(SEXP sx, SEXP sfilter)
 			BAIL("memory allocation failure");
 		}
 
-		REAL(ans)[i] = (double)nunit;
+		count[g] += w * (double)nunit;
+	}
+
+	for (g = 0; g < ngroup; g++) {
+		if (is_na[g]) {
+			count[g] = NA_REAL;
+		}
 	}
 
 	UNPROTECT(nprot);

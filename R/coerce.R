@@ -43,6 +43,16 @@ as_enum <- function(name, value, choices)
 }
 
 
+as_filter <- function(units, filter)
+{
+    if (units == "sentences") {
+        as_sentence_filter(filter)
+    } else {
+        as_token_filter(filter)
+    }
+}
+
+
 as_group <- function(group, n)
 {
     if (!is.null(group)) {

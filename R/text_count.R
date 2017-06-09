@@ -13,19 +13,24 @@
 #  limitations under the License.
 
 
-text_split <- function(x, units, size = 1,
+text_count <- function(x, units = "tokens",
                        filter = if (units == "sentences") sentence_filter()
-                                else token_filter())
+                                else token_filter(),
+                       weights = NULL, group = NULL)
 {
     x <- as_text(x)
-    units <- as_enum("units", units, choices = c("sentences", "tokens"))
-    size <- as_size(size)
+    units <- as_enum("units", units,
+                     choices = c("sentences", "tokens", "types"))
     filter <- as_filter(units, filter)
+    weights <- as_weights(weights, length(x))
+    group <- as_group(group, length(x))
 
     if (units == "sentences") {
-        ans <- .Call(C_text_split_sentences, x, size, filter)
+        ans <- .Call(C_text_count_sentences, x, filter, weights, group)
     } else if (units == "tokens") {
-        ans <- .Call(C_text_split_tokens, x, size, filter)
+        ans <- .Call(C_text_count_tokens, x, filter, weights, group)
+    } else if (units == "types") {
+        stop("not implemented")
     } else {
         stop(paste0("unrecognized 'units' value: '", units, "'"))
     }

@@ -98,17 +98,7 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	}
 	buffer = (void *)R_alloc(ng_max, sizeof(*buffer));
 
-	if (sweights != R_NilValue) {
-		PROTECT(sweights = coerceVector(sweights, REALSXP)); nprot++;
-		if (XLENGTH(sweights) != n) {
-			Rf_error("invalid 'weights' vector;"
-				 " should have length = %"PRIu64,
-				 (uint64_t)n);
-		}
-		weights = REAL(sweights);
-	} else {
-		weights = NULL;
-	}
+	weights = as_weights(sweights, n);
 	min_count = REAL(smin_count)[0];
 	max_count = REAL(smax_count)[0];
 

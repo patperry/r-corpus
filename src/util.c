@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <inttypes.h>
+#include <stdint.h>
 #include <string.h>
 #include <Rdefines.h>
 #include "rcorpus.h"
@@ -51,4 +53,23 @@ SEXP getListElement(SEXP list, const char *str)
 		return R_NilValue;
 	}
 	return VECTOR_ELT(list, i);
+}
+
+
+double *as_weights(SEXP sweights, R_xlen_t n)
+{
+	R_xlen_t n0;
+
+	if (sweights == R_NilValue) {
+		return NULL;
+	}
+
+	n0 = XLENGTH(sweights);
+	if (n0 != n) {
+		error("invalid 'weights' vector;"
+		      " length is %"PRIu64" but should be %"PRIu64,
+		      (uint64_t)n0, (uint64_t)n);
+	}
+
+	return REAL(sweights);
 }

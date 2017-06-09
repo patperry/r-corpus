@@ -131,8 +131,8 @@ struct corpus_filter *as_filter(SEXP filter);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
-SEXP text_count_sentences(SEXP x, SEXP filter);
-SEXP text_count_tokens(SEXP x, SEXP filter);
+SEXP text_count_sentences(SEXP x, SEXP filter, SEXP weights, SEXP group);
+SEXP text_count_tokens(SEXP x, SEXP filter, SEXP weights, SEXP group);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 
@@ -155,5 +155,6 @@ SEXP read_ndjson(SEXP buffer);
 /* internal utility functions */
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
+double *as_weights(SEXP sweights, R_xlen_t n);
 
 #endif /* RCORPUS_H */

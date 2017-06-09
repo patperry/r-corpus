@@ -294,11 +294,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		}
 	}
 
-	weights = NULL;
-	if (sweights != R_NilValue) {
-		weights = REAL(sweights);
-	}
-
+	weights = as_weights(sweights, n);
 	if (sgroup != R_NilValue) {
 		srow_names = getAttrib(sgroup, R_LevelsSymbol);
 		ngroup = XLENGTH(srow_names);

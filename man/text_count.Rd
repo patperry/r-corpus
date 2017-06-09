@@ -7,7 +7,8 @@
 \usage{
     text_count(x, units = "tokens",
                filter = if (units == "sentences") sentence_filter()
-                        else token_filter())
+                        else token_filter(),
+               weights = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text or character vector.}
@@ -18,6 +19,14 @@
     \item{filter}{when \code{units = "sentences"}, a sentence filter
         defining the sentence boundaries; otherwise, a token filter
         defining the token boundaries.}
+
+    \item{weights}{a numeric vector the same length of \code{x} assigning
+        weights to each text, or \code{NULL} for unit weights
+        (not used if \code{units = "types"}).}
+
+    \item{group}{if non-\code{NULL}, a factor, character string, or
+        integer vector the same length of \code{x} specifying the grouping
+        behavior.}
 }
 \details{
     \code{text_count} counts the number of units in each text element:
@@ -28,9 +37,13 @@
     the sentence and token definitions.
 }
 \value{
-    A numeric vector with the same length and names as the input text,
-    with the elements given the number of units in the corresponding
-    text element.
+    If \code{group} is \code{NULL}, the result is a numeric vector with the
+    same length and names as the input text, with the elements given the
+    (weighted) number of units in the corresponding text element.
+
+    If \code{group} is non-\code{NULL}, then counts are aggregated by
+    the levels of the argument, and the length and names of the output
+    match the \code{group} levels.
 }
 \seealso{
     \code{\link{abbreviations}}, \code{\link{sentence_filter}},
