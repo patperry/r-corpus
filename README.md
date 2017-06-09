@@ -55,10 +55,11 @@ version, run the following command in R:
 
     install.packages("corpus")
 
-Alternatively, use any other installation method supported by your R
-development environment.
+To install the latest test version, run
 
-*Note: This package uses a git submodule, so `install_git` and
+    install.packages("https://github.com/patperry/r-corpus/raw/master/dist/corpus_0.6.1.tar.gz", repos = NULL)
+
+*Note, the package uses a git submodules, so so `install_git` and
 `install_github` won't work.  See the section on
 [Building from source](https://github.com/patperry/r-corpus#building-from-source) below if you want to install the development version.*
 
