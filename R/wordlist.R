@@ -15,13 +15,13 @@
 
 abbreviations <- function(kind = "english")
 {
-    wordlist("abbreviations", kind, C_abbreviations)
+    wordlist("abbreviations", kind, function(k) .Call(C_abbreviations, k))
 }
 
 
 stopwords <- function(kind = "english")
 {
-    wordlist("stopwords", kind, C_stopwords)
+    wordlist("stopwords", kind, function(k) .Call(C_stopwords, k))
 }
 
 
@@ -31,7 +31,7 @@ wordlist <- function(type, kind, call)
 
     words <- character()
     for (k in kind) {
-        wk <- .Call(call, k)
+        wk <- call(k)
         words <- c(words, wk)
     }
 
