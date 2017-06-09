@@ -59,7 +59,7 @@ To install the latest test version, run
 
     install.packages("http://ptrckprry.com/dist/corpus_0.6.1.tar.gz", repos = NULL)
 
-*Note, the package uses a git submodules, so so `install_git` and
+*Note, the package uses a git submodule, so `install_git` and
 `install_github` won't work.  See the section on
 [Building from source](https://github.com/patperry/r-corpus#building-from-source) below if you want to install the development version.*
 
