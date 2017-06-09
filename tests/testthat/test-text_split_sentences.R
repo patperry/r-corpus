@@ -125,3 +125,16 @@ test_that("'sentences' should work on S3 objects", {
     sents2 <- text_split(x2)
     expect_equal(sents, sents2)
 })
+
+
+test_that("text_count can works on sentences", {
+    text <- c(a="He said, 'Are you going?' John Shook his head.",
+              b="'Are you going?' John asked",
+              c="This. Is. A. Long. Sentence!!!",
+              d="Why all the shouting??")
+    n0 <- text_count(text, "sentences")
+    split <- text_split(text, "sentences")
+    n <- c(with(split, tapply(index, parent, length)))
+    names(n) <- names(text)
+    expect_equal(n, n0)
+})

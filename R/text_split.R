@@ -13,6 +13,31 @@
 #  limitations under the License.
 
 
+text_count <- function(x, units = "sentences",
+                       filter = token_filter(),
+                       crlf_break = FALSE,
+                       suppress = abbreviations("english"))
+{
+    x <- as_text(x)
+    units <- as_enum("units", units, choices = c("sentences", "tokens"))
+
+    if (units == "sentences") {
+        crlf_break <- as_option("crlf_break", crlf_break)
+        suppress <- as_character_vector("suppress", suppress)
+
+        ans <- .Call(C_text_count_sentences, x, crlf_break, suppress)
+    } else if (units == "tokens") {
+        filter <- as_token_filter(filter)
+
+        ans <- .Call(C_text_count_tokens, x, filter)
+    } else {
+        stop(paste0("unrecognized 'units' value: '", units, "'"))
+    }
+
+    ans
+}
+
+
 text_split <- function(x, units = "sentences", size = 1,
                        filter = token_filter(),
                        crlf_break = FALSE,

@@ -15,6 +15,7 @@ export(stopwords)
 export(token_filter)
 export(term_counts)
 export(term_matrix)
+export(text_count)
 export(text_split)
 export(tokens)
 

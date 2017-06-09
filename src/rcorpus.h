@@ -125,6 +125,8 @@ struct corpus_filter *as_filter(SEXP filter);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
+SEXP text_count_sentences(SEXP x, SEXP crlf_break, SEXP suppress);
+SEXP text_count_tokens(SEXP x, SEXP filter);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP crlf_break, SEXP suppress);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 

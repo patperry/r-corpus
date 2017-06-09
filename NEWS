@@ -1,5 +1,7 @@
 Changes in version 0.6.1
 
+ * Add text_count() for counting sentences or tokens.
+
  * Fixed bug where "u.s" (a unigram) stems to "u.s" (a bigram), and then
    causes for term_matrix() select.  Thanks to Dmitriy Selivanov for
    reporting: https://github.com/patperry/r-corpus/issues/3 .
