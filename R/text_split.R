@@ -13,23 +13,22 @@
 #  limitations under the License.
 
 
-text_count <- function(x, units = "sentences",
-                       filter = token_filter(),
-                       crlf_break = FALSE,
-                       suppress = abbreviations("english"))
+text_count <- function(x, units = "tokens",
+                       filter = if (units == "sentences") sentence_filter()
+                                else token_filter())
 {
     x <- as_text(x)
-    units <- as_enum("units", units, choices = c("sentences", "tokens"))
+    units <- as_enum("units", units,
+                     choices = c("sentences", "tokens", "types"))
 
     if (units == "sentences") {
-        crlf_break <- as_option("crlf_break", crlf_break)
-        suppress <- as_character_vector("suppress", suppress)
-
-        ans <- .Call(C_text_count_sentences, x, crlf_break, suppress)
+        filter <- as_sentence_filter(filter)
+        ans <- .Call(C_text_count_sentences, x, filter)
     } else if (units == "tokens") {
         filter <- as_token_filter(filter)
-
         ans <- .Call(C_text_count_tokens, x, filter)
+    } else if (units == "types") {
+        stop("not implemented")
     } else {
         stop(paste0("unrecognized 'units' value: '", units, "'"))
     }
@@ -38,23 +37,19 @@ text_count <- function(x, units = "sentences",
 }
 
 
-text_split <- function(x, units = "sentences", size = 1,
-                       filter = token_filter(),
-                       crlf_break = FALSE,
-                       suppress = abbreviations("english"))
+text_split <- function(x, units, size = 1,
+                       filter = if (units == "sentences") sentence_filter()
+                                else token_filter())
 {
     x <- as_text(x)
     units <- as_enum("units", units, choices = c("sentences", "tokens"))
     size <- as_size(size)
 
     if (units == "sentences") {
-        crlf_break <- as_option("crlf_break", crlf_break)
-        suppress <- as_character_vector("suppress", suppress)
-
-        ans <- .Call(C_text_split_sentences, x, size, crlf_break, suppress)
+        filter <- as_sentence_filter(filter)
+        ans <- .Call(C_text_split_sentences, x, size, filter)
     } else if (units == "tokens") {
         filter <- as_token_filter(filter)
-
         ans <- .Call(C_text_split_tokens, x, size, filter)
     } else {
         stop(paste0("unrecognized 'units' value: '", units, "'"))

@@ -4,8 +4,9 @@ context("text_split_sentences")
 test_that("'sentences' splits according to UAX #29 (Examples)", {
     text <- c("He said, 'Are you going?' John Shook his head.",
               "'Are you going?' John asked")
+    f <- sentence_filter(suppress = NULL)
 
-    expect_equal(text_split(text, suppress = NULL),
+    expect_equal(text_split(text, "sentences", filter = f),
         data.frame(parent = c(1L, 1L, 2L, 2L),
                    index  = c(1L, 2L, 1L, 2L),
                    text   = as_text(c("He said, 'Are you going?' ",
@@ -18,8 +19,8 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
 test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
     text <- c("c.d", "3.4", "U.S.", "the resp. leaders are",
               "etc.)' '(the")
-
-    expect_equal(text_split(text, suppress = NULL),
+    f <- sentence_filter(suppress = NULL)
+    expect_equal(text_split(text, "sentences", filter = f),
         data.frame(parent = c(1L, 2L, 3L, 4L, 5L),
                    index  = c(1L, 1L, 1L, 1L, 1L),
                    text   = as_text(c("c.d", "3.4", "U.S.",
@@ -32,8 +33,8 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
     text <- c("She said 'See spot run.'  John shook his head.",
               "etc.\u5b83\u4eec\u6307",
               "\u7406\u6570\u5b57.\u5b83\u4eec\u6307")
-
-    expect_equal(text_split(text, suppress = NULL),
+    f <- sentence_filter(suppress = NULL)
+    expect_equal(text_split(text, "sentences", filter = f),
         data.frame(parent = c(1L, 1L, 2L, 2L, 3L, 3L),
                    index  = c(1L, 2L, 1L, 2L, 1L, 2L),
                    text   = as_text(c("She said 'See spot run.'  ",
@@ -45,22 +46,23 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
 })
 
 
-test_that("'sentences' cannot handle abbreviations", {
-    expect_equal(text_split("Mr. Jones", suppress = NULL),
+test_that("'sentences' cannot handle abbreviations without suppressions", {
+    f <- sentence_filter(suppress = NULL)
+    expect_equal(text_split("Mr. Jones", "sentences", filter = f),
         data.frame(parent = c(1L, 1L), index = c(1L, 2L),
                    text = as_text(c("Mr. ", "Jones"))))
 })
 
 
 test_that("'sentences' works on length-0 arguments values", {
-    expect_equal(text_split(c(), suppress = NULL),
+    expect_equal(text_split(c(), "sentences"),
         data.frame(parent = numeric(), index = integer(),
                    text = as_text(c())))
 })
 
 
 test_that("'sentences' works on empty and missing values", {
-    expect_equal(text_split(c("1", "2", NA, "", "5"), suppress = NULL),
+    expect_equal(text_split(c("1", "2", NA, "", "5"), "sentences"),
         data.frame(parent = c(1L, 2L, 4L, 5L),
                    index  = c(1L, 1L, 1L, 1L),
                    text   = as_text(c("1", "2", "", "5"))))
@@ -69,8 +71,7 @@ test_that("'sentences' works on empty and missing values", {
 
 test_that("'sentences' ignores names if its argument has them", {
     text <- as_text(c(a="First sentence.", b="Second sentence!"))
-
-    sents <- text_split(text, suppress = NULL)
+    sents <- text_split(text, "sentences")
     expect_equal(sents,
         data.frame(parent = c(1L, 2L), index = c(1L, 1L),
                    text = as_text(c("First sentence.", "Second sentence!"))))
@@ -83,7 +84,7 @@ test_that("the result of 'sentences' can be serialized", {
               c="This. Is. A. Long. Sentence!!!",
               d="Why all the shouting??")
 
-    sents <- text_split(text)
+    sents <- text_split(text, "sentences")
     file <- tempfile()
     saveRDS(sents, file)
     sents2 <- readRDS(file)
@@ -102,7 +103,7 @@ test_that("the result of 'sentences' on JSON data can be serialized", {
     writeLines(json, file)
 
     data <- read_ndjson(file)
-    sents <- text_split(data$text)
+    sents <- text_split(data$text, "sentences")
 
     file2 <- tempfile()
     saveRDS(sents, file2)
@@ -121,8 +122,8 @@ test_that("'sentences' should work on S3 objects", {
     x2 <- as.character(x)
     names(x2) <- names(x)
 
-    sents <- text_split(x)
-    sents2 <- text_split(x2)
+    sents <- text_split(x, "sentences")
+    sents2 <- text_split(x2, "sentences")
     expect_equal(sents, sents2)
 })
 

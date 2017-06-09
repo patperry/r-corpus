@@ -32,6 +32,7 @@
 struct corpus_data;
 struct corpus_filebuf;
 struct corpus_filter;
+struct corpus_sentfilter;
 
 struct json {
 	struct corpus_schema schema;
@@ -118,6 +119,11 @@ SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
 
+/* sentence filter */
+SEXP alloc_sentfilter(SEXP props);
+int is_sentfilter(SEXP filter);
+struct corpus_sentfilter *as_sentfilter(SEXP filter);
+
 /* token filter */
 SEXP alloc_filter(SEXP props);
 int is_filter(SEXP filter);
@@ -125,9 +131,9 @@ struct corpus_filter *as_filter(SEXP filter);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
-SEXP text_count_sentences(SEXP x, SEXP crlf_break, SEXP suppress);
+SEXP text_count_sentences(SEXP x, SEXP filter);
 SEXP text_count_tokens(SEXP x, SEXP filter);
-SEXP text_split_sentences(SEXP x, SEXP size, SEXP crlf_break, SEXP suppress);
+SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 
 SEXP tokens_text(SEXP x, SEXP props);

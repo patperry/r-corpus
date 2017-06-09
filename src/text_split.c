@@ -43,7 +43,6 @@ static SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
 	do { \
 		free(block); \
 		free(parent); \
-		corpus_sentfilter_destroy(&filter); \
 		Rf_error(msg); \
 	} while (0)
 
@@ -68,17 +67,17 @@ static SEXP make_blocks(SEXP sx, struct corpus_text *block, R_xlen_t *parent,
 	} while (0)
 
 
-SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
+SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP sfilter)
 {
 	SEXP ans;
-	struct corpus_sentfilter filter;
-	const struct corpus_text *text, *suppress;
+	struct corpus_sentfilter *filter;
+	const struct corpus_text *text;
 	struct corpus_text *block, *block1, current;
 	R_xlen_t *parent, *parent1;
-	R_xlen_t i, n, isupp, nsupp, nblock, nblock_max;
+	R_xlen_t i, n, nblock, nblock_max;
 	size_t attr, size;
 	double s, block_size;
-	int flags, nprot, err;
+	int nprot, err;
 
 	nprot = 0;
 
@@ -93,37 +92,9 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 		block_size = 1;
 	}
 
-	// crlf_break
-	PROTECT(scrlf_break = coerceVector(scrlf_break, LGLSXP)); nprot++;
-	if (LOGICAL(scrlf_break)[0] == TRUE) {
-		flags = CORPUS_SENTSCAN_STRICT;
-	} else {
-		flags = CORPUS_SENTSCAN_SPCRLF;
-	}
-
-	if ((err = corpus_sentfilter_init(&filter, flags))) {
-		Rf_error("memory allocation failure");
-	}
-
-	// suppress
-	if (ssuppress != R_NilValue) {
-		PROTECT(ssuppress = coerce_text(ssuppress)); nprot++;
-		suppress = as_text(ssuppress, &nsupp);
-
-		for (isupp = 0; isupp < nsupp; isupp++) {
-			if (!suppress[isupp].ptr) {
-				continue;
-			}
-
-			err = corpus_sentfilter_suppress(&filter,
-							 &suppress[isupp]);
-			if (err) {
-				corpus_sentfilter_destroy(&filter);
-				Rf_error("failed adding break suppression"
-					 " to sentence filter");
-			}
-		}
-	}
+	// filter
+	PROTECT(sfilter = alloc_sentfilter(sfilter)); nprot++;
+	filter = as_sentfilter(sfilter);
 
 	nblock = 0;
 	nblock_max = 256;
@@ -147,7 +118,7 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 			continue;
 		}
 
-		if ((err = corpus_sentfilter_start(&filter, &text[i]))) {
+		if ((err = corpus_sentfilter_start(filter, &text[i]))) {
 			BAIL("memory allocation failure");
 		}
 
@@ -155,15 +126,15 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 		size = 0;
 		attr = 0;
 
-		while (corpus_sentfilter_advance(&filter)) {
+		while (corpus_sentfilter_advance(filter)) {
 			if (s == 0) {
-				current.ptr = filter.current.ptr;
+				current.ptr = filter->current.ptr;
 				attr = 0;
 				size = 0;
 			}
 
-			size += CORPUS_TEXT_SIZE(&filter.current);
-			attr |= CORPUS_TEXT_BITS(&filter.current);
+			size += CORPUS_TEXT_SIZE(&filter->current);
+			attr |= CORPUS_TEXT_BITS(&filter->current);
 			s++;
 
 			if (s < block_size) {
@@ -180,7 +151,7 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 			s = 0;
 		}
 
-		if (filter.error) {
+		if (filter->error) {
 			BAIL("memory allocation failure");
 		}
 
@@ -197,7 +168,6 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP scrlf_break, SEXP ssuppress)
 	// free excess memory
 	block = realloc(block, nblock * sizeof(*block));
 	parent = realloc(parent, nblock * sizeof(*parent));
-	corpus_sentfilter_destroy(&filter);
 
 	PROTECT(ans = make_blocks(sx, block, parent, nblock)); nprot++;
 	UNPROTECT(nprot);

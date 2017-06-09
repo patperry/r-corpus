@@ -1,19 +1,19 @@
 \name{text_split}
+\alias{corpus_sentence_filter}
 \alias{sentences}
-\alias{text_count}
+\alias{sentence_filter}
 \alias{text_split}
 \title{Segmenting Text}
 \description{
     Segment text into smaller units.
 }
 \usage{
-    text_split(x, units = "sentences", size = 1,
-               filter = token_filter(), crlf_break = FALSE,
-               suppress = abbreviations("english"))
+    text_split(x, units, size = 1,
+               filter = if (units == "sentences") sentence_filter()
+                        else token_filter())
 
-    text_count(x, units = "sentences",
-               filter = token_filter(), crlf_break = FALSE,
-               suppress = abbreviations("english"))
+    sentence_filter(crlf_break = FALSE,
+                    suppress = abbreviations("english"))
 }
 \arguments{
     \item{x}{a text or character vector.}
@@ -24,26 +24,22 @@
     \item{size}{the block size, a positive integer giving the number of
         units per block.}
 
-    \item{filter}{when \code{units = "tokens"}, a token filter defining
-        the token boundaries in the text.}
+    \item{filter}{when \code{units = "sentences"}, a sentence filter
+        defining the sentence boundaries; otherwise, a token filter
+        defining the token boundaries.}
 
-    \item{crlf_break}{when \code{units = "sentences"}, a logical value
-        indicating whether to break sentences on carriage returns or
-        line feeds.}
+    \item{crlf_break}{a logical value indicating whether to break
+        sentences on carriage returns or line feeds.}
 
-    \item{suppress}{when \code{units = "sentences"}, a character vector
-        of sentence break suppressions.}
+    \item{suppress}{a character vector of sentence break suppressions.}
 }
 \details{
     \code{text_split} splits text into blocks of the given size, measured
     in the specified units.
 
-    \code{text_count} counts the number of units in each text element.
-
     When \code{units = "sentences"}, units are sentences as defined in
     the \sQuote{Sentences} section below.  When \code{units = "tokens"},
-    units are non-\code{NA} tokens defined by the \code{filter}
-    argument.
+    units are non-\code{NA} tokens.
 }
 \section{Sentences}{
     Sentences are defined according to a tailored version of the
@@ -55,14 +51,15 @@
     reasonable behavior across a variety of languages, but they do not
     handle abbreviations correctly and by default they treat carriage
     returns and line feeds as paragraph separators, often leading to
-    incorrect breaks. To get around these shortcomings, tailor the
-    UAX 29 rules using the \code{crlf_break} and the \code{suppress}
-    arguments.
+    incorrect breaks. To get around these shortcomings, the
+    \code{filter} argument, specified using the \code{sentence_filter}
+    function, allows tailoring the UAX 29 rules using the
+    \code{crlf_break} and the \code{suppress} properties.
 
     The UAX 29 rules break after full stops (periods) whenever they are
     followed by uppercase letters. Under these rules, the text
     \code{"I saw Mr. Jones today."} gets split into two sentences. To get
-    around this, we allow a \code{suppress} argument, a list of sentence
+    around this, we allow a \code{suppress} property, a list of sentence
     break suppressions which, when followed by uppercase characters, do
     not signal the end of a sentence.
 
@@ -74,19 +71,16 @@
     To break sentences on CRLF, CR, and LF, specify \code{crlf_break = TRUE}.
 }
 \value{
-    For \code{text_split}, the result is a data frame with three columns:
+    The result is a data frame with three columns:
     \code{parent}, \code{index}, and \code{text}, and one row for each
     text block. The \code{parent} value is the integer index of the parent
     text in \code{x}; the \code{index} value is the integer index of the
     sentence in its parent; the \code{text} value is the text of the
-    block, a value of type \code{\link{text}}.
-
-    For \code{text_count}, the result is a numeric vector with the same
-    length and names as the text vector, with the elements given the number
-    of units in the corresponding text element.
+    block, a value of type \code{\link{corpus_text}}.
 }
 \seealso{
-    \code{\link{abbreviations}}, \code{\link{tokens}}.
+    \code{\link{abbreviations}}, \code{\link{text_count}},
+        \code{\link{tokens}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.", 
@@ -97,15 +91,12 @@
     # split text into sentences
     text_split(text, units = "sentences")
 
-    # count the number of sentences or tokens
-    text_count(text, units = "sentences")
-    text_count(text, units = "tokens")
-
     # disable the default sentence suppressions
-    text_split("I saw Mr. Jones today.", units = "sentences", suppress = NULL)
+    text_split("I saw Mr. Jones today.", units = "sentences", filter = NULL)
 
     # break on CR and LF
-    text_split("Split across\na line.", units = "sentences", crlf_break = TRUE)
+    text_split("Split across\na line.", units = "sentences",
+               filter = sentence_filter(crlf_break = TRUE))
 
     # 2-sentence blocks
     text_split(c("What. Are. You. Doing????",

@@ -37,18 +37,17 @@
 
 #define BAIL(msg) \
 	do { \
-		corpus_sentfilter_destroy(&filter); \
 		Rf_error(msg); \
 	} while (0)
 
 
-SEXP text_count_sentences(SEXP sx, SEXP scrlf_break, SEXP ssuppress)
+SEXP text_count_sentences(SEXP sx, SEXP sfilter)
 {
 	SEXP ans;
-	struct corpus_sentfilter filter;
-	const struct corpus_text *text, *suppress;
-	R_xlen_t i, n, isupp, nsupp, nunit;
-	int flags, nprot, err;
+	struct corpus_sentfilter *filter;
+	const struct corpus_text *text;
+	R_xlen_t i, n, nunit;
+	int nprot, err;
 
 	nprot = 0;
 
@@ -56,36 +55,9 @@ SEXP text_count_sentences(SEXP sx, SEXP scrlf_break, SEXP ssuppress)
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
 
-	// crlf_break
-	PROTECT(scrlf_break = coerceVector(scrlf_break, LGLSXP)); nprot++;
-	if (LOGICAL(scrlf_break)[0] == TRUE) {
-		flags = CORPUS_SENTSCAN_STRICT;
-	} else {
-		flags = CORPUS_SENTSCAN_SPCRLF;
-	}
-
-	if ((err = corpus_sentfilter_init(&filter, flags))) {
-		Rf_error("memory allocation failure");
-	}
-
-	// suppress
-	if (ssuppress != R_NilValue) {
-		PROTECT(ssuppress = coerce_text(ssuppress)); nprot++;
-		suppress = as_text(ssuppress, &nsupp);
-
-		for (isupp = 0; isupp < nsupp; isupp++) {
-			if (!suppress[isupp].ptr) {
-				continue;
-			}
-
-			err = corpus_sentfilter_suppress(&filter,
-							 &suppress[isupp]);
-			if (err) {
-				BAIL("failed adding break suppression"
-				     " to sentence filter");
-			}
-		}
-	}
+	// filter
+	PROTECT(sfilter = alloc_sentfilter(sfilter)); nprot++;
+	filter = as_sentfilter(sfilter);
 
 	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names_text(sx));
@@ -101,22 +73,21 @@ SEXP text_count_sentences(SEXP sx, SEXP scrlf_break, SEXP ssuppress)
 			continue;
 		}
 
-		if ((err = corpus_sentfilter_start(&filter, &text[i]))) {
+		if ((err = corpus_sentfilter_start(filter, &text[i]))) {
 			BAIL("memory allocation failure");
 		}
 
 		nunit = 0;
-		while (corpus_sentfilter_advance(&filter)) {
+		while (corpus_sentfilter_advance(filter)) {
 			nunit++;
 		}
-		if (filter.error) {
+		if (filter->error) {
 			BAIL("memory allocation failure");
 		}
 
 		REAL(ans)[i] = (double)nunit;
 	}
 
-	corpus_sentfilter_destroy(&filter);
 	UNPROTECT(nprot);
 	return ans;
 }
