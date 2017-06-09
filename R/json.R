@@ -57,7 +57,7 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = "text",
         if (length(dim(ans)) == 2) {
             ans <- as.data.frame(ans, text = text,
                                  stringsAsFactors = stringsAsFactors)
-        } else if (datatype(ans) == "text") {
+        } else if (json_datatype(ans) == "text") {
             ans <- .Call(C_as_text_json, ans)
         } else {
             ans <- .Call(C_simplify_json, ans, text, stringsAsFactors)
@@ -102,15 +102,15 @@ dimnames.corpus_json <- function(x)
 }
 
 
-datatype.corpus_json <- function(x, ...)
+json_datatype <- function(x)
 {
-    .Call(C_datatype_json, x)
+    .Call(C_json_datatype, x)
 }
 
 
-datatypes.corpus_json <- function(x, ...)
+json_datatypes <- function(x)
 {
-    .Call(C_datatypes_json, x)
+    .Call(C_json_datatypes, x)
 }
 
 

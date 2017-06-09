@@ -417,7 +417,7 @@ SEXP names_json(SEXP sdata)
 }
 
 
-SEXP datatype_json(SEXP sdata)
+SEXP json_datatype(SEXP sdata)
 {
 	SEXP str, ans;
 	const struct json *d = as_json(sdata);
@@ -445,7 +445,7 @@ SEXP datatype_json(SEXP sdata)
 }
 
 
-SEXP datatypes_json(SEXP sdata)
+SEXP json_datatypes(SEXP sdata)
 {
 	SEXP types, str, names;
 	const struct json *d = as_json(sdata);
