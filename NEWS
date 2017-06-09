@@ -1,4 +1,4 @@
-Changes in version 0.6.1
+Changes in version 0.6.1 (2017-06-08)
 
  * Add text_count() for counting sentences or tokens.
 
