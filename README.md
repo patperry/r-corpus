@@ -367,7 +367,7 @@ sequence of commands in R:
         # must be in C locale for consistent string sorting
         collate <- Sys.getlocale("LC_COLLATE")
         Sys.setlocale("LC_COLLATE", "C")
-        devtools::test(dir) # run the tests (optional)
+        devtools::test(dir)
         Sys.setlocale("LC_COLLATE", collate) # restore the original locale
 
         # optional: remove the temporary files
