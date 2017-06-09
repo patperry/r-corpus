@@ -15,7 +15,10 @@ clean:
 check: $(CORPUS_LIB)
 	Rscript -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
 
+dist:
+	mkdir -p dist && cd dist && R CMD build ..
+
 install: $(CORPUS_LIB)
 	Rscript -e 'devtools::install(".")'
 
-.PHONY: all bench clean check install
+.PHONY: all bench clean check dist install

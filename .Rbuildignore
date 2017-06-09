@@ -3,10 +3,11 @@
 [.]so$
 ^[.]git
 ^[.]travis[.]yml$
-^bench
 ^Makefile$
 ^README[.]md$
 ^TODO[.]md$
+^bench$
+^dist$
 ^shell[.]sh$
 ^src/corpus/[.]git$
 ^src/corpus/[.]travis[.]yml$
