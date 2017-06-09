@@ -21,7 +21,8 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
                          drop_symbol = FALSE, drop_other = FALSE,
                          drop = NULL, drop_except = NULL)
 {
-    ans <- structure(list(), class="corpus_token_filter")
+    ans <- structure(list(),
+                     class = c("corpus_token_filter", "corpus_filter"))
 
     ans$map_case <- map_case
     ans$map_compat <- map_compat
@@ -49,39 +50,13 @@ as_token_filter <- function(filter)
         return(NULL)
     }
 
-    ans <- structure(list(), class = "corpus_token_filter")
+    ans <- structure(list(),
+                     class = c("corpus_token_filter", "corpus_filter"))
     keys <- names(token_filter())
     for (key in keys) {
         ans[[key]] <- filter[[key]]
     }
     ans
-}
-
-
-`[<-.corpus_token_filter` <- function(x, i, value)
-{
-    if (anyNA(i)) {
-        stop("NAs are not allowed in subscripted assignments")
-    }
-    if (!is.character(i)) {
-        i <- names(x)[i]
-    }
-
-    if (length(value) == 1) {
-        value <- rep(value, length(i))
-    } else if (length(value) != length(i)) {
-        stop("number of items to replace differs from the replacement length")
-    }
-
-    for (j in seq_along(i)) {
-        key <- i[[j]]
-        val <- value[[j]]
-        if (!is.na(key)) {
-            x[[key]] <- val
-        }
-    }
-
-    x
 }
 
 
@@ -99,56 +74,7 @@ as_token_filter <- function(filter)
     } else {
         stop(paste0("unrecognized token filter property: '", name, "'"))
     }
-
-    y <- unclass(x)
-    if (is.null(value)) {
-        # setting a list element to NULL is tricky; see
-        # http://stackoverflow.com/a/7945259
-        y[[name]] <- NA
-        y[match(name, names(y))] <- list(NULL)
-    } else {
-        y[[name]] <- value
-    }
-    class(y) <- class(x)
-    y
-}
-
-
-`[[<-.corpus_token_filter` <- function(x, i, value)
-{
-    if (length(i) > 1) {
-        stop("no such token filter property")
-    }
-    if (!is.character(i)) {
-        name <- names(x)[[i]]
-    } else {
-        name <- i
-    }
-    if (is.na(name)) {
-        stop(paste0("no such token filter property (", i, ")"))
-    }
-
-    `$<-.corpus_token_filter`(x, name, value)
-}
-
-
-print.corpus_token_filter <- function(x, ...)
-{
-    cat("Token filter with the following options:\n\n")
-    for (k in names(x)) {
-        val <- x[[k]]
-
-        cat(paste0("\t", k, ": "))
-        if (is.null(val)) {
-            cat("NULL\n")
-        } else if (length(val) == 1) {
-            cat(paste0(val, "\n"))
-        } else {
-            utils::str(val, width = getOption("width") - 8 - nchar(k) - 2,
-                       give.attr = FALSE)
-        }
-    }
-    invisible(x)
+    `$<-.corpus_filter`(x, name, value)
 }
 
 
