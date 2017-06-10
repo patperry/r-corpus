@@ -57,7 +57,7 @@ version, run the following command in R:
 
 To install the latest test version, run
 
-    install.packages("http://ptrckprry.com/dist/corpus_0.6.1.tar.gz", repos = NULL)
+    install.packages("http://ptrckprry.com/dist/corpus_0.6.2.tar.gz", repos = NULL)
 
 *Note, the package uses a git submodule, so `install_git` and
 `install_github` won't work.  See the section on
