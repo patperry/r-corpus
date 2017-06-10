@@ -15,7 +15,10 @@ Features
 
  * `vocab()` for type/token frequencies (?)
 
- * Some sort of key words in context (KWIC) function
+ * Some sort of key words in context (KWIC) function: `text_locate()`
+
+ * See if text contains a term: `text_detect(,terms)`;
+   also `text_subset(,terms)`
 
  * Need calls to `R_CheckUserInterrupt()` in long-running computations
    (without leaking memory).

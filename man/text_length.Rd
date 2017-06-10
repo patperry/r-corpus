@@ -1,20 +1,23 @@
-\name{text_count}
-\alias{text_count}
-\title{Counting text units}
+\name{text_length}
+\alias{text_length}
+\alias{text_ntype}
+\title{Measuring text.}
 \description{
     Count the number of sentences, tokens, or types.
 }
 \usage{
-    text_count(x, units = "tokens",
-               filter = if (units == "sentences") sentence_filter()
-                        else token_filter(),
-               weights = NULL, group = NULL)
+    text_length(x, units = "tokens",
+                filter = if (units == "sentences") sentence_filter()
+                         else token_filter(),
+                weights = NULL, group = NULL)
+
+    text_ntype(x, filter = token_filter(), weights = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text or character vector.}
 
     \item{units}{the block size units, either \code{"sentences"},
-        \code{"tokens"}, or \code{"types"}.}
+        or \code{"tokens"}.}
 
     \item{filter}{when \code{units = "sentences"}, a sentence filter
         defining the sentence boundaries; otherwise, a token filter
@@ -28,9 +31,11 @@
         behavior.}
 }
 \details{
-    \code{text_count} counts the number of units in each text element:
-    sentences, non-\code{NA} tokens, or unique types, depending on
-    the value of the \code{units} argument.
+    \code{text_length} counts the number of units in each text element:
+    sentences or non-\code{NA} tokens, depending on the value of the
+    \code{units} argument.
+
+    \code{text_ntype} counts the number of unique types in each text.
 
     See \code{\link{sentence_filter}} and \code{\link{token_filter}} for
     the sentence and token definitions.
@@ -43,13 +48,14 @@
     Texts with \code{weights} values of zero get there counts set to
     zero, if even the text value is \code{NA}.
 
-    When \code{units = "types"}, the magnitude and sign of the
+    For \code{text_ntype}, the magnitude and sign of the
     \code{weights} values do not affect the output, only whether
     the weight is nonzero.
 
-    If \code{group} is non-\code{NULL}, then counts are aggregated by
-    the levels of the argument, and the length and names of the output
-    match the \code{group} levels.
+    If \code{group} is non-\code{NULL}, then counts (or type sets, for
+    \code{text_ntype} are aggregated by the levels of the \code{group}
+    argument, and the length and names of the output match the
+    \code{group} levels.
 }
 \seealso{
     \code{\link{abbreviations}}, \code{\link{sentence_filter}},
@@ -62,6 +68,7 @@
               "She asked 'do you really mean that?' and I said 'yes.'")
 
     # count the number of sentences or tokens
-    text_count(text, units = "sentences")
-    text_count(text, units = "tokens")
+    text_length(text, units = "sentences")
+    text_length(text, units = "tokens")
+    text_ntype(text)
 }

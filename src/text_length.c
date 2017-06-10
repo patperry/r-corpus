@@ -43,7 +43,7 @@
 	} while (0)
 
 
-SEXP text_count_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
+SEXP text_length_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 {
 	SEXP ans, names;
 	struct corpus_sentfilter *filter;
@@ -141,7 +141,7 @@ SEXP text_count_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	} while (0)
 
 
-SEXP text_count_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
+SEXP text_length_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
@@ -244,7 +244,7 @@ SEXP text_count_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	} while (0)
 
 
-SEXP text_count_types(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
+SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
