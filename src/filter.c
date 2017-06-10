@@ -174,7 +174,12 @@ static int token_filter_flags(SEXP filter)
 }
 
 
-static void stem_except_terms(struct corpus_filter *f, SEXP sterms)
+static void add_terms(const char *name,
+		      int (*add_term)(struct corpus_filter *,
+			              const struct corpus_text *),
+		      struct corpus_filter *f,
+		      struct corpus_typemap *map,
+		      SEXP sterms)
 {
 	const struct corpus_text *terms;
 	R_xlen_t i, n;
@@ -192,97 +197,22 @@ static void stem_except_terms(struct corpus_filter *f, SEXP sterms)
 			continue;
 		}
 
-		if ((err = corpus_filter_stem_except(f, &terms[i]))) {
-			error("failed adding term to token filter "
-			      "stem exception list");
+		if ((err = corpus_typemap_set(map, &terms[i]))) {
+			goto out;
 		}
+
+		if ((err = add_term(f, &map->type))) {
+			goto out;
+		}
+	}
+out:
+	if (err) {
+		corpus_typemap_destroy(map);
+		error("failed adding term to token filter %s list", name);
 	}
 
 	UNPROTECT(1);
-}
 
-
-static void drop_terms(struct corpus_filter *f, SEXP sterms)
-{
-	const struct corpus_text *terms;
-	R_xlen_t i, n;
-	int err;
-
-	if (sterms == R_NilValue) {
-		return;
-	}
-
-	PROTECT(sterms = coerce_text(sterms));
-	terms = as_text(sterms, &n);
-
-	for (i = 0; i < n; i++) {
-		if (!terms[i].ptr) {
-			continue;
-		}
-
-		if ((err = corpus_filter_drop(f, &terms[i]))) {
-			error("failed adding term to token filter "
-			      "drop list");
-		}
-	}
-
-	UNPROTECT(1);
-}
-
-
-static void drop_except_terms(struct corpus_filter *f, SEXP sterms)
-{
-	const struct corpus_text *terms;
-	R_xlen_t i, n;
-	int err;
-
-	if (sterms == R_NilValue) {
-		return;
-	}
-
-	PROTECT(sterms = coerce_text(sterms));
-	terms = as_text(sterms, &n);
-
-	for (i = 0; i < n; i++) {
-		if (!terms[i].ptr) {
-			continue;
-		}
-
-		if ((err = corpus_filter_drop_except(f, &terms[i]))) {
-			error("failed adding term to token filter "
-			      "drop exception list");
-		}
-	}
-
-	UNPROTECT(1);
-}
-
-
-static void combine_terms(struct corpus_filter *f, SEXP sterms)
-{
-	const struct corpus_text *terms;
-	R_xlen_t i, n;
-	int err;
-
-	if (sterms == R_NilValue) {
-		return;
-	}
-
-	PROTECT(sterms = coerce_text(sterms));
-	terms = as_text(sterms, &n);
-
-	for (i = 0; i < n; i++) {
-		if (!terms[i].ptr) {
-			continue;
-		}
-
-		if ((err = corpus_filter_combine(f, &terms[i]))) {
-			error("failed adding term to token filter "
-			      " combine list");
-		}
-	}
-
-	UNPROTECT(1);
 }
 
 
@@ -290,8 +220,9 @@ SEXP alloc_filter(SEXP props)
 {
 	SEXP sfilter;
 	struct corpus_filter *f;
+	struct corpus_typemap map;
 	const char *stemmer;
-	int type_kind, flags;
+	int err, type_kind, flags;
 
 	type_kind = token_filter_type_kind(props);
 	stemmer = token_filter_stemmer(props);
@@ -301,10 +232,23 @@ SEXP alloc_filter(SEXP props)
 	PROTECT(sfilter = R_MakeExternalPtr(f, FILTER_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(sfilter, free_filter, TRUE);
 
-	stem_except_terms(f, getListElement(props, "stem_except"));
-	drop_terms(f, getListElement(props, "drop"));
-	drop_except_terms(f, getListElement(props, "drop_except"));
-	combine_terms(f, getListElement(props, "combine"));
+	if ((err = corpus_typemap_init(&map, type_kind, NULL))) {
+		error("memory allocation failure");
+	}
+
+	add_terms("stem exception", corpus_filter_stem_except, f, &map,
+		  getListElement(props, "stem_except"));
+
+	add_terms("drop", corpus_filter_drop, f, &map,
+		  getListElement(props, "drop"));
+
+	add_terms("drop exception", corpus_filter_drop_except, f, &map,
+		  getListElement(props, "drop_except"));
+
+	add_terms("combine", corpus_filter_combine, f, &map,
+		  getListElement(props, "combine"));
+
+	corpus_typemap_destroy(&map);
 
 	UNPROTECT(1);
 	return sfilter;

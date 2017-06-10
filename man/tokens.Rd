@@ -11,7 +11,7 @@
     token_filter(map_case = TRUE, map_compat = TRUE,
                  map_quote = TRUE, remove_ignorable = TRUE,
                  stemmer = NA, stem_except = drop,
-                 combine = NULL,
+                 combine = abbreviations("english"),
                  drop_letter = FALSE, drop_mark = FALSE,
                  drop_number = FALSE, drop_punct = FALSE,
                  drop_symbol = FALSE, drop_other = FALSE,
@@ -149,6 +149,15 @@
 
     When \code{filter = NULL}, we treat all logical properties as
     \code{FALSE} and all other properties as \code{NA} or \code{NULL}.
+
+    Terms specified by the \code{stem_except}, \code{combine},
+    \code{drop}, and \code{drop_except} need to be stemmed (unless
+    \code{stemmer} is not \code{NA}), but they do not need to be
+    normalized. We normalize the argument values in the manner specified
+    by \code{map_case}, \code{map_compate}, \code{map_quote}, and
+    \code{remove_ignorable}. Thus, for example, if \code{map_case = TRUE},
+    then a token filter with \code{combine = "Mx."} produces the same
+    results as a token filter with \code{combine = "mx."}.
 }
 \section{Stemming}{
     We use the stemming algorithms provided by the Snowball library. These
@@ -171,6 +180,11 @@
     example, specifying \code{combine = "new york"} will
     cause consecutive instances of the words \code{new} and \code{york}
     to get replaced by a single token, \code{new york}.
+
+    By default, we set \code{combine = abbreviations("english")}, so
+    that abbreviations like \code{"Ms."} get treated as single tokens;
+    with \code{combine = NULL}, trailing punctuation gets split off, and
+    \code{"Ms."} gets tokenized into two tokens, for "Ms" and ".".
 }
 \value{
     A list of the same length as \code{x}, with the same names. Each list
@@ -201,4 +215,15 @@
     # ...except for certain words
     tokens("Mary is running",
            token_filter(stemmer = "english", stem_except = "mary"))
+
+    # combine abbreviations by default
+    tokens("Ms. Jones")
+
+    # disable default combinations
+    tokens("Ms. Jones", token_filter(combine = NULL))
+
+    # add new combinations
+    tokens("Ms. Jones is from New York City, New York.",
+           token_filter(combine = c(abbreviations("english"),
+                                    "new york", "new york city")))
 }

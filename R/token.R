@@ -15,7 +15,8 @@
 
 token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
                          remove_ignorable = TRUE,
-                         stemmer = NA, stem_except = drop, combine = NULL,
+                         stemmer = NA, stem_except = drop,
+                         combine = abbreviations("english"),
                          drop_letter = FALSE, drop_mark = FALSE,
                          drop_number = FALSE, drop_punct = FALSE,
                          drop_symbol = FALSE, drop_other = FALSE,
