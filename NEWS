@@ -1,3 +1,18 @@
+Changes in version 0.6.2 (2017-06-10)
+
+ * Add term_frame()
+
+ * Add transpose argument to term_matrix()
+
+ * Normalize token filter combine, drop, drop_except, stem_except arguments
+
+ * Set combine = abbreviations("english") by default.
+
+ * Rename text_count() to text_length(); add text_ntype().
+
+ * Add group, weights arguments for text_length() and text_ntype()
+
+
 Changes in version 0.6.1 (2017-06-08)
 
  * Add text_count() for counting sentences or tokens.
