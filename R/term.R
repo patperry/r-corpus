@@ -82,3 +82,33 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
     Matrix::sparseMatrix(i = i, j = j, x = mat$count, dims = dims,
                          dimnames = dimnames, index1 = FALSE, check = FALSE)
 }
+
+
+term_frame <- function(x, filter = token_filter(), weights = NULL,
+                       ngrams = NULL, select = NULL, group = NULL)
+{
+    x <- as_text(x)
+    filter <- as_token_filter(filter)
+    weights <- as_weights(weights, length(x))
+    ngrams <- as_ngrams(ngrams)
+    select <- as_character_vector("select", select)
+    group <- as_group(group, length(x))
+
+    mat <- .Call(C_term_matrix_text, x, filter, weights, ngrams, select, group)
+
+    nm <- mat$row_names
+    if (is.null(nm)) {
+        row <- mat$i + 1
+    } else {
+        row <- nm[mat$i + 1]
+    }
+
+    term <- mat$col_names[mat$j + 1]
+    count <- mat$count
+
+    if (is.null(group)) {
+        data.frame(text = row, term, count, stringsAsFactors = FALSE)
+    } else {
+        data.frame(group = row, term, count, stringsAsFactors = FALSE)
+    }
+}
