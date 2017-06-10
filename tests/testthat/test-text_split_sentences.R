@@ -69,12 +69,14 @@ test_that("'sentences' works on empty and missing values", {
 })
 
 
-test_that("'sentences' ignores names if its argument has them", {
-    text <- as_text(c(a="First sentence.", b="Second sentence!"))
+test_that("'sentences' uses names if its argument has them", {
+    text <- as_text(c(a="First sentence. Second.", b="Third sentence!"))
     sents <- text_split(text, "sentences")
     expect_equal(sents,
-        data.frame(parent = c(1L, 2L), index = c(1L, 1L),
-                   text = as_text(c("First sentence.", "Second sentence!"))))
+        data.frame(parent = c("a", "a", "b"), index = c(1L, 2L, 1L),
+                   text = as_text(c("First sentence. ", "Second.",
+                                    "Third sentence!")),
+                   stringsAsFactors = FALSE))
 })
 
 
