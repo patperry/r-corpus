@@ -90,7 +90,7 @@
     }
 }
 \seealso{
-    \code{\link{abbreviations}}, \code{\link{text_count}},
+    \code{\link{abbreviations}}, \code{\link{text_length}},
         \code{\link{tokens}}.
 }
 \examples{
