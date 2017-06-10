@@ -49,16 +49,3 @@ test_that("'split_tokens' handles empty and missing text", {
         data.frame(parent = c(1, 4, 5), index = c(1, 1, 1),
                    text = as_text(c("", "", "a"))))
 })
-
-
-test_that("text_count can works on tokens", {
-    text <- c(a="He said, 'Are you going?' John Shook his head.",
-              b="'Are you going?' John asked",
-              c="This. Is. A. Long. Sentence!!!",
-              d="Why all the shouting??")
-    n0 <- text_count(text, "tokens")
-    split <- text_split(text, "tokens")
-    n <- c(with(split, tapply(index, parent, length)))
-    names(n) <- names(text)
-    expect_equal(n, n0)
-})

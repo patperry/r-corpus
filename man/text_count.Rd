@@ -21,8 +21,7 @@
         defining the token boundaries.}
 
     \item{weights}{a numeric vector the same length of \code{x} assigning
-        weights to each text, or \code{NULL} for unit weights
-        (not used if \code{units = "types"}).}
+        weights to each text, or \code{NULL}.}
 
     \item{group}{if non-\code{NULL}, a factor, character string, or
         integer vector the same length of \code{x} specifying the grouping
@@ -40,6 +39,13 @@
     If \code{group} is \code{NULL}, the result is a numeric vector with the
     same length and names as the input text, with the elements given the
     (weighted) number of units in the corresponding text element.
+
+    Texts with \code{weights} values of zero get there counts set to
+    zero, if even the text value is \code{NA}.
+
+    When \code{units = "types"}, the magnitude and sign of the
+    \code{weights} values do not affect the output, only whether
+    the weight is nonzero.
 
     If \code{group} is non-\code{NULL}, then counts are aggregated by
     the levels of the argument, and the length and names of the output

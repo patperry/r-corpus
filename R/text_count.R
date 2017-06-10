@@ -30,7 +30,7 @@ text_count <- function(x, units = "tokens",
     } else if (units == "tokens") {
         ans <- .Call(C_text_count_tokens, x, filter, weights, group)
     } else if (units == "types") {
-        stop("not implemented")
+        ans <- .Call(C_text_count_types, x, filter, weights, group)
     } else {
         stop(paste0("unrecognized 'units' value: '", units, "'"))
     }

@@ -50,6 +50,10 @@ as_token_filter <- function(filter)
         return(NULL)
     }
 
+    if (!is.list(filter)) {
+        stop("'filter' argument should be a list")
+    }
+
     ans <- structure(list(),
                      class = c("corpus_token_filter", "corpus_filter"))
     keys <- names(token_filter())
