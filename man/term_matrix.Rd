@@ -3,11 +3,12 @@
 \title{Term Frequency Matrix}
 \description{
     Tokenize a set of texts and compute a term frequency matrix, with
-    one column for each term.
+    one column for each term, or its transpose.
 }
 \usage{
     term_matrix(x, filter = token_filter(), weights = NULL,
-                ngrams = NULL, select = NULL, group = NULL)
+                ngrams = NULL, select = NULL, group = NULL,
+                transpose = FALSE)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
@@ -17,7 +18,7 @@
     \item{weights}{a numeric vector the same length of \code{x} assigning
         weights to each text, or \code{NULL} for unit weights.}
 
-    \item{ngrams}{ an integer vector of n-gram lengths to include, or
+    \item{ngrams}{an integer vector of n-gram lengths to include, or
         \code{NULL} to use the \code{select} argument to determine the
         n-gram lengths.}
 
@@ -27,6 +28,9 @@
     \item{group}{if non-\code{NULL}, a factor, character string, or
         integer vector the same length of \code{x} specifying the grouping
         behavior.}
+
+    \item{transpose}{a logical value indicating whether to transpose the
+        result, putting terms as rows instead of columns.}
 }
 \details{
     \code{term_matrix} tokenizes a set of texts and computes the occurrence
@@ -48,13 +52,17 @@
     \code{group} get skipped.
 }
 \value{
-    A sparse matrix in \code{"dgCMatrix"} format with one column for each term
-    and one row for each input text or (if \code{group} is non-\code{NULL}) on
+    When \code{transpose = FALSE}, the result is a sparse matrix in
+    \code{"dgCMatrix"} format with one column for each term and one row
+    for each input text or (if \code{group} is non-\code{NULL}) on
     row for each grouping level.
 
     If \code{filter$select} is non-\code{NULL}, then the column names will
     be equal to \code{filter$select}. Otherwise, the columns are assigned
     in arbitrary order.
+
+    When \code{transpose = TRUE}, we return the transpose of the term matrix,
+    in \code{"dgCMatrix"} format.
 }
 \seealso{
     \code{\link{tokens}}, \code{\link{term_counts}}.
@@ -80,4 +88,7 @@
 
     # select certain multi-type terms
     term_matrix(text, select = c("a rose", "a violet", "sweet", "smell"))
+
+    # transpose the result
+    term_matrix(text, ngrams = 1:2, transpose = TRUE)[1:10, ] # first 10 rows
 }

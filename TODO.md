@@ -4,6 +4,8 @@ To Do
 Features
 --------
 
+ * `term_frame()`
+
  * Concat operator `c()` for text.
 
  * Need implementations for the `.S3PrimitiveGenerics` for `text`.

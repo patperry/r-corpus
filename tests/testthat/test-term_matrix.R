@@ -76,6 +76,18 @@ test_that("'term_matrix' weights and group works", {
 })
 
 
+test_that("'term_matrix' can transpose", {
+    text <- c("A rose is a rose is a rose.",
+              "A Rose is red, a violet is blue!",
+              "A rose by any other name would smell as sweet.")
+    w <- c(100, 3, 1000)
+    g <- c("B", "B", "A")
+    x <- term_matrix(text, weights = w, group = g, transpose = TRUE)
+    x0 <- t(as.matrix(term_matrix(text, weights = w, group = g)))
+    expect_equal(as.matrix(x), x0)
+})
+
+
 test_that("'term_matrix' can select stemmed bigrams", {
     text <- "A sentence. Another sentence. Others..."
     f <- token_filter(stemmer = "english", drop_punct = TRUE,

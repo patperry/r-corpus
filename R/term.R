@@ -48,7 +48,8 @@ term_counts <- function(x, filter = token_filter(), weights = NULL,
 
 
 term_matrix <- function(x, filter = token_filter(), weights = NULL,
-                        ngrams = NULL, select = NULL, group = NULL)
+                        ngrams = NULL, select = NULL, group = NULL,
+                        transpose = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
@@ -56,6 +57,7 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)
     group <- as_group(group, length(x))
+    transpose <- as_option("transpose", transpose)
 
     if (is.null(group)) {
         n <- length(x)
@@ -64,8 +66,19 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
     }
 
     mat <- .Call(C_term_matrix_text, x, filter, weights, ngrams, select, group)
-    Matrix::sparseMatrix(i = mat$i, j = mat$j, x = mat$count,
-                         dims = c(n, length(mat$col_names)),
-                         dimnames = list(mat$row_names, mat$col_names),
-                         index1 = FALSE, check = FALSE)
+
+    if (!transpose) {
+        i <- mat$i
+        j <- mat$j
+        dims <- c(n, length(mat$col_names))
+        dimnames <- list(mat$row_names, mat$col_names)
+    } else {
+        i <- mat$j
+        j <- mat$i
+        dims <- c(length(mat$col_names), n)
+        dimnames <- list(mat$col_names, mat$row_names)
+    }
+
+    Matrix::sparseMatrix(i = i, j = j, x = mat$count, dims = dims,
+                         dimnames = dimnames, index1 = FALSE, check = FALSE)
 }
