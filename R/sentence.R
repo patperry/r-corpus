@@ -31,7 +31,7 @@ as_sentence_filter <- function(filter)
     }
 
     if (!is.list(filter)) {
-        stop("'filter' argument should be a list")
+        stop("'filter' argument should be a sentence filter, list, or NULL")
     }
 
     ans <- structure(list(),

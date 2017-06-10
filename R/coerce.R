@@ -146,6 +146,10 @@ as_ngrams <- function(ngrams)
 
 as_option <- function(name, value)
 {
+    if (is.null(value)) {
+        return(FALSE)
+    }
+
     if (!(length(value) == 1 && is.logical(value))) {
         stop(paste0("'", name, "' argument must be TRUE or FALSE"))
     }

@@ -52,7 +52,7 @@ as_token_filter <- function(filter)
     }
 
     if (!is.list(filter)) {
-        stop("'filter' argument should be a list")
+        stop("'filter' argument should be a token filter, list, or NULL")
     }
 
     ans <- structure(list(),
