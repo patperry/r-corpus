@@ -30,5 +30,9 @@ text_split <- function(x, units, size = 1,
         stop(paste0("unrecognized 'units' value: '", units, "'"))
     }
 
+    nm <- names(x)
+    if (!is.null(nm)) {
+        ans$parent <- nm[ans$parent]
+    }
     ans
 }
