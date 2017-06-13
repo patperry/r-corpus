@@ -20,6 +20,7 @@ export(term_frame)
 export(text_length)
 export(text_ntype)
 export(text_split)
+export(text_types)
 export(tokens)
 
 ## Methods

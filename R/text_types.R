@@ -13,25 +13,25 @@
 #  limitations under the License.
 
 
-text_length <- function(x, units = "tokens",
-                        filter = if (units == "sentences") sentence_filter()
-                                else token_filter(),
-                        weights = NULL, group = NULL)
+text_ntype <- function(x, filter = token_filter(), weights = NULL,
+                       group = NULL, collapse = FALSE)
 {
     x <- as_text(x)
-    units <- as_enum("units", units,
-                     choices = c("sentences", "tokens"))
-    filter <- as_filter(units, filter)
+    filter <- as_token_filter(filter)
     weights <- as_weights(weights, length(x))
     group <- as_group(group, length(x))
+    collapse <- as_option("collapse", collapse)
+    .Call(C_text_ntype, x, filter, weights, group, collapse)
+}
 
-    if (units == "sentences") {
-        ans <- .Call(C_text_length_sentences, x, filter, weights, group)
-    } else if (units == "tokens") {
-        ans <- .Call(C_text_length_tokens, x, filter, weights, group)
-    } else {
-        stop(paste0("unrecognized 'units' value: '", units, "'"))
-    }
 
-    ans
+text_types <- function(x, filter = token_filter(), weights = NULL,
+                       group = NULL, collapse = FALSE)
+{
+    x <- as_text(x)
+    filter <- as_token_filter(filter)
+    weights <- as_weights(weights, length(x))
+    group <- as_group(group, length(x))
+    collapse <- as_option("collapse", collapse)
+    .Call(C_text_types, x, filter, weights, group, collapse)
 }

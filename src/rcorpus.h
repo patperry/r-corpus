@@ -136,6 +136,7 @@ SEXP text_length_tokens(SEXP x, SEXP filter, SEXP weights, SEXP group);
 SEXP text_ntype(SEXP x, SEXP filter, SEXP weights, SEXP group, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
+SEXP text_types(SEXP x, SEXP filter, SEXP weights, SEXP group, SEXP collapse);
 
 SEXP tokens_text(SEXP x, SEXP props);
 SEXP term_counts_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
