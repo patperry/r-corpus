@@ -56,7 +56,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(term_matrix_text, 6),
 	CALLDEF(text_length_sentences, 4),
 	CALLDEF(text_length_tokens, 4),
-	CALLDEF(text_ntype, 4),
+	CALLDEF(text_ntype, 5),
 	CALLDEF(text_split_sentences, 3),
 	CALLDEF(text_split_tokens, 3),
         {NULL, NULL, 0}

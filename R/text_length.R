@@ -38,11 +38,12 @@ text_length <- function(x, units = "tokens",
 
 
 text_ntype <- function(x, filter = token_filter(), weights = NULL,
-                       group = NULL)
+                       group = NULL, collapse = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
     weights <- as_weights(weights, length(x))
     group <- as_group(group, length(x))
-    .Call(C_text_ntype, x, filter, weights, group)
+    collapse <- as_option("collapse", collapse)
+    .Call(C_text_ntype, x, filter, weights, group, collapse)
 }

@@ -11,7 +11,8 @@
                          else token_filter(),
                 weights = NULL, group = NULL)
 
-    text_ntype(x, filter = token_filter(), weights = NULL, group = NULL)
+    text_ntype(x, filter = token_filter(), weights = NULL, group = NULL,
+               collapse = FALSE)
 }
 \arguments{
     \item{x}{a text or character vector.}
@@ -29,6 +30,9 @@
     \item{group}{if non-\code{NULL}, a factor, character string, or
         integer vector the same length of \code{x} specifying the grouping
         behavior.}
+
+    \item{collapse}{a logical value indicating whether to collapse the
+        aggregation over all rows of the input.}
 }
 \details{
     \code{text_length} counts the number of units in each text element:
@@ -55,7 +59,9 @@
     If \code{group} is non-\code{NULL}, then counts (or type sets, for
     \code{text_ntype} are aggregated by the levels of the \code{group}
     argument, and the length and names of the output match the
-    \code{group} levels.
+    \code{group} levels. For \code{text_ntype}, if \code{collapse = TRUE},
+    then the \code{group} argument is ignored and we aggregate over all
+    rows of the input.
 }
 \seealso{
     \code{\link{abbreviations}}, \code{\link{sentence_filter}},
@@ -71,4 +77,5 @@
     text_length(text, units = "sentences")
     text_length(text, units = "tokens")
     text_ntype(text)
+    text_ntype(text, collapse = TRUE)
 }

@@ -244,7 +244,8 @@ SEXP text_length_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	} while (0)
 
 
-SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
+SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup,
+		SEXP scollapse)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
@@ -256,7 +257,7 @@ SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	R_xlen_t i, n, g, ngroup;
 	const int *group;
 	int *is_na;
-	int nprot, err;
+	int nprot, collapse, err;
 
 	nprot = 0;
 
@@ -279,6 +280,13 @@ SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	} else {
 		names = names_text(sx);
 		ngroup = n;
+		group = NULL;
+	}
+
+	collapse = LOGICAL(scollapse)[0] == TRUE;
+	if (collapse) {
+		names = R_NilValue;
+		ngroup = 1;
 		group = NULL;
 	}
 
@@ -309,7 +317,7 @@ SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 		if (group && group[i] == NA_INTEGER) {
 			continue;
 		}
-		g = group ? group[i] - 1: i;
+		g = collapse ? 0 : (group ? group[i] - 1: i);
 
 		if (!text[i].ptr) { // missing text
 			is_na[g] = 1;

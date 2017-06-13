@@ -133,7 +133,7 @@ struct corpus_filter *as_filter(SEXP filter);
 SEXP abbreviations(SEXP kind);
 SEXP text_length_sentences(SEXP x, SEXP filter, SEXP weights, SEXP group);
 SEXP text_length_tokens(SEXP x, SEXP filter, SEXP weights, SEXP group);
-SEXP text_ntype(SEXP x, SEXP filter, SEXP weights, SEXP group);
+SEXP text_ntype(SEXP x, SEXP filter, SEXP weights, SEXP group, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 
