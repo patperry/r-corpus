@@ -1,13 +1,15 @@
-\name{tokens}
+\name{text_tokens}
 \alias{corpus_token_filter}
 \alias{token_filter}
-\alias{tokens}
+\alias{text_tokens}
 \title{Text Tokenization}
 \description{
    Segment text into tokens, each of which is an instance of
    a particular \sQuote{type}.
 }
 \usage{
+    text_tokens(x, filter = token_filter())
+
     token_filter(map_case = TRUE, map_compat = TRUE,
                  map_quote = TRUE, remove_ignorable = TRUE,
                  stemmer = NA, stem_except = drop,
@@ -16,8 +18,6 @@
                  drop_number = FALSE, drop_punct = FALSE,
                  drop_symbol = FALSE, drop_other = FALSE,
                  drop = NULL, drop_except = NULL)
-
-    tokens(x, filter = token_filter())
 }
 \arguments{
     \item{x}{object to be tokenized.}
@@ -93,8 +93,8 @@
         \code{drop_other}, and \code{drop} arguments, or \code{NULL}.}
 }
 \details{
-    \code{tokens} splits texts into token sequences. Each token is an instance
-    of a particular type. This operation proceeds in a series
+    \code{text_tokens} splits texts into token sequences. Each token is an
+    instance of a particular type. This operation proceeds in a series
     of stages, controlled by the \code{filter} argument:
 
     \enumerate{
@@ -171,8 +171,8 @@
     punctuation like the full stop in \code{"u.s"} into boundary punctuation
     like at the end of \code{"u."}; otherwise, in examples like this, the
     stemming procedure would turn single-word tokens into multi-word
-    tokens (compare \code{tokens("u.s")} with \code{tokens("u.")}). For
-    English, this likely only affects words ending in \code{".s"}.
+    tokens (compare \code{text_tokens("u.s")} with \code{text_tokens("u.")}).
+    For English, this likely only affects words ending in \code{".s"}.
 }
 \section{Combining words}{
     The \code{combine} property of a \code{token_filter} enables
@@ -192,38 +192,40 @@
     element of \code{x}.
 }
 \seealso{
-    \code{\link{text_split}}, \code{\link{stopwords}},
-    \code{\link{term_counts}}, \code{\link{term_matrix}}.
+    \code{\link{text_split}}, \code{\link{text_types}},
+    \code{\link{abbreviations}}, \code{\link{stopwords}},
+    \code{\link{term_matrix}}.
 }
 \examples{
-    tokens("The quick ('brown') fox can't jump 32.3 feet, right?")
+    text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?")
 
     # don't normalize:
-    tokens("The quick ('brown') fox can't jump 32.3 feet, right?", NULL)
+    text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?", NULL)
 
     # drop common function words ('stop' words):
-    tokens("Able was I ere I saw Elba.",
-           token_filter(drop = stopwords("english")))
+    text_tokens("Able was I ere I saw Elba.",
+                token_filter(drop = stopwords("english")))
 
     # drop numbers, with some exceptions:"
-    tokens("0, 1, 2, 3, 4, 5",
-           token_filter(drop_number = TRUE, drop_except = c("0", "2", "4")))
+    text_tokens("0, 1, 2, 3, 4, 5",
+                token_filter(drop_number = TRUE,
+                             drop_except = c("0", "2", "4")))
 
     # apply stemming...
-    tokens("Mary is running", token_filter(stemmer = "english"))
+    text_tokens("Mary is running", token_filter(stemmer = "english"))
 
     # ...except for certain words
-    tokens("Mary is running",
-           token_filter(stemmer = "english", stem_except = "mary"))
+    text_tokens("Mary is running",
+                token_filter(stemmer = "english", stem_except = "mary"))
 
     # combine abbreviations by default
-    tokens("Ms. Jones")
+    text_tokens("Ms. Jones")
 
     # disable default combinations
-    tokens("Ms. Jones", token_filter(combine = NULL))
+    text_tokens("Ms. Jones", token_filter(combine = NULL))
 
     # add new combinations
-    tokens("Ms. Jones is from New York City, New York.",
-           token_filter(combine = c(abbreviations("english"),
-                                    "new york", "new york city")))
+    text_tokens("Ms. Jones is from New York City, New York.",
+                token_filter(combine = c(abbreviations("english"),
+                                         "new york", "new york city")))
 }

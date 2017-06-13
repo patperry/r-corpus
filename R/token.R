@@ -13,6 +13,14 @@
 #  limitations under the License.
 
 
+text_tokens <- function(x, filter = token_filter())
+{
+    x <- as_text(x)
+    filter <- as_token_filter(filter)
+    .Call(C_text_tokens, x, filter)
+}
+
+
 token_filter <- function(map_case = TRUE, map_compat = TRUE, map_quote = TRUE,
                          remove_ignorable = TRUE,
                          stemmer = NA, stem_except = drop,
@@ -82,10 +90,3 @@ as_token_filter <- function(filter)
     `$<-.corpus_filter`(x, name, value)
 }
 
-
-tokens <- function(x, filter = token_filter())
-{
-    x <- as_text(x)
-    filter <- as_token_filter(filter)
-    .Call(C_tokens_text, x, filter)
-}

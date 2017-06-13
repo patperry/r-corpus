@@ -7,7 +7,7 @@ test_that("'term_matrix' works", {
     x <- term_matrix(text)
 
     # compute the term matrix by hand
-    toks <- tokens(text)
+    toks <- text_tokens(text)
     i <- rep(seq_along(toks), sapply(toks, length))
     toks <- factor(c(toks, recursive = TRUE))
     j <- as.integer(toks)

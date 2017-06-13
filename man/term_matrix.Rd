@@ -78,7 +78,7 @@
     a character string.
 }
 \seealso{
-    \code{\link{tokens}}, \code{\link{term_counts}}.
+    \code{\link{text_tokens}}, \code{\link{term_counts}}.
 }
 \examples{
     text <- c("A rose is a rose is a rose.",

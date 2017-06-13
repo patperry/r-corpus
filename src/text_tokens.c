@@ -166,7 +166,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 }
 
 
-SEXP tokens_text(SEXP sx, SEXP sprops)
+SEXP text_tokens(SEXP sx, SEXP sprops)
 {
 	SEXP ans, names, stext, sfilter;
 	const struct corpus_text *text;

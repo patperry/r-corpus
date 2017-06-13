@@ -55,7 +55,7 @@
     term.
 }
 \seealso{
-    \code{\link{tokens}}, \code{\link{term_matrix}}.
+    \code{\link{text_tokens}}, \code{\link{term_matrix}}.
 }
 \examples{
     term_counts("A rose is a rose is a rose.")

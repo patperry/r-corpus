@@ -91,7 +91,7 @@
 }
 \seealso{
     \code{\link{abbreviations}}, \code{\link{text_length}},
-        \code{\link{tokens}}.
+        \code{\link{text_tokens}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.", 
