@@ -128,11 +128,13 @@ struct corpus_sentfilter *as_sentfilter(SEXP filter);
 SEXP alloc_filter(SEXP props);
 int is_filter(SEXP filter);
 struct corpus_filter *as_filter(SEXP filter);
+int token_filter_type_kind(SEXP props);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
 SEXP text_length_sentences(SEXP x, SEXP filter, SEXP weights, SEXP group);
 SEXP text_length_tokens(SEXP x, SEXP filter, SEXP weights, SEXP group);
+SEXP text_locate(SEXP x, SEXP terms, SEXP filter);
 SEXP text_ntype(SEXP x, SEXP filter, SEXP weights, SEXP group, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);

@@ -498,7 +498,7 @@ static void load_text(SEXP x)
 		}
 
 		begin = (start[i] < 1) ? 0 : (start[i] - 1);
-		end = stop[i] < start[i] ? start[i] : stop[i];
+		end = stop[i] < start[i] ? begin : stop[i];
 		if ((size_t)end > CORPUS_TEXT_SIZE(&txt)) {
 			end = (int)CORPUS_TEXT_SIZE(&txt);
 		}
