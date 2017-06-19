@@ -269,36 +269,31 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		}
 	}
 
-	if (select) {
-		scol_names = items_termset(sselect);
-	} else {
-		PROTECT(scol_names = allocVector(STRSXP, terms->nitem));
-		nprot++;
+	PROTECT(scol_names = allocVector(STRSXP, terms->nitem));
+	nprot++;
 
-		if ((err = corpus_render_init(&render, CORPUS_ESCAPE_NONE))) {
+	if ((err = corpus_render_init(&render, CORPUS_ESCAPE_NONE))) {
+		goto out;
+	}
+	has_render = 1;
+
+	for (i = 0; i < terms->nitem; i++) {
+		type_ids = terms->items[i].type_ids;
+		m = terms->items[i].length;
+		for (j = 0; j < m; j++) {
+			type = corpus_filter_type(filter, type_ids[j]);
+			if (j > 0) {
+				corpus_render_char(&render, ' ');
+			}
+			corpus_render_text(&render, type);
+		}
+		if ((err = render.error)) {
 			goto out;
 		}
-		has_render = 1;
+		sterm = mkCharLenCE(render.string, render.length, CE_UTF8);
+		corpus_render_clear(&render);
 
-		for (i = 0; i < terms->nitem; i++) {
-			type_ids = terms->items[i].type_ids;
-			m = terms->items[i].length;
-			for (j = 0; j < m; j++) {
-				type = corpus_filter_type(filter, type_ids[j]);
-				if (j > 0) {
-					corpus_render_char(&render, ' ');
-				}
-				corpus_render_text(&render, type);
-			}
-			if ((err = render.error)) {
-				goto out;
-			}
-			sterm = mkCharLenCE(render.string, render.length,
-					    CE_UTF8);
-			corpus_render_clear(&render);
-
-			SET_STRING_ELT(scol_names, i, sterm);
-		}
+		SET_STRING_ELT(scol_names, i, sterm);
 	}
 
 	PROTECT(ans = allocVector(VECSXP, 5)); nprot++;
