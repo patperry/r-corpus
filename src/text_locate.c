@@ -46,16 +46,13 @@ struct locate_item {
 };
 
 struct locate {
+	SEXP sfilter, sterms;
 	struct corpus_filter *filter;
-	struct corpus_intset set;
-	SEXP *terms;
-	struct corpus_typemap map;
+	struct termset *terms;
 	struct locate_item *items;
 	struct mkchar mkchar;
 	int nitem;
 	int nitem_max;
-	int has_map;
-	int has_set;
 	int has_mkchar;
 	int nprot;
 };
@@ -72,80 +69,33 @@ static SEXP make_instances(struct locate *loc, SEXP sx,
 
 void locate_init(struct locate *loc, SEXP sterms, SEXP sfilter)
 {
-	const struct corpus_text *terms;
-	R_xlen_t i, n;
-	int err, symbol_id, term_id, type_id, type_kind;
-
-	loc->has_map = 0;
-	loc->has_set = 0;
 	loc->has_mkchar = 0;
 	loc->items = NULL;
 	loc->nitem = 0;
 	loc->nitem_max = 0;
 	loc->nprot = 0;
 
-	type_kind = token_filter_type_kind(sfilter);
-	PROTECT(sfilter = alloc_filter(sfilter)); loc->nprot++;
-	loc->filter = as_filter(sfilter);
+	PROTECT(loc->sfilter = alloc_filter(sfilter));
+	loc->nprot++;
+	loc->filter = as_filter(loc->sfilter);
 
-	PROTECT(sterms = coerce_text(sterms)); loc->nprot++;
-	terms = as_text(sterms, &n);
-	loc->terms = (void *)R_alloc(n,  sizeof(*loc->terms));
+	PROTECT(loc->sterms = alloc_termset(sterms, "locate",
+					    loc->filter, 1)); loc->nprot++;
+	loc->terms = as_termset(loc->sterms);
 
 	mkchar_init(&loc->mkchar);
 	loc->has_mkchar = 1;
-	
-	TRY(corpus_typemap_init(&loc->map, type_kind, NULL));
-	loc->has_map = 1;
-
-	TRY(corpus_intset_init(&loc->set));
-	loc->has_set = 1;
-
-	for (i = 0; i < n; i++) {
-		if (!terms[i].ptr) {
-			continue;
-		}
-
-		TRY(corpus_typemap_set(&loc->map, &terms[i]));
-		TRY(corpus_filter_combine(loc->filter, &loc->map.type));
-		corpus_symtab_has_type(&loc->filter->symtab, &loc->map.type,
-				       &symbol_id);
-		type_id = loc->filter->type_ids[symbol_id];
-		TRY(corpus_intset_add(&loc->set, type_id, &term_id));
-		PROTECT(loc->terms[term_id]
-				= mkchar_get(&loc->mkchar, &terms[i]));
-		loc->nprot++;
-	}
-	err = 0;
-out:
-	if (err) {
-		locate_destroy(loc);
-		Rf_error("memory allocation failure");
-	}
 }
 
 
 void locate_destroy(struct locate *loc)
 {
-	if (loc->has_set) {
-		corpus_intset_destroy(&loc->set);
-		loc->has_set = 0;
-	}
-
-	if (loc->has_map) {
-		corpus_typemap_destroy(&loc->map);
-		loc->has_map = 0;
-	}
-
 	if (loc->has_mkchar) {
 		mkchar_destroy(&loc->mkchar);
 		loc->has_mkchar = 0;
 	}
-
 	corpus_free(loc->items);
 	loc->items = NULL;
-	loc->nitem = 0;
-	loc->nitem_max = 0;
 
 	UNPROTECT(loc->nprot);
 	loc->nprot = 0;
@@ -192,7 +142,7 @@ SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 	const struct corpus_text *text;
 	struct locate loc;
 	R_xlen_t i, n;
-	int err, nprot, type_id, term_id;
+	int err, length, nprot, type_id, term_id;
 
 	nprot = 0;
 
@@ -208,7 +158,9 @@ SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 			if (type_id < 0) {
 				continue;
 			}
-			if (!corpus_intset_has(&loc.set, type_id, &term_id)) {
+			length = 1;
+			if (!corpus_termset_has(&loc.terms->set, &type_id,
+						length, &term_id)) {
 				continue;
 			}
 			locate_add(&loc, i, term_id, &loc.filter->current);
@@ -233,7 +185,7 @@ out:
 SEXP make_instances(struct locate *loc, SEXP sx,
 		    const struct corpus_text *text)
 {
-	SEXP ans, names, row_names, sclass, sources,
+	SEXP ans, terms, names, row_names, sclass, sources,
 	     ptable, psource, prow, pstart, pstop,
 	     before, bsource, brow, bstart, bstop,
 	     after, asource, arow, astart, astop,
@@ -244,6 +196,7 @@ SEXP make_instances(struct locate *loc, SEXP sx,
 	n = loc->nitem;
 	nprot = 0;
 	
+	terms = items_termset(loc->sterms);
 	sources = getListElement(sx, "sources");
 	ptable = getListElement(sx, "table");
 	psource = getListElement(ptable, "source");
@@ -270,7 +223,7 @@ SEXP make_instances(struct locate *loc, SEXP sx,
 		REAL(stext)[i] = (double)(text_id + 1);
 
 		term_id = loc->items[i].term_id;
-		SET_STRING_ELT(sterm, i, loc->terms[term_id]);
+		SET_STRING_ELT(sterm, i, STRING_ELT(terms, term_id));
 
 		SET_STRING_ELT(instance, i,
 			       mkchar_get(&loc->mkchar,

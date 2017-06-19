@@ -22,6 +22,8 @@
 #include <Rdefines.h>
 
 #include "corpus/src/table.h"
+#include "corpus/src/tree.h"
+#include "corpus/src/termset.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
 #include "corpus/src/typemap.h"
@@ -50,6 +52,14 @@ struct mkchar {
 struct decode {
 	struct mkchar mkchar;
 	int overflow;
+};
+
+struct termset {
+	struct corpus_termset set;
+	struct corpus_text *items;
+	int has_set;
+	int max_length;
+	int nitem;
 };
 
 /* converting text to CHARSXP */
@@ -128,7 +138,13 @@ struct corpus_sentfilter *as_sentfilter(SEXP filter);
 SEXP alloc_filter(SEXP props);
 int is_filter(SEXP filter);
 struct corpus_filter *as_filter(SEXP filter);
-int token_filter_type_kind(SEXP props);
+
+/* term set */
+SEXP alloc_termset(SEXP sterms, const char *name,
+		   struct corpus_filter *filter, int allow_dup);
+int is_termset(SEXP termset);
+struct termset *as_termset(SEXP termset);
+SEXP items_termset(SEXP termset);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);

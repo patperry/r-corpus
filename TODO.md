@@ -1,6 +1,8 @@
 To Do
 =====
 
+ * R strings are bounded by `INT_MAX`; check this.
+
 Features
 --------
 

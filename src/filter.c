@@ -93,7 +93,7 @@ static int token_filter_logical(SEXP filter, const char *key, int nullval)
 }
 
 
-int token_filter_type_kind(SEXP filter)
+static int token_filter_type_kind(SEXP filter)
 {
 	int kind;
 
