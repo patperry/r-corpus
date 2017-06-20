@@ -28,11 +28,11 @@ LIBCORPUS = corpus/lib/strntod.o corpus/lib/strntoimax.o \
 	corpus/src/array.o corpus/src/census.o corpus/src/data.o \
 	corpus/src/datatype.o corpus/src/error.o corpus/src/filebuf.o \
 	corpus/src/filter.o corpus/src/intset.o corpus/src/memory.o \
-	corpus/src/ngram.o corpus/src/render.o corpus/src/sentfilter.o \
-	corpus/src/sentscan.o corpus/src/symtab.o corpus/src/table.o \
-	corpus/src/termset.o corpus/src/text.o corpus/src/textset.o \
-	corpus/src/tree.o corpus/src/typemap.o corpus/src/unicode.o \
-	corpus/src/wordscan.o \
+	corpus/src/ngram.o corpus/src/render.o corpus/src/search.o \
+	corpus/src/sentfilter.o corpus/src/sentscan.o corpus/src/symtab.o \
+	corpus/src/table.o corpus/src/termset.o corpus/src/text.o \
+	corpus/src/textset.o corpus/src/tree.o corpus/src/typemap.o \
+	corpus/src/unicode.o corpus/src/wordscan.o \
 	$(STEMMER_O)
 
 $(SHLIB): libccorpus.a

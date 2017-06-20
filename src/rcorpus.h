@@ -34,6 +34,7 @@
 struct corpus_data;
 struct corpus_filebuf;
 struct corpus_filter;
+struct corpus_search;
 struct corpus_sentfilter;
 
 struct json {
@@ -128,6 +129,12 @@ SEXP subset_text_handle(SEXP handle, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
+
+/* search */
+SEXP alloc_search(SEXP sterms, const char *name, struct corpus_filter *filter);
+int is_search(SEXP search);
+struct corpus_search *as_search(SEXP search);
+SEXP items_search(SEXP search);
 
 /* sentence filter */
 SEXP alloc_sentfilter(SEXP props);
