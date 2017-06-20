@@ -15,7 +15,7 @@
  */
 
 #include <limits.h>
-#include "corpus/src/error.h"
+#include "corpus/src/array.h"
 #include "corpus/src/text.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
@@ -69,25 +69,13 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 
 static void mkchar_ensure(struct mkchar *mk, int nmin)
 {
-	double n1;
 	int size = mk->size;
 
 	if (nmin <= size) {
 		return;
 	}
 
-	// determine the new size
-	n1 = size ? (double)size : 32; // minimum size: 32
-	while (n1 < nmin) {
-		n1 *= 1.618; // golden ratio
-	}
-
-	if (n1 > (double)INT_MAX) {
-		size = INT_MAX;
-	} else {
-		size = (int)n1;
-	}
-
+	corpus_array_size_add(&size, 1, 0, nmin); // can't overflow
 	mk->buf = (void *)R_alloc(size, sizeof(uint8_t));
 	mk->size = size;
 }
