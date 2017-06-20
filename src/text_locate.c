@@ -121,7 +121,7 @@ SEXP text_detect(SEXP sx, SEXP sterms, SEXP sfilter)
 	PROTECT(ssearch = alloc_search(sterms, "detect", filter)); nprot++;
 	search = as_search(ssearch);
 
-	PROTECT(ans = allocVector(LGLSXP, n));
+	PROTECT(ans = allocVector(LGLSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names_text(sx));
 
 	for (i = 0; i < n; i++) {
