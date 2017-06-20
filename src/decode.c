@@ -38,12 +38,6 @@ void decode_init(struct decode *d)
 }
 
 
-void decode_destroy(struct decode *d)
-{
-	mkchar_destroy(&d->mkchar);
-}
-
-
 void decode_clear(struct decode *d)
 {
 	d->overflow = 0;
@@ -83,7 +77,6 @@ SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
 	int overflow;
 
 	if (val->type_id < 0) {
-		decode_destroy(d);
 		error("invalid data object");
 	}
 

@@ -233,8 +233,6 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		i++;
 	}
 
-	mkchar_destroy(&mkchar);
-
 	if (output_types) {
 		PROTECT(ans = allocVector(VECSXP, 2 + ng_max)); nprot++;
 		SET_VECTOR_ELT(ans, 0, sterm);

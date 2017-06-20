@@ -65,13 +65,11 @@ struct termset {
 
 /* converting text to CHARSXP */
 void mkchar_init(struct mkchar *mk);
-void mkchar_destroy(struct mkchar *mk);
 SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text);
 
 /* converting data to R values */
 void decode_init(struct decode *d);
 void decode_clear(struct decode *d);
-void decode_destroy(struct decode *d);
 
 int decode_logical(struct decode *d, const struct corpus_data *val);
 int decode_integer(struct decode *d, const struct corpus_data *val);

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#include "corpus/src/array.h"
+#include <limits.h>
 #include "corpus/src/error.h"
-#include "corpus/src/memory.h"
 #include "corpus/src/text.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 
-static int mkchar_ensure(struct mkchar *mk, int nmin);
+static void mkchar_ensure(struct mkchar *mk, int nmin);
 
 
 void mkchar_init(struct mkchar *mk)
@@ -32,25 +31,14 @@ void mkchar_init(struct mkchar *mk)
 }
 
 
-void mkchar_destroy(struct mkchar *mk)
-{
-	corpus_free(mk->buf);
-}
-
-
-/* Note: We have to destroy the mkchar object before calling error
- * so that we don't leak memory.
- */
 SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 {
 	SEXP ans;
 	uint8_t *ptr;
 	size_t len = CORPUS_TEXT_SIZE(text);
 	struct corpus_text_iter it;
-	int err;
 
 	if (len >= INT_MAX) {
-		mkchar_destroy(mk);
 		error("character string length exceeds maximum (%d)",
 			INT_MAX - 1);
 	}
@@ -59,9 +47,8 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 		ans = NA_STRING;
 	} else {
 		if (CORPUS_TEXT_HAS_ESC(text)) {
-			if ((err = mkchar_ensure(mk, (int)len))) {
-				goto error;
-			}
+			mkchar_ensure(mk, (int)len);
+
 			corpus_text_iter_make(&it, text);
 			ptr = mk->buf;
 			while (corpus_text_iter_advance(&it)) {
@@ -77,29 +64,30 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 	}
 
 	return ans;
-
-error:
-	mkchar_destroy(mk);
-	error("memory allocation failure while creating character object");
-	return NA_STRING;
 }
 
 
-static int mkchar_ensure(struct mkchar *mk, int nmin)
+static void mkchar_ensure(struct mkchar *mk, int nmin)
 {
-	void *base = mk->buf;
+	double n1;
 	int size = mk->size;
-	int err;
 
-	if (size >= nmin) {
-		return 0;
+	if (nmin <= size) {
+		return;
 	}
 
-	err = corpus_array_grow(&base, &size, sizeof(uint8_t), 0, nmin);
-	if (!err) {
-		mk->buf = base;
-		mk->size = size;
+	// determine the new size
+	n1 = size ? (double)size : 32; // minimum size: 32
+	while (n1 < nmin) {
+		n1 *= 1.618; // golden ratio
 	}
 
-	return err;
+	if (n1 > (double)INT_MAX) {
+		size = INT_MAX;
+	} else {
+		size = (int)n1;
+	}
+
+	mk->buf = (void *)R_alloc(size, sizeof(uint8_t));
+	mk->size = size;
 }

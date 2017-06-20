@@ -248,7 +248,6 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
         SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
         setAttrib(ans, R_ClassSymbol, sclass);
 	
-	mkchar_destroy(&mkchar);
 	UNPROTECT(nprot);
 	return ans;
 }

@@ -236,7 +236,6 @@ SEXP text_types(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup,
 		UNPROTECT(1); nprot--; // 'set' is protected by ans
 	}
 
-	mkchar_destroy(&mkchar);
 	types_context_destroy(&ctx);
 	UNPROTECT(nprot);
 	return ans;
