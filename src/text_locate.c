@@ -101,6 +101,61 @@ void locate_grow(struct locate *loc, int nadd)
 }
 
 
+SEXP text_detect(SEXP sx, SEXP sterms, SEXP sfilter)
+{
+	SEXP ans, ssearch;
+	const struct corpus_text *text;
+	struct corpus_filter *filter;
+	struct corpus_search *search;
+	R_xlen_t i, n;
+	int err, nprot;
+
+	nprot = 0;
+
+	PROTECT(sx = coerce_text(sx)); nprot++;
+	text = as_text(sx, &n);
+
+	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
+	filter = as_filter(sfilter);
+
+	PROTECT(ssearch = alloc_search(sterms, "detect", filter)); nprot++;
+	search = as_search(ssearch);
+
+	PROTECT(ans = allocVector(LGLSXP, n));
+	setAttrib(ans, R_NamesSymbol, names_text(sx));
+
+	for (i = 0; i < n; i++) {
+		if (text[i].ptr == NULL) {
+			LOGICAL(ans)[i] = NA_LOGICAL;
+			continue;
+		}
+
+		TRY(corpus_search_start(search, &text[i], filter));
+
+		if (corpus_search_advance(search)) {
+			LOGICAL(ans)[i] = TRUE;
+		} else {
+			LOGICAL(ans)[i] = FALSE;
+		}
+
+		TRY(search->error);
+
+		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
+			R_CheckUserInterrupt();
+		}
+	}
+
+	err = 0;
+
+out:
+	UNPROTECT(nprot);
+	if (err) {
+		Rf_error("memory allocation failure");
+	}
+	return ans;
+}
+
+
 SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 {
 	SEXP ans, sitems, ssearch;
@@ -126,6 +181,10 @@ SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 	locate_init(&loc);
 
 	for (i = 0; i < n; i++) {
+		if (text[i].ptr == NULL) {
+			continue;
+		}
+
 		TRY(corpus_search_start(search, &text[i], filter));
 
 		while (corpus_search_advance(search)) {

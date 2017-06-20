@@ -155,6 +155,7 @@ SEXP items_termset(SEXP termset);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
+SEXP text_detect(SEXP x, SEXP terms, SEXP filter);
 SEXP text_length_sentences(SEXP x, SEXP filter, SEXP weights, SEXP group);
 SEXP text_length_tokens(SEXP x, SEXP filter, SEXP weights, SEXP group);
 SEXP text_locate(SEXP x, SEXP terms, SEXP filter);
