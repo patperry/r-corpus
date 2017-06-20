@@ -49,7 +49,6 @@ struct locate {
 
 
 static void locate_init(struct locate *loc);
-static void locate_destroy(struct locate *loc);
 static void locate_add(struct locate *loc, int text_id, int term_id,
 		       const struct corpus_text *instance);
 static void locate_grow(struct locate *loc, int nadd);
@@ -62,12 +61,6 @@ void locate_init(struct locate *loc)
 	loc->items = NULL;
 	loc->nitem = 0;
 	loc->nitem_max = 0;
-}
-
-
-void locate_destroy(struct locate *loc)
-{
-	corpus_free(loc->items);
 }
 
 
@@ -90,17 +83,20 @@ void locate_add(struct locate *loc, int text_id, int term_id,
 
 void locate_grow(struct locate *loc, int nadd)
 {
-	void *base = loc->items;
+	char *base = (char *)loc->items;
+	size_t width = sizeof(*loc->items);
         int size = loc->nitem_max;
         int err;
 
-        if ((err = corpus_array_grow(&base, &size, sizeof(*loc->items),
-                                     loc->nitem, nadd))) {
-		locate_destroy(loc);
-                Rf_error("memory allocation failure");
+	if (nadd <= size - loc->nitem) {
+		return;
+	}
+
+        if ((err = corpus_array_size_add(&size, width, loc->nitem, nadd))) {
+                Rf_error("overflow error");
         }
 
-        loc->items = base;
+        loc->items = (void *)S_realloc(base, size, loc->nitem_max, width);
         loc->nitem_max = size;
 }
 
@@ -139,13 +135,16 @@ SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 		}
 
 		TRY(search->error);
+
+		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
+			R_CheckUserInterrupt();
+		}
 	}
 
 	PROTECT(ans = make_instances(&loc, sx, sitems, text)); nprot++;
 	err = 0;
 
 out:
-	locate_destroy(&loc);
 	UNPROTECT(nprot);
 	if (err) {
 		Rf_error("memory allocation failure");

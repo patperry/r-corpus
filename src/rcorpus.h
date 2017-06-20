@@ -31,6 +31,8 @@
 #include "corpus/src/datatype.h"
 #include "corpus/src/data.h"
 
+#define RCORPUS_CHECK_INTERRUPT 1000
+
 struct corpus_data;
 struct corpus_filebuf;
 struct corpus_filter;
