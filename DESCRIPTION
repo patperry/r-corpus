@@ -1,6 +1,6 @@
 Package: corpus
-Version: 0.6.3
-Date: 2017-06-08
+Version: 0.7.0
+Date: 2017-06-20
 Title: Text Corpus Analysis
 Author: Patrick O. Perry [aut, cre],
   Martin Porter and Richard Boulton [ctb, cph] (Snowball),
