@@ -13,13 +13,12 @@
 #  limitations under the License.
 
 
-text_count <- function(x, terms, filter = token_filter(),
-                       weights = NULL, group = NULL)
+text_count <- function(x, terms, filter = token_filter())
 {
     x <- as_text(x)
     terms <- as_character_vector("terms", terms)
     filter <- as_token_filter(filter)
-    .Call(C_text_count, x, terms, filter, weights, group)
+    .Call(C_text_count, x, terms, filter)
 }
 
 
