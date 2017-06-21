@@ -37,7 +37,7 @@
     vector with the unique types.
 }
 \seealso{
-    \code{\link{token_filter}}, \code{\link{text_length}}.
+    \code{\link{token_filter}}, \code{\link{text_tokens}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.",
