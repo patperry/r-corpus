@@ -37,23 +37,13 @@
 #endif
 
 
-#define BAIL(msg) \
-	do { \
-		Rf_error(msg); \
-	} while (0)
-
-
-SEXP text_length_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
+SEXP text_nsentence(SEXP sx, SEXP sfilter)
 {
 	SEXP ans, names;
 	struct corpus_sentfilter *filter;
 	const struct corpus_text *text;
-	const double *weights;
 	double *count;
-	double w;
-	const int *group;
-	int *is_na;
-	R_xlen_t i, n, nunit, g, ngroup;
+	R_xlen_t i, n, nunit;
 	int nprot, err;
 
 	nprot = 0;
@@ -61,46 +51,19 @@ SEXP text_length_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
+	names = names_text(sx);
 
 	// filter
 	PROTECT(sfilter = alloc_sentfilter(sfilter)); nprot++;
 	filter = as_sentfilter(sfilter);
 
-	// weights
-	weights = as_weights(sweights, n);
-
-	// group
-	if (sgroup != R_NilValue) {
-		names = getAttrib(sgroup, R_LevelsSymbol);
-		ngroup = XLENGTH(names);
-		group = INTEGER(sgroup);
-	} else {
-		names = names_text(sx);
-		ngroup = n;
-		group = NULL;
-	}
-
-	PROTECT(ans = allocVector(REALSXP, ngroup)); nprot++;
+	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names);
 	count = REAL(ans);
-	memset(count, 0, ngroup * sizeof(*count));
-
-	is_na = (void *)R_alloc(ngroup, sizeof(*is_na));
-	memset(is_na, 0, ngroup * sizeof(*is_na));
 
 	for (i = 0; i < n; i++) {
-		w = weights ? weights[i] : 1;
-		if (w == 0) {
-			continue;
-		}
-
-		if (group && group[i] == NA_INTEGER) {
-			continue;
-		}
-		g = group ? group[i] - 1: i;
-
 		if (!text[i].ptr) { // missing value
-			is_na[g] = 1;
+			count[i] = NA_REAL;
 			continue;
 		}
 
@@ -109,7 +72,7 @@ SEXP text_length_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 		}
 
 		if ((err = corpus_sentfilter_start(filter, &text[i]))) {
-			BAIL("memory allocation failure");
+			Rf_error("memory allocation failure");
 		}
 
 		nunit = 0;
@@ -117,15 +80,13 @@ SEXP text_length_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 			nunit++;
 		}
 		if (filter->error) {
-			BAIL("memory allocation failure");
+			Rf_error("memory allocation failure");
 		}
 
-		count[g] += w * (double)nunit;
-	}
+		count[i] = (double)nunit;
 
-	for (g = 0; g < ngroup; g++) {
-		if (is_na[g]) {
-			count[g] = NA_REAL;
+		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
+			R_CheckUserInterrupt();
 		}
 	}
 
@@ -134,24 +95,13 @@ SEXP text_length_sentences(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 }
 
 
-#undef BAIL
-#define BAIL(msg) \
-	do { \
-		Rf_error(msg); \
-	} while (0)
-
-
-SEXP text_length_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
+SEXP text_ntoken(SEXP sx, SEXP sfilter)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
 	const struct corpus_text *text;
-	const double *weights;
-	double w;
 	double *count;
-	R_xlen_t i, n, nunit, g, ngroup;
-	const int *group;
-	int *is_na;
+	R_xlen_t i, n, nunit;
 	int nprot, err;
 
 	nprot = 0;
@@ -159,52 +109,25 @@ SEXP text_length_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
+	names = names_text(sx);
 
 	// filter
 	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
 	filter = as_filter(sfilter);
 
-	// weights
-	weights = as_weights(sweights, n);
-
-	// group
-	if (sgroup != R_NilValue) {
-		names = getAttrib(sgroup, R_LevelsSymbol);
-		ngroup = XLENGTH(names);
-		group = INTEGER(sgroup);
-	} else {
-		names = names_text(sx);
-		ngroup = n;
-		group = NULL;
-	}
-
-	PROTECT(ans = allocVector(REALSXP, ngroup)); nprot++;
+	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names);
 	count = REAL(ans);
-	memset(count, 0, ngroup * sizeof(*count));
-
-	is_na = (void *)R_alloc(ngroup, sizeof(*is_na));
-	memset(is_na, 0, ngroup * sizeof(*is_na));
 
 	for (i = 0; i < n; i++) {
-		w = weights ? weights[i] : 1;
-		if (w == 0) { // no weight
-			continue;
-		}
-
-		if (group && group[i] == NA_INTEGER) {
-			continue;
-		}
-		g = group ? group[i] - 1: i;
-
 		if (!text[i].ptr) { // missing text
-			is_na[g] = 1;
+			count[i] = NA_REAL;
 			continue;
 		}
 
 		if ((err = corpus_filter_start(filter, &text[i],
 					       CORPUS_FILTER_SCAN_TOKENS))) {
-			BAIL("memory allocation failure");
+			Rf_error("memory allocation failure");
 		}
 
 		nunit = 0;
@@ -218,15 +141,13 @@ SEXP text_length_tokens(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup)
 		}
 
 		if (filter->error) {
-			BAIL("memory allocation failure");
+			Rf_error("memory allocation failure");
 		}
 
-		count[g] += w * (double)nunit;
-	}
+		count[i] = (double)nunit;
 
-	for (g = 0; g < ngroup; g++) {
-		if (is_na[g]) {
-			count[g] = NA_REAL;
+		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
+			R_CheckUserInterrupt();
 		}
 	}
 

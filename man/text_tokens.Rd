@@ -1,7 +1,8 @@
 \name{text_tokens}
 \alias{corpus_token_filter}
-\alias{token_filter}
+\alias{text_ntoken}
 \alias{text_tokens}
+\alias{token_filter}
 \title{Text Tokenization}
 \description{
    Segment text into tokens, each of which is an instance of
@@ -9,6 +10,8 @@
 }
 \usage{
     text_tokens(x, filter = token_filter())
+
+    text_ntoken(x, filter = token_filter())
 
     token_filter(map_case = TRUE, map_compat = TRUE,
                  map_quote = TRUE, remove_ignorable = TRUE,
@@ -187,9 +190,13 @@
     \code{"Ms."} gets tokenized into two tokens, for "Ms" and ".".
 }
 \value{
-    A list of the same length as \code{x}, with the same names. Each list
-    item is a character vector with the tokens for the corresponding
-    element of \code{x}.
+    \code{text_tokens} returns a list of the same length as \code{x}, with
+    the same names. Each list item is a character vector with the tokens
+    for the corresponding element of \code{x}.
+
+    \code{text_ntoken} returns a numeric vector the same length as \code{x},
+    with each element giving the number of non-dropped tokens in the
+    corresponding text.
 }
 \seealso{
     \code{\link{text_split}}, \code{\link{text_types}},
@@ -198,6 +205,9 @@
 }
 \examples{
     text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?")
+
+    # count non-dropped tokens:
+    text_ntoken("The quick ('brown') fox can't jump 32.3 feet, right?")
 
     # don't normalize:
     text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?", NULL)

@@ -13,6 +13,14 @@
 #  limitations under the License.
 
 
+text_nsentence <- function(x, filter = sentence_filter())
+{
+    x <- as_text(x)
+    filter <- as_sentence_filter(filter)
+    .Call(C_text_nsentence, x, filter)
+}
+
+
 sentence_filter <- function(crlf_break = FALSE,
                             suppress = abbreviations("english"))
 {

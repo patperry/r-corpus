@@ -2,6 +2,7 @@
 \alias{corpus_sentence_filter}
 \alias{sentences}
 \alias{sentence_filter}
+\alias{text_nsentence}
 \alias{text_split}
 \title{Segmenting Text}
 \description{
@@ -14,6 +15,8 @@
 
     sentence_filter(crlf_break = FALSE,
                     suppress = abbreviations("english"))
+
+    text_nsentence(x, filter = sentence_filter())
 }
 \arguments{
     \item{x}{a text or character vector.}
@@ -71,7 +74,7 @@
     To break sentences on CRLF, CR, and LF, specify \code{crlf_break = TRUE}.
 }
 \value{
-    The result is a data frame with three columns named
+    \code{text_split} returns a data frame with three columns named
     \code{parent}, \code{index}, and \code{text}, and one row for each
     text block. The columns are as follows:
 
@@ -88,10 +91,13 @@
         \item The \code{text} value is the text of the block, a value of
             type \code{\link{corpus_text}} (not a character vector).
     }
+
+    \code{text_nsentence} returns a numeric vector with the same length
+    as \code{x} with each element giving the number of sentences in the
+    corresponding text.
 }
 \seealso{
-    \code{\link{abbreviations}}, \code{\link{text_length}},
-        \code{\link{text_tokens}}.
+    \code{\link{abbreviations}}, \code{\link{text_tokens}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.", 
@@ -101,6 +107,9 @@
 
     # split text into sentences
     text_split(text, units = "sentences")
+
+    # get the number of sentences
+    text_nsentence(text)
 
     # disable the default sentence suppressions
     text_split("I saw Mr. Jones today.", units = "sentences", filter = NULL)
