@@ -358,8 +358,9 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 	REAL(row_names)[1] = -(double)n;
 	setAttrib(ans, R_RowNamesSymbol, row_names);
 
-	PROTECT(sclass = allocVector(STRSXP, 1)); nprot++;
-        SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
+	PROTECT(sclass = allocVector(STRSXP, 2)); nprot++;
+        SET_STRING_ELT(sclass, 0, mkChar("corpus_text_locate"));
+        SET_STRING_ELT(sclass, 1, mkChar("data.frame"));
         setAttrib(ans, R_ClassSymbol, sclass);
 	
 	UNPROTECT(nprot);

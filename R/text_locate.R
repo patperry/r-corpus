@@ -43,3 +43,37 @@ text_locate <- function(x, terms, filter = token_filter())
     }
     ans
 }
+
+
+format.corpus_text_locate <- function(x, width = getOption("width"), ...)
+{
+    row_names <- format(rownames(x), jusitfy = "left")
+    rval <- list(text = format(x$text, justify = "left"),
+                 term = format(x$term, justify = "left"),
+                 before = NULL,
+                 instance = format(x$instance, justify = "centre"),
+                 after = NULL)
+    colwidths <- sapply(rval, function(col) max(c(0, nchar(col))))
+    for (col in names(colwidths)) {
+        colwidths[[col]] <- max(nchar(col), colwidths[[col]])
+    }
+    colwidths[["names"]] <- max(c(1, nchar(row_names)))
+
+    cwidth <- floor((width - sum(colwidths) - length(rval)) / 2)
+
+    rval[["before"]] <- format(x$before, justify = "right", nchar_max = cwidth)
+    rval[["after"]] <- format(x$after, justify = "left", nchar_max = cwidth)
+
+    for (i in seq_along(rval)) {
+        oldClass(rval[[i]]) <- "AsIs"
+    }
+
+    as.data.frame(rval, row.names = row_names)
+}
+
+
+print.corpus_text_locate <- function(x, ...)
+{
+    print(format(x))
+    invisible(x)
+}
