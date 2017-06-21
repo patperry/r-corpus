@@ -6,24 +6,15 @@
     Get or measure the set of types (unique token values).
 }
 \usage{
-    text_types(x, filter = token_filter(), weights = NULL, group = NULL,
-               collapse = FALSE)
+    text_types(x, filter = token_filter(), collapse = FALSE)
 
-    text_ntype(x, filter = token_filter(), weights = NULL, group = NULL,
-               collapse = FALSE)
+    text_ntype(x, filter = token_filter(), collapse = FALSE)
 }
 \arguments{
     \item{x}{a text or character vector.}
 
     \item{filter}{a token filter defining the token boundaries and
         normalization.}
-
-    \item{weights}{a numeric vector the same length of \code{x} assigning
-        weights to each text, or \code{NULL}.}
-
-    \item{group}{if non-\code{NULL}, a factor, character string, or
-        integer vector the same length of \code{x} specifying the grouping
-        behavior.}
 
     \item{collapse}{a logical value indicating whether to collapse the
         aggregation over all rows of the input.}
@@ -34,22 +25,16 @@
     vector. Types are determined according to the \code{filter} argument.
 }
 \value{
-    If \code{group} is \code{NULL}, the result of \code{text_ntype} is a
-    numeric vector with the same length and names as the input text, with the
-    elements given the (weighted) number of units in the corresponding text
-    element. For \code{text_types}, the result is a list of character vectors
-    with each vector giving the unique types in the corresponding text.
+    If \code{collapse = FALSE}, then \code{text_ntype} produces a numeric
+    vector with the same length and names as the input text, with the elements
+    giving the number of units in the corresponding texts.  For
+    \code{text_types}, the result is a list of character vector with each
+    vector giving the unique types in the corresponding text.
 
-    Texts with \code{weights} values of zero get there counts set to zero, if
-    even the text value is \code{NA}.  The magnitude and sign of the
-    \code{weights} values do not affect the output, only whether the weight is
-    nonzero.
-
-    If \code{group} is non-\code{NULL}, then type sets are aggregated by the
-    levels of the \code{group} argument, and the length and names of the
-    output match the \code{group} levels. For \code{text_ntype}, if
-    \code{collapse = TRUE}, then we ignore the \code{group} argument and
-    we aggregate over all rows of the input.
+    If \code{collapse = TRUE}, then we aggregate over all rows of the input.
+    In this case, \code{text_ntype} produces a scalar indicating the number
+    of unique types in \code{x}, and \code{text_types} produces a character
+    vector with the unique types.
 }
 \seealso{
     \code{\link{token_filter}}, \code{\link{text_length}}.

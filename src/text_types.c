@@ -39,18 +39,17 @@
 
 struct types_context {
 	SEXP names;
-	R_xlen_t ngroup;
 	struct corpus_filter *filter;
 	struct corpus_intset *types;
 	int *is_na;
+	int ngroup;
 	int collapse;
 	int nprot;
 };
 
 
 static void types_context_init(struct types_context *ctx, SEXP sx,
-			       SEXP sfilter, SEXP sweights, SEXP sgroup,
-			       SEXP scollapse);
+			       SEXP sfilter, SEXP scollapse);
 static void types_context_destroy(struct types_context *ctx);
 
 
@@ -61,12 +60,9 @@ static void types_context_destroy(struct types_context *ctx);
 	} while (0)
 
 void types_context_init(struct types_context *ctx, SEXP sx, SEXP sfilter,
-			SEXP sweights, SEXP sgroup, SEXP scollapse)
+			SEXP scollapse)
 {
 	const struct corpus_text *text;
-	const double *weights;
-	double w;
-	const int *group;
 	R_xlen_t i, n, g;
 	int err;
 
@@ -80,26 +76,9 @@ void types_context_init(struct types_context *ctx, SEXP sx, SEXP sfilter,
 	PROTECT(sfilter = alloc_filter(sfilter)); ctx->nprot++;
 	ctx->filter = as_filter(sfilter);
 
-	// weights
-	weights = as_weights(sweights, n);
-
-	// group
-	if (sgroup != R_NilValue) {
-		ctx->names = getAttrib(sgroup, R_LevelsSymbol);
-		ctx->ngroup = XLENGTH(ctx->names);
-		group = INTEGER(sgroup);
-	} else {
-		ctx->names = names_text(sx);
-		ctx->ngroup = n;
-		group = NULL;
-	}
-
 	ctx->collapse = LOGICAL(scollapse)[0] == TRUE;
-	if (ctx->collapse) {
-		ctx->names = R_NilValue;
-		ctx->ngroup = 1;
-		group = NULL;
-	}
+	ctx->ngroup = ctx->collapse ? 1 : n;
+	ctx->names = ctx->collapse ? R_NilValue : names_text(sx);
 
 	ctx->is_na = (void *)R_alloc(ctx->ngroup, sizeof(*ctx->is_na));
 	memset(ctx->is_na, 0, ctx->ngroup * sizeof(*ctx->is_na));
@@ -115,15 +94,7 @@ void types_context_init(struct types_context *ctx, SEXP sx, SEXP sfilter,
 	}
 
 	for (i = 0; i < n; i++) {
-		w = weights ? weights[i] : 1;
-		if (w == 0) { // no weight
-			continue;
-		}
-
-		if (group && group[i] == NA_INTEGER) {
-			continue;
-		}
-		g = ctx->collapse ? 0 : (group ? group[i] - 1: i);
+		g = ctx->collapse ? 0 : i;
 
 		if (!text[i].ptr) { // missing text
 			ctx->is_na[g] = 1;
@@ -167,15 +138,14 @@ void types_context_destroy(struct types_context *ctx)
 }
 
 
-SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup,
-		SEXP scollapse)
+SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP scollapse)
 {
 	SEXP ans;
 	struct types_context ctx;
 	double *count;
 	R_xlen_t g;
 
-	types_context_init(&ctx, sx, sfilter, sweights, sgroup, scollapse);
+	types_context_init(&ctx, sx, sfilter, scollapse);
 	PROTECT(ans = allocVector(REALSXP, ctx.ngroup));
 	setAttrib(ans, R_NamesSymbol, ctx.names);
 	count = REAL(ans);
@@ -195,8 +165,7 @@ SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup,
 }
 
 
-SEXP text_types(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup,
-		SEXP scollapse)
+SEXP text_types(SEXP sx, SEXP sfilter, SEXP scollapse)
 {
 	SEXP ans, set;
 	const struct corpus_text *type;
@@ -207,7 +176,7 @@ SEXP text_types(SEXP sx, SEXP sfilter, SEXP sweights, SEXP sgroup,
 	int i, n, type_id, nprot;
 
 	nprot = 0;
-	types_context_init(&ctx, sx, sfilter, sweights, sgroup, scollapse);
+	types_context_init(&ctx, sx, sfilter, scollapse);
 	mkchar_init(&mkchar);
 
 	if (ctx.collapse) {

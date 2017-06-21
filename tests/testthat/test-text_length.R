@@ -28,8 +28,7 @@ test_that("text_length can works on tokens", {
 
 
 test_that("text_ntype works on types", {
-    expect_equal(text_ntype(LETTERS, group = rep(1:2, 13)),
-                 c("1" = 13, "2" = 13))
+    expect_equal(text_ntype(LETTERS, collapse = TRUE), 26)
 
     expect_equal(text_ntype(paste(LETTERS, letters, LETTERS)),
                  rep(1, 26))
