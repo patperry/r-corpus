@@ -74,6 +74,12 @@ data <- data.frame(name = names, text = as_text(text2),
 ## get treated as single entities
 f <- token_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
 
+## compute number of types, tokens, and sentences:
+print(data.frame(text = data$name,
+                 types = text_ntype(data, f),
+                 tokens = text_ntoken(data, f),
+                 sentences = text_nsentence(data)))
+
 ## compute the term occurrence frequencies
 stats <- term_counts(data, f)
 head(stats, n = 5)
@@ -98,3 +104,9 @@ with(stats, {
 
 ## restore the old font family
 par(family = font_family)
+
+pause()
+
+
+# 6. Search for terms
+head(text_locate(data, "\u6027", f))
