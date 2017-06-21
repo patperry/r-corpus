@@ -161,32 +161,15 @@ names.corpus_text <- function(x)
 }
 
 
-format.corpus_text <- function(x, justify = "left", nchar_max = 60,
-                               ellipsis = "\u2026", ...)
+format.corpus_text <- function(x, trim = FALSE,
+                               justify = c("left", "right", "none"),
+                               truncate = 60L, ...)
 {
-    if (length(x) == 0) {
-        str <- character()
-    } else if (is.null(nchar_max)) {
-        str <- as.character(x)
-    } else if (nchar_max <= 0) {
-        str <- rep("", length(x))
-    } else {
-        str <- as.character(x)
-        names(str) <- names(x)
-        str <- format(str, justify = justify)
-        len <- nchar(str)
-        long <- !is.na(len) & (len >= nchar_max + 1)
-        if (justify == "right") {
-            str[long] <- paste0(ellipsis, substr(str[long],
-                                                 len[long] - nchar_max + 2,
-                                                 len[long]))
-        } else {
-            str[long] <- paste0(substr(str[long], 1, nchar_max - 1), ellipsis)
-        }
-        return(str)
-    }
-    names(str) <- names(x)
-    format(str, justify = justify)
+    x <- as_text(x)
+    trim <- as_option("trim", trim)
+    justify <- match.arg(justify)
+    truncate <- as.integer(truncate)
+    .Call(C_format_text, x, trim, justify, truncate)
 }
 
 

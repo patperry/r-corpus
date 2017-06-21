@@ -60,9 +60,12 @@ format.corpus_text_locate <- function(x, width = getOption("width"), ...)
     colwidths[["names"]] <- max(c(1, nchar(row_names)))
 
     cwidth <- floor((width - sum(colwidths) - length(rval)) / 2)
+    if (cwidth < 10) {
+        cwidth <- 10
+    }
 
-    rval[["before"]] <- format(x$before, justify = "right", nchar_max = cwidth)
-    rval[["after"]] <- format(x$after, justify = "left", nchar_max = cwidth)
+    rval[["before"]] <- format(x$before, justify = "right", truncate = cwidth - 1)
+    rval[["after"]] <- format(x$after, justify = "left", truncate = cwidth - 1)
 
     for (i in seq_along(rval)) {
         oldClass(rval[[i]]) <- "AsIs"
