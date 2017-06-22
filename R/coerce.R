@@ -97,29 +97,29 @@ as_limit <- function(limit)
 }
 
 
-as_max <- function(max)
+as_max <- function(name, value)
 {
-    if (!((is.na(max) || is.numeric(max))
-          && length(max) == 1 && !is.nan(max))) {
-        stop("'max' should be a numeric value")
+    if (!((is.na(value) || is.numeric(value))
+          && length(value) == 1 && !is.nan(value))) {
+        stop(paste0("'", name, "' should be a numeric value"))
     }
-    if (is.na(max)) {
-        max <- Inf
+    if (is.na(value)) {
+        value <- Inf
     }
-    as.double(max)
+    as.double(value)
 }
 
 
-as_min <- function(min)
+as_min <- function(name, value)
 {
-    if (!((is.na(min) || is.numeric(min))
-          && length(min) == 1 && !is.nan(min))) {
-        stop("'min' should be a numeric value")
+    if (!((is.na(value) || is.numeric(value))
+          && length(value) == 1 && !is.nan(value))) {
+        stop(paste0("'", name, "' should be a numeric value"))
     }
-    if (is.na(min)) {
-        min <- -Inf
+    if (is.na(value)) {
+        value <- -Inf
     }
-    as.double(min)
+    as.double(value)
 }
 
 

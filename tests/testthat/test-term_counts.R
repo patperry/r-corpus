@@ -53,7 +53,7 @@ test_that("'term_counts' can count ngrams", {
 
 test_that("'term_counts' can count ngrams above min", {
     expect_equal(term_counts("A rose is a rose is a rose.", ngrams = 2,
-                             min = 2),
+                             min_count = 2),
                  data.frame(term = c("a rose", "is a", "rose is"),
                             count = c(3, 2, 2),
                             stringsAsFactors = FALSE))

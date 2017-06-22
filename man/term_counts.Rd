@@ -6,7 +6,7 @@
 }
 \usage{
     term_counts(x, filter = token_filter(), weights = NULL,
-                ngrams = NULL, min = NA, max = NA, limit = NA,
+                ngrams = NULL, min_count = NA, max_count = NA, limit = NA,
                 types = FALSE)
 }
 \arguments{
@@ -20,10 +20,10 @@
     \item{ngrams}{an integer vector of n-gram lengths to include, or
         \code{NULL} for length-1 n-grams only.}
 
-    \item{min}{a numeric scalar giving the minimum term count to include
+    \item{min_count}{a numeric scalar giving the minimum term count to include
         in the output, or \code{NA} for no minimum count.}
 
-    \item{max}{a numeric scalar giving the maximum term count to include
+    \item{max_count}{a numeric scalar giving the maximum term count to include
         in the output, or \code{NA} for no maximum count.}
 
     \item{limit}{an integer scalar giving the maximum number of terms
