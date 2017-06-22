@@ -1,21 +1,34 @@
-Changes in version 0.6.2 (2017-06-10)
+Changes in version 0.7.0 (2017-06-22)
 
- * Add term_frame()
+ * Add text_locate(), for searching for specific terms in text,
+   reporting the contexts of the occurrences ("Key words in context").
+
+ * Add text_count() and text_detect() for counting term occurrences or
+   checking for a term's existence in a text.
+
+ * Add text_types() and text_ntype() for returning the unique types in
+   a text, or counting types.
+
+ * Rename tokens() to text_tokens() for consistency; add text_ntoken().
+
+ * Add text_nsentence() for counting sentences.
+
+ * Add term_frame(), reporting term frequencies as a data frame with
+   columns "text", "term", and "count".
 
  * Add transpose argument to term_matrix()
 
- * Normalize token filter combine, drop, drop_except, stem_except arguments
+ * Add new version of format.corpus_text() that is faster and aware
+   of character widths, in particular, Emoji and East Asian character
+   widths.
+
+ * Rename term_counts() "min" and "max" arguments to "min_count" and
+   "max_count".
+
+ * Normalize token filter combine, drop, drop_except, stem_except arguments,
+   to allow passing cased versions of these arguments.
 
  * Set combine = abbreviations("english") by default.
-
- * Rename text_count() to text_length(); add text_ntype().
-
- * Add group, weights arguments for text_length() and text_ntype()
-
-
-Changes in version 0.6.1 (2017-06-08)
-
- * Add text_count() for counting sentences or tokens.
 
  * Fixed bug where "u.s" (a unigram) stems to "u.s" (a bigram), and then
    causes for term_matrix() select.  Thanks to Dmitriy Selivanov for
