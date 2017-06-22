@@ -4,7 +4,9 @@
 ^[.]git
 ^[.]travis[.]yml$
 ^Makefile$
+^README[.]html$
 ^README[.]md$
+^README[.]Rmd$
 ^TODO[.]md$
 ^bench$
 ^dist$

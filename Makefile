@@ -18,7 +18,11 @@ check: $(CORPUS_LIB)
 dist:
 	mkdir -p dist && cd dist && R CMD build ..
 
+doc:
+	Rscript -e 'rmarkdown::render("README.Rmd", output_format=c("html_document", "md_document"))'
+	
+
 install: $(CORPUS_LIB)
 	Rscript -e 'devtools::install(".")'
 
-.PHONY: all bench clean check dist install
+.PHONY: all bench clean check dist doc install
