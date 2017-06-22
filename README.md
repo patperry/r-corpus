@@ -24,6 +24,21 @@ frequencies (including n-grams).
 There are no language models, no part-of-speech tagging, no topic
 models, and no word vectors.
 
+Performance
+-----------
+
+*Corpus* was designed for performance, with the majority of the package
+written in C. The following benchmarks demonstrate its performance:
+
+-   [reading in newline-delmited JSON
+    data](https://github.com/jeroen/ndjson-benchmark#readme);
+
+-   [computing a term frequency
+    matrix](https://github.com/patperry/bench-term-matrix#readme).
+
+In both of these benchmarks, *corpus* is at least twice as fast as the
+next competitor.
+
 Installing
 ----------
 

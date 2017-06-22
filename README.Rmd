@@ -23,6 +23,20 @@ There are no language models, no part-of-speech tagging, no topic models, and
 no word vectors.
 
 
+Performance
+-----------
+
+*Corpus* was designed for performance, with the majority of the package
+written in C. The following benchmarks demonstrate its performance:
+
+  + [reading in newline-delmited JSON data][bench-ndjson];
+
+  + [computing a term frequency matrix][bench-term-matrix].
+
+In both of these benchmarks, *corpus* is at least twice as fast as the next
+competitor.
+
+
 Installing
 ----------
 
@@ -192,6 +206,8 @@ Corpus is released under the [Apache Licence, Version 2.0][apache].
 
 
 [apache]: https://www.apache.org/licenses/LICENSE-2.0.html
+[bench-term-matrix]: https://github.com/patperry/bench-term-matrix#readme
+[bench-ndjson]: https://github.com/jeroen/ndjson-benchmark#readme
 [casefold]: https://www.w3.org/International/wiki/Case_folding
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes
 [corpus]: https://github.com/patperry/corpus
