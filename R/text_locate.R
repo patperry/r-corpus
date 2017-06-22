@@ -45,27 +45,48 @@ text_locate <- function(x, terms, filter = token_filter())
 }
 
 
-format.corpus_text_locate <- function(x, width = getOption("width"), ...)
+format.corpus_text_locate <- function(x, width = getOption("width"),
+                                      ..., justify = "none")
 {
-    row_names <- format(rownames(x), jusitfy = "left")
-    rval <- list(text = format(x$text, justify = "left"),
-                 term = format(x$term, justify = "left"),
-                 before = NULL,
-                 instance = format(x$instance, justify = "centre"),
-                 after = NULL)
-    colwidths <- sapply(rval, function(col) max(c(0, nchar(col))))
-    for (col in names(colwidths)) {
-        colwidths[[col]] <- max(nchar(col), colwidths[[col]])
-    }
-    colwidths[["names"]] <- max(c(1, nchar(row_names)))
+    nctx <- 0
+    rval <- list()
+    colwidths <- c()
 
-    cwidth <- floor((width - sum(colwidths) - length(rval)) / 2)
-    if (cwidth < 10) {
-        cwidth <- 10
+    for (i in names(x)) {
+        if (i %in% c("before", "after")) {
+            rval[[i]] <- NA # set to NA and deal with this later
+            colwidths[[i]] <- 0
+            nctx <- nctx + 1
+        } else {
+            if (i == "text") {
+                rval[[i]] <- format(as.character(x[[i]]), width = 4,
+                                    justify = justify)
+            } else if (i == "instance") {
+                rval[[i]] <- format(x[[i]], width = 8, justify = "centre")
+            } else {
+                rval[[i]] = format(x[[i]], width = nchar(i, "width"),
+                                   ..., justify = justify)
+            }
+            colwidths[[i]] <- max(nchar(i, "width"), nchar(rval[[i]], "width"))
+        }
     }
 
-    rval[["before"]] <- format(x$before, justify = "right", truncate = cwidth - 1)
-    rval[["after"]] <- format(x$after, justify = "left", truncate = cwidth - 1)
+    row_names <- format(rownames(x), jusitfy = "left", width = 1)
+    colwidths <- c(colwidths, max(1, nchar(row_names, "width")))
+
+    ctxwidth <- max(12, floor((width
+                               - sum(colwidths)
+                               - length(colwidths)) / max(1, nctx)))
+
+    if (!is.null(x$before)) {
+        rval[["before"]] <- format(x$before, justify = "right",
+                                   truncate = ctxwidth - 1)
+    }
+
+    if (!is.null(x$after)) {
+        rval[["after"]] <- format(x$after, justify = "left",
+                                  truncate = ctxwidth - 1)
+    }
 
     for (i in seq_along(rval)) {
         oldClass(rval[[i]]) <- "AsIs"

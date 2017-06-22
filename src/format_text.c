@@ -24,12 +24,10 @@
 #include "rcorpus.h"
 
 
-static int char_width(uint32_t code)
+static int char_width(uint32_t code, int type)
 {
-	enum corpus_charwidth_type type;
-
-	type = corpus_unicode_charwidth(code);
 	switch (type) {
+	case CORPUS_CHARWIDTH_IGNORABLE:
 	case CORPUS_CHARWIDTH_NONE:
 		return 0;
 
@@ -75,12 +73,15 @@ static int char_width(uint32_t code)
 static int text_width(const struct corpus_text *text)
 {
 	struct corpus_text_iter it;
-	int width, w;
+	int32_t code;
+	int type, width, w;
 
 	corpus_text_iter_make(&it, text);
 	width = 0;
 	while (corpus_text_iter_advance(&it)) {
-		w = char_width(it.current);
+		code = it.current;
+		type = corpus_unicode_charwidth(code);
+		w = char_width(code, type);
 		if (width > INT_MAX - w) {
 			return INT_MAX;
 		}
@@ -97,7 +98,7 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 	struct corpus_text_iter it;
 	uint8_t *dst;
 	uint32_t code;
-	int w, size, width;
+	int w, type, size, width;
 
 	width = 0;
 	dst = buf;
@@ -105,7 +106,13 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 	corpus_text_iter_make(&it, text);
 	while (corpus_text_iter_advance(&it)) {
 		code = it.current;
-		w = char_width(code);
+		type = corpus_unicode_charwidth(code);
+
+		if (type == CORPUS_CHARWIDTH_IGNORABLE) {
+			continue;
+		}
+
+		w = char_width(code, type);
 		if (width > truncate - w) {
 			corpus_encode_utf8(0x2026, &dst);
 			width += 1;
@@ -134,7 +141,7 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 	struct corpus_text_iter it;
 	uint8_t *dst;
 	uint32_t code;
-	int w, size, width;
+	int w, type, size, width;
 
 	width = 0;
 	dst = end;
@@ -143,7 +150,13 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 	corpus_text_iter_skip(&it);
 	while (corpus_text_iter_retreat(&it)) {
 		code = it.current;
-		w = char_width(code);
+		type = corpus_unicode_charwidth(code);
+
+		if (type == CORPUS_CHARWIDTH_IGNORABLE) {
+			continue;
+		}
+
+		w = char_width(code, type);
 		if (width > truncate - w) {
 			corpus_rencode_utf8(0x2026, &dst);
 			width += 1;
