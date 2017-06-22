@@ -79,13 +79,13 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
                                - length(colwidths)) / max(1, nctx)))
 
     if (!is.null(x$before)) {
-        rval[["before"]] <- format(x$before, justify = "right",
-                                   truncate = ctxwidth - 1)
+        rval[["before"]] <- format(x$before, chars = ctxwidth,
+                                   justify = "right")
     }
 
     if (!is.null(x$after)) {
-        rval[["after"]] <- format(x$after, justify = "left",
-                                  truncate = ctxwidth - 1)
+        rval[["after"]] <- format(x$after, chars = ctxwidth,
+                                  justify = "left")
     }
 
     for (i in seq_along(rval)) {

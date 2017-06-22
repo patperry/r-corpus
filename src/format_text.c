@@ -117,7 +117,7 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 
 
 static SEXP format_left(const struct corpus_text *text, int trim,
-			int truncate, int width_max,
+			int chars, int width_max,
 			uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
@@ -142,7 +142,9 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 		}
 
 		w = char_width(code, type);
-		if (width > truncate - w) {
+		if (width > chars - w
+				|| (width == chars - w
+				    && corpus_text_iter_can_advance(&it))) {
 			code = ELLIPSIS;
 			w = 1;
 			trunc = 1;
@@ -185,7 +187,7 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 
 
 static SEXP format_right(const struct corpus_text *text, int trim,
-			 int truncate, int width_max,
+			 int chars, int width_max,
 			 uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
@@ -210,7 +212,9 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 		}
 
 		w = char_width(code, type);
-		if (width > truncate - w) {
+		if (width > chars - w
+				|| (width == chars - w
+				    && corpus_text_iter_can_retreat(&it))) {
 			code = ELLIPSIS;
 			w = 1;
 			trunc = 1;
@@ -262,7 +266,7 @@ enum justify_type {
 };
 
 
-SEXP format_text(SEXP sx, SEXP strim, SEXP struncate, SEXP sjustify,
+SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 		 SEXP swidth, SEXP sna_encode)
 {
 	SEXP ans, ans_i;
@@ -273,7 +277,7 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP struncate, SEXP sjustify,
 	struct corpus_text na_text;
 	R_xlen_t i, n;
 	int width, width_max, nbuf, trim, na_encode;
-	int truncate;
+	int chars;
 	int nprot;
 
 	nprot = 0;
@@ -283,12 +287,12 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP struncate, SEXP sjustify,
 	PROTECT(strim = coerceVector(strim, LGLSXP)); nprot++;
 	trim = (LOGICAL(strim)[0] == TRUE);
 
-	PROTECT(struncate = coerceVector(struncate, INTSXP)); nprot++;
-	truncate = INTEGER(struncate)[0];
-	if (truncate == NA_INTEGER) {
-		truncate = INT_MAX;
-	} else if (truncate < 0) {
-		truncate = 0;
+	PROTECT(schars = coerceVector(schars, INTSXP)); nprot++;
+	chars = INTEGER(schars)[0];
+	if (chars == NA_INTEGER) {
+		chars = INT_MAX;
+	} else if (chars < 0) {
+		chars = 0;
 	}
 
 	justify_str = CHAR(STRING_ELT(sjustify, 0));
@@ -327,8 +331,8 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP struncate, SEXP sjustify,
 		if (width > width_max) {
 			width_max = width;
 		}
-		if (width_max > truncate) {
-			width_max = truncate + 1;
+		if (width_max > chars) {
+			width_max = chars;
 			break;
 		}
 	}
@@ -351,10 +355,10 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP struncate, SEXP sjustify,
 		}
 
 		if (justify != JUSTIFY_RIGHT) {
-			ans_i = format_left(text_i, trim, truncate,
+			ans_i = format_left(text_i, trim, chars,
 					    width_max, &buf, &nbuf);
 		} else {
-			ans_i = format_right(text_i, trim, truncate,
+			ans_i = format_right(text_i, trim, chars,
 					     width_max, &buf, &nbuf);
 		}
 

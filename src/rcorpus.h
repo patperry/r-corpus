@@ -123,7 +123,7 @@ SEXP as_text_character(SEXP text);
 
 SEXP alloc_na_text(void);
 SEXP coerce_text(SEXP x);
-SEXP format_text(SEXP x, SEXP trim, SEXP truncate, SEXP justify,
+SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify,
 		 SEXP width, SEXP na_encode);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
