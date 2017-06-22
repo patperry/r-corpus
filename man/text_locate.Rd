@@ -50,7 +50,7 @@
 }
 \examples{
     text <- c("Rose is a rose is a rose is a rose.",
-              "A rose by any other name is just as sweet.",
+              "A rose by any other name would smell as sweet.",
               "Snow White and Rose Red")
 
     text_count(text, "rose")
