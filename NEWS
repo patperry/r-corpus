@@ -16,7 +16,7 @@ Changes in version 0.7.0 (2017-06-22)
  * Add term_frame(), reporting term frequencies as a data frame with
    columns "text", "term", and "count".
 
- * Add transpose argument to term_matrix()
+ * Add transpose argument to term_matrix().
 
  * Add new version of format.corpus_text() that is faster and aware
    of character widths, in particular, Emoji and East Asian character
