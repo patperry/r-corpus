@@ -262,15 +262,17 @@ enum justify_type {
 };
 
 
-SEXP format_text(SEXP sx, SEXP strim, SEXP sjustify, SEXP struncate)
+SEXP format_text(SEXP sx, SEXP strim, SEXP struncate, SEXP sjustify,
+		 SEXP swidth, SEXP sna_encode)
 {
 	SEXP ans, ans_i;
 	enum justify_type justify;
 	const char *justify_str;
 	uint8_t *buf;
-	struct corpus_text *text;
+	struct corpus_text *text, *text_i;
+	struct corpus_text na_text;
 	R_xlen_t i, n;
-	int width, width_max, nbuf, trim;
+	int width, width_max, nbuf, trim, na_encode;
 	int truncate;
 	int nprot;
 
@@ -280,6 +282,14 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP sjustify, SEXP struncate)
 
 	PROTECT(strim = coerceVector(strim, LGLSXP)); nprot++;
 	trim = (LOGICAL(strim)[0] == TRUE);
+
+	PROTECT(struncate = coerceVector(struncate, INTSXP)); nprot++;
+	truncate = INTEGER(struncate)[0];
+	if (truncate == NA_INTEGER) {
+		truncate = INT_MAX;
+	} else if (truncate < 0) {
+		truncate = 0;
+	}
 
 	justify_str = CHAR(STRING_ELT(sjustify, 0));
 	if (strcmp(justify_str, "left") == 0) {
@@ -291,20 +301,29 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP sjustify, SEXP struncate)
 		trim = 0;
 	}
 
-	PROTECT(struncate = coerceVector(struncate, INTSXP)); nprot++;
-	truncate = INTEGER(struncate)[0];
-	if (truncate == NA_INTEGER) {
-		truncate = INT_MAX;
-	} else if (truncate < 0) {
-		truncate = 0;
+	if (swidth != R_NilValue) {
+		PROTECT(swidth = coerceVector(swidth, INTSXP)); nprot++;
+		width_max = INTEGER(swidth)[0];
+		if (width_max == NA_INTEGER || width_max < 0) {
+			width_max = 0;
+		}
+	} else {
+		width_max = 0;
 	}
+
+	PROTECT(sna_encode = coerceVector(sna_encode, LGLSXP)); nprot++;
+	na_encode = (LOGICAL(sna_encode)[0] == TRUE);
 
 	PROTECT(ans = allocVector(STRSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names_text(sx));
 
-	width_max = 0;
 	for (i = 0; i < n; i++) {
-		width = text_width(&text[i]);
+		if (text[i].ptr == NULL) {
+			width = na_encode ? 2 : 0;
+		} else {
+			width = text_width(&text[i]);
+		}
+
 		if (width > width_max) {
 			width_max = width;
 		}
@@ -317,14 +336,28 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP sjustify, SEXP struncate)
 	nbuf = width_max;
 	buf = (void *)R_alloc(nbuf, sizeof(uint8_t));
 
+	na_text.ptr = (uint8_t *)"NA";
+	na_text.attr = 2;
+
 	for (i = 0; i < n; i++) {
+		text_i = &text[i];
+		if (text_i->ptr == NULL) {
+			if (!na_encode) {
+				SET_STRING_ELT(ans, i, NA_STRING);
+				continue;
+			} else {
+				text_i = &na_text;
+			}
+		}
+
 		if (justify != JUSTIFY_RIGHT) {
-			ans_i = format_left(&text[i], trim, truncate,
+			ans_i = format_left(text_i, trim, truncate,
 					    width_max, &buf, &nbuf);
 		} else {
-			ans_i = format_right(&text[i], trim, truncate,
+			ans_i = format_right(text_i, trim, truncate,
 					     width_max, &buf, &nbuf);
 		}
+
 		SET_STRING_ELT(ans, i, ans_i);
 
 		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {

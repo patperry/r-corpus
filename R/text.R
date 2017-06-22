@@ -161,15 +161,17 @@ names.corpus_text <- function(x)
 }
 
 
-format.corpus_text <- function(x, trim = FALSE,
+format.corpus_text <- function(x, trim = FALSE, truncate = 60L,
                                justify = c("left", "right", "none"),
-                               truncate = 60L, ...)
+                               width = NULL, na.encode = TRUE, ...)
 {
     x <- as_text(x)
     trim <- as_option("trim", trim)
-    justify <- match.arg(justify)
     truncate <- as.integer(truncate)
-    .Call(C_format_text, x, trim, justify, truncate)
+    justify <- match.arg(justify)
+    width <- as.integer(width)
+    na.encode <- as_option("na.encode", na.encode)
+    .Call(C_format_text, x, trim, truncate, justify, width, na.encode)
 }
 
 
