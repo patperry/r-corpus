@@ -1,10 +1,9 @@
-\name{text}
+\name{as_text}
 \alias{as_text}
 \alias{as_text.default}
 \alias{corpus_text}
 \alias{is_text}
 \alias{is_text.default}
-\alias{text}
 \title{Text Vectors}
 \description{
     Create or test for text objects.
