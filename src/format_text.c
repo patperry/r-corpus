@@ -17,11 +17,14 @@
 #include <ctype.h>
 #include <limits.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "corpus/src/array.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
+
+
+#define ELLIPSIS 0x2026
 
 
 static int char_width(uint32_t code, int type)
@@ -70,6 +73,7 @@ static int char_width(uint32_t code, int type)
 	}
 }
 
+
 static int text_width(const struct corpus_text *text)
 {
 	struct corpus_text_iter it;
@@ -92,19 +96,44 @@ static int text_width(const struct corpus_text *text)
 }
 
 
-static SEXP format_left(const struct corpus_text *text, int trim,
-			int truncate, int width_max, uint8_t *buf)
+static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 {
+	uint8_t *buf = *bufptr;
+	int nbuf0 = *nbufptr;
+	int nbuf = nbuf0;
+	int err;
+
+	if ((err = corpus_array_size_add(&nbuf, 1, nbuf0, nadd))) {
+		error("buffer size (%d + %d bytes)"
+		      " exceeds maximum (%d bytes)", nbuf0, nadd,
+		      INT_MAX);
+	}
+
+	buf = (void *)S_realloc((char *)buf, nbuf, nbuf0, sizeof(uint8_t));
+
+	*bufptr = buf;
+	*nbufptr = nbuf;
+}
+
+
+static SEXP format_left(const struct corpus_text *text, int trim,
+			int truncate, int width_max,
+			uint8_t **bufptr, int *nbufptr)
+{
+	uint8_t *buf = *bufptr;
+	int nbuf = *nbufptr;
+	uint8_t *end = buf + nbuf;
 	struct corpus_text_iter it;
 	uint8_t *dst;
 	uint32_t code;
-	int w, type, size, width;
+	int w, trunc, type, nbyte, fill, len, off, width;
 
-	width = 0;
 	dst = buf;
-
+	width = 0;
+	trunc = 0;
 	corpus_text_iter_make(&it, text);
-	while (corpus_text_iter_advance(&it)) {
+
+	while (!trunc && corpus_text_iter_advance(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
 
@@ -114,41 +143,65 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 
 		w = char_width(code, type);
 		if (width > truncate - w) {
-			corpus_encode_utf8(0x2026, &dst);
-			width += 1;
-			break;
-		} else {
-			corpus_encode_utf8(code, &dst);
-			width += w;
+			code = ELLIPSIS;
+			w = 1;
+			trunc = 1;
 		}
+
+		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
+		if (dst + nbyte > end) {
+			off = (int)(dst - buf);
+
+			grow_buffer(&buf, &nbuf, nbyte);
+			dst = buf + off;
+			end = buf + nbuf;
+		}
+
+		corpus_encode_utf8(code, &dst);
+		width += w;
 	}
 
-	if (!trim) {
-		while (width < width_max) {
+	if (!trim && ((fill = width_max - width)) > 0) {
+		if (dst + fill > end) {
+			off = (int)(dst - buf);
+
+			grow_buffer(&buf, &nbuf, fill);
+			dst = buf + off;
+			end = buf + nbuf;
+		}
+
+		while (fill-- > 0) {
 			*dst++ = ' ';
-			width++;
 		}
 	}
 
-	size = (int)(dst - buf);
-	return mkCharLenCE((char *)buf, size, CE_UTF8);
+
+	*bufptr = buf;
+	*nbufptr = nbuf;
+
+	len = (int)(dst - buf);
+	return mkCharLenCE((char *)buf, len, CE_UTF8);
 }
 
 
 static SEXP format_right(const struct corpus_text *text, int trim,
-			 int truncate, int width_max, uint8_t *end)
+			 int truncate, int width_max,
+			 uint8_t **bufptr, int *nbufptr)
 {
+	uint8_t *buf = *bufptr;
+	int nbuf = *nbufptr;
 	struct corpus_text_iter it;
 	uint8_t *dst;
 	uint32_t code;
-	int w, type, size, width;
+	int w, fill, trunc, type, off, len, nbyte, width;
 
+	dst = buf + nbuf;
 	width = 0;
-	dst = end;
-
+	trunc = 0;
 	corpus_text_iter_make(&it, text);
 	corpus_text_iter_skip(&it);
-	while (corpus_text_iter_retreat(&it)) {
+
+	while (!trunc && corpus_text_iter_retreat(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
 
@@ -158,24 +211,47 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 
 		w = char_width(code, type);
 		if (width > truncate - w) {
-			corpus_rencode_utf8(0x2026, &dst);
-			width += 1;
-			break;
-		} else {
-			corpus_rencode_utf8(code, &dst);
-			width += w;
+			code = ELLIPSIS;
+			w = 1;
+			trunc = 1;
 		}
+
+		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
+
+		if (dst < buf + nbyte) {
+			off = dst - buf;
+			len = nbuf - off;
+
+			grow_buffer(&buf, &nbuf, nbyte);
+			dst = buf + nbuf - len;
+			memmove(dst, buf + off, len);
+		}
+
+		corpus_rencode_utf8(code, &dst);
+		width += w;
 	}
 
-	if (!trim) {
-		while (width < width_max) {
+	if (!trim && ((fill = width_max - width)) > 0) {
+		if (dst < buf + fill) {
+			off = dst - buf;
+			len = nbuf - off;
+
+			grow_buffer(&buf, &nbuf, fill);
+			dst = buf + nbuf - len;
+			memmove(dst, buf + off, len);
+		}
+
+		while (fill-- > 0) {
 			*--dst = ' ';
-			width++;
 		}
 	}
 
-	size = (int)(end - dst);
-	return mkCharLenCE((char *)dst, size, CE_UTF8);
+	*bufptr = buf;
+	*nbufptr = nbuf;
+
+	off = (int)(dst - buf);
+	len = nbuf - off;
+	return mkCharLenCE((char *)dst, len, CE_UTF8);
 }
 
 
@@ -191,11 +267,10 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP sjustify, SEXP struncate)
 	SEXP ans, ans_i;
 	enum justify_type justify;
 	const char *justify_str;
-	uint8_t *buf, *end;
+	uint8_t *buf;
 	struct corpus_text *text;
 	R_xlen_t i, n;
 	int width, width_max, nbuf, trim;
-	size_t size, size_max;
 	int truncate;
 	int nprot;
 
@@ -228,37 +303,27 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP sjustify, SEXP struncate)
 	setAttrib(ans, R_NamesSymbol, names_text(sx));
 
 	width_max = 0;
-	size_max = 0;
 	for (i = 0; i < n; i++) {
 		width = text_width(&text[i]);
-		size = CORPUS_TEXT_SIZE(&text[i]);
 		if (width > width_max) {
 			width_max = width;
 		}
-		if (size > size_max) {
-			size_max = size;
-		}
-
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
+		if (width_max > truncate) {
+			width_max = truncate + 1;
+			break;
 		}
 	}
 
-	if (width_max > truncate) {
-		width_max = truncate + 1;
-	}
-
-	nbuf = size_max + width_max; // conservative
+	nbuf = width_max;
 	buf = (void *)R_alloc(nbuf, sizeof(uint8_t));
-	end = buf + nbuf;
 
 	for (i = 0; i < n; i++) {
 		if (justify != JUSTIFY_RIGHT) {
 			ans_i = format_left(&text[i], trim, truncate,
-					    width_max, buf);
+					    width_max, &buf, &nbuf);
 		} else {
 			ans_i = format_right(&text[i], trim, truncate,
-					     width_max, end);
+					     width_max, &buf, &nbuf);
 		}
 		SET_STRING_ELT(ans, i, ans_i);
 
