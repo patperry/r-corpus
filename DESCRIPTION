@@ -1,6 +1,6 @@
 Package: corpus
 Version: 0.7.0
-Date: 2017-06-20
+Date: 2017-06-22
 Title: Text Corpus Analysis
 Author: Patrick O. Perry [aut, cre],
   Martin Porter and Richard Boulton [ctb, cph] (Snowball),
@@ -8,7 +8,8 @@ Author: Patrick O. Perry [aut, cre],
 Maintainer:  Patrick O. Perry <pperry@stern.nyu.edu>
 Imports: Matrix
 Suggests: testthat
-Description: Text corpus data analysis, with full support for Unicode.  Functions for reading data from newline-delimited JSON files, for normalizing and tokenizing text, and for computing term occurrence frequencies (including n-grams).
+Description: Text corpus data analysis, with full support for Unicode.
+Functions for reading data from newline-delimited JSON files, for normalizing and tokenizing text, for searching for term occurrences, and for computing term occurrence frequencies (including n-grams).
 License: Apache License (== 2.0) | file LICENSE
 URL: https://github.com/patperry/r-corpus
 BugReports: https://github.com/patperry/r-corpus/issues
