@@ -11,12 +11,14 @@ Text corpus analysis functions
 \details{
 This package contains functions for text corpus analysis. To create a text
 object, use the \code{\link{read_ndjson}} or \code{\link{as_text}} function.
-To split text into sentences or token blocks, use the \code{\link{text_split}}
-function.  To specify preprocessing behavior for transforming a text into a
-token sequence, use the \code{\link{token_filter}} function. To tokenize text
-or compute term frequencies, use the \code{\link{text_tokens}},
+To split text into sentences or token blocks, use \code{\link{text_split}}.
+To specify preprocessing behavior for transforming a text into a
+token sequence, use \code{\link{token_filter}}. To tokenize text
+or compute term frequencies, use \code{\link{text_tokens}},
 \code{\link{term_counts}}, \code{\link{term_matrix}} or
-\code{\link{term_frame}} function.
+\code{\link{term_frame}}. To search for or count specific terms,
+use \code{\link{text_locate}}, \code{\link{text_count}}, or
+\code{\link{text_detect}}.
 
 For a complete list of functions, use \code{library(help = "corpus")}.
 }
