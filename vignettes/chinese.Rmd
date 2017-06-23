@@ -16,7 +16,7 @@ and assumes you have `httr`, `stringi`, and `wordcloud` installed.
 We'll start by loading the package and setting a seed to ensure reproducible
 results
 ```{r}
-library(corpus)
+library("corpus")
 set.seed(100)
 ```
 
