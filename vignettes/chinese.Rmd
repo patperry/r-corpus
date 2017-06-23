@@ -153,7 +153,7 @@ with(stats, {
 })
 ```
 
-![Word cloud](figure/chinese-unnamed-chunk-10-1.png)
+![Word cloud](fig/chinese-unnamed-chunk-10-1.png)
 
 ```r
 par(family = font_family) # switch the font back

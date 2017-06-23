@@ -9,10 +9,10 @@ $(CORPUS_LIB):
 
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
 	cd vignettes/src && $(RSCRIPT) -e 'knitr::knit("chinese.Rmd")'
-	rm -f $@
+	rm -f $@ vignettes/fig/chinese-*
 	mv vignettes/src/chinese.md $@
-	mkdir -p vignettes/figure
-	mv vignettes/src/figure/chinese-* vignettes/figure
+	mkdir -p vignettes/fig
+	mv vignettes/src/fig/chinese-* vignettes/fig
 	chmod a-w $@
 
 bench:
@@ -20,6 +20,7 @@ bench:
 
 clean:
 	$(RSCRIPT) -e 'devtools::clean_dll(".")'
+	rm -rf $(BUILT_VIGNETTES)
 
 check: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'Sys.setlocale(locale = "C"); devtools::test(".")'

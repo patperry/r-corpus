@@ -12,7 +12,7 @@ Chinese text handling
 =====================
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(comment = "", fig.path = "figure/chinese-",
+knitr::opts_chunk$set(comment = "", fig.path = "fig/chinese-",
                       fig.retina = TRUE)
 ```
 
