@@ -3,10 +3,8 @@
 [.]so$
 ^[.]git
 ^[.]travis[.]yml$
+^CONDUCT[.]md$
 ^Makefile$
-^README[.]html$
-^README[.]md$
-^README[.]Rmd$
 ^TODO[.]md$
 ^bench$
 ^dist$

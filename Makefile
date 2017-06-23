@@ -23,15 +23,12 @@ clean:
 check: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
 
-dist: vignettes
+dist: $(BUILT_VIGNETTES)
 	mkdir -p dist && cd dist && R CMD build ..
 
-doc:
-	$(RSCRIPT) -e 'rmarkdown::render("README.Rmd", output_format=c("html_document", "md_document"))'
-
-vignettes: $(BUILT_VIGNETTES)
+doc: $(BUILT_VIGNETTES)
 
 install: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'devtools::install(".")'
 
-.PHONY: all bench clean check dist doc install vignettes
+.PHONY: all bench clean check dist doc install

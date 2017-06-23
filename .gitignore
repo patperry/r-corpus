@@ -2,4 +2,3 @@
 *.o
 *.so
 dist/
-README.html
