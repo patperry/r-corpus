@@ -29,14 +29,14 @@ set.seed(100)
 
 ## Documents and stopwords
 
-First download a stopword list suitable for Chinese
+First download a stop word list suitable for Chinese, the Baidu stop words
 ```{r, message = FALSE, warning = FALSE}
 cstops <- "https://raw.githubusercontent.com/ropensci/textworkshop17/master/demos/chineseDemo/ChineseStopWords.txt"
 csw <- paste(readLines(cstops, encoding = "UTF-8"), collapse = "\n") # download
 csw <- gsub("\\s", "", csw)           # remove whitespace
 stop_words <- strsplit(csw, ",")[[1]] # extract the comma-separated words
 ```
-and some demonstration documents. These are in plain text format,
+Next, download some demonstration documents. These are in plain text format,
 encoded in UTF-8.
 ```{r, message = FALSE, warning = FALSE}
 govReports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"

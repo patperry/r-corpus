@@ -8,12 +8,10 @@ $(CORPUS_LIB):
 	$(RSCRIPT) -e 'devtools::compile_dll(".")'
 
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
-	cd vignettes/src && $(RSCRIPT) -e 'knitr::knit("chinese.Rmd")'
-	rm -f $@ vignettes/fig/chinese-*
-	mv vignettes/src/chinese.md $@
-	mkdir -p vignettes/fig
-	mv vignettes/src/fig/chinese-* vignettes/fig
-	chmod a-w $@
+	rm -rf vignettes/fig/chinese-*
+	cd vignettes && $(RSCRIPT) -e 'knitr::knit("src/chinese.Rmd")'
+	mv vignettes/chinese.md $@
+	touch -r $< $@ # copy the source file's time stamp
 
 bench:
 	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'
