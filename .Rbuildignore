@@ -6,6 +6,7 @@
 ^CONDUCT[.]md$
 ^Makefile$
 ^TODO[.]md$
+^appveyor[.]yml$
 ^bench$
 ^dist$
 ^shell[.]sh$
