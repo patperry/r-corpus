@@ -9,13 +9,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette shows how to work with Chinese language materials using the corpus package.
-It's based on Haiyan Wang's rOpenSci [demo](https://github.com/ropensci/textworkshop17/tree/master/demos/chineseDemo)
-and assumes you have `httr`, `RColorBrewer`, `readtext`,
-`stringi` and `wordcloud` installed.
+This vignette shows how to work with Chinese language materials using the
+corpus package.  It's based on Haiyan Wang's [rOpenSci demo](https://github.com/ropensci/textworkshop17/tree/master/demos/chineseDemo)
+and assumes you have `httr`, `stringi`, and `wordcloud` installed.
 
-We'll start by loading the package and setting a
-seed to ensure reproducible results
+We'll start by loading the package and setting a seed to ensure reproducible
+results
 ```{r}
 library(corpus)
 set.seed(100)
@@ -26,20 +25,22 @@ set.seed(100)
 First download a stopword list suitable for Chinese
 ```{r, message=FALSE, warning=FALSE}
 cstops <- "https://raw.githubusercontent.com/ropensci/textworkshop17/master/demos/chineseDemo/ChineseStopWords.txt"
-csw <- readtext::readtext(cstops) # download
-# remove whitespace
-csw <- stringi::stri_replace_all_charclass(csw$text, "\\p{WHITE_SPACE}", "")
-# extract the comma-separated words
-stop_words <- stringi::stri_split(csw, fixed = ",")[[1]]
+csw <- paste(readLines(cstops, encoding = "UTF-8"), collapse = "\n") # download
+csw <- gsub("\\s", "", csw)           # remove whitespace
+stop_words <- strsplit(csw, ",")[[1]] # extract the comma-separated words
 ```
-and some demonstration documents. These are in JSON format.
+and some demonstration documents. These are in plain text format,
+encoded in UTF-8.
 ```{r, message=FALSE, warning=FALSE}
 govReports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
 raw <- httr::GET(govReports)
 paths <- sapply(httr::content(raw), function(x) x$path)
 names <- tools::file_path_sans_ext(basename(paths))
 urls <- sapply(httr::content(raw), function(x) x$download_url)
-text <- readtext::readtext(urls)$text
+text <- sapply(urls, function(url) paste(readLines(url, warn = FALSE,
+                                                   encoding = "UTF-8"),
+                                         collapse = "\n"))
+names(text) <- names
 ```
 
 ## Tokenization
@@ -54,7 +55,7 @@ and then manually insert zero-width spaces between tokens.
 ```{r}
 toks <- stringi::stri_split_boundaries(text, type = "word")
 dict <- unique(c(toks, recursive = TRUE)) # unique words
-text2 <- sapply(toks, stringi::stri_join, collapse = "\u200B")
+text2 <- sapply(toks, paste, collapse = "\u200B")
 ```
 and put the input text in a data frame for convenient analysis
 ```{r}
@@ -92,11 +93,14 @@ suitable for Chinese ('STSong' is a good choice for Mac users). We switch to
 this font, create the wordcloud, then switch back.
 ```{r, message=FALSE, warning=FALSE}
 font_family <- par("family") # the previous font family
-par(family = "STSong") # change to a nice chinese font
+par(family = "STSong") # change to a nice Chinese font
+# use RColorBrewer::brewer.pal(8, "Dark2") as a color palette
+palette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E",
+             "#E6AB02", "#A6761D", "#666666")
 with(stats, {
-  wordcloud::wordcloud(term, count, min.freq = 500,
-    random.order = FALSE, rot.per = 0.25,
-    colors = RColorBrewer::brewer.pal(8, "Dark2"))
+    wordcloud::wordcloud(term, count, min.freq = 500,
+                         random.order = FALSE, rot.per = 0.25,
+                         colors = palette)
 })
 par(family = font_family) # switch the font back
 ```

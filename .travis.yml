@@ -2,7 +2,8 @@ language: R
 cache: packages
 
 r_packages:
-  - readtext
+  - httr
+  - wordcloud
 
 r_github_packages:
   - jimhester/covr
