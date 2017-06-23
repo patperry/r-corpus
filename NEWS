@@ -1,5 +1,8 @@
 Changes in version 0.8.0
 
+ * Converted the "chinese" demo to a vignette. Thanks to Will Lowe for
+   contributing.
+
 
 Changes in version 0.7.0 (2017-06-22)
 
