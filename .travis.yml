@@ -1,6 +1,9 @@
 language: R
 cache: packages
 
+r_packages:
+  - readtext
+
 r_github_packages:
   - jimhester/covr
 
