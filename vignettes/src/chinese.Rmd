@@ -11,7 +11,10 @@ vignette: >
 Chinese text handling
 =====================
 
-
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(comment = "", fig.path = "figure/chinese-",
+                      fig.retina = TRUE)
+```
 
 This vignette shows how to work with Chinese language materials using the
 corpus package.  It's based on Haiyan Wang's [rOpenSci demo](https://github.com/ropensci/textworkshop17/tree/master/demos/chineseDemo)
@@ -19,8 +22,7 @@ and assumes you have `httr`, `stringi`, and `wordcloud` installed.
 
 We'll start by loading the package and setting a seed to ensure reproducible
 results
-
-```r
+```{r}
 library("corpus")
 set.seed(100)
 ```
@@ -28,8 +30,7 @@ set.seed(100)
 ## Documents and stopwords
 
 First download a stopword list suitable for Chinese
-
-```r
+```{r, message = FALSE, warning = FALSE}
 cstops <- "https://raw.githubusercontent.com/ropensci/textworkshop17/master/demos/chineseDemo/ChineseStopWords.txt"
 csw <- paste(readLines(cstops, encoding = "UTF-8"), collapse = "\n") # download
 csw <- gsub("\\s", "", csw)           # remove whitespace
@@ -37,8 +38,7 @@ stop_words <- strsplit(csw, ",")[[1]] # extract the comma-separated words
 ```
 and some demonstration documents. These are in plain text format,
 encoded in UTF-8.
-
-```r
+```{r, message = FALSE, warning = FALSE}
 govReports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
 raw <- httr::GET(govReports)
 paths <- sapply(httr::content(raw), function(x) x$path)
@@ -59,15 +59,13 @@ usage rates.
 
 We use `stringi`'s tokenizer, collect a dictionary of the word types,
 and then manually insert zero-width spaces between tokens.
-
-```r
+```{r}
 toks <- stringi::stri_split_boundaries(text, type = "word")
 dict <- unique(c(toks, recursive = TRUE)) # unique words
 text2 <- sapply(toks, paste, collapse = "\u200B")
 ```
 and put the input text in a data frame for convenient analysis
-
-```r
+```{r}
 data <- data.frame(name = names, text = as_text(text2),
                    stringsAsFactors = FALSE)
 ```
@@ -75,66 +73,24 @@ data <- data.frame(name = names, text = as_text(text2),
 We then specify a token filter to determine what is counted by other corpus
 functions.  Here we set `combine = dict` so that multi-word
 tokens get treated as single entities
-
-```r
+```{r}
 f <- token_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
 f
-```
-
-```
-Token filter with the following options:
-
-	map_case: TRUE
-	map_compat: TRUE
-	map_quote: TRUE
-	remove_ignorable: TRUE
-	stemmer: NA
-	stem_except:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" ...
-	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
-	drop_letter: FALSE
-	drop_mark: FALSE
-	drop_number: FALSE
-	drop_symbol: FALSE
-	drop_punct: TRUE
-	drop_other: FALSE
-	drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
-	drop_except: NULL
 ```
 
 ## Document statistics
 
 Using the token filter we compute type, token, and sentence counts
-
-```r
+```{r}
 head(data.frame(text = data$name,
                  types = text_ntype(data, f),
                  tokens = text_ntoken(data, f),
                  sentences = text_nsentence(data)))
 ```
-
-```
-                     text types tokens sentences
-1 1954政府工作报告_周恩来  2023   8694       453
-2 1955政府工作报告_李富春  2780  21079       981
-3 1956政府工作报告_李先念  1336   8821       495
-4 1957政府工作报告_周恩来  2331  13007       704
-5 1958政府工作报告_薄一波  1969   9346       412
-6 1959政府工作报告_周恩来  2261  11638       577
-```
 and use it to examine term frequencies
-
-```r
+```{r}
 stats <- term_counts(data, f)
 head(stats, n = 5)
-```
-
-```
-  term count
-1 发展  5627
-2 经济  5036
-3 社会  4255
-4 建设  4248
-5 改革  2931
 ```
 
 ## Visualization
@@ -142,8 +98,7 @@ head(stats, n = 5)
 We can visualize word frequencies with a wordcloud.  You may want to use a font
 suitable for Chinese ('STSong' is a good choice for Mac users). We switch to
 this font, create the wordcloud, then switch back.
-
-```r
+```{r, message = FALSE, warning = FALSE, fig.cap = "Word cloud"}
 font_family <- par("family") # the previous font family
 par(family = "STSong") # change to a nice Chinese font
 with(stats, {
@@ -151,28 +106,12 @@ with(stats, {
                          random.order = FALSE, rot.per = 0.25,
                          colors = RColorBrewer::brewer.pal(8, "Dark2"))
 })
-```
-
-![Word cloud](figure/chinese-unnamed-chunk-10-1.png)
-
-```r
 par(family = font_family) # switch the font back
 ```
 
 ## Keyword in context
 
 Finally, here's how we might show terms in their local context
-
-```r
+```{r}
 head(text_locate(data, "\u6027", f))
-```
-
-```
-  text term                     before instance                      after
-1    1   性  …方面的重要问题之一是计划    性    不足。我们现在还有许多计… 
-2    1   性  …术和提高劳动生产率的积极    性    ，对于发展经济建设很有害… 
-3    1   性  …表现了人民群众的政治积极    性    和政治觉悟的提高，充分表… 
-4    1   性  …、氢武器和其他大规模毁灭    性    武器的愿望必须满足。这些… 
-5    2   性  …在劳动战线上的高度的积极    性    和创造性，依靠全国人民在… 
-6    2   性  …线上的高度的积极性和创造    性    ，依靠全国人民在改革土地… 
 ```

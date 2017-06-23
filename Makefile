@@ -1,28 +1,39 @@
 
 CORPUS_LIB= src/corpus.so
+BUILT_VIGNETTES= vignettes/chinese.Rmd
+RSCRIPT= Rscript
+
+vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
+	cd vignettes/src && $(RSCRIPT) -e 'knitr::knit("chinese.Rmd")'
+	rm -f $@
+	mv vignettes/src/chinese.md $@
+	mkdir -p vignettes/figure
+	mv vignettes/src/figure/chinese-* vignettes/figure
+	chmod a-w $@
 
 all: $(CORPUS_LIB)
 
 $(CORPUS_LIB):
-	Rscript -e 'devtools::compile_dll(".")'
+	$(RSCRIPT) -e 'devtools::compile_dll(".")'
 
 bench:
-	Rscript -e 'devtools::load_all("."); source("bench/bench.R")'
+	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'
 
 clean:
-	Rscript -e 'devtools::clean_dll(".")'
+	$(RSCRIPT) -e 'devtools::clean_dll(".")'
 
 check: $(CORPUS_LIB)
-	Rscript -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
+	$(RSCRIPT) -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
 
-dist:
+dist: vignettes
 	mkdir -p dist && cd dist && R CMD build ..
 
 doc:
-	Rscript -e 'rmarkdown::render("README.Rmd", output_format=c("html_document", "md_document"))'
-	
+	$(RSCRIPT) -e 'rmarkdown::render("README.Rmd", output_format=c("html_document", "md_document"))'
+
+vignettes: $(BUILT_VIGNETTES)
 
 install: $(CORPUS_LIB)
 	Rscript -e 'devtools::install(".")'
 
-.PHONY: all bench clean check dist doc install
+.PHONY: all bench clean check dist doc install vignettes
