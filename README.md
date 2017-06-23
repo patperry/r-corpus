@@ -1,7 +1,8 @@
 Corpus (R Package)
 ==================
 
-[![Build Status][travis-badge]][travis]
+[![Build Status (Linux)][travis-badge]][travis]
+[![Build Status (Windows)][appveyor-badge]][appveyor]
 [![Coverage Status][codecov-badge]][codecov]
 [![CRAN_Status_Badge][cran-badge]][cran]
 [![CRAN RStudio mirror downloads][cranlogs-badge]][cran]
@@ -222,6 +223,8 @@ License
 
 
 [apache]: https://www.apache.org/licenses/LICENSE-2.0.html "Apache License, Version 2.0"
+[appveyor]: https://ci.appveyor.com/project/patperry/r-corpus/branch/master "Continuous Integration (Windows)"
+[appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/patperry/r-corpus?branch=master&svg=true "Continuous Inegration Badge (Windows)"
 [bench-term-matrix]: https://github.com/patperry/bench-term-matrix#readme "Term Matrix Benchmark"
 [bench-ndjson]: https://github.com/jeroen/ndjson-benchmark#readme "NDJSON Benchmark"
 [building]: https://github.com/patperry/r-corpus#building-from-source "Building from Source"
@@ -238,6 +241,6 @@ License
 [ndjson]: http://ndjson.org/ "Newline-Delimited JSON"
 [nfkc]: http://unicode.org/reports/tr15/ "Unicode Normalization Forms"
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries "Unicode Text Segmentation, Sentence Boundaries"
-[travis]: https://travis-ci.org/patperry/r-corpus "Continuous Integration"
-[travis-badge]: https://api.travis-ci.org/patperry/r-corpus.svg?branch=master "Continuous Integration Badge"
+[travis]: https://travis-ci.org/patperry/r-corpus "Continuous Integration (Linux)"
+[travis-badge]: https://api.travis-ci.org/patperry/r-corpus.svg?branch=master "Continuous Integration Badge (Linux)"
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries "Unicode Text Segmentation, Word Boundaries"
