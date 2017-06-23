@@ -4,7 +4,7 @@ Corpus (R Package)
 [![Build Status][travis-badge]][travis]
 [![Coverage Status][codecov-badge]][codecov]
 [![CRAN_Status_Badge][cran-badge]][cran]
-![CRAN RStudio mirror downloads][cranlogs-badge]
+[![CRAN RStudio mirror downloads][cranlogs-badge]][cran]
 
 Text corpus analysis in R, with full support for Unicode.
 
