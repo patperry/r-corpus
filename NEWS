@@ -1,3 +1,6 @@
+Changes in version 0.8.0
+
+
 Changes in version 0.7.0 (2017-06-22)
 
  * Add text_locate(), for searching for specific terms in text,
