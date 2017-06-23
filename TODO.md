@@ -6,8 +6,6 @@ To Do
 Features
 --------
 
- * `term_frame()`
-
  * Concat operator `c()` for text.
 
  * Need implementations for the `.S3PrimitiveGenerics` for `text`.
@@ -19,10 +17,10 @@ Features
 
  * `vocab()` for type/token frequencies (?)
 
- * Some sort of key words in context (KWIC) function: `text_locate()`
-
- * See if text contains a term: `text_detect(,terms)`;
-   also `text_subset(,terms)`
+ * `text_subset(,terms)`
 
  * Need calls to `R_CheckUserInterrupt()` in long-running computations
    (without leaking memory).
+
+ * Passing a `token_filter` everywhere is annoying, error-prone. Allow
+   setting a `filter` property on text objects to act as a default.
