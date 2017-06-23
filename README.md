@@ -203,7 +203,8 @@ Contributing
 ------------
 
 The project maintainer welcomes contributions in the form of feature requests,
-bug reports, comments, or code.  If you'd like to contribute, either
+bug reports, comments, unit tests, vignettes, or other code.  If you'd like to
+contribute, either
 
  + fork the source code and submit a pull request (pay special attention to
    the instructions for [building from source][building]);
