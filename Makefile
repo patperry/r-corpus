@@ -1,7 +1,11 @@
-
+RSCRIPT= Rscript --vanilla
 CORPUS_LIB= src/corpus.so
 BUILT_VIGNETTES= vignettes/chinese.Rmd
-RSCRIPT= Rscript
+
+all: $(CORPUS_LIB) $(BUILT_VIGNETTES)
+
+$(CORPUS_LIB):
+	$(RSCRIPT) -e 'devtools::compile_dll(".")'
 
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
 	cd vignettes/src && $(RSCRIPT) -e 'knitr::knit("chinese.Rmd")'
@@ -10,11 +14,6 @@ vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
 	mkdir -p vignettes/figure
 	mv vignettes/src/figure/chinese-* vignettes/figure
 	chmod a-w $@
-
-all: $(CORPUS_LIB)
-
-$(CORPUS_LIB):
-	$(RSCRIPT) -e 'devtools::compile_dll(".")'
 
 bench:
 	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'
@@ -34,6 +33,6 @@ doc:
 vignettes: $(BUILT_VIGNETTES)
 
 install: $(CORPUS_LIB)
-	Rscript -e 'devtools::install(".")'
+	$(RSCRIPT) -e 'devtools::install(".")'
 
 .PHONY: all bench clean check dist doc install vignettes
