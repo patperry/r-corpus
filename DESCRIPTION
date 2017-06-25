@@ -6,6 +6,7 @@ Author: Patrick O. Perry [aut, cre],
   Martin Porter and Richard Boulton [ctb, cph] (Snowball),
   Unicode, Inc. [ctb, cph] (Unicode Character Database)
 Maintainer: Patrick O. Perry <pperry@stern.nyu.edu>
+Depends: R (>= 2.10)
 Imports: Matrix
 Suggests:
   knitr,

@@ -8,6 +8,8 @@
 ^TODO[.]md$
 ^appveyor[.]yml$
 ^bench$
+^data/federalist$
+^data/federalist/
 ^dist$
 ^shell[.]sh$
 ^src/corpus/[.]git$
