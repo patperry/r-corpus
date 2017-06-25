@@ -7,6 +7,9 @@ all: $(CORPUS_LIB) $(BUILT_VIGNETTES)
 $(CORPUS_LIB):
 	$(RSCRIPT) -e 'devtools::compile_dll(".")'
 
+README: README.md
+	sed -e '/^\[!\[/d' $< > $@
+
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
 	rm -rf vignettes/fig/chinese-*
 	cd vignettes && $(RSCRIPT) -e 'knitr::knit("src/chinese.Rmd")'
@@ -23,10 +26,10 @@ clean:
 check: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
 
-dist: $(BUILT_VIGNETTES)
+dist: $(BUILT_VIGNETTES) README
 	mkdir -p dist && cd dist && R CMD build ..
 
-doc: $(BUILT_VIGNETTES)
+doc: $(BUILT_VIGNETTES) README
 
 install: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'devtools::install(".")'

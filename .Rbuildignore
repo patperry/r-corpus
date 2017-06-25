@@ -5,6 +5,7 @@
 ^[.]travis[.]yml$
 ^CONDUCT[.]md$
 ^Makefile$
+^README[.]md$
 ^TODO[.]md$
 ^appveyor[.]yml$
 ^bench$
