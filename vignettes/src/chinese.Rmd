@@ -1,19 +1,14 @@
----
-title: "Chinese text handling"
-date: "2017-06-23"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Chinese text handling}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
+<!--
+%\VignetteIndexEntry{Chinese text handling}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+-->
 
 Chinese text handling
 =====================
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(comment = "", fig.path = "fig/chinese-",
-                      fig.retina = TRUE)
+knitr::opts_chunk$set(comment = "", fig.path = "chinese-", fig.retina = TRUE)
 ```
 
 This vignette shows how to work with Chinese language materials using the
@@ -98,7 +93,7 @@ head(stats, n = 5)
 We can visualize word frequencies with a wordcloud.  You may want to use a font
 suitable for Chinese ('STSong' is a good choice for Mac users). We switch to
 this font, create the wordcloud, then switch back.
-```{r, message = FALSE, warning = FALSE, fig.cap = "Word cloud"}
+```{r wordcloud, message = FALSE, warning = FALSE, fig.cap = "Word cloud"}
 font_family <- par("family") # the previous font family
 par(family = "STSong") # change to a nice Chinese font
 with(stats, {

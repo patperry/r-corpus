@@ -1,12 +1,8 @@
----
-title: "Chinese text handling"
-date: "2017-06-23"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Chinese text handling}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
+<!--
+%\VignetteIndexEntry{Chinese text handling}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+-->
 
 Chinese text handling
 =====================
@@ -153,7 +149,7 @@ with(stats, {
 })
 ```
 
-![Word cloud](fig/chinese-unnamed-chunk-10-1.png)
+![Word cloud](chinese-wordcloud-1.png)
 
 ```r
 par(family = font_family) # switch the font back

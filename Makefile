@@ -11,10 +11,8 @@ README: README.md
 	sed -e '/^\[!\[/d' $< > $@
 
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
-	rm -rf vignettes/fig/chinese-*
 	cd vignettes && $(RSCRIPT) -e 'knitr::knit("src/chinese.Rmd")'
-	mv vignettes/chinese.md $@
-	touch -r $< $@ # copy the source file's time stamp
+	mv vignettes/chinese.md $@ && touch -r $< $@
 
 bench:
 	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'
