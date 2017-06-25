@@ -211,7 +211,9 @@ def clean_body(b):
     return body + "\n"
 
 
-def superscript(num):
+def superscript(num, unicode=False):
+    if not unicode:
+        return "[" + str(num) + "]"
     s = ""
     for n in str(num):
         n = int(n)
