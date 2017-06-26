@@ -302,7 +302,7 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 		justify = JUSTIFY_RIGHT;
 	} else {
 		justify = JUSTIFY_LEFT; // "none"; no "centre"
-		trim = 0;
+		trim = 1;
 	}
 
 	if (swidth != R_NilValue) {
