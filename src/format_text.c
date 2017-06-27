@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <limits.h>
 #include <stddef.h>
@@ -95,7 +96,7 @@ static int char_width(uint32_t code, int type, int utf8)
 		return 0;
 	}
 
-	if (CORPUS_UTF16_ENCODE_LEN(code) > 1) {
+	if (code > 0xFFFF) {
 		// R doesn't handle these values
 		//   UTF-8 locale: \uXXXXYYYY   (10)
 		//   C     locale: <U+XXXXYYYY> (12)
@@ -124,9 +125,6 @@ static int char_width(uint32_t code, int type, int utf8)
 	// CORPUS_CHARWIDTH_OTHER; need to escape
 
 	if (code < 0x80) {
-		if (isprint((int)code)) {
-			return 1;
-		}
 		switch (code) {
 		case '\a':
 		case '\b':
@@ -141,11 +139,8 @@ static int char_width(uint32_t code, int type, int utf8)
 		}
 	}
 
-	if (CORPUS_UTF16_ENCODE_LEN(code) == 1) {
-		return 6; // \uXXXX
-	} else {
-		return 10; // \UXXXXYYYY
-	}
+	assert(code <= 0xFFFF);
+	return 6; // \uXXXX
 }
 
 
