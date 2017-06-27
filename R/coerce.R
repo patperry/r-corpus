@@ -68,12 +68,12 @@ as_group <- function(group, n)
 }
 
 
-as_kind <- function(type, kind)
+as_kind <- function(kind)
 {
     if (is.null(kind) || all(is.na(kind))) {
         return(NULL)
     } else if (!is.character(kind)) {
-        stop(paste(type, "'kind' must be a character vector"))
+        stop(paste("'kind' must be a character vector"))
     }
     kind <- as.character(kind)
     kind <- unique(kind[!is.na(kind)])

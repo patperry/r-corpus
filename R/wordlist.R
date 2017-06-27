@@ -16,31 +16,34 @@
 abbreviations <- function(kind = "english")
 {
     context <- sys.call()
-    wordlist("abbreviations", kind, context,
-             function(k) .Call(C_abbreviations, k))
+    withCallingHandlers({
+        wordlist(kind, function(k) .Call(C_abbreviations, k))
+    }, error = function(e, ctx = context) {
+        e$call <- ctx
+        stop(e)
+    })
 }
 
 
 stopwords <- function(kind = "english")
 {
     context <- sys.call()
-    wordlist("stopwords", kind, context,
-             function(k) .Call(C_stopwords, k))
+    withCallingHandlers({
+        wordlist(kind, function(k) .Call(C_stopwords, k))
+    }, error = function(e, ctx = context) {
+        e$call <- ctx
+        stop(e)
+    })
 }
 
 
-wordlist <- function(type, kind, context, call)
+wordlist <- function(kind, call)
 {
-    kind <- as_kind(type, kind)
+    kind <- as_kind(kind)
 
     words <- character()
     for (k in kind) {
-        withCallingHandlers({
-            wk <- call(k)
-        }, error = function(e, ctx = context) {
-            e$call <- ctx
-            stop(e)
-        })
+        wk <- call(k)
         words <- c(words, wk)
     }
 

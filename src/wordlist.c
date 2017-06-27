@@ -14,40 +14,58 @@
  * limitations under the License.
  */
 
-#include <stdint.h>
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
 #include "corpus/src/typemap.h"
+#include "corpus/src/tree.h"
+#include "corpus/src/sentscan.h"
+#include "corpus/src/sentfilter.h"
 #include "rcorpus.h"
 
 
-SEXP stopwords(SEXP skind)
+static SEXP wordlist(const uint8_t **(*callback)(const char *, int *),
+		     SEXP skind)
 {
 	SEXP ans;
-	const char **words;
+	const char **strs;
 	const char *kind;
 	int i, n;
 
-        PROTECT(skind = coerceVector(skind, STRSXP));
+	if (skind == R_NilValue) {
+		return R_NilValue;
+	}
 
+        PROTECT(skind = coerceVector(skind, STRSXP));
 	if (STRING_ELT(skind, 0) == NA_STRING) {
 		UNPROTECT(1);
 		return R_NilValue;
 	}
 
 	kind = translateCharUTF8(STRING_ELT(skind, 0));
-	words = (const char **)corpus_stopword_list(kind, &n);
+	strs = (const char **)callback(kind, &n);
 
-	if (!words) {
-		error("unknown stopwords kind: '%s'", kind);
+	if (!strs) {
+		error("unknown kind (\"%s\")", kind);
 	}
 
 	PROTECT(ans = allocVector(STRSXP, n));
 	for (i = 0; i < n; i++) {
-		SET_STRING_ELT(ans, i, mkCharCE(words[i], CE_UTF8));
+		SET_STRING_ELT(ans, i, mkCharCE(strs[i], CE_UTF8));
 	}
 
 	UNPROTECT(2);
 	return ans;
+}
+
+
+SEXP abbreviations(SEXP skind)
+{
+	return wordlist(corpus_sentsuppress_list, skind);
+}
+
+
+SEXP stopwords(SEXP skind)
+{
+	return wordlist(corpus_stopword_list, skind);
 }
