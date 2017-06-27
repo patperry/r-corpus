@@ -267,8 +267,21 @@ test_that("'format' error for invalid justify", {
 })
 
 
-test_that("'format' error for invalid trim", {
+test_that("'format' error for invalid logicals", {
     text <- as_text("")
     expect_error(format(text, trim = NA), "'trim' should be TRUE or FALSE",
+                 fixed = TRUE)
+    expect_error(format(text, na.encode = NA),
+                 "'na.encode' should be TRUE or FALSE", fixed = TRUE)
+})
+
+
+test_that("'format' error for invalid integers", {
+    text <- as_text("")
+    expect_error(format(text, chars = "3"),
+                 "'chars' should be an integer scalar",
+                 fixed = TRUE)
+    expect_error(format(text, width = "3"),
+                 "'width' should be an integer scalar",
                  fixed = TRUE)
 })
