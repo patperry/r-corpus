@@ -35,11 +35,11 @@ static void encode_ascii(uint32_t code, uint8_t **bufptr)
 	if (code < 0x80) {
 		*dst++ = (uint8_t)code;
 	} else if (code <= 0xFFFF) {
-		sprintf(dst, "<U+%04x", (unsigned)code);
+		sprintf(dst, "<U+%04X", (unsigned)code);
 		dst += 7;
 		*dst++ = '>'; // overwrite trailing \0
 	} else {
-		sprintf(dst, "<U+%08x", (unsigned)code);
+		sprintf(dst, "<U+%08X", (unsigned)code);
 		dst += 11;
 		*dst++ = '>';
 	}
@@ -56,11 +56,11 @@ static void rencode_ascii(uint32_t code, uint8_t **bufptr)
 		*--dst = (uint8_t)code;
 	} else if (code <= 0xFFFF) {
 		dst -= 8;
-		sprintf(dst, "<U+%04x", (unsigned)code);
+		sprintf(dst, "<U+%04X", (unsigned)code);
 		dst[7] = '>';
 	} else {
 		dst -= 12;
-		sprintf(dst, "<U+%08x", (unsigned)code);
+		sprintf(dst, "<U+%08X", (unsigned)code);
 		dst[11] = '>';
 	}
 
@@ -210,6 +210,15 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 	*nbufptr = nbuf;
 }
 
+#define ENSURE(nbyte) \
+	do { \
+		if (dst + (nbyte) > end) { \
+			off = (int)(dst - buf); \
+			grow_buffer(&buf, &nbuf, nbyte); \
+			dst = buf + off; \
+			end = buf + nbuf; \
+		} \
+	} while (0)
 
 static SEXP format_left(const struct corpus_text *text, int trim,
 			int chars, int width_max, int utf8,
@@ -244,13 +253,7 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 		}
 
 		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
-		if (dst + nbyte > end) {
-			off = (int)(dst - buf);
-
-			grow_buffer(&buf, &nbuf, nbyte);
-			dst = buf + off;
-			end = buf + nbuf;
-		}
+		ENSURE(nbyte);
 
 		if (trunc) {
 			if (utf8) {
@@ -268,13 +271,7 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 	}
 
 	if (!trim && ((fill = width_max - width)) > 0) {
-		if (dst + fill > end) {
-			off = (int)(dst - buf);
-
-			grow_buffer(&buf, &nbuf, fill);
-			dst = buf + off;
-			end = buf + nbuf;
-		}
+		ENSURE(fill);
 
 		while (fill-- > 0) {
 			*dst++ = ' ';
@@ -310,12 +307,7 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 	if ((fill = width_max - fullwidth) > 0) {
 		bfill = fill / 2;
 
-		if (dst + bfill > end) {
-			off = (int)(dst - buf);
-			grow_buffer(&buf, &nbuf, bfill);
-			dst = buf + off;
-			end = buf + nbuf;
-		}
+		ENSURE(bfill);
 
 		for (i = 0; i < bfill; i++) {
 			*dst++ = ' ';
@@ -342,13 +334,7 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 		}
 
 		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
-		if (dst + nbyte > end) {
-			off = (int)(dst - buf);
-
-			grow_buffer(&buf, &nbuf, nbyte);
-			dst = buf + off;
-			end = buf + nbuf;
-		}
+		ENSURE(nbyte);
 
 		if (trunc) {
 			if (utf8) {
@@ -366,13 +352,7 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 	}
 
 	if (((fill = width_max - width - bfill)) > 0) {
-		if (dst + fill > end) {
-			off = (int)(dst - buf);
-
-			grow_buffer(&buf, &nbuf, fill);
-			dst = buf + off;
-			end = buf + nbuf;
-		}
+		ENSURE(fill);
 
 		while (fill-- > 0) {
 			*dst++ = ' ';
@@ -386,6 +366,18 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 	len = (int)(dst - buf);
 	return mkCharLenCE((char *)buf, len, CE_UTF8);
 }
+
+#undef ENSURE
+#define ENSURE(nbyte) \
+	do { \
+		if (dst < buf + nbyte) { \
+			off = dst - buf; \
+			len = nbuf - off; \
+			grow_buffer(&buf, &nbuf, nbyte); \
+			dst = buf + nbuf - len; \
+			memmove(dst, buf + off, len); \
+		} \
+	} while (0)
 
 
 static SEXP format_right(const struct corpus_text *text, int trim,
@@ -421,15 +413,7 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 		}
 
 		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
-
-		if (dst < buf + nbyte) {
-			off = dst - buf;
-			len = nbuf - off;
-
-			grow_buffer(&buf, &nbuf, nbyte);
-			dst = buf + nbuf - len;
-			memmove(dst, buf + off, len);
-		}
+		ENSURE(nbyte);
 
 		if (trunc) {
 			if (utf8) {
@@ -447,14 +431,7 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 	}
 
 	if (!trim && ((fill = width_max - width)) > 0) {
-		if (dst < buf + fill) {
-			off = dst - buf;
-			len = nbuf - off;
-
-			grow_buffer(&buf, &nbuf, fill);
-			dst = buf + nbuf - len;
-			memmove(dst, buf + off, len);
-		}
+		ENSURE(fill);
 
 		while (fill-- > 0) {
 			*--dst = ' ';
@@ -522,13 +499,9 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 		trim = 1;
 	}
 
-	if (swidth != R_NilValue) {
-		PROTECT(swidth = coerceVector(swidth, INTSXP)); nprot++;
-		width_max = INTEGER(swidth)[0];
-		if (width_max == NA_INTEGER || width_max < 0) {
-			width_max = 0;
-		}
-	} else {
+	PROTECT(swidth = coerceVector(swidth, INTSXP)); nprot++;
+	width_max = INTEGER(swidth)[0];
+	if (width_max == NA_INTEGER || width_max < 0) {
 		width_max = 0;
 	}
 

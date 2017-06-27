@@ -137,10 +137,12 @@ test_that("'format' can handle high code points in C locale", {
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    raw <- "\U00010000"
+    raw <- c("\U00010000", "\U0010ffff")
     text <- as_text(raw)
-    expect_equal(format(text, justify = "left"), "<U+00010000>")
-    expect_equal(format(text, justify = "right"), "<U+00010000>")
+    fmt <- c("<U+00010000>", "<U+0010FFFF>")
+
+    expect_equal(format(text, justify = "left"), fmt)
+    expect_equal(format(text, justify = "right"), fmt)
 })
 
 
@@ -150,7 +152,7 @@ test_that("'format' can handle high code points in Unicode locale", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    raw <- "\U00010000"
+    raw <- c("\U00010000", "\U0010ffff")
     text <- as_text(raw)
     expect_equal(format(text, justify = "left"), raw)
     expect_equal(format(text, justify = "right"), raw)
@@ -192,6 +194,25 @@ test_that("'format' can handle marks", {
     expect_equal(format(text, chars = 1, justify = "left"), raw)
     expect_equal(format(text, chars = 1, justify = "centre"), raw)
     expect_equal(format(text, chars = 1, justify = "right"), raw)
+})
+
+
+test_that("'format' can handle UTF-8 'Other' codes", {
+    raw <- "\ufffd"
+    text <- as_text(raw)
+
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    expect_equal(format(text, justify = "left"), "<U+FFFD>")
+    expect_equal(format(text, justify = "centre"), "<U+FFFD>")
+    expect_equal(format(text, justify = "right"), "<U+FFFD>")
+
+    switch_ctype("Unicode")
+
+    expect_equal(format(text, justify = "left"), raw)
+    expect_equal(format(text, justify = "centre"), raw)
+    expect_equal(format(text, justify = "right"), raw)
 })
 
 
