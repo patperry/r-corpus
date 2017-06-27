@@ -198,15 +198,15 @@ test_that("'format' can handle marks", {
 
 
 test_that("'format' can handle UTF-8 'Other' codes", {
-    raw <- "\ufffd"
+    raw <- "\u2072" # unassigned
     text <- as_text(raw)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(format(text, justify = "left"), "<U+FFFD>")
-    expect_equal(format(text, justify = "centre"), "<U+FFFD>")
-    expect_equal(format(text, justify = "right"), "<U+FFFD>")
+    expect_equal(format(text, justify = "left"), "<U+2072>")
+    expect_equal(format(text, justify = "centre"), "<U+2072>")
+    expect_equal(format(text, justify = "right"), "<U+2072>")
 
     switch_ctype("Unicode")
 
