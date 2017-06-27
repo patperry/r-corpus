@@ -43,7 +43,7 @@ SEXP abbreviations(SEXP skind)
 	strs = (const char **)corpus_sentsuppress_list(kind, &n);
 
 	if (!strs) {
-		error("unknown abbreviations kind: '%s'", kind);
+		error("unknown abbreviations kind: \"%s\"", kind);
 	}
 
 	PROTECT(ans = allocVector(STRSXP, n));
