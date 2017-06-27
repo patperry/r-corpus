@@ -13,36 +13,24 @@
 #  limitations under the License.
 
 
-abbreviations <- function(kind = "english")
+with_rethrow <- function(expr)
 {
-    with_rethrow({
-        wordlist(kind, function(k) .Call(C_abbreviations, k))
-    })
-}
-
-
-stopwords <- function(kind = "english")
-{
-    with_rethrow({
-        wordlist(kind, function(k) .Call(C_stopwords, k))
-    })
-}
-
-
-wordlist <- function(kind, call)
-{
-    kind <- as_kind(kind)
-
-    words <- character()
-    for (k in kind) {
-        wk <- call(k)
-        words <- c(words, wk)
-    }
-
-    if (length(words) == 0) {
-        return(NULL)
-    }
-
-    words <- sort(unique(words))
-    words
+    parentcall <- sys.call(1)
+    eval(envir = parent.frame(),
+        withCallingHandlers(expr,
+            error = function(e, call = parentcall) {
+                e$call <- call
+                stop(e)
+            },
+            warning = function(w, call = parentcall) {
+                w$call <- call
+                warning(w)
+                invokeRestart("muffleWarning")
+            },
+            message = function(m, call = parentcall) {
+                m$call <- call
+                message(m)
+            }
+        )
+    )
 }
