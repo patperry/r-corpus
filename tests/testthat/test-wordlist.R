@@ -26,6 +26,12 @@ test_that("'abbreviations' errors for unknown kinds", {
 })
 
 
+test_that("'abbreviations' errors for non-string", {
+    expect_error(abbreviations(1),
+                 "^'kind' must be a character vector$")
+})
+
+
 test_that("'abbreviations' can union lists", {
     x1 <- abbreviations("english")
     x2 <- abbreviations("french")
@@ -37,3 +43,10 @@ test_that("'abbreviations' can union lists", {
 test_that("'stopwords' has common function words", {
     expect_true(all(c("the", "and", "is") %in% stopwords("english")))
 })
+
+
+test_that("'stopwords' errors for unknown kinds", {
+    expect_error(stopwords("xyz"),
+                 '^unknown kind \\("xyz"\\)$')
+})
+
