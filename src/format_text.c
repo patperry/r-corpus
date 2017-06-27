@@ -27,10 +27,86 @@
 #define ELLIPSIS 0x2026
 
 
-static int char_width(uint32_t code, int type)
+static void encode_ascii(uint32_t code, uint8_t **bufptr)
 {
+	char *dst = (char *)*bufptr;
+
+	if (code < 0x80) {
+		*dst++ = (uint8_t)code;
+	} else if (code <= 0xFFFF) {
+		sprintf(dst, "<U+%04x", (unsigned)code);
+		dst += 7;
+		*dst++ = '>'; // overwrite trailing \0
+	} else {
+		sprintf(dst, "<U+%08x", (unsigned)code);
+		dst += 11;
+		*dst++ = '>';
+	}
+
+	*bufptr = (uint8_t *)dst;
+}
+
+
+static void rencode_ascii(uint32_t code, uint8_t **bufptr)
+{
+	char *dst = (char *)*bufptr;
+
+	if (code < 0x80) {
+		*--dst = (uint8_t)code;
+	} else if (code <= 0xFFFF) {
+		dst -= 8;
+		sprintf(dst, "<U+%04x", (unsigned)code);
+		dst[7] = '>';
+	} else {
+		dst -= 12;
+		sprintf(dst, "<U+%08x", (unsigned)code);
+		dst[11] = '>';
+	}
+
+	*bufptr = (uint8_t *)dst;
+}
+
+
+static void encode(int utf8, uint32_t code, uint8_t **bufptr)
+{
+	if (utf8) {
+		corpus_encode_utf8(code, bufptr);
+	} else {
+		encode_ascii(code, bufptr);
+	}
+}
+
+
+static void rencode(int utf8, uint32_t code, uint8_t **bufptr)
+{
+	if (utf8) {
+		corpus_rencode_utf8(code, bufptr);
+	} else {
+		rencode_ascii(code, bufptr);
+	}
+}
+
+
+static int char_width(uint32_t code, int type, int utf8)
+{
+	(void)utf8;
+
+	if (type == CORPUS_CHARWIDTH_IGNORABLE) {
+		return 0;
+	}
+
+	if (CORPUS_UTF16_ENCODE_LEN(code) > 1) {
+		// R doesn't handle these values
+		//   UTF-8 locale: \uXXXXYYYY   (10)
+		//   C     locale: <U+XXXXYYYY> (12)
+		return utf8 ? 10 : 12; 
+	}
+
+	if (code >= 0x80 && !utf8) {
+		return 8; // <U+XXXX>
+	}
+
 	switch (type) {
-	case CORPUS_CHARWIDTH_IGNORABLE:
 	case CORPUS_CHARWIDTH_NONE:
 		return 0;
 
@@ -61,33 +137,57 @@ static int char_width(uint32_t code, int type)
 		case '\v':
 			return 2;
 		default:
-			break;
+			return 4; // \ooo octal escape
 		}
-		return 6; // \uXXXX
 	}
 
 	if (CORPUS_UTF16_ENCODE_LEN(code) == 1) {
-		return 6;
+		return 6; // \uXXXX
 	} else {
 		return 10; // \UXXXXYYYY
 	}
 }
 
 
-static int text_width(const struct corpus_text *text)
+static int text_width(const struct corpus_text *text, int limit, int utf8)
 {
 	struct corpus_text_iter it;
 	int32_t code;
 	int type, width, w;
+	int ellipsis = utf8 ? 1 : 3;
 
 	corpus_text_iter_make(&it, text);
 	width = 0;
 	while (corpus_text_iter_advance(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
-		w = char_width(code, type);
-		if (width > INT_MAX - w) {
-			return INT_MAX;
+		w = char_width(code, type, utf8);
+		if (width > limit - w) {
+			return width + ellipsis;
+		}
+		width += w;
+	}
+
+	return width;
+}
+
+
+static int text_rwidth(const struct corpus_text *text, int limit, int utf8)
+{
+	struct corpus_text_iter it;
+	int32_t code;
+	int type, width, w;
+	int ellipsis = utf8 ? 1 : 3;
+
+	corpus_text_iter_make(&it, text);
+	corpus_text_iter_skip(&it);
+	width = 0;
+	while (corpus_text_iter_retreat(&it)) {
+		code = it.current;
+		type = corpus_unicode_charwidth(code);
+		w = char_width(code, type, utf8);
+		if (width > limit - w) {
+			return width + ellipsis;
 		}
 		width += w;
 	}
@@ -117,7 +217,7 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 
 
 static SEXP format_left(const struct corpus_text *text, int trim,
-			int chars, int width_max,
+			int chars, int width_max, int utf8,
 			uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
@@ -141,12 +241,10 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 			continue;
 		}
 
-		w = char_width(code, type);
-		if (width > chars - w
-				|| (width == chars - w
-				    && corpus_text_iter_can_advance(&it))) {
+		w = char_width(code, type, utf8);
+		if (width > chars - w) {
 			code = ELLIPSIS;
-			w = 1;
+			w = utf8 ? 1 : 3;
 			trunc = 1;
 		}
 
@@ -159,7 +257,18 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 			end = buf + nbuf;
 		}
 
-		corpus_encode_utf8(code, &dst);
+		if (trunc) {
+			if (utf8) {
+				corpus_encode_utf8(ELLIPSIS, &dst);
+			} else {
+				// nbyte(ELLIPSIS) == 3 so no need to reserve
+				*dst++ = '.';
+				*dst++ = '.';
+				*dst++ = '.';
+			}
+		} else {
+			encode(utf8, code, &dst);
+		}
 		width += w;
 	}
 
@@ -186,8 +295,106 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 }
 
 
+static SEXP format_centre(const struct corpus_text *text, int chars,
+			  int width_max, int utf8,
+			  uint8_t **bufptr, int *nbufptr)
+{
+	uint8_t *buf = *bufptr;
+	int nbuf = *nbufptr;
+	uint8_t *end = buf + nbuf;
+	struct corpus_text_iter it;
+	uint8_t *dst;
+	uint32_t code;
+	int i, w, trunc, type, nbyte, bfill, fill, len, off,
+	    fullwidth, width;
+
+	dst = buf;
+
+	fullwidth = text_width(text, chars, utf8);
+
+	if ((fill = width_max - fullwidth) > 0) {
+		bfill = fill / 2;
+
+		if (dst + bfill > end) {
+			off = (int)(dst - buf);
+			grow_buffer(&buf, &nbuf, bfill);
+			dst = buf + off;
+			end = buf + nbuf;
+		}
+
+		for (i = 0; i < bfill; i++) {
+			*dst++ = ' ';
+		}
+	}
+
+	width = 0;
+	trunc = 0;
+	corpus_text_iter_make(&it, text);
+
+	while (!trunc && corpus_text_iter_advance(&it)) {
+		code = it.current;
+		type = corpus_unicode_charwidth(code);
+
+		if (type == CORPUS_CHARWIDTH_IGNORABLE) {
+			continue;
+		}
+
+		w = char_width(code, type, utf8);
+		if (width > chars - w) {
+			code = ELLIPSIS;
+			w = utf8 ? 1 : 3;
+			trunc = 1;
+		}
+
+		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
+		if (dst + nbyte > end) {
+			off = (int)(dst - buf);
+
+			grow_buffer(&buf, &nbuf, nbyte);
+			dst = buf + off;
+			end = buf + nbuf;
+		}
+
+		if (trunc) {
+			if (utf8) {
+				corpus_encode_utf8(ELLIPSIS, &dst);
+			} else {
+				// nbyte(ELLIPSIS) == 3 so no need to reserve
+				*dst++ = '.';
+				*dst++ = '.';
+				*dst++ = '.';
+			}
+		} else {
+			encode(utf8, code, &dst);
+		}
+		width += w;
+	}
+
+	if (((fill = width_max - width - bfill)) > 0) {
+		if (dst + fill > end) {
+			off = (int)(dst - buf);
+
+			grow_buffer(&buf, &nbuf, fill);
+			dst = buf + off;
+			end = buf + nbuf;
+		}
+
+		while (fill-- > 0) {
+			*dst++ = ' ';
+		}
+	}
+
+
+	*bufptr = buf;
+	*nbufptr = nbuf;
+
+	len = (int)(dst - buf);
+	return mkCharLenCE((char *)buf, len, CE_UTF8);
+}
+
+
 static SEXP format_right(const struct corpus_text *text, int trim,
-			 int chars, int width_max,
+			 int chars, int width_max, int utf8,
 			 uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
@@ -211,12 +418,10 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 			continue;
 		}
 
-		w = char_width(code, type);
-		if (width > chars - w
-				|| (width == chars - w
-				    && corpus_text_iter_can_retreat(&it))) {
+		w = char_width(code, type, utf8);
+		if (width > chars - w) {
 			code = ELLIPSIS;
-			w = 1;
+			w = utf8 ? 1 : 3;
 			trunc = 1;
 		}
 
@@ -231,7 +436,18 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 			memmove(dst, buf + off, len);
 		}
 
-		corpus_rencode_utf8(code, &dst);
+		if (trunc) {
+			if (utf8) {
+				corpus_rencode_utf8(ELLIPSIS, &dst);
+			} else {
+				// nbyte(ELLIPSIS) == 3 so no need to reserve
+				*--dst = '.';
+				*--dst = '.';
+				*--dst = '.';
+			}
+		} else {
+			rencode(utf8, code, &dst);
+		}
 		width += w;
 	}
 
@@ -262,12 +478,13 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 enum justify_type {
 	JUSTIFY_NONE = 0,
 	JUSTIFY_LEFT,
+	JUSTIFY_CENTRE,
 	JUSTIFY_RIGHT
 };
 
 
 SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
-		 SEXP swidth, SEXP sna_encode)
+		 SEXP swidth, SEXP sna_encode, SEXP sutf8)
 {
 	SEXP ans, ans_i;
 	enum justify_type justify;
@@ -276,9 +493,8 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 	struct corpus_text *text, *text_i;
 	struct corpus_text na_text;
 	R_xlen_t i, n;
-	int width, width_max, nbuf, trim, na_encode;
-	int chars;
-	int nprot;
+	int chars, chars_i, ellipsis, width, width_max, nbuf, trim, na_encode,
+	    utf8, nprot;
 
 	nprot = 0;
 	PROTECT(sx = coerce_text(sx)); nprot++;
@@ -287,10 +503,14 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 	PROTECT(strim = coerceVector(strim, LGLSXP)); nprot++;
 	trim = (LOGICAL(strim)[0] == TRUE);
 
+	PROTECT(strim = coerceVector(sutf8, LGLSXP)); nprot++;
+	utf8 = (LOGICAL(sutf8)[0] == TRUE);
+	ellipsis = utf8 ? 1 : 3;
+
 	PROTECT(schars = coerceVector(schars, INTSXP)); nprot++;
 	chars = INTEGER(schars)[0];
 	if (chars == NA_INTEGER) {
-		chars = INT_MAX;
+		chars = INT_MAX - ellipsis;
 	} else if (chars < 0) {
 		chars = 0;
 	}
@@ -300,8 +520,10 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 		justify = JUSTIFY_LEFT;
 	} else if (strcmp(justify_str, "right") == 0) {
 		justify = JUSTIFY_RIGHT;
+	} else if (strcmp(justify_str, "centre") == 0) {
+		justify = JUSTIFY_CENTRE;
 	} else {
-		justify = JUSTIFY_LEFT; // "none"; no "centre"
+		justify = JUSTIFY_NONE;
 		trim = 1;
 	}
 
@@ -324,15 +546,18 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 	for (i = 0; i < n; i++) {
 		if (text[i].ptr == NULL) {
 			width = na_encode ? 2 : 0;
+		} else if (justify == JUSTIFY_RIGHT) {
+			width = text_rwidth(&text[i], chars, utf8);
 		} else {
-			width = text_width(&text[i]);
+			width = text_width(&text[i], chars, utf8);
 		}
 
 		if (width > width_max) {
 			width_max = width;
 		}
-		if (width_max > chars) {
-			width_max = chars;
+
+		if (width_max >= chars + ellipsis) {
+			width_max = chars + ellipsis;
 			break;
 		}
 	}
@@ -351,15 +576,28 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 				continue;
 			} else {
 				text_i = &na_text;
+				chars_i = 2;
 			}
+		} else {
+			chars_i = chars;
 		}
 
-		if (justify != JUSTIFY_RIGHT) {
-			ans_i = format_left(text_i, trim, chars,
-					    width_max, &buf, &nbuf);
-		} else {
-			ans_i = format_right(text_i, trim, chars,
-					     width_max, &buf, &nbuf);
+		switch (justify) {
+		case JUSTIFY_LEFT:
+		case JUSTIFY_NONE:
+			ans_i = format_left(text_i, trim, chars_i,
+					    width_max, utf8, &buf, &nbuf);
+			break;
+
+		case JUSTIFY_CENTRE:
+			ans_i = format_centre(text_i, chars_i, width_max,
+					      utf8, &buf, &nbuf);
+			break;
+
+		case JUSTIFY_RIGHT:
+			ans_i = format_right(text_i, trim, chars_i,
+					     width_max, utf8, &buf, &nbuf);
+			break;
 		}
 
 		SET_STRING_ELT(ans, i, ans_i);

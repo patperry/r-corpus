@@ -162,7 +162,7 @@ names.corpus_text <- function(x)
 
 
 format.corpus_text <- function(x, trim = FALSE, chars = 45L,
-                               justify = c("left", "right", "none"),
+                               justify = c("left", "right", "centre", "none"),
                                width = NULL, na.encode = TRUE, ...)
 {
     x <- as_text(x)
@@ -171,7 +171,8 @@ format.corpus_text <- function(x, trim = FALSE, chars = 45L,
     justify <- match.arg(justify)
     width <- if (is.null(width)) NA_integer_ else as.integer(width)
     na.encode <- as_option("na.encode", na.encode)
-    .Call(C_format_text, x, trim, chars, justify, width, na.encode)
+    utf8 <- grepl("UTF-8$", Sys.getlocale("LC_CTYPE"))
+    .Call(C_format_text, x, trim, chars, justify, width, na.encode, utf8)
 }
 
 
