@@ -255,3 +255,20 @@ test_that("'format' can set minimum width", {
     expect_equal(format(text, justify = "right", width = 5),
                  format(raw, justify = "right", width = 5))
 })
+
+
+test_that("'format' error for invalid justify", {
+    text <- as_text("")
+    expect_error(format(text, justify = "wild"),
+                 paste("'justify' should be one of",
+                       paste(dQuote(c("left", "right", "centre", "none")),
+                             collapse = ", ")),
+                 fixed = TRUE)
+})
+
+
+test_that("'format' error for invalid trim", {
+    text <- as_text("")
+    expect_error(format(text, trim = NA), "'trim' should be TRUE or FALSE",
+                 fixed = TRUE)
+})

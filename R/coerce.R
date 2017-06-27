@@ -17,7 +17,7 @@ as_character_vector <- function(name, value)
 {
     if (!(is.null(value) || is.character(value) || is_text(value)
           || all(is.na(value)))) {
-        stop(paste0("'", name, "' must be text, a character vector, or NULL"))
+        stop(paste0("'", name, "' should be text, a character vector, or NULL"))
     }
     if (is.null(value)) {
         return(NULL)
@@ -68,12 +68,26 @@ as_group <- function(group, n)
 }
 
 
+as_integer_scalar <- function(name, value)
+{
+    if (is.null(value)) {
+        return(NA_integer_)
+    }
+
+    if (!((is.numeric(value) || is.na(value)) && length(value) == 1)) {
+        stop(paste0("'", name, "' should be an integer scalar"))
+    }
+    
+    as.integer(value)
+}
+
+
 as_kind <- function(kind)
 {
     if (is.null(kind) || all(is.na(kind))) {
         return(NULL)
     } else if (!is.character(kind)) {
-        stop(paste("'kind' must be a character vector"))
+        stop(paste("'kind' should be a character vector"))
     }
     kind <- as.character(kind)
     kind <- unique(kind[!is.na(kind)])
@@ -130,12 +144,12 @@ as_ngrams <- function(ngrams)
     }
 
     if (!is.numeric(ngrams)) {
-        stop("'ngrams' argument must be NULL or an integer vector")
+        stop("'ngrams' should be NULL or an integer vector")
     }
 
     ngrams <- ngrams[is.finite(ngrams) & ngrams >= 1]
     if (length(ngrams) == 0) {
-        stop("'ngrams' argument must contain at least one positive value")
+        stop("'ngrams' should contain at least one positive value")
     }
 
     ngrams <- unique(sort(ngrams))
@@ -150,8 +164,8 @@ as_option <- function(name, value)
         return(FALSE)
     }
 
-    if (!(length(value) == 1 && is.logical(value))) {
-        stop(paste0("'", name, "' argument must be TRUE or FALSE"))
+    if (!(length(value) == 1 && is.logical(value) && !is.na(value))) {
+        stop(paste0("'", name, "' should be TRUE or FALSE"))
     }
     as.logical(value)
 }
@@ -184,14 +198,14 @@ as_stemmer <- function(stemmer)
     }
 
     if (!(length(stemmer) == 1 && is.character(stemmer))) {
-        stop(paste0("'stemmer' argument must be a character string,",
+        stop(paste0("'stemmer' argument should be a character string,",
                     "NA, or NULL"))
     }
     stemmer <- as.character(stemmer)
 
     if (!stemmer %in% stemmers) {
         stop(paste0("invalid 'stemmer' argument (\"", stemmer, "\");",
-                    " must be NA or one of the following: ",
+                    " should be NA or one of the following: ",
                     paste0('"', stemmers, '"', collapse=", ")))
     }
 
