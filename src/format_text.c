@@ -504,7 +504,7 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 
 	PROTECT(schars = coerceVector(schars, INTSXP)); nprot++;
 	chars = INTEGER(schars)[0];
-	if (chars == NA_INTEGER) {
+	if (chars == NA_INTEGER || chars > INT_MAX - ellipsis) {
 		chars = INT_MAX - ellipsis;
 	} else if (chars < 0) {
 		chars = 0;

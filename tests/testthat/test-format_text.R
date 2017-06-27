@@ -137,9 +137,10 @@ test_that("'format' can handle high code points in C locale", {
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    text <- "\U00010000"
-    expect_equal(format(text, justify="left"), "<U+00010000>")
-    expect_equal(format(text, justify="right"), "<U+00010000>")
+    raw <- "\U00010000"
+    text <- as_text(raw)
+    expect_equal(format(text, justify = "left"), "<U+00010000>")
+    expect_equal(format(text, justify = "right"), "<U+00010000>")
 })
 
 
@@ -149,7 +150,87 @@ test_that("'format' can handle high code points in Unicode locale", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    text <- "\U00010000"
-    expect_equal(format(text, justify="left"), text)
-    expect_equal(format(text, justify="right"), text)
+    raw <- "\U00010000"
+    text <- as_text(raw)
+    expect_equal(format(text, justify = "left"), raw)
+    expect_equal(format(text, justify = "right"), raw)
+})
+
+
+test_that("'format' can handle ignorable code points", {
+    raw <- "\u200B"
+    text <- as_text(raw)
+
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    expect_equal(format(text, justify = "left"), "")
+    expect_equal(format(text, justify = "centre"), "")
+    expect_equal(format(text, justify = "right"), "")
+
+    switch_ctype("Unicode")
+
+    expect_equal(format(text, justify = "left"), "")
+    expect_equal(format(text, justify = "centre"), "")
+    expect_equal(format(text, justify = "right"), "")
+})
+
+
+test_that("'format' can handle marks", {
+    raw <- "e\u0300"
+    text <- as_text(raw)
+
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    expect_equal(format(text, chars = 1, justify = "left"), "e...")
+    expect_equal(format(text, chars = 1, justify = "centre"), "e...")
+    expect_equal(format(text, chars = 1, justify = "right"), "...")
+
+    ctype <- switch_ctype("Unicode")
+
+    expect_equal(format(text, chars = 1, justify = "left"), raw)
+    expect_equal(format(text, chars = 1, justify = "centre"), raw)
+    expect_equal(format(text, chars = 1, justify = "right"), raw)
+})
+
+
+test_that("'format' can handle negative or zero, or NA chars", {
+    text <- as_text("foo")
+
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+    
+    expect_equal(format(text, chars = -1, justify = "left"), "...")
+    expect_equal(format(text, chars = -1, justify = "centre"), "...")
+    expect_equal(format(text, chars = -1, justify = "right"), "...")
+
+    expect_equal(format(text, chars = 0, justify = "left"), "...")
+    expect_equal(format(text, chars = 0, justify = "centre"), "...")
+    expect_equal(format(text, chars = 0, justify = "right"), "...")
+
+    expect_equal(format(text, chars = NA, justify = "left"), "foo")
+    expect_equal(format(text, chars = NA, justify = "centre"), "foo")
+    expect_equal(format(text, chars = NA, justify = "right"), "foo")
+})
+
+
+test_that("'format' can skip NA", {
+    text <- as_text(NA)
+    expect_equal(format(text, na.encode = FALSE), NA_character_)
+})
+
+
+test_that("'format' can set minimum width", {
+    raw <- c("a", "ab", "abc")
+    text <- as_text(raw)
+
+    expect_equal(format(text, justify = "none", width = 5),
+                 format(raw, justify = "none", width = 5))
+    expect_equal(format(text, justify = "left", width = 5),
+                 format(raw, justify = "left", width = 5))
+    expect_equal(format(text, justify = "centre", width = 5),
+                 format(raw, justify = "centre", width = 5))
+    expect_equal(format(text, justify = "right", width = 5),
+                 format(raw, justify = "right", width = 5))
 })
