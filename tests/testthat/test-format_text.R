@@ -28,11 +28,14 @@ test_that("'format' can handle long text in UTF-8 locale", {
                 "\u6027", "\u2026\u6027", "\u2026?", "\u2026")
     text <- as_text(raw)
 
+    locale <- ifelse(Sys.info()[["sysname"]] == "windows",
+                     "English_United States.1252", "UTF-8")
     ctype <- Sys.getlocale("LC_CTYPE")
-    Sys.setlocale("LC_CTYPE", "UTF-8")
+    Sys.setlocale("LC_CTYPE", locale)
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    if (!grepl("UTF-8$", Sys.getlocale("LC_CTYPE"))) {
-        skip("Cannot switch to UTF-8 locale")
+    if (Sys.getlocale("LC_CTYPE") != locale) {
+        skip(paste0("Cannot change locale to '", locale, "'"))
     }
 
     expect_equal(format(text, chars = 2, justify = "none"),
@@ -46,8 +49,6 @@ test_that("'format' can handle long text in UTF-8 locale", {
 
     expect_equal(format(text, chars = 2, justify = "right"),
                  format(rshort, justify = "right"))
-
-    Sys.setlocale("LC_CTYPE", ctype)
 })
 
 
@@ -60,11 +61,14 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
                 "\u2026", "\u2026", "\u2026?", "\u2026")
     text <- as_text(raw)
 
+    locale <- ifelse(Sys.info()[["sysname"]] == "windows",
+                     "English_United States.1252", "UTF-8")
     ctype <- Sys.getlocale("LC_CTYPE")
-    Sys.setlocale("LC_CTYPE", "UTF-8")
+    Sys.setlocale("LC_CTYPE", locale)
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    if (!grepl("UTF-8$", Sys.getlocale("LC_CTYPE"))) {
-        skip("Cannot switch to UTF-8 locale")
+    if (Sys.getlocale("LC_CTYPE") != locale) {
+        skip(paste0("Cannot change locale to '", locale, "'"))
     }
 
     expect_equal(format(text, chars = 1, justify = "none"),
@@ -78,8 +82,6 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
 
     expect_equal(format(text, chars = 1, justify = "right"),
                  format(rshort, justify = "right"))
-
-    Sys.setlocale("LC_CTYPE", ctype)
 })
 
 
@@ -95,8 +97,13 @@ test_that("'format' can handle long text in C locale", {
                   "...\001", "...")
     text <- as_text(raw)
 
+    # R has a Unicode rendering bug on Windows
+    # https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=17299
+    skip_on_os("windows")
+
     ctype <- Sys.getlocale("LC_CTYPE")
     Sys.setlocale("LC_CTYPE", "C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     expect_equal(format(text, chars = 10, justify = "none"),
                  format(short, justify = "none"))
@@ -109,6 +116,4 @@ test_that("'format' can handle long text in C locale", {
 
     expect_equal(format(text, chars = 10, justify = "right"),
                  format(rshort, justify = "right"))
-
-    Sys.setlocale("LC_CTYPE", ctype)
 })

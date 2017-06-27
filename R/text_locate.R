@@ -77,7 +77,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
     ctxwidth <- max(12, floor((width
                                - sum(colwidths)
                                - length(colwidths)) / max(1, nctx)))
-    ellipsis <- ifelse(grepl("UTF-8$", Sys.getlocale("LC_CTYPE")), 1, 3)
+    ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", 3, 1)
 
     if (!is.null(x$before)) {
         rval[["before"]] <- format(x$before, chars = ctxwidth - ellipsis,
