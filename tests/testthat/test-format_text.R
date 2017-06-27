@@ -97,10 +97,6 @@ test_that("'format' can handle long text in C locale", {
                   "...\001", "...")
     text <- as_text(raw)
 
-    # R has a Unicode rendering bug on Windows
-    # https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=17299
-    skip_on_os("windows")
-
     ctype <- Sys.getlocale("LC_CTYPE")
     Sys.setlocale("LC_CTYPE", "C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
