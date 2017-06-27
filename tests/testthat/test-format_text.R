@@ -31,6 +31,10 @@ test_that("'format' can handle long text in UTF-8 locale", {
     ctype <- Sys.getlocale("LC_CTYPE")
     Sys.setlocale("LC_CTYPE", "UTF-8")
 
+    if (!grepl("UTF-8$", Sys.getlocale("LC_CTYPE"))) {
+        skip("Cannot switch to UTF-8 locale")
+    }
+
     expect_equal(format(text, chars = 2, justify = "none"),
                  format(short, justify = "none"))
 
@@ -58,6 +62,10 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
 
     ctype <- Sys.getlocale("LC_CTYPE")
     Sys.setlocale("LC_CTYPE", "UTF-8")
+
+    if (!grepl("UTF-8$", Sys.getlocale("LC_CTYPE"))) {
+        skip("Cannot switch to UTF-8 locale")
+    }
 
     expect_equal(format(text, chars = 1, justify = "none"),
                  format(short, justify = "none"))
