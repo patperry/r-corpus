@@ -45,9 +45,13 @@ text_locate <- function(x, terms, filter = token_filter())
 }
 
 
-format.corpus_text_locate <- function(x, width = getOption("width"),
-                                      ..., justify = "none")
+format.corpus_text_locate <- function(x, width = getOption("width"), ...,
+                                      justify = "none")
 {
+    width <- as_integer_scalar("width", width)
+    encoding <- as_encoding("encoding", encoding)
+    justify <- as_justify("justify", justify)
+
     nctx <- 0
     rval <- list()
     colwidths <- c()
@@ -59,13 +63,16 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
             nctx <- nctx + 1
         } else {
             if (i == "text") {
+                # use as.character to format an integer text id like
+                # a character label
                 rval[[i]] <- format(as.character(x[[i]]), width = 4,
                                     justify = justify)
             } else if (i == "instance") {
-                rval[[i]] <- format(x[[i]], width = 8, justify = "centre")
+                rval[[i]] <- format(as_text(x[[i]]), width = 8,
+                                    justify = "centre")
             } else {
-                rval[[i]] = format(x[[i]], width = nchar(i, "width"),
-                                   ..., justify = justify)
+                rval[[i]] = format(x[[i]], width = nchar(i, "width"), ...,
+                                   justify = justify)
             }
             colwidths[[i]] <- max(nchar(i, "width"), nchar(rval[[i]], "width"))
         }

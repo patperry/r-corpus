@@ -82,6 +82,12 @@ as_integer_scalar <- function(name, value)
 }
 
 
+as_justify <- function(name, value)
+{
+    as_enum(name, value, c("left", "right", "centre", "none"))
+}
+
+
 as_kind <- function(kind)
 {
     if (is.null(kind) || all(is.na(kind))) {
