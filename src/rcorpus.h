@@ -131,6 +131,7 @@ SEXP subset_text_handle(SEXP handle, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
+SEXP text_valid(SEXP x);
 
 /* search */
 SEXP alloc_search(SEXP sterms, const char *name, struct corpus_filter *filter);
@@ -165,14 +166,16 @@ SEXP text_ntoken(SEXP x, SEXP filter);
 SEXP text_ntype(SEXP x, SEXP filter, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
-SEXP text_types(SEXP x, SEXP filter, SEXP collapse);
-
 SEXP text_tokens(SEXP x, SEXP props);
+SEXP text_types(SEXP x, SEXP filter, SEXP collapse);
 SEXP term_counts_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
 		      SEXP min_count, SEXP max_count, SEXP output_types);
 SEXP term_matrix_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
 		      SEXP select, SEXP group);
 SEXP stopwords(SEXP kind);
+
+/* utf8 */
+SEXP utf8_valid(SEXP x);
 
 /* data schema */
 SEXP alloc_schema(void);

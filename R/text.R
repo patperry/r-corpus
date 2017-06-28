@@ -65,15 +65,17 @@ as_text.default <- function(x, ...)
     }
 }
 
+
 is_text <- function(x)
 {
-    UseMethod("is_text")
-}
-
-
-is_text.default <- function(x)
-{
-    inherits(x, "corpus_text")
+    if (!inherits(x, "corpus_text")) {
+        return(FALSE)
+    }
+    valid <- .Call(C_text_valid, x)
+    if (!valid) {
+        stop("invalid text object")
+    }
+    return(TRUE)
 }
 
 

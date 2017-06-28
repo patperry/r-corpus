@@ -54,8 +54,8 @@
     the other R conversion functions (\code{as.numeric},
     \code{as.character}, etc.), which drop the names.
 
-    \code{as_text} and \code{is_text} are generic: you can write methods
-    to handle specific classes of objects.
+    \code{as_text} is generic: you can write methods to handle specific
+    classes of objects.
 }
 \value{
     \code{as_text} attempts to coerce its argument to \code{text} type; it

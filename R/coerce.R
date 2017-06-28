@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 
-as_character_vector <- function(name, value)
+as_character_vector <- function(name, value, utf8 = TRUE)
 {
     if (!(is.null(value) || is.character(value) || is_text(value)
           || all(is.na(value)))) {
@@ -22,8 +22,14 @@ as_character_vector <- function(name, value)
     if (is.null(value)) {
         return(NULL)
     }
-    # TODO: UTF-8 validation
-    as.character(value)
+    value <- as.character(value)
+    if (utf8) {
+        if (!isTRUE(msg <- utf8_valid(value))) {
+            stop(paste0("'", name, "' is invalid: ", msg))
+        }
+        value <- enc2utf8(value)
+    }
+    value
 }
 
 
@@ -95,7 +101,7 @@ as_kind <- function(kind)
     } else if (!is.character(kind)) {
         stop(paste("'kind' should be a character vector"))
     }
-    kind <- as.character(kind)
+    kind <- as_character_vector("kind", kind, utf8 = TRUE)
     kind <- unique(kind[!is.na(kind)])
     kind
 }
@@ -254,4 +260,16 @@ as_weights <- function(weights, n)
     }
 
     weights
+}
+
+
+utf8_valid <- function(x)
+{
+    if (is_text(x)) {
+        return(TRUE)
+    }
+    if (!is.character(x) || is.null(x)) {
+        x <- as.character(x)
+    }
+    .Call(C_utf8_valid, x)
 }

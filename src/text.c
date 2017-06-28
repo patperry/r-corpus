@@ -172,6 +172,12 @@ int is_text(SEXP x)
 }
 
 
+SEXP text_valid(SEXP x)
+{
+	return ScalarLogical(is_text(x));
+}
+
+
 struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 {
 	SEXP handle, source, table;

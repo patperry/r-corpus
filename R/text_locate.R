@@ -50,7 +50,6 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
 {
     width <- as_integer_scalar("width", width)
     print.gap <- as_print_gap("print.gap", print.gap)
-    encoding <- as_encoding("encoding", encoding)
     justify <- as_justify("justify", justify)
 
     nctx <- 0
