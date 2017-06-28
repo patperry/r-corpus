@@ -1,2 +1,6 @@
-invisible(Sys.setlocale("LC_COLLATE", "C"))
-devtools::load_all(".")
+if (interactive()) {
+    invisible(Sys.setlocale("LC_COLLATE", "C"))
+    if (requireNamespace("devtools", quietly = TRUE)) {
+        devtools::load_all(".")
+    }
+}
