@@ -13,7 +13,6 @@
 ^data/federalist$
 ^data/federalist/
 ^dist$
-^shell[.]sh$
 ^src/corpus/[.]git$
 ^src/corpus/[.]travis[.]yml$
 ^src/corpus/Makefile$
