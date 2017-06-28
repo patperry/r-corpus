@@ -178,19 +178,23 @@ format.corpus_text <- function(x, trim = FALSE, chars = 45L, justify = "left",
 }
 
 
-print.corpus_text <- function(x, print_max = 6L, ...)
+print.corpus_text <- function(x, max = 6L, ...)
 {
     if (length(x) == 0) {
         cat("text(0)\n")
         return(invisible(x))
     }
 
-    if (is.null(print_max) || is.na(print_max) || length(x) <= print_max) {
+    if (is.null(max) || is.na(max)) {
+        max <- getOption("max.print")
+    }
+
+    if (is.na(max) || length(x) <= max) {
         xsub <- x
         nextra <- 0
     } else {
-        xsub <- x[seq_len(print_max)]
-        nextra <- length(x) - print_max
+        xsub <- x[seq_len(max)]
+        nextra <- length(x) - max
     }
 
     str <- format(xsub, na.encode = FALSE, ...)
@@ -207,7 +211,7 @@ print.corpus_text <- function(x, print_max = 6L, ...)
 
     if (nextra > 0) {
         cat(paste0(paste0(rep(" ", max(nchar(lab))), collapse=""), "\u22ee\n"))
-        cat("(", length(x), " rows total)\n", sep="")
+        cat("(", length(x), " entries total)\n", sep="")
     }
 
     invisible(x)
