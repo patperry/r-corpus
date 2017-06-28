@@ -177,6 +177,20 @@ as_option <- function(name, value)
 }
 
 
+as_print_gap <- function(name, value)
+{
+    value <- as_integer_scalar(name, value)
+    if (is.na(value)) {
+        value <- 1
+    } else if (value < 0) {
+        stop(paste0("'", name, "' should be non-negative"))
+    } else if (value > 1024) {
+        stop(paste0("'", name, "' should be less than or equal to 1024"))
+    }
+    value
+}
+
+
 as_size <- function(size)
 {
     if (!(is.numeric(size) && length(size) == 1 && !is.na(size))) {

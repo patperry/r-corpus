@@ -45,10 +45,11 @@ text_locate <- function(x, terms, filter = token_filter())
 }
 
 
-format.corpus_text_locate <- function(x, width = getOption("width"), ...,
-                                      justify = "none")
+format.corpus_text_locate <- function(x, width = getOption("width"),
+                                      print.gap = NULL, ..., justify = "none")
 {
     width <- as_integer_scalar("width", width)
+    print.gap <- as_print_gap("print.gap", print.gap)
     encoding <- as_encoding("encoding", encoding)
     justify <- as_justify("justify", justify)
 
@@ -81,9 +82,8 @@ format.corpus_text_locate <- function(x, width = getOption("width"), ...,
     row_names <- format(rownames(x), jusitfy = "left", width = 1)
     colwidths <- c(colwidths, max(1, nchar(row_names, "width")))
 
-    ctxwidth <- max(12, floor((width
-                               - sum(colwidths)
-                               - length(colwidths)) / max(1, nctx)))
+    extra <- width - sum(colwidths) - print.gap * length(colwidths)
+    ctxwidth <- max(12, extra / max(1, nctx))
     ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", 3, 1)
 
     if (!is.null(x$before)) {
@@ -104,8 +104,8 @@ format.corpus_text_locate <- function(x, width = getOption("width"), ...,
 }
 
 
-print.corpus_text_locate <- function(x, ...)
+print.corpus_text_locate <- function(x, print.gap = NULL, ...)
 {
-    print(format(x))
+    print(format(x, print.gap = print.gap))
     invisible(x)
 }
