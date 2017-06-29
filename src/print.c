@@ -14,7 +14,27 @@
  * limitations under the License.
  */
 
+#include <stdint.h>
 #include "rcorpus.h"
 
-SEXP print_text(SEXP sx, SEXP schars, SEXP squote, SEXP sna_print,
-		SEXP sprint_gap, SEXP sright, SEXP smax);
+
+SEXP print_frame(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
+		 SEXP sright, SEXP smax)
+{
+	SEXP row_names, col_names;
+	const uint8_t *na_print;
+	int i, j, nrow, ncol;
+	int quote, print_gap, right, max;
+	int *colwidths;
+
+	row_names = GetRowNames(sx);
+	col_names = GetColNames(sx);
+	nrow = nrows(sx);
+	ncol = ncols(sx);
+
+	quote = LOGICAL(squote)[0] == TRUE;
+	na_print = (const uint8_t *)CHAR(STRING_ELT(sna_print, 0));
+	print_gap = INTEGER(sprint_gap)[0];
+	right = LOGICAL(sright)[0] == TRUE;
+	max = INTEGER(smax)[0];
+}

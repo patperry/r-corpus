@@ -188,8 +188,9 @@ SEXP mmap_ndjson(SEXP file);
 SEXP read_ndjson(SEXP buffer);
 
 /* internal utility functions */
+double *as_weights(SEXP sweights, R_xlen_t n);
+int char_width(uint32_t code, int type, int utf8);
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
-double *as_weights(SEXP sweights, R_xlen_t n);
 
 #endif /* RCORPUS_H */

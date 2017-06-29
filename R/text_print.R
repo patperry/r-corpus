@@ -119,9 +119,12 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     if (is.null(na.print)) {
         na.print <- ifelse(quote, "<NA>", "NA")
     }
+    na.print <- utf8_encode(na.print)
+
     if (is.null(print.gap)) {
         print.gap <- 1L
     }
+
     if (is.null(max)) {
         max <- getOption("max.print")
     }

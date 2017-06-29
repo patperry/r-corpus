@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include <stddef.h>
@@ -23,6 +24,52 @@
 #include "corpus/src/array.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
+
+
+int char_width(uint32_t code, int type, int utf8)
+{
+	if (type == CORPUS_CHARWIDTH_IGNORABLE) {
+		return 0;
+	}
+
+	if (code >= 0x80 && !utf8) {
+		return (code <= 0xFFFF) ? 8 : 12; // <U+XXXX> or <U+XXXXYYYY>
+	}
+
+	switch (type) {
+	case CORPUS_CHARWIDTH_NONE:
+		return 0;
+
+	case CORPUS_CHARWIDTH_NARROW:
+		return 1;
+
+	case CORPUS_CHARWIDTH_WIDE:
+	case CORPUS_CHARWIDTH_AMBIGUOUS:
+		return 2;
+
+	default:
+		break;
+	}
+
+	// CORPUS_CHARWIDTH_OTHER; need to escape
+
+	if (code < 0x80) {
+		switch (code) {
+		case '\a':
+		case '\b':
+		case '\f':
+		case '\n':
+		case '\r':
+		case '\t':
+		case '\v':
+			return 2;
+		default:
+			return utf8 ? 6 : 4; // \uXXXX or \xXX
+		}
+	}
+
+	return (code <= 0xFFFF) ? 6 : 10; // \uXXXX or \UXXXXYYYY
+}
 
 
 static const char *encoding_name(cetype_t ce)
@@ -93,7 +140,8 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
 			corpus_decode_utf8(&ptr, &code);
 
 			cw = corpus_unicode_charwidth(code);
-			if (cw == CORPUS_CHARWIDTH_OTHER) {
+			if (cw == CORPUS_CHARWIDTH_OTHER
+					|| cw == CORPUS_CHARWIDTH_IGNORABLE) {
 				needs = 1;
 				if (code < 0x80) {
 					switch (code) {

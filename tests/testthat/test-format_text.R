@@ -48,11 +48,11 @@ test_that("'format' can handle short text", {
 
 test_that("'format' can handle long text in Unicode locale", {
     raw    <- c(NA, "", "a", "ab", "foo", "food",     "short text",
-                "\u6027", "\u6027\u6027", "\u6027?", "\U0001f642")
+                "\u6027", "\u6027\u6027", "\u6027?")
     short  <- c(NA, "", "a", "ab", "fo\u2026", "fo\u2026", "sh\u2026",
-                "\u6027", "\u6027\u2026", "\u6027\u2026", "\u2026")
+                "\u6027", "\u6027\u2026", "\u6027\u2026")
     rshort <- c(NA, "", "a", "ab", "\u2026oo", "\u2026od", "\u2026xt",
-                "\u6027", "\u2026\u6027", "\u2026?", "\u2026")
+                "\u6027", "\u2026\u6027", "\u2026?")
     text <- as_text(raw)
 
     ctype <- switch_ctype("Unicode")
@@ -74,11 +74,11 @@ test_that("'format' can handle long text in Unicode locale", {
 
 test_that("'format' can handle long text in UTF-8 locale, part 2", {
     raw    <- c(NA, "", "a", "\n", "ab", "foo", "food",     "short text",
-                "\u6027", "\u6027\u6027", "\u6027?", "\U0001f642")
+                "\u6027", "\u6027\u6027", "\u6027?")
     short  <- c(NA, "", "a", "\u2026", "a\u2026", "f\u2026", "f\u2026",
-                "s\u2026", "\u2026", "\u2026", "\u2026", "\u2026")
+                "s\u2026", "\u2026", "\u2026", "\u2026")
     rshort <- c(NA, "", "a", "\u2026", "\u2026b", "\u2026o", "\u2026d",
-                "\u2026t", "\u2026", "\u2026", "\u2026?", "\u2026")
+                "\u2026t", "\u2026", "\u2026", "\u2026?")
     text <- as_text(raw)
 
     ctype <- switch_ctype("Unicode")
@@ -99,19 +99,14 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
 
 
 test_that("'format' can handle long text in C locale", {
-    # R has a Unicode bug on Windows
-    # https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=17299
-    skip_on_os("windows")
-
     raw    <- c("\u6027", "?\u6027", "\n\u6027", "?\n\u6027", "\u0001\u6027",
-                "\u6027?", "\u6027\n", "\u6027?\n", "\u6027\u0001",
-                "\U0001f642")
+                "\u6027?", "\u6027\n", "\u6027?\n", "\u6027\u0001")
     short <- c("<U+6027>", "?<U+6027>", "\n<U+6027>", "?\n...",
                   "\001...", "<U+6027>?", "<U+6027>\n", "<U+6027>?...",
-                  "<U+6027>...", "...")
+                  "<U+6027>...")
     rshort <- c("<U+6027>", "?<U+6027>", "\n<U+6027>", "...\n<U+6027>",
                  "...<U+6027>", "<U+6027>?", "<U+6027>\n", "...?\n",
-                  "...\001", "...")
+                  "...\001")
     text <- as_text(raw)
 
     ctype <- switch_ctype("C")
@@ -152,10 +147,13 @@ test_that("'format' can handle high code points in Unicode locale", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    raw <- c("\U00010000", "\U0010ffff")
+    raw   <- c("\U00010000",          "\U0010ffff")
+    left  <- c("\U00010000         ", "\U0010ffff")
+    right <- c("         \U00010000", "\U0010ffff")
+
     text <- as_text(raw)
-    expect_equal(format(text, justify = "left"), raw)
-    expect_equal(format(text, justify = "right"), raw)
+    expect_equal(format(text, justify = "left"), left)
+    expect_equal(format(text, justify = "right"), right)
 })
 
 

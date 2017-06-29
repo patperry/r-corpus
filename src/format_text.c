@@ -88,62 +88,6 @@ static void rencode(int utf8, uint32_t code, uint8_t **bufptr)
 }
 
 
-static int char_width(uint32_t code, int type, int utf8)
-{
-	(void)utf8;
-
-	if (type == CORPUS_CHARWIDTH_IGNORABLE) {
-		return 0;
-	}
-
-	if (code > 0xFFFF) {
-		// R doesn't handle these values
-		//   UTF-8 locale: \UXXXXYYYY   (10)
-		//   C     locale: <U+XXXXYYYY> (12)
-		return utf8 ? 10 : 12; 
-	}
-
-	if (code >= 0x80 && !utf8) {
-		return 8; // <U+XXXX>
-	}
-
-	switch (type) {
-	case CORPUS_CHARWIDTH_NONE:
-		return 0;
-
-	case CORPUS_CHARWIDTH_NARROW:
-		return 1;
-
-	case CORPUS_CHARWIDTH_WIDE:
-	case CORPUS_CHARWIDTH_AMBIGUOUS:
-		return 2;
-
-	default:
-		break;
-	}
-
-	// CORPUS_CHARWIDTH_OTHER; need to escape
-
-	if (code < 0x80) {
-		switch (code) {
-		case '\a':
-		case '\b':
-		case '\f':
-		case '\n':
-		case '\r':
-		case '\t':
-		case '\v':
-			return 2;
-		default:
-			return utf8 ? 6 : 4; // \uXXXX or \ooo
-		}
-	}
-
-	assert(code <= 0xFFFF);
-	return 6; // \uXXXX
-}
-
-
 static int text_width(const struct corpus_text *text, int limit, int utf8)
 {
 	struct corpus_text_iter it;
