@@ -52,6 +52,10 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
     print.gap <- as_print_gap("print.gap", print.gap)
     justify <- as_justify("justify", justify)
 
+    if (is.null(print.gap)) {
+        print.gap <- 1
+    }
+
     nctx <- 0
     rval <- list()
     colwidths <- c()

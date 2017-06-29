@@ -98,7 +98,7 @@ static int char_width(uint32_t code, int type, int utf8)
 
 	if (code > 0xFFFF) {
 		// R doesn't handle these values
-		//   UTF-8 locale: \uXXXXYYYY   (10)
+		//   UTF-8 locale: \UXXXXYYYY   (10)
 		//   C     locale: <U+XXXXYYYY> (12)
 		return utf8 ? 10 : 12; 
 	}
@@ -135,7 +135,7 @@ static int char_width(uint32_t code, int type, int utf8)
 		case '\v':
 			return 2;
 		default:
-			return 4; // \ooo octal escape
+			return utf8 ? 6 : 4; // \uXXXX or \ooo
 		}
 	}
 

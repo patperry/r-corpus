@@ -260,7 +260,7 @@ test_that("'format' can set minimum width", {
 test_that("'format' error for invalid justify", {
     text <- as_text("")
     expect_error(format(text, justify = "wild"),
-                 paste("'justify' should be one of",
+                 paste("'justify' must be one of",
                        paste(dQuote(c("left", "right", "centre", "none")),
                              collapse = ", ")),
                  fixed = TRUE)
@@ -269,19 +269,19 @@ test_that("'format' error for invalid justify", {
 
 test_that("'format' error for invalid logicals", {
     text <- as_text("")
-    expect_error(format(text, trim = NA), "'trim' should be TRUE or FALSE",
+    expect_error(format(text, trim = NA), "'trim' must be TRUE or FALSE",
                  fixed = TRUE)
     expect_error(format(text, na.encode = NA),
-                 "'na.encode' should be TRUE or FALSE", fixed = TRUE)
+                 "'na.encode' must be TRUE or FALSE", fixed = TRUE)
 })
 
 
 test_that("'format' error for invalid integers", {
     text <- as_text("")
     expect_error(format(text, chars = "3"),
-                 "'chars' should be an integer scalar",
+                 "'chars' must be an integer scalar",
                  fixed = TRUE)
     expect_error(format(text, width = "3"),
-                 "'width' should be an integer scalar",
+                 "'width' must be an integer scalar",
                  fixed = TRUE)
 })

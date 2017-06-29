@@ -28,7 +28,7 @@ test_that("'abbreviations' errors for unknown kinds", {
 
 test_that("'abbreviations' errors for non-string", {
     expect_error(abbreviations(1),
-                 "^'kind' should be a character vector$")
+                 "^'kind' must be a character vector$")
 })
 
 

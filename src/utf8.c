@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+#include <ctype.h>
 #include <inttypes.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "corpus/src/array.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
@@ -48,6 +51,7 @@ static int is_valid(const uint8_t *str, size_t size, size_t *errptr)
 	size_t err = (size_t)-1;
 	int valid, nbyte;
 
+	valid = 1;
 	while (ptr != end) {
 		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
 		if (corpus_scan_utf8(&ptr, end)) {
@@ -56,14 +60,301 @@ static int is_valid(const uint8_t *str, size_t size, size_t *errptr)
 			goto out;
 		}
 	}
-	valid = 1;
 
 out:
-	if (!valid) {
+	if (!valid && errptr) {
 		*errptr = err;
 	}
 
 	return valid;
+}
+
+
+static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
+			      int *sizeptr)
+{
+	const uint8_t *end = str + size0;
+	const uint8_t *ptr = str;
+	const uint8_t *start;
+	uint32_t code;
+	int cw, err, needs, nbyte, size;
+
+	size = 0;
+	needs = 0;
+	while (ptr != end) {
+		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
+		start = ptr;
+		if ((err = corpus_scan_utf8(&start, end))) {
+			// encode invalid byte as \xHH (4 bytes)
+			needs = 1;
+			nbyte = 4;
+			ptr++;
+		} else {
+			corpus_decode_utf8(&ptr, &code);
+
+			cw = corpus_unicode_charwidth(code);
+			if (cw == CORPUS_CHARWIDTH_OTHER) {
+				needs = 1;
+				if (code < 0x80) {
+					switch (code) {
+					case '\a':
+					case '\b':
+					case '\f':
+					case '\n':
+					case '\r':
+					case '\t':
+					case '\v':
+						nbyte = 2; // \a, \b, etc.
+						break;
+					default:
+						nbyte = 4; // \xHH
+						break;
+					}
+				} else if (code <= 0xFFFF) {
+					// \uXXXX or <U+XXXX>
+					nbyte = utf8 ? 6 : 8;
+				} else {
+					// \UXXXXYYYY or <U+XXXXYYYY>
+					nbyte = utf8 ? 10 : 12;
+				}
+			}
+		}
+
+		if (size > INT_MAX - nbyte) {
+			error("encoded character string size",
+			      " exceeds maximum (2^31-1 bytes)");
+		}
+		size += nbyte;
+	}
+	if (sizeptr) {
+		*sizeptr = size;
+	}
+	return needs;
+}
+
+
+static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
+			 int utf8)
+{
+	const uint8_t *end = str + size;
+	const uint8_t *ptr = str;
+	const uint8_t *start;
+	uint32_t code;
+	int cw, err, nbyte;
+
+	while (ptr != end) {
+		start = ptr;
+		if ((err = corpus_scan_utf8(&start, end))) {
+			sprintf((char *)dst, "\\x%02x",
+				(unsigned)*ptr);
+			dst += 4;
+			ptr++;
+			continue;
+		}
+
+		start = ptr;
+		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
+
+		corpus_decode_utf8(&ptr, &code);
+		if (utf8) {
+			cw = corpus_unicode_charwidth(code);
+			if (cw != CORPUS_CHARWIDTH_OTHER) {
+				while (nbyte-- > 0) {
+					*dst++ = *start++;
+				}
+				continue;
+			}
+		}
+
+		if (code < 0x80) {
+			*dst++ = '\\';
+			switch (code) {
+			case '\a':
+				*dst++ = 'a';
+				break;
+			case '\b':
+				*dst++ = 'b';
+				break;
+			case '\f':
+				*dst++ = 'f';
+				break;
+			case '\n':
+				*dst++ = 'n';
+				break;
+			case '\r':
+				*dst++ = 'r';
+				break;
+			case '\t':
+				*dst++ = 't';
+				break;
+			case '\v':
+				*dst++ = 'v';
+				break;
+			default:
+				sprintf((char *)dst, "x%02x", (unsigned)code);
+				dst += 3;
+				break;
+			}
+		} else if (utf8 && code <= 0xFFFF) {
+			sprintf((char *)dst, "\\u%04x", (unsigned)code);
+			dst += 6;
+		} else if (!utf8 && code <= 0xFFFF) {
+			sprintf((char *)dst, "<U+%04X>", (unsigned)code);
+			dst += 8;
+		} else if (utf8) {
+			sprintf((char *)dst, "\\U%08x", (unsigned)code);
+			dst += 10;
+		} else {
+			sprintf((char *)dst, "<U+%08X>", (unsigned)code);
+			dst += 12;
+		}
+	}
+}
+
+
+static int needs_encode_bytes(const uint8_t *str, size_t size0, int *sizeptr)
+{
+	const uint8_t *end = str + size0;
+	const uint8_t *ptr = str;
+	int code;
+	int needs, nbyte, size;
+
+	size = 0;
+	needs = 0;
+	while (ptr != end) {
+		code = *ptr++;
+		switch (code) {
+		case '\a':
+		case '\b':
+		case '\f':
+		case '\n':
+		case '\r':
+		case '\t':
+		case '\v':
+			needs = 1;
+			nbyte = 2;
+			break;
+		default:
+			if (code < 0x80 && isprint(code)) {
+				nbyte = 1;
+			} else {
+				needs = 1;
+				nbyte = 4; // \xXX
+			}
+			break;
+		}
+
+		if (size > INT_MAX - nbyte) {
+			error("encoded character string size",
+			      " exceeds maximum (2^31-1 bytes)");
+		}
+		size += nbyte;
+	}
+	if (sizeptr) {
+		*sizeptr = size;
+	}
+	return needs;
+}
+
+
+static void encode_bytes(uint8_t *dst, const uint8_t *str, size_t size)
+{
+	const uint8_t *end = str + size;
+	const uint8_t *ptr = str;
+	uint8_t code;
+
+	while (ptr != end) {
+		code = *ptr++;
+		switch (code) {
+		case '\a':
+			*dst++ = 'a';
+			break;
+		case '\b':
+			*dst++ = 'b';
+			break;
+		case '\f':
+			*dst++ = 'f';
+			break;
+		case '\n':
+			*dst++ = 'n';
+			break;
+		case '\r':
+			*dst++ = 'r';
+			break;
+		case '\t':
+			*dst++ = 't';
+			break;
+		case '\v':
+			*dst++ = 'v';
+			break;
+		default:
+			if (code < 0x80 && isprint(code)) {
+				*dst++ = code;
+			} else {
+				sprintf((char *)dst, "\\x%02x", code);
+				dst += 4;
+			}
+			break;
+		}
+	
+		ptr++;
+	}
+	return;
+}
+
+
+static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
+{
+	const uint8_t *str, *str2;
+	char *buf = *bufptr;
+	int nbuf = *nbufptr;
+	int conv, size, size2;
+	cetype_t ce;
+
+	if (sx == NA_STRING) {
+		return NA_STRING;
+	}
+
+	str = (const uint8_t *)CHAR(sx);
+	size = (size_t)XLENGTH(sx);
+	conv = 0;
+
+	ce = getCharCE(sx);
+	if (ce != CE_ANY && ce != CE_UTF8 && ce != CE_BYTES) {
+		str2 = (const uint8_t *)translateCharUTF8(sx);
+		ce = CE_UTF8;
+		if (str2 != str) {
+			str = str2;
+			size = strlen((const char *)str);
+			conv = 1;
+		}
+	}
+
+	if (ce == CE_BYTES) {
+		if (!needs_encode_bytes(str, size, &size2)) {
+			return sx;
+		}
+	} else if (!needs_encode_chars(str, size, utf8, &size2)) {
+		if (conv) {
+			sx = mkCharLenCE((const char *)str, size, CE_UTF8);
+		}
+		return sx;
+	}
+
+	if (size2 > nbuf) {
+		corpus_array_size_add(&nbuf, 1, 0, size2);
+		buf = R_alloc(size2, 1);
+		*bufptr = buf;
+		*nbufptr = nbuf;
+	}
+
+	if (ce == CE_BYTES) {
+		encode_bytes((uint8_t *)buf, str, size);
+	} else {
+		encode_chars((uint8_t *)buf, str, size, utf8);
+	}
+
+	return mkCharLenCE(buf, size2, CE_UTF8);
 }
 
 
@@ -91,7 +382,7 @@ SEXP utf8_valid(SEXP sx)
 		}
 
 		ce = getCharCE(sstr);
-		raw = ((ce == CE_ANY || ce == CE_UTF8 || ce == CE_BYTES));
+		raw = (ce == CE_ANY || ce == CE_UTF8 || ce == CE_BYTES);
 
 		if (raw) {
 			str = (const uint8_t *)CHAR(sstr);
@@ -133,5 +424,45 @@ SEXP utf8_valid(SEXP sx)
 	ans = ScalarLogical(TRUE);
 out:
 	UNPROTECT(nprot);
+	return ans;
+}
+
+
+SEXP utf8_encode(SEXP sx, SEXP sutf8)
+{
+	SEXP ans, elt, elt2;
+	char *buf;
+	R_xlen_t i, n;
+	int duped, nbuf, utf8;
+
+	if (!isString(sx)) {
+		error("argument 'x' is not a character vector");
+	}
+	n = XLENGTH(sx);
+
+	if (!isLogical(sutf8) || XLENGTH(sutf8) != 1) {
+		error("argument 'utf8' is not a logical scalar");
+	}
+	utf8 = LOGICAL(sutf8)[0] == TRUE;
+
+	ans = sx;
+	duped = 0;
+	buf = NULL;
+	nbuf = 0;
+
+	for (i = 0; i < n; i++) {
+		elt = STRING_ELT(sx, i);
+		elt2 = charsxp_encode(elt, utf8, &buf, &nbuf);
+		if (!duped && elt != elt2) {
+			PROTECT(ans = duplicate(ans));
+			duped = 1;
+		}
+		SET_STRING_ELT(ans, i, elt2);
+	}
+
+	if (duped) {
+		UNPROTECT(1);
+	}
+
 	return ans;
 }

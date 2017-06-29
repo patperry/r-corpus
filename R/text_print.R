@@ -12,13 +12,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-format.corpus_text <- function(x, trim = FALSE, chars = 45L, justify = "left",
-                               width = NULL, na.encode = TRUE, ...)
+format.corpus_text <- function(x, trim = FALSE, chars = NULL,
+                               justify = "left", width = NULL,
+                               na.encode = TRUE, ...)
 {
     with_rethrow({
         x <- as_text(x)
         trim <- as_option("trim", trim)
-        chars <- as_integer_scalar("chars", chars)
+        if (is.null(chars)) {
+            chars <- 45L
+        } else {
+            chars <- as_integer_scalar("chars", chars)
+        }
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)
@@ -64,5 +69,63 @@ print.corpus_text <- function(x, max = 6L, ...)
         cat("(", length(x), " entries total)\n", sep="")
     }
 
+    invisible(x)
+}
+
+
+print.corpus_frame <- function(x, chars = NULL, digits = NULL,
+                               quote = FALSE, na.print = NULL,
+                               print.gap = NULL, right = TRUE,
+                               row.names = TRUE, max = NULL, ...)
+{
+    n <- nrow(x)
+
+    chars <- as_integer_scalar("chars", chars, null = NULL)
+    digits <- as_digits("digits", digits)
+    quote <- as_option("quote", quote)
+    na.print <- as_na_print("na.print", na.print)
+    print.gap <- as_print_gap("print_gap", print.gap)
+    right <- as_option("right", right)
+    if (!isTRUE(row.names)) {
+        if (identical(row.names, FALSE)) {
+            row.names <- rep("", n)
+        } else {
+            row.names <- as_names("row.names", row.names)
+        }
+    }
+    max <- as_max_print("max", max)
+    
+    if (length(x) == 0) {
+        cat(sprintf(ngettext(n, "data frame with 0 columns and %d row", 
+            "data frame with 0 columns and %d rows"), n), "\n", 
+            sep = "")
+    }
+
+    fmt <- format(x, chars = chars, digits = digits, na.encode = FALSE)
+    m <- as.matrix(fmt)
+    if (!(is.matrix(m) && storage.mode(m) == "character")) {
+        stop("'format' returned a malformed value")
+    }
+
+    dims <- dimnames(m)
+    if (!isTRUE(row.names)) {
+        dims[[1]] <- row.names
+    }
+
+    udims <- lapply(dims, function(x) if (is.null(x)) NULL else utf8_encode(x))
+    um <- utf8_encode(m)
+    dimnames(um) <- udims
+
+    if (is.null(na.print)) {
+        na.print <- ifelse(quote, "<NA>", "NA")
+    }
+    if (is.null(print.gap)) {
+        print.gap <- 1L
+    }
+    if (is.null(max)) {
+        max <- getOption("max.print")
+    }
+
+    .Call(print_frame, um, quote, na.print, print.gap, right, max)
     invisible(x)
 }
