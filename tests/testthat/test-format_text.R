@@ -164,15 +164,15 @@ test_that("'format' can handle ignorable code points", {
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(format(text, justify = "left", ignorables = FALSE), "")
-    expect_equal(format(text, justify = "centre", ignorables = FALSE), "")
-    expect_equal(format(text, justify = "right", ignorables = FALSE), "")
+    expect_equal(format(text, justify = "left", display = TRUE), "")
+    expect_equal(format(text, justify = "centre", display = TRUE), "")
+    expect_equal(format(text, justify = "right", display = TRUE), "")
 
     switch_ctype("Unicode")
 
-    expect_equal(format(text, justify = "left", ignorables = FALSE), "")
-    expect_equal(format(text, justify = "centre", ignorables = FALSE), "")
-    expect_equal(format(text, justify = "right", ignorables = FALSE), "")
+    expect_equal(format(text, justify = "left", display = TRUE), "")
+    expect_equal(format(text, justify = "centre", display = TRUE), "")
+    expect_equal(format(text, justify = "right", display = TRUE), "")
 })
 
 
