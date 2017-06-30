@@ -41,10 +41,10 @@ int char_width(uint32_t code, int type, int utf8)
 		return 0;
 
 	case CORPUS_CHARWIDTH_NARROW:
+	case CORPUS_CHARWIDTH_AMBIGUOUS:
 		return 1;
 
 	case CORPUS_CHARWIDTH_WIDE:
-	case CORPUS_CHARWIDTH_AMBIGUOUS:
 		return 2;
 
 	default:

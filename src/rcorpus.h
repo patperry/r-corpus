@@ -115,6 +115,10 @@ SEXP alloc_filebuf(SEXP file);
 int is_filebuf(SEXP sbuf);
 struct corpus_filebuf *as_filebuf(SEXP sbuf);
 
+/* frame */
+SEXP print_frame(SEXP x, SEXP quote, SEXP na_print, SEXP print_gap,
+		 SEXP right, SEXP width);
+
 /* text (core) */
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop);
 int is_text(SEXP text);

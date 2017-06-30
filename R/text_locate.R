@@ -103,7 +103,9 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
         oldClass(rval[[i]]) <- "AsIs"
     }
 
-    as.data.frame(rval, row.names = row_names)
+    ans <- as.data.frame(rval, row.names = row_names)
+    class(ans) <- c("corpus_frame", "data.frame")
+    ans
 }
 
 

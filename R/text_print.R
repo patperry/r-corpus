@@ -73,6 +73,12 @@ print.corpus_text <- function(x, max = 6L, ...)
 }
 
 
+format.corpus_frame <- function(x, ..., justify = "none")
+{
+    format.data.frame(x, ..., justify = justify)
+}
+
+
 print.corpus_frame <- function(x, chars = NULL, digits = NULL,
                                quote = FALSE, na.print = NULL,
                                print.gap = NULL, right = TRUE,
@@ -94,24 +100,35 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         }
     }
     max <- as_max_print("max", max)
-    
+    if (is.null(max)) {
+        max <- getOption("max.print")
+    }
+
     if (length(x) == 0) {
         cat(sprintf(ngettext(n, "data frame with 0 columns and %d row", 
             "data frame with 0 columns and %d rows"), n), "\n", 
             sep = "")
     }
 
-    fmt <- format(x, chars = chars, digits = digits, na.encode = FALSE)
+    fmt <- format.corpus_frame(x, chars = chars, digits = digits,
+                               na.encode = FALSE)
     m <- as.matrix(fmt)
     if (!(is.matrix(m) && storage.mode(m) == "character")) {
         stop("'format' returned a malformed value")
     }
-
-    dims <- dimnames(m)
     if (!isTRUE(row.names)) {
-        dims[[1]] <- row.names
+        rownames(m) <- row.names
     }
 
+    nr <- nrow(m)
+    nc <- ncol(m)
+    len <- length(m)
+    if (trunc <- (len > max)) {
+        limit <- max(1, max %/% nc)
+        m <- m[1:limit, ,drop = FALSE]
+    }
+
+    dims <- dimnames(m)
     udims <- lapply(dims, function(x) if (is.null(x)) NULL else utf8_encode(x))
     um <- utf8_encode(m)
     dimnames(um) <- udims
@@ -125,10 +142,14 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         print.gap <- 1L
     }
 
-    if (is.null(max)) {
-        max <- getOption("max.print")
+    width <- getOption("width")
+
+    .Call(C_print_frame, um, quote, na.print, print.gap, right, width)
+
+    if (trunc) {
+        ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
+        print(d); cat(sprintf("%s\n(%d rows total)\n", ellipsis, nr))
     }
 
-    .Call(print_frame, um, quote, na.print, print.gap, right, max)
     invisible(x)
 }
