@@ -128,7 +128,8 @@ SEXP as_text_character(SEXP text);
 SEXP alloc_na_text(void);
 SEXP coerce_text(SEXP x);
 SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify,
-		 SEXP width, SEXP na_encode, SEXP utf8);
+		 SEXP width, SEXP na_encode, SEXP ignorables,
+		 SEXP emoji, SEXP utf8);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
 SEXP subset_text_handle(SEXP handle, SEXP i);
@@ -193,7 +194,6 @@ SEXP read_ndjson(SEXP buffer);
 
 /* internal utility functions */
 double *as_weights(SEXP sweights, R_xlen_t n);
-int char_width(uint32_t code, int type, int utf8);
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
 

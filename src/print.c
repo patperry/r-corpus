@@ -42,6 +42,7 @@ int charsxp_width(SEXP charsxp)
 			break;
 
 		case CORPUS_CHARWIDTH_WIDE:
+		case CORPUS_CHARWIDTH_EMOJI:
 			width += 2;
 			break;
 
@@ -157,8 +158,6 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 			}
 			PRINT_SPACES(print_gap);
 			PRINT_NOQUOTE(str, n, colwidths[j] - w);
-			//Rprintf("|123456789|123456789|123456789|\n");
-			//Rprintf("'%s' (width %d); pad %d\n", str, w, colwidths[j] - w);
 		}
 		PRINT_CHAR('\n');
 		FLUSH();
@@ -193,14 +192,13 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 			PRINT_SPACES(print_gap);
 
 			if (elt == NA_STRING) {
-				PRINT_NOQUOTE(na_print, na_size, width - na_width);
+				PRINT_NOQUOTE(na_print, na_size,
+					      width - na_width);
 			} else {
 				str = translateChar(elt);
 				w = charsxp_width(elt) + (quote ? 2 : 0);
 				n = strlen(str);
 				PRINT_ENTRY(str, n, width - w);
-				//Rprintf("|123456789|123456789|123456789|\n");
-				//Rprintf("'%s' (width %d); pad %d\n", str, w, width - w);
 			}
 		}
 

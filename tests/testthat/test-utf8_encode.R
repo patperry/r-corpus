@@ -48,3 +48,21 @@ test_that("'utf8_encode' preserves attributes", {
     switch_ctype("Unicode")
     expect_equal(utf8_encode(x), enc2utf8(x))
 })
+
+
+test_that("'utf8_encode' can encode basic Unicode", {
+    x <- "\u200b"
+    Encoding(x) <- "UTF-8"
+
+    switch_ctype("Unicode")
+    expect_equal(utf8_encode(x), x)
+})
+
+
+test_that("'utf8_encode' can encode extended Unicode", {
+    x <- "\U0001f60d"
+    Encoding(x) <- "UTF-8"
+
+    switch_ctype("Unicode")
+    expect_equal(utf8_encode(x), x)
+})

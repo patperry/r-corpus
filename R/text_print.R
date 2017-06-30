@@ -14,7 +14,8 @@
 
 format.corpus_text <- function(x, trim = FALSE, chars = NULL,
                                justify = "left", width = NULL,
-                               na.encode = TRUE, ...)
+                               na.encode = TRUE, ignorables = TRUE,
+                               emoji = FALSE, ...)
 {
     with_rethrow({
         x <- as_text(x)
@@ -27,13 +28,17 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)
+        ignorables <- as_option("ignorables", ignorables)
+        emoji <- as_option("emoji", emoji)
         utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-        .Call(C_format_text, x, trim, chars, justify, width, na.encode, utf8)
+        .Call(C_format_text, x, trim, chars, justify, width, na.encode,
+              ignorables, emoji, utf8)
     })
 }
 
 
-print.corpus_text <- function(x, max = 6L, ...)
+print.corpus_text <- function(x, max = 6L, ignorables = FALSE,
+                              emoji = TRUE, ...)
 {
     if (length(x) == 0) {
         cat("text(0)\n")
@@ -52,7 +57,8 @@ print.corpus_text <- function(x, max = 6L, ...)
         nextra <- length(x) - max
     }
 
-    str <- format(xsub, na.encode = FALSE, ...)
+    str <- format(xsub, na.encode = FALSE, ignorables = ignorables,
+                  emoji = emoji, ...)
     nm <- names(str)
 
     if (is.null(nm)) {
@@ -73,16 +79,20 @@ print.corpus_text <- function(x, max = 6L, ...)
 }
 
 
-format.corpus_frame <- function(x, ..., justify = "none")
+format.corpus_frame <- function(x, ..., justify = "none",
+                                ignorables = TRUE, emoji = FALSE)
 {
-    format.data.frame(x, ..., justify = justify)
+    # TODO: format character specially
+    format.data.frame(x, ..., justify = justify, ignorables = ignorables,
+                      emoji = emoji)
 }
 
 
 print.corpus_frame <- function(x, chars = NULL, digits = NULL,
                                quote = FALSE, na.print = NULL,
                                print.gap = NULL, right = TRUE,
-                               row.names = TRUE, max = NULL, ...)
+                               row.names = TRUE, max = NULL,
+                               ignorables = FALSE, emoji = TRUE, ...)
 {
     n <- nrow(x)
 
@@ -111,7 +121,8 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
 
     fmt <- format.corpus_frame(x, chars = chars, digits = digits,
-                               na.encode = FALSE)
+                               na.encode = FALSE, ignorables = ignorables,
+                               emoji = emoji)
     m <- as.matrix(fmt)
     if (!(is.matrix(m) && storage.mode(m) == "character")) {
         stop("'format' returned a malformed value")
