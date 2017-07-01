@@ -84,7 +84,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
 
     width <- getOption("width")
 
-    .Call(C_print_frame, um, quote, na.print, print.gap, right, width)
+    .Call(C_print_table, um, quote, na.print, print.gap, right, width)
 
     if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")

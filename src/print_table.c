@@ -175,7 +175,7 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 }
 
 
-SEXP print_frame(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
+SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 		 SEXP sright, SEXP swidth)
 {
 	SEXP elt, dim_names, row_names, col_names;
