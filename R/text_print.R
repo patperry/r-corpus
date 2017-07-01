@@ -58,20 +58,22 @@ print.corpus_text <- function(x, max = 6L, display = TRUE, ...)
         nextra <- length(x) - max
     }
 
-    str <- format(xsub, na.encode = FALSE, display = display, ...)
+    fmt <- format(xsub, na.encode = FALSE, display = display, ...)
+    str <- utf8_encode(fmt)
     nm <- names(str)
 
     if (is.null(nm)) {
-        lab <- format(paste0("[", seq_along(str), "]"), justify="right")
+        lab <- format(paste0("[", seq_along(str), "]"), justify = "right")
     } else {
-        lab <- format(nm, justify="left")
+        lab <- utf8_encode(format(nm, justify = "left"))
     }
     for (i in seq_along(str)) {
-        cat(lab[[i]], " ", encodeString(str[[i]]), "\n", sep="")
+        cat(lab[[i]], " ", utf8_encode(str[[i]]), "\n", sep="")
     }
 
     if (nextra > 0) {
-        cat(paste0(paste0(rep(" ", max(nchar(lab))), collapse=""), "\u22ee\n"))
+        cat(paste0(paste0(rep(" ", max(utf8_width(lab))), collapse=""),
+                   "\u22ee\n"))
         cat("(", length(x), " entries total)\n", sep="")
     }
 

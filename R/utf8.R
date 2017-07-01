@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 
+# converts a character vector from its declared encoding to UTF-8
 as_utf8 <- function(x)
 {
     .Call(C_utf8_coerce, x)
@@ -26,15 +27,19 @@ utf8_encode <- function(x)
     .Call(C_utf8_encode, x, utf8)
 }
 
-
+# test whether the elements can be converted to valid UTF-8
 utf8_valid <- function(x)
 {
     .Call(C_utf8_valid, x)
 }
 
-
-utf8_width <- function(x)
+# gets the width; invalid sequences (?)
+utf8_width <- function(x, encode = FALSE)
 {
-    x <- as_utf8(x)
+    if (encode) {
+        x <- utf8_encode(x)
+    } else {
+        x <- as_utf8(x)
+    }
     .Call(C_utf8_width, x)
 }
