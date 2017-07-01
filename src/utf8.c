@@ -123,32 +123,40 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
 			nbyte = 4;
 			ptr++;
 		} else {
-			corpus_decode_utf8(&ptr, &code);
+			if (nbyte == 1) {
+				code = *ptr++;
 
-			cw = corpus_unicode_charwidth(code);
-			if (cw == CORPUS_CHARWIDTH_OTHER) {
-				needs = 1;
-				if (code < 0x80) {
-					switch (code) {
-					case '\a':
-					case '\b':
-					case '\f':
-					case '\n':
-					case '\r':
-					case '\t':
-					case '\v':
-						nbyte = 2; // \a, \b, etc.
-						break;
-					default:
+				switch (code) {
+				case '\a':
+				case '\b':
+				case '\f':
+				case '\n':
+				case '\r':
+				case '\t':
+				case '\v':
+					needs = 1;
+					nbyte = 2;
+					break;
+				default:
+					if (!isprint((int)code)) {
+						needs = 1;
 						nbyte = 4; // \xHH
-						break;
 					}
-				} else if (code <= 0xFFFF) {
-					// \uXXXX or <U+XXXX>
-					nbyte = utf8 ? 6 : 8;
+					break;
+				}
+			} else {
+				corpus_decode_utf8(&ptr, &code);
+
+				if (utf8) {
+					cw = corpus_unicode_charwidth(code);
+					needs = (cw == CORPUS_CHARWIDTH_OTHER);
 				} else {
-					// \UXXXXYYYY or <U+XXXXYYYY>
-					nbyte = utf8 ? 10 : 12;
+					needs = 1;
+				}
+
+				if (needs) {
+					// \uXXXX or \UXXXXYYYY
+					nbyte = (code <= 0xFFFF) ? 6 : 10;
 				}
 			}
 		}
@@ -162,6 +170,7 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
 	if (sizeptr) {
 		*sizeptr = size;
 	}
+
 	return needs;
 }
 
@@ -178,8 +187,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 	while (ptr != end) {
 		start = ptr;
 		if ((err = corpus_scan_utf8(&start, end))) {
-			sprintf((char *)dst, "\\x%02x",
-				(unsigned)*ptr);
+			sprintf((char *)dst, "\\x%02x", (unsigned)*ptr);
 			dst += 4;
 			ptr++;
 			continue;
@@ -188,7 +196,52 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 		start = ptr;
 		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
 
+		if (nbyte == 1) {
+			code = *ptr++;
+			switch (code) {
+			case '\a':
+				*dst++ = '\\';
+				*dst++ = 'a';
+				break;
+			case '\b':
+				*dst++ = '\\';
+				*dst++ = 'b';
+				break;
+			case '\f':
+				*dst++ = '\\';
+				*dst++ = 'f';
+				break;
+			case '\n':
+				*dst++ = '\\';
+				*dst++ = 'n';
+				break;
+			case '\r':
+				*dst++ = '\\';
+				*dst++ = 'r';
+				break;
+			case '\t':
+				*dst++ = '\\';
+				*dst++ = 't';
+				break;
+			case '\v':
+				*dst++ = '\\';
+				*dst++ = 'v';
+				break;
+			default:
+				if (code >= 0x80 || !isprint((int)code)) {
+					sprintf((char *)dst, "\\x%02x",
+						(unsigned)code);
+					dst += 4;
+				} else {
+					*dst++ = (uint8_t)code;
+				}
+				break;
+			}
+			continue;
+		}
+
 		corpus_decode_utf8(&ptr, &code);
+
 		if (utf8) {
 			cw = corpus_unicode_charwidth(code);
 			if (cw != CORPUS_CHARWIDTH_OTHER) {
@@ -199,47 +252,12 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 			}
 		}
 
-		if (code < 0x80) {
-			*dst++ = '\\';
-			switch (code) {
-			case '\a':
-				*dst++ = 'a';
-				break;
-			case '\b':
-				*dst++ = 'b';
-				break;
-			case '\f':
-				*dst++ = 'f';
-				break;
-			case '\n':
-				*dst++ = 'n';
-				break;
-			case '\r':
-				*dst++ = 'r';
-				break;
-			case '\t':
-				*dst++ = 't';
-				break;
-			case '\v':
-				*dst++ = 'v';
-				break;
-			default:
-				sprintf((char *)dst, "x%02x", (unsigned)code);
-				dst += 3;
-				break;
-			}
-		} else if (utf8 && code <= 0xFFFF) {
+		if (code <= 0xFFFF) {
 			sprintf((char *)dst, "\\u%04x", (unsigned)code);
 			dst += 6;
-		} else if (!utf8 && code <= 0xFFFF) {
-			sprintf((char *)dst, "<U+%04X>", (unsigned)code);
-			dst += 8;
-		} else if (utf8) {
+		} else {
 			sprintf((char *)dst, "\\U%08x", (unsigned)code);
 			dst += 10;
-		} else {
-			sprintf((char *)dst, "<U+%08X>", (unsigned)code);
-			dst += 12;
 		}
 	}
 }
@@ -286,6 +304,7 @@ static int needs_encode_bytes(const uint8_t *str, size_t size0, int *sizeptr)
 	if (sizeptr) {
 		*sizeptr = size;
 	}
+
 	return needs;
 }
 
@@ -300,39 +319,44 @@ static void encode_bytes(uint8_t *dst, const uint8_t *str, size_t size)
 		code = *ptr++;
 		switch (code) {
 		case '\a':
+			*dst++ = '\\';
 			*dst++ = 'a';
 			break;
 		case '\b':
+			*dst++ = '\\';
 			*dst++ = 'b';
 			break;
 		case '\f':
+			*dst++ = '\\';
 			*dst++ = 'f';
 			break;
 		case '\n':
+			*dst++ = '\\';
 			*dst++ = 'n';
 			break;
 		case '\r':
+			*dst++ = '\\';
 			*dst++ = 'r';
 			break;
 		case '\t':
+			*dst++ = '\\';
 			*dst++ = 't';
 			break;
 		case '\v':
+			*dst++ = '\\';
 			*dst++ = 'v';
 			break;
 		default:
-			if (code < 0x80 && isprint(code)) {
+			if (code < 0x80 && isprint((int)code)) {
 				*dst++ = code;
 			} else {
-				sprintf((char *)dst, "\\x%02x", code);
+				sprintf((char *)dst, "\\x%02x",
+					(unsigned)code);
 				dst += 4;
 			}
 			break;
 		}
-	
-		ptr++;
 	}
-	return;
 }
 
 
@@ -353,7 +377,16 @@ static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
 	conv = 0;
 
 	ce = getCharCE(sx);
-	if (ce != CE_ANY && ce != CE_UTF8 && ce != CE_BYTES) {
+	switch (ce) {
+	case CE_ANY:
+	case CE_BYTES:
+	case CE_UTF8:
+#if (!defined(_WIN32) && !defined(_WIN64))
+	case CE_NATIVE: // assume that 'native' is UTF-8 on non-Windows
+#endif
+		break;
+
+	default:
 		str2 = (const uint8_t *)translateCharUTF8(sx);
 		ce = CE_UTF8;
 		if (str2 != str) {

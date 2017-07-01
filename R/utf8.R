@@ -24,7 +24,8 @@ utf8_valid <- function(x)
     .Call(C_utf8_valid, x)
 }
 
-
+# encode an R character string in a form suitable for dsiplay
+# on a terminal in the current locale (determined by LC_CTYPE)
 utf8_encode <- function(x)
 {
     if (is.null(x)) {

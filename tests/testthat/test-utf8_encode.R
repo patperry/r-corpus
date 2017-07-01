@@ -45,7 +45,9 @@ test_that("'utf8_encode' preserves attributes", {
     dimnames(x) <- list(c("foo", "bar"), as.character(1:13))
     class(x) <- "my_class"
 
-    switch_ctype("Unicode")
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
     expect_equal(utf8_encode(x), enc2utf8(x))
 })
 
@@ -54,7 +56,9 @@ test_that("'utf8_encode' can encode basic Unicode", {
     x <- "\u200b"
     Encoding(x) <- "UTF-8"
 
-    switch_ctype("Unicode")
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
     expect_equal(utf8_encode(x), x)
 })
 
@@ -63,6 +67,39 @@ test_that("'utf8_encode' can encode extended Unicode", {
     x <- "\U0001f60d"
     Encoding(x) <- "UTF-8"
 
-    switch_ctype("Unicode")
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
     expect_equal(utf8_encode(x), x)
+})
+
+
+test_that("'utf8_encode' can handle ASCII escapes", {
+    x <- "\x01\a\b\f\n\r\t\v\x7f"
+    expect_equal(utf8_encode(x), "\\x01\\a\\b\\f\\n\\r\\t\\v\\x7f")
+})
+
+test_that("'utf8_encode' can handle invalid UTF-8", {
+    x <- "\xfe"
+    expect_equal(utf8_encode(x), "\\xfe")
+})
+
+test_that("'utf8_encode' can handle bytes", {
+    x <- "\x01\a\b\f\n\r\t\v\x7f\x80\xff"
+    Encoding(x) <- "bytes"
+    expect_equal(utf8_encode(x),
+                 "\\x01\\a\\b\\f\\n\\r\\t\\v\\x7f\\x80\\xff")
+})
+
+test_that("'utf8_encode' can handle latin-1", {
+    x <- "her \xa320"
+    Encoding(x) <- "latin1"
+
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    expect_equal(utf8_encode(x), "her \\u00a320")
+
+    switch_ctype("Unicode")
+    expect_equal(utf8_encode(x), "her \u00a320")
 })
