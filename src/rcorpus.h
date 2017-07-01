@@ -180,6 +180,7 @@ SEXP term_matrix_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
 SEXP stopwords(SEXP kind);
 
 /* utf8 */
+SEXP utf8_coerce(SEXP x);
 SEXP utf8_encode(SEXP x, SEXP utf8);
 SEXP utf8_valid(SEXP x);
 SEXP utf8_width(SEXP x);

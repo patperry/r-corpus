@@ -77,6 +77,22 @@ static const char *encoding_name(cetype_t ce)
 }
 
 
+static int encodes_utf8(cetype_t ce)
+{
+	switch (ce) {
+	case CE_ANY:
+	case CE_BYTES:
+	case CE_UTF8:
+#if (!defined(_WIN32) && !defined(_WIN64))
+	case CE_NATIVE: // assume that 'native' is UTF-8 on non-Windows
+#endif
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+
 static int is_valid(const uint8_t *str, size_t size, size_t *errptr)
 {
 	const uint8_t *end = str + size;
@@ -377,16 +393,7 @@ static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
 	conv = 0;
 
 	ce = getCharCE(sx);
-	switch (ce) {
-	case CE_ANY:
-	case CE_BYTES:
-	case CE_UTF8:
-#if (!defined(_WIN32) && !defined(_WIN64))
-	case CE_NATIVE: // assume that 'native' is UTF-8 on non-Windows
-#endif
-		break;
-
-	default:
+	if (!encodes_utf8(ce)) {
 		str2 = (const uint8_t *)translateCharUTF8(sx);
 		ce = CE_UTF8;
 		if (str2 != str) {
@@ -424,22 +431,25 @@ static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
 }
 
 
-SEXP utf8_valid(SEXP sx)
+SEXP utf8_coerce(SEXP sx)
 {
-	char buf[256];
 	SEXP ans, sstr;
-	cetype_t ce;
 	const uint8_t *str;
+	cetype_t ce;
 	size_t size, err;
 	R_xlen_t i, n;
-	int nprot, raw;
-	
+	int raw, duped;;
+
 	if (sx == R_NilValue) {
-		return ScalarLogical(TRUE);
+		return R_NilValue;
+	}
+	if (!isString(sx)) {
+		error("argument is not a character vector");
 	}
 
-	nprot = 0;
-	PROTECT(sx = coerceVector(sx, STRSXP)); nprot++;
+	ans = sx;
+	duped = 0;
+
 	n = XLENGTH(sx);
 	for (i = 0; i < n; i++) {
 		sstr = STRING_ELT(sx, i);
@@ -448,7 +458,7 @@ SEXP utf8_valid(SEXP sx)
 		}
 
 		ce = getCharCE(sstr);
-		raw = (ce == CE_ANY || ce == CE_UTF8 || ce == CE_BYTES);
+		raw = encodes_utf8(ce);
 
 		if (raw) {
 			str = (const uint8_t *)CHAR(sstr);
@@ -459,37 +469,103 @@ SEXP utf8_valid(SEXP sx)
 		}
 
 		if (!is_valid(str, size, &err)) {
-			if (ce == CE_UTF8) {
-				snprintf(buf, sizeof(buf),
-					 "entry %"PRIu64
-					 " is marked as \"UTF-8\""
-					 " but string byte %"PRIu64
-					 " (\"\\x%0x\")"
-					 " is invalid in that encoding",
-					 (uint64_t)i + 1,
-					 (uint64_t)err + 1,
-					 (unsigned)str[err]);
+			if (ce == CE_BYTES) {
+				error("argument entry %"PRIu64
+				      " cannot be converted"
+				      " from \"bytes\" to \"UTF-8\";"
+				      " it contains an invalid byte"
+				      " in position %"PRIu64
+				      " (\\x%0x)",
+				      (uint64_t)i + 1,
+				      (uint64_t)err + 1,
+				      (unsigned)str[err]);
+			} else if (raw) {
+				error("argument entry %"PRIu64
+				      " is marked as \"UTF-8\""
+				      " but contains an invalid byte"
+				      " in position %"PRIu64
+				      " (\\x%0x)",
+				      (uint64_t)i + 1,
+				      (uint64_t)err + 1,
+				      (unsigned)str[err]);
 			} else {
-				snprintf(buf, sizeof(buf),
-					 "cannot convert entry %"PRIu64
-					 " from \"%s\" encoding to \"UTF-8\";"
-					 " %sstring byte %"PRIu64
-					 " (\"\\x%0x\") is invalid",
-					 (uint64_t)i + 1,
-					 encoding_name(ce),
-					 ce == CE_BYTES ? ""
-					 	        : "after conversion, ",
-					 (uint64_t)err + 1,
-					 (unsigned)str[err]);
+				error("argument entry %"PRIu64
+				      " cannot be converted"
+				      " from \"%s\" encoding to \"UTF-8\";"
+				      " calling 'enc2utf8' on that entry"
+				      " returns a string with an invalid"
+				      " byte in position %"PRIu64,
+				      " (\\x%0x)",
+				      (uint64_t)i + 1,
+				      encoding_name(ce),
+				      (uint64_t)err + 1,
+				      (unsigned)str[err]);
 			}
-			PROTECT(ans = ScalarString(mkChar(buf))); nprot++;
-			goto out;
+		}
+
+		if (!raw || ce == CE_BYTES || ce == CE_NATIVE) {
+			if (!duped) {
+				PROTECT(ans = duplicate(ans));
+				duped = 1;
+			}
+			SET_STRING_ELT(ans, i,
+				       mkCharLenCE((const char *)str,
+					           size, CE_UTF8));
 		}
 	}
 
-	ans = ScalarLogical(TRUE);
-out:
-	UNPROTECT(nprot);
+	if (duped) {
+		UNPROTECT(1);
+	}
+
+	return ans;
+}
+
+
+SEXP utf8_valid(SEXP sx)
+{
+	SEXP ans, sstr;
+	const uint8_t *str;
+	cetype_t ce;
+	size_t size, err;
+	R_xlen_t i, n;
+	int raw, val;;
+
+	if (sx == R_NilValue) {
+		return R_NilValue;
+	}
+	if (!isString(sx)) {
+		error("argument is not a character vector");
+	}
+
+	n = XLENGTH(sx);
+	PROTECT(ans = allocVector(LGLSXP, n));
+	setAttrib(ans, R_NamesSymbol, getAttrib(sx, R_NamesSymbol));
+
+	n = XLENGTH(sx);
+	for (i = 0; i < n; i++) {
+		sstr = STRING_ELT(sx, i);
+		if (sstr == NA_STRING) {
+			LOGICAL(ans)[i] = NA_LOGICAL;
+			continue;
+		}
+
+		ce = getCharCE(sstr);
+		raw = encodes_utf8(ce);
+
+		if (raw) {
+			str = (const uint8_t *)CHAR(sstr);
+			size = (size_t)XLENGTH(sstr);
+		} else {
+			str = (const uint8_t *)translateCharUTF8(sstr);
+			size = strlen((const char *)str);
+		}
+
+		val = is_valid(str, size, &err) ? TRUE : FALSE;
+		LOGICAL(ans)[i] = val;
+	}
+
+	UNPROTECT(1);
 	return ans;
 }
 
@@ -500,11 +576,14 @@ SEXP utf8_width(SEXP sx)
 	R_xlen_t i, n;
 	int w;
 
-	if (!isString(sx)) {
-		error("argument 'x' is not a character vector");
+	if (sx == R_NilValue) {
+		return R_NilValue;
 	}
-	n = XLENGTH(sx);
+	if (!isString(sx)) {
+		error("argument is not a character vector");
+	}
 
+	n = XLENGTH(sx);
 	PROTECT(ans = allocVector(INTSXP, n));
 	setAttrib(ans, R_NamesSymbol, getAttrib(sx, R_NamesSymbol));
 
@@ -530,14 +609,15 @@ SEXP utf8_encode(SEXP sx, SEXP sutf8)
 	R_xlen_t i, n;
 	int duped, nbuf, utf8;
 
-	if (!isString(sx)) {
-		error("argument 'x' is not a character vector");
+	if (sx == R_NilValue) {
+		return R_NilValue;
 	}
-	n = XLENGTH(sx);
 
-	if (!isLogical(sutf8) || XLENGTH(sutf8) != 1) {
-		error("argument 'utf8' is not a logical scalar");
+	if (!isString(sx)) {
+		error("argument is not a character vector");
 	}
+
+	n = XLENGTH(sx);
 	utf8 = LOGICAL(sutf8)[0] == TRUE;
 
 	ans = sx;

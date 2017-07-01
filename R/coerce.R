@@ -37,10 +37,7 @@ as_character_vector <- function(name, value, utf8 = TRUE)
     }
     value <- as.character(value)
     if (utf8) {
-        if (!isTRUE(msg <- utf8_valid(value))) {
-            stop(paste0("'", name, "' is invalid: ", msg))
-        }
-        value <- enc2utf8(value)
+        value <- as_utf8(value)
     }
     value
 }
