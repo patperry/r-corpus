@@ -126,11 +126,6 @@ as.Date.corpus_text <- function(x, format, ...)
     as.Date(as.character(x), format, ...)
 }
 
-is.character.corpus_text <- function(x)
-{
-    FALSE
-}
-
 all.equal.corpus_text <- function(target, current, ...)
 {
     if (!is_text(current)) {
