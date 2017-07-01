@@ -74,96 +74,9 @@ is_text <- function(x)
     if (!inherits(x, "corpus_text")) {
         return(FALSE)
     }
-    valid <- .Call(C_text_valid, x)
-    if (!valid) {
-        stop("invalid text object")
-    }
-    return(TRUE)
+    .Call(C_text_valid, x)
 }
 
-
-length.corpus_text <- function(x)
-{
-    .Call(C_length_text, x)
-}
-
-
-dim.corpus_text <- function(x)
-{
-    NULL
-}
-
-
-names.corpus_text <- function(x)
-{
-    unclass(x)$names
-}
-
-
-`names<-.corpus_text` <- function(x, value)
-{
-    if (!is.null(value)) {
-        value <- as.character(value)
-        if (length(value) != length(x)) {
-            stop(paste0("names attribute [", length(value), "]",
-                        " must be the same length as the text object [",
-                        length(x), "]"))
-        }
-    }
-
-    y <- unclass(x)
-    y$names <- value
-    class(y) <- class(x)
-    y
-}
-
-
-`[.corpus_text` <- function(x, i)
-{
-    index <- seq_along(x)
-    names(index) <- names(x)
-    i <- index[i]
-
-    y <- unclass(x)
-    y$handle <- .Call(C_subset_text_handle, y$handle, as.double(i))
-    y$table <- y$table[i,]
-    y$names <- y$names[i]
-    class(y) <- class(x)
-    y
-}
-
-
-`[[.corpus_text` <- function(x, i)
-{
-    index <- seq_along(x)
-    names(index) <- names(x)
-    i <- index[[i]]
-    as.character(x[i])
-}
-
-
-`$.corpus_text` <- function(x, name)
-{
-    stop("$ operator is invalid for text objects")
-}
-
-
-`$<-.corpus_text` <- function(x, name, value)
-{
-    stop("$<- operator is invalid for text objects")
-}
-
-
-`[<-.corpus_text` <- function(x, i, value)
-{
-    stop("[<- operator is invalid for text objects")
-}
-
-
-`[[<-.corpus_text` <- function(x, i, value)
-{
-    stop("[[<- operator is invalid for text objects")
-}
 
 
 summary.corpus_text <- function(object, ...)
@@ -171,16 +84,6 @@ summary.corpus_text <- function(object, ...)
     value <- c(Length = length(object), Class = "text", Mode = "character")
     class(value) <- c("summaryDefault", "table")
     value
-}
-
-as.character.corpus_text <- function(x, ...)
-{
-    .Call(C_as_character_text, x)
-}
-
-as.complex.corpus_text <- function(x, ...)
-{
-    as.complex(as.character(x, ...))
 }
 
 as.data.frame.corpus_text <- function(x, row.names = NULL, optional = FALSE, ...)
@@ -216,21 +119,6 @@ as.data.frame.corpus_text <- function(x, row.names = NULL, optional = FALSE, ...
     }
 
     structure(value, row.names = row.names, class = "data.frame")
-}
-
-as.double.corpus_text <- function(x, ...)
-{
-    as.double(as.character(x, ...))
-}
-
-as.integer.corpus_text <- function(x, ...)
-{
-    as.integer(as.character(x, ...))
-}
-
-as.logical.corpus_text <- function(x, ...)
-{
-    as.logical(as.character(x, ...))
 }
 
 as.Date.corpus_text <- function(x, format, ...)
@@ -273,16 +161,6 @@ all.equal.corpus_text <- function(target, current, ...)
     }
 
     all.equal(target, current, ...)
-}
-
-is.na.corpus_text <- function(x)
-{
-    .Call(C_is_na_text, x)
-}
-
-anyNA.corpus_text <- function(x, recursive = FALSE)
-{
-    .Call(C_anyNA_text, x)
 }
 
 Ops.corpus_text <- function(e1, e2)

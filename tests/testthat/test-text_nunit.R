@@ -1,4 +1,4 @@
-context("text_length")
+context("text_nunit")
 
 
 test_that("text_nsentence can works on sentences", {
