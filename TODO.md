@@ -4,36 +4,17 @@ To Do
 Features
 --------
 
- * Concat operator `c()` for text.
-
- * `rep()` for text
+ * `[<-` for text
 
  * `[[<-` for text
 
- * `[<-` for text
+ * `c()` for text.
 
- * Need implementations for
-   `names(.knownS3Generics)[.knownS3Generics == "base"]` for `text`.
+ * `rep()` for text
 
- Math          
- Ops           
- Summary       
- Complex       
- as.data.frame 
- as.matrix     
- as.vector     
- cbind         
- labels        
- print         
- rbind         
- seq           
- solve         
- summary       
- t    
+ * `summary.text` could be better
 
- * `summary.text`
-
- * `vocab()` for type/token frequencies (?)
+ * `format.corpus_frame`
 
  * `text_subset(,terms)`
 
@@ -42,3 +23,7 @@ Features
 
  * Passing a `token_filter` everywhere is annoying, error-prone. Allow
    setting a `filter` property on text objects to act as a default.
+
+ * `as_corpus`
+
+ * `text_priority`

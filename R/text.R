@@ -17,6 +17,7 @@ as_text <- function(x, ...)
     UseMethod("as_text")
 }
 
+
 as_text.character <- function(x, ...)
 {
     with_rethrow({
@@ -24,6 +25,7 @@ as_text.character <- function(x, ...)
         .Call(C_as_text_character, x)
     })
 }
+
 
 as_text.default <- function(x, ...)
 {
@@ -42,7 +44,6 @@ as_text.default <- function(x, ...)
         } else {
             nm <- row.names(x)
         }
-
 
         # find the columns with type 'text'
         text_cols <- sapply(x, is_text)
@@ -75,100 +76,4 @@ is_text <- function(x)
         return(FALSE)
     }
     .Call(C_text_valid, x)
-}
-
-
-
-summary.corpus_text <- function(object, ...)
-{
-    value <- c(Length = length(object), Class = "text", Mode = "character")
-    class(value) <- c("summaryDefault", "table")
-    value
-}
-
-as.data.frame.corpus_text <- function(x, row.names = NULL, optional = FALSE, ...)
-{
-    nm <- deparse(substitute(x), width.cutoff = 500L)
-
-    nrows <- length(x)
-
-    # get row names
-    if (!is.null(row.names)) {
-        if (!(is.character(row.names) && length(row.names) == nrows)) {
-            stop("'row.names' is not a character vector of length %d", nrows)
-        }
-    } else if (is.null(row.names)) {
-        if (nrows == 0L) {
-            row.names <- character()
-        } else {
-            row.names <- names(x)
-
-            if (is.null(row.names)) {
-                row.names <- .set_row_names(nrows)
-            }
-        }
-    }
-
-    if (!is.null(names(x))) {
-        names(x) <- NULL
-    }
-
-    value <- list(x)
-    if (!optional)  {
-        names(value) <- nm
-    }
-
-    structure(value, row.names = row.names, class = "data.frame")
-}
-
-as.Date.corpus_text <- function(x, format, ...)
-{
-    as.Date(as.character(x), format, ...)
-}
-
-all.equal.corpus_text <- function(target, current, ...)
-{
-    if (!is_text(current)) {
-        return(c(paste("Modes: text,", mode(current)),
-                 paste("target is text, current is", mode(current))))
-    }
-
-    nt <- names(target)
-    at <- attributes(target)
-    target <- as.character(target)
-    names(target) <- nt
-
-    for (a in names(at)) {
-        if (!(a %in% c("names", "class"))) {
-            attr(target, a) <- at[[a]]
-        }
-    }
-
-    nc <- names(current)
-    ac <- attributes(current)
-    current <- as.character(current)
-    names(current) <- nc
-
-    for (a in names(ac)) {
-        if (!(a %in% c("names", "class"))) {
-            attr(current, a) <- ac[[a]]
-        }
-    }
-
-    all.equal(target, current, ...)
-}
-
-Ops.corpus_text <- function(e1, e2)
-{
-    if (nargs() == 1)
-        stop(gettextf("unary %s not defined for \"text\" objects",
-            .Generic), domain = NA)
-    boolean <- switch(.Generic, `<` = , `>` = , `==` = , `!=` = ,
-        `<=` = , `>=` = TRUE, FALSE)
-    if (!boolean)
-        stop(gettextf("%s not defined for \"text\" objects",
-            .Generic), domain = NA)
-    e1 <- as.character(e1)
-    e2 <- as.character(e2)
-    NextMethod(.Generic)
 }
