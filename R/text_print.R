@@ -58,8 +58,7 @@ print.corpus_text <- function(x, max = 6L, display = TRUE, ...)
         nextra <- length(x) - max
     }
 
-    str <- format(xsub, na.encode = FALSE, ignorables = ignorables,
-                  emoji = emoji, ...)
+    str <- format(xsub, na.encode = FALSE, display = display, ...)
     nm <- names(str)
 
     if (is.null(nm)) {
@@ -134,7 +133,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     len <- length(m)
     if (trunc <- (len > max)) {
         limit <- max(1, max %/% nc)
-        m <- m[1:limit, ,drop = FALSE]
+        m <- m[1:limit, , drop = FALSE]
     }
 
     dims <- dimnames(m)
@@ -157,7 +156,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
 
     if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
-        print(d); cat(sprintf("%s\n(%d rows total)\n", ellipsis, nr))
+        cat(sprintf("%s\n(%d rows total)\n", ellipsis, nr))
     }
 
     invisible(x)
