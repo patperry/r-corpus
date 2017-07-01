@@ -25,6 +25,16 @@
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
+/* Some displays will wrongly format emoji with one space instead of two.
+ * Fortunately, these displays also give zero-width-spaces one space
+ * instead of zero.
+ *
+ * Append a zero-width space will fix the emoji display problems on these
+ * terminals, while leaving other terminals unaffected.
+ */
+
+#define ZWSP "\xE2\x80\x8B" // U+200B
+#define ZWSP_NBYTE 3
 
 int charsxp_width(SEXP charsxp)
 {
@@ -121,8 +131,8 @@ out:
 }
 
 
-static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
-			      int *sizeptr)
+static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
+			      int utf8, int *sizeptr)
 {
 	const uint8_t *end = str + size0;
 	const uint8_t *ptr = str;
@@ -140,42 +150,61 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
 			needs = 1;
 			nbyte = 4;
 			ptr++;
-		} else {
-			if (nbyte == 1) {
-				code = *ptr++;
-
-				switch (code) {
-				case '\a':
-				case '\b':
-				case '\f':
-				case '\n':
-				case '\r':
-				case '\t':
-				case '\v':
+		} else if (nbyte == 1) { // code < 0x80
+			code = *ptr++;
+			switch (code) {
+			case '\a':
+			case '\b':
+			case '\f':
+			case '\n':
+			case '\r':
+			case '\t':
+			case '\v':
+				needs = 1;
+				nbyte = 2;
+				break;
+			default:
+				if (!isprint((int)code)) {
 					needs = 1;
-					nbyte = 2;
+					nbyte = 4; // \xHH
+				}
+				break;
+			}
+		} else {
+			corpus_decode_utf8(&ptr, &code);
+			if (utf8) {
+				cw = corpus_unicode_charwidth(code);
+				switch (cw) {
+				case CORPUS_CHARWIDTH_OTHER:
+					// \uXXXX or \UXXXXYYYY
+					needs = 1;
+					nbyte = ((code <= 0xFFFF) ? 6 : 10);
 					break;
-				default:
-					if (!isprint((int)code)) {
+
+				case CORPUS_CHARWIDTH_IGNORABLE:
+					if (display) {
+						// remove ignorables
 						needs = 1;
-						nbyte = 4; // \xHH
+						nbyte = 0;
 					}
+					break;
+
+				case CORPUS_CHARWIDTH_EMOJI:
+					if (display) {
+						// add zwsp after emoji
+						needs = 1;
+						nbyte += ZWSP_NBYTE;
+					}
+					break;
+
+				default:
+					needs = 0;
 					break;
 				}
 			} else {
-				corpus_decode_utf8(&ptr, &code);
-
-				if (utf8) {
-					cw = corpus_unicode_charwidth(code);
-					needs = (cw == CORPUS_CHARWIDTH_OTHER);
-				} else {
-					needs = 1;
-				}
-
-				if (needs) {
-					// \uXXXX or \UXXXXYYYY
-					nbyte = (code <= 0xFFFF) ? 6 : 10;
-				}
+				needs = 1;
+				// \uXXXX or \UXXXXYYYY
+				nbyte = (code <= 0xFFFF) ? 6 : 10;
 			}
 		}
 
@@ -194,7 +223,7 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int utf8,
 
 
 static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
-			 int utf8)
+			 int display, int utf8)
 {
 	const uint8_t *end = str + size;
 	const uint8_t *ptr = str;
@@ -214,7 +243,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 		start = ptr;
 		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
 
-		if (nbyte == 1) {
+		if (nbyte == 1) { // code < 0x80
 			code = *ptr++;
 			switch (code) {
 			case '\a':
@@ -246,7 +275,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 				*dst++ = 'v';
 				break;
 			default:
-				if (code >= 0x80 || !isprint((int)code)) {
+				if (!isprint((int)code)) {
 					sprintf((char *)dst, "\\x%02x",
 						(unsigned)code);
 					dst += 4;
@@ -259,23 +288,30 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 		}
 
 		corpus_decode_utf8(&ptr, &code);
+		cw = corpus_unicode_charwidth(code);
 
-		if (utf8) {
-			cw = corpus_unicode_charwidth(code);
-			if (cw != CORPUS_CHARWIDTH_OTHER) {
-				while (nbyte-- > 0) {
-					*dst++ = *start++;
-				}
-				continue;
+		if (cw == CORPUS_CHARWIDTH_OTHER || !utf8) {
+			if (code <= 0xFFFF) {
+				sprintf((char *)dst, "\\u%04x", (unsigned)code);
+				dst += 6;
+			} else {
+				sprintf((char *)dst, "\\U%08x", (unsigned)code);
+				dst += 10;
 			}
+			continue;
 		}
 
-		if (code <= 0xFFFF) {
-			sprintf((char *)dst, "\\u%04x", (unsigned)code);
-			dst += 6;
-		} else {
-			sprintf((char *)dst, "\\U%08x", (unsigned)code);
-			dst += 10;
+		if (cw == CORPUS_CHARWIDTH_IGNORABLE && display) {
+			continue;
+		}
+
+		while (nbyte-- > 0) {
+			*dst++ = *start++;
+		}
+
+		if (cw == CORPUS_CHARWIDTH_EMOJI && display) {
+			memcpy(dst, ZWSP, ZWSP_NBYTE);
+			dst += ZWSP_NBYTE;
 		}
 	}
 }
@@ -378,7 +414,8 @@ static void encode_bytes(uint8_t *dst, const uint8_t *str, size_t size)
 }
 
 
-static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
+static SEXP charsxp_encode(SEXP sx, int display, int utf8, char **bufptr,
+			   int *nbufptr)
 {
 	const uint8_t *str, *str2;
 	char *buf = *bufptr;
@@ -409,7 +446,7 @@ static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
 		if (!needs_encode_bytes(str, size, &size2)) {
 			return sx;
 		}
-	} else if (!needs_encode_chars(str, size, utf8, &size2)) {
+	} else if (!needs_encode_chars(str, size, display, utf8, &size2)) {
 		if (conv) {
 			sx = mkCharLenCE((const char *)str, size, CE_UTF8);
 		}
@@ -426,7 +463,7 @@ static SEXP charsxp_encode(SEXP sx, int utf8, char **bufptr, int *nbufptr)
 	if (ce == CE_BYTES) {
 		encode_bytes((uint8_t *)buf, str, size);
 	} else {
-		encode_chars((uint8_t *)buf, str, size, utf8);
+		encode_chars((uint8_t *)buf, str, size, display, utf8);
 	}
 
 	return mkCharLenCE(buf, size2, CE_UTF8);
@@ -604,12 +641,12 @@ SEXP utf8_width(SEXP sx)
 }
 
 
-SEXP utf8_encode(SEXP sx, SEXP sutf8)
+SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 {
 	SEXP ans, elt, elt2;
 	char *buf;
 	R_xlen_t i, n;
-	int duped, nbuf, utf8;
+	int duped, nbuf, display, utf8;
 
 	if (sx == R_NilValue) {
 		return R_NilValue;
@@ -620,6 +657,7 @@ SEXP utf8_encode(SEXP sx, SEXP sutf8)
 	}
 
 	n = XLENGTH(sx);
+	display = LOGICAL(sdisplay)[0] == TRUE;
 	utf8 = LOGICAL(sutf8)[0] == TRUE;
 
 	ans = sx;
@@ -629,7 +667,7 @@ SEXP utf8_encode(SEXP sx, SEXP sutf8)
 
 	for (i = 0; i < n; i++) {
 		elt = STRING_ELT(sx, i);
-		elt2 = charsxp_encode(elt, utf8, &buf, &nbuf);
+		elt2 = charsxp_encode(elt, display, utf8, &buf, &nbuf);
 		if (!duped && elt != elt2) {
 			PROTECT(ans = duplicate(ans));
 			duped = 1;

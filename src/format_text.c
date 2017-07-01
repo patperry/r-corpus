@@ -28,37 +28,9 @@
 #define ELLIPSIS 0x2026
 #define ELLIPSIS_NBYTE 3
 
-#define ZWSP 0x200B
-#define ZWSP_NBYTE 3
-#define ZWSP_ASCII_WIDTH 8
-
 
 static int char_width(uint32_t code, int type, int utf8)
 {
-
-	if (code >= 0x80 && !utf8) {
-		return (code <= 0xFFFF) ? 8 : 12; // <U+XXXX> or <U+XXXXYYYY>
-	}
-
-	switch (type) {
-	case CORPUS_CHARWIDTH_NONE:
-	case CORPUS_CHARWIDTH_IGNORABLE:
-		return 0;
-
-	case CORPUS_CHARWIDTH_NARROW:
-	case CORPUS_CHARWIDTH_AMBIGUOUS:
-		return 1;
-
-	case CORPUS_CHARWIDTH_WIDE:
-	case CORPUS_CHARWIDTH_EMOJI:
-		return 2;
-
-	default:
-		break;
-	}
-
-	// CORPUS_CHARWIDTH_OTHER; need to escape
-
 	if (code < 0x80) {
 		switch (code) {
 		case '\a':
@@ -70,7 +42,26 @@ static int char_width(uint32_t code, int type, int utf8)
 		case '\v':
 			return 2;
 		default:
-			return utf8 ? 6 : 4; // \uXXXX or \xXX
+			return isprint((int)code) ? 1 : 4; // \xXX
+		}
+	}
+
+	if (utf8) {
+		switch (type) {
+		case CORPUS_CHARWIDTH_NONE:
+		case CORPUS_CHARWIDTH_IGNORABLE:
+			return 0;
+
+		case CORPUS_CHARWIDTH_NARROW:
+		case CORPUS_CHARWIDTH_AMBIGUOUS:
+			return 1;
+
+		case CORPUS_CHARWIDTH_WIDE:
+		case CORPUS_CHARWIDTH_EMOJI:
+			return 2;
+
+		default:
+			break;
 		}
 	}
 
@@ -78,68 +69,7 @@ static int char_width(uint32_t code, int type, int utf8)
 }
 
 
-static void encode_ascii(uint32_t code, uint8_t **bufptr)
-{
-	char *dst = (char *)*bufptr;
-
-	if (code < 0x80) {
-		*dst++ = (uint8_t)code;
-	} else if (code <= 0xFFFF) {
-		sprintf(dst, "<U+%04X", (unsigned)code);
-		dst += 7;
-		*dst++ = '>'; // overwrite trailing \0
-	} else {
-		sprintf(dst, "<U+%08X", (unsigned)code);
-		dst += 11;
-		*dst++ = '>';
-	}
-
-	*bufptr = (uint8_t *)dst;
-}
-
-
-static void rencode_ascii(uint32_t code, uint8_t **bufptr)
-{
-	char *dst = (char *)*bufptr;
-
-	if (code < 0x80) {
-		*--dst = (uint8_t)code;
-	} else if (code <= 0xFFFF) {
-		dst -= 8;
-		sprintf(dst, "<U+%04X", (unsigned)code);
-		dst[7] = '>';
-	} else {
-		dst -= 12;
-		sprintf(dst, "<U+%08X", (unsigned)code);
-		dst[11] = '>';
-	}
-
-	*bufptr = (uint8_t *)dst;
-}
-
-
-static void encode(int utf8, uint32_t code, uint8_t **bufptr)
-{
-	if (utf8) {
-		corpus_encode_utf8(code, bufptr);
-	} else {
-		encode_ascii(code, bufptr);
-	}
-}
-
-
-static void rencode(int utf8, uint32_t code, uint8_t **bufptr)
-{
-	if (utf8) {
-		corpus_rencode_utf8(code, bufptr);
-	} else {
-		rencode_ascii(code, bufptr);
-	}
-}
-
-
-static int text_width(const struct corpus_text *text, int limit,
-		      int ignorables, int utf8)
+static int text_width(const struct corpus_text *text, int limit, int utf8)
 {
 	struct corpus_text_iter it;
 	int32_t code;
@@ -151,10 +81,6 @@ static int text_width(const struct corpus_text *text, int limit,
 	while (corpus_text_iter_advance(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
-		if (type == CORPUS_CHARWIDTH_IGNORABLE && !ignorables) {
-			return 0;
-		}
-
 		w = char_width(code, type, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
@@ -166,8 +92,7 @@ static int text_width(const struct corpus_text *text, int limit,
 }
 
 
-static int text_rwidth(const struct corpus_text *text, int limit,
-		       int ignorables, int utf8)
+static int text_rwidth(const struct corpus_text *text, int limit, int utf8)
 {
 	struct corpus_text_iter it;
 	int32_t code;
@@ -180,10 +105,6 @@ static int text_rwidth(const struct corpus_text *text, int limit,
 	while (corpus_text_iter_retreat(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
-		if (type == CORPUS_CHARWIDTH_IGNORABLE && !ignorables) {
-			return 0;
-		}
-
 		w = char_width(code, type, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
@@ -225,8 +146,8 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 	} while (0)
 
 static SEXP format_left(const struct corpus_text *text, int trim,
-			int chars, int width_max, int ignorables,
-			int emoji, int utf8, uint8_t **bufptr, int *nbufptr)
+			int chars, int width_max, int utf8,
+			uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
@@ -244,12 +165,8 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 	while (!trunc && corpus_text_iter_advance(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
-
-		if (type == CORPUS_CHARWIDTH_IGNORABLE && !ignorables) {
-			continue;
-		}
-
 		w = char_width(code, type, utf8);
+
 		if (width > chars - w) {
 			code = ELLIPSIS;
 			w = utf8 ? 1 : 3;
@@ -271,20 +188,7 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 				*dst++ = '.';
 			}
 		} else {
-			encode(utf8, code, &dst);
-			if (type == CORPUS_CHARWIDTH_EMOJI && emoji && utf8) {
-				// Some displays will wrongly format emoji
-				// with one space instead of two. Fortunately,
-				// these terminals also give zero-width-spaces
-				// one space instead of zero.
-				//
-				// Append a zero-width space will fix the emoji
-				// display problems on these terminals, while
-				// leaving other terminals unaffected.
-
-				ENSURE(ZWSP_NBYTE);
-				corpus_encode_utf8(ZWSP, &dst);
-			}
+			corpus_encode_utf8(code, &dst);
 		}
 		width += w;
 	}
@@ -307,8 +211,8 @@ static SEXP format_left(const struct corpus_text *text, int trim,
 
 
 static SEXP format_centre(const struct corpus_text *text, int chars,
-			  int width_max, int ignorables, int emoji,
-			  int utf8, uint8_t **bufptr, int *nbufptr)
+			  int width_max, int utf8, uint8_t **bufptr,
+			  int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
@@ -321,7 +225,7 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 
 	dst = buf;
 
-	fullwidth = text_width(text, chars, ignorables, utf8);
+	fullwidth = text_width(text, chars, utf8);
 
 	if ((fill = width_max - fullwidth) > 0) {
 		bfill = fill / 2;
@@ -340,12 +244,8 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 	while (!trunc && corpus_text_iter_advance(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
-
-		if (type == CORPUS_CHARWIDTH_IGNORABLE && !ignorables) {
-			continue;
-		}
-
 		w = char_width(code, type, utf8);
+
 		if (width > chars - w) {
 			code = ELLIPSIS;
 			w = utf8 ? 1 : 3;
@@ -364,11 +264,7 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 				*dst++ = '.';
 			}
 		} else {
-			encode(utf8, code, &dst);
-			if (type == CORPUS_CHARWIDTH_EMOJI && emoji && utf8) {
-				ENSURE(ZWSP_NBYTE);
-				corpus_encode_utf8(ZWSP, &dst);
-			}
+			corpus_encode_utf8(code, &dst);
 		}
 		width += w;
 	}
@@ -401,10 +297,9 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 		} \
 	} while (0)
 
-
 static SEXP format_right(const struct corpus_text *text, int trim,
-			 int chars, int width_max, int ignorables,
-			 int emoji, int utf8, uint8_t **bufptr, int *nbufptr)
+			 int chars, int width_max, int utf8,
+			 uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
@@ -422,12 +317,8 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 	while (!trunc && corpus_text_iter_retreat(&it)) {
 		code = it.current;
 		type = corpus_unicode_charwidth(code);
-
-		if (type == CORPUS_CHARWIDTH_IGNORABLE && !ignorables) {
-			continue;
-		}
-
 		w = char_width(code, type, utf8);
+
 		if (width > chars - w) {
 			code = ELLIPSIS;
 			w = utf8 ? 1 : 3;
@@ -447,12 +338,7 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 				*--dst = '.';
 			}
 		} else {
-			if (type == CORPUS_CHARWIDTH_EMOJI && emoji && utf8) {
-				ENSURE(ZWSP_NBYTE);
-				corpus_rencode_utf8(ZWSP, &dst);
-				ENSURE(nbyte);
-			}
-			rencode(utf8, code, &dst);
+			corpus_rencode_utf8(code, &dst);
 		}
 		width += w;
 	}
@@ -482,9 +368,8 @@ enum justify_type {
 };
 
 
-SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
-		 SEXP swidth, SEXP sna_encode, SEXP signorables,
-		 SEXP semoji, SEXP sutf8)
+SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
+		 SEXP sna_encode, SEXP sutf8)
 {
 	SEXP ans, ans_i;
 	enum justify_type justify;
@@ -494,7 +379,7 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 	struct corpus_text na_text;
 	R_xlen_t i, n;
 	int chars, chars_i, ellipsis, width, width_max, nbuf, trim, na_encode,
-	    ignorables, emoji, utf8, nprot;
+	    utf8, nprot;
 
 	nprot = 0;
 	PROTECT(sx = coerce_text(sx)); nprot++;
@@ -536,12 +421,6 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 	PROTECT(sna_encode = coerceVector(sna_encode, LGLSXP)); nprot++;
 	na_encode = (LOGICAL(sna_encode)[0] == TRUE);
 
-	PROTECT(signorables = coerceVector(signorables, LGLSXP)); nprot++;
-	ignorables = (LOGICAL(signorables)[0] == TRUE);
-
-	PROTECT(semoji = coerceVector(semoji, LGLSXP)); nprot++;
-	emoji = (LOGICAL(semoji)[0] == TRUE);
-
 	PROTECT(ans = allocVector(STRSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names_text(sx));
 
@@ -549,9 +428,9 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 		if (text[i].ptr == NULL) {
 			width = na_encode ? 2 : 0;
 		} else if (justify == JUSTIFY_RIGHT) {
-			width = text_rwidth(&text[i], chars, ignorables, utf8);
+			width = text_rwidth(&text[i], chars, utf8);
 		} else {
-			width = text_width(&text[i], chars, ignorables, utf8);
+			width = text_width(&text[i], chars, utf8);
 		}
 
 		if (width > width_max) {
@@ -588,20 +467,17 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify,
 		case JUSTIFY_LEFT:
 		case JUSTIFY_NONE:
 			ans_i = format_left(text_i, trim, chars_i,
-					    width_max, ignorables, emoji,
-					    utf8, &buf, &nbuf);
+					    width_max, utf8, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_CENTRE:
 			ans_i = format_centre(text_i, chars_i, width_max,
-					      ignorables, emoji, utf8,
-					      &buf, &nbuf);
+					      utf8, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_RIGHT:
 			ans_i = format_right(text_i, trim, chars_i,
-					     width_max, ignorables, emoji,
-					     utf8, &buf, &nbuf);
+					     width_max, utf8, &buf, &nbuf);
 			break;
 		}
 

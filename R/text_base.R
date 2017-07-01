@@ -140,7 +140,7 @@ cbind.corpus_text <- function(..., deparse.level = 1)
 
 format.corpus_text <- function(x, trim = FALSE, chars = NULL,
                                justify = "left", width = NULL,
-                               na.encode = TRUE, display = FALSE, ...)
+                               na.encode = TRUE, ...)
 {
     with_rethrow({
         x <- as_text(x)
@@ -153,14 +153,9 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)
-        display <- as_option("display", display)
 
-        ignorables <- !display
-        emoji <- display
         utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-
-        .Call(C_format_text, x, trim, chars, justify, width, na.encode,
-              ignorables, emoji, utf8)
+        .Call(C_format_text, x, trim, chars, justify, width, na.encode, utf8)
     })
 }
 
@@ -184,14 +179,14 @@ print.corpus_text <- function(x, max = 6L, display = TRUE, ...)
         nextra <- length(x) - max
     }
 
-    fmt <- format(xsub, na.encode = FALSE, display = display, ...)
+    fmt <- format(xsub, na.encode = FALSE, ...)
     str <- utf8_encode(fmt)
     nm <- names(str)
 
     if (is.null(nm)) {
         lab <- format(paste0("[", seq_along(str), "]"), justify = "right")
     } else {
-        lab <- utf8_encode(format(nm, justify = "left"))
+        lab <- utf8_encode(format(nm, justify = "left"), display = display)
     }
     for (i in seq_along(str)) {
         cat(lab[[i]], " ", utf8_encode(str[[i]]), "\n", sep="")

@@ -19,12 +19,12 @@ as_utf8 <- function(x)
     .Call(C_utf8_coerce, x)
 }
 
-# encode an R character string in a form suitable for dsiplay
-# on a terminal in the current locale (determined by LC_CTYPE)
-utf8_encode <- function(x)
+# encode an R character string in a form suitable for display
+# in the current locale (determined by LC_CTYPE)
+utf8_encode <- function(x, display = FALSE)
 {
     utf8 <- (Sys.getlocale("LC_CTYPE") != "C")
-    .Call(C_utf8_encode, x, utf8)
+    .Call(C_utf8_encode, x, display, utf8)
 }
 
 

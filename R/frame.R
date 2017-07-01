@@ -11,10 +11,10 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 
-format.corpus_frame <- function(x, ..., display = FALSE, justify = "none")
+format.corpus_frame <- function(x, ..., justify = "none")
 {
     # TODO: format character specially
-    format.data.frame(x, ..., display = display, justify = justify)
+    format.data.frame(x, ..., justify = justify)
 }
 
 
@@ -43,6 +43,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     if (is.null(max)) {
         max <- getOption("max.print")
     }
+    display <- as_option("display", display)
 
     if (length(x) == 0) {
         cat(sprintf(ngettext(n, "data frame with 0 columns and %d row", 
@@ -51,7 +52,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
 
     fmt <- format.corpus_frame(x, chars = chars, digits = digits,
-                               na.encode = FALSE, display = display)
+                               na.encode = FALSE)
     m <- as.matrix(fmt)
     if (!(is.matrix(m) && storage.mode(m) == "character")) {
         stop("'format' returned a malformed value")
@@ -84,7 +85,9 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
 
     width <- getOption("width")
 
-    .Call(C_print_table, um, quote, na.print, print.gap, right, width)
+    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+    .Call(C_print_table, um, quote, na.print, print.gap, right, width,
+          display, utf8)
 
     if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
