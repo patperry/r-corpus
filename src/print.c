@@ -23,39 +23,6 @@
 #include "rcorpus.h"
 
 
-int charsxp_width(SEXP charsxp)
-{
-	const uint8_t *ptr = (const uint8_t *)CHAR(charsxp);
-	const uint8_t *end = ptr + XLENGTH(charsxp);
-	uint32_t code;
-	int width, cw;
-
-	width = 0;
-	while (ptr != end) {
-		corpus_decode_utf8(&ptr, &code);
-		cw = corpus_unicode_charwidth(code);
-
-		switch (cw) {
-		case CORPUS_CHARWIDTH_NARROW:
-		case CORPUS_CHARWIDTH_AMBIGUOUS:
-			width += 1;
-			break;
-
-		case CORPUS_CHARWIDTH_WIDE:
-		case CORPUS_CHARWIDTH_EMOJI:
-			width += 2;
-			break;
-
-		default:
-			continue;
-		}
-	}
-
-	return width;
-}
-
-
-
 #define NEEDS(n) \
 	do { \
 		if ((n) && (nbuf > nbuf_max - (n))) { \

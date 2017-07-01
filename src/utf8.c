@@ -26,6 +26,37 @@
 #include "rcorpus.h"
 
 
+int charsxp_width(SEXP charsxp)
+{
+	const uint8_t *ptr = (const uint8_t *)CHAR(charsxp);
+	const uint8_t *end = ptr + XLENGTH(charsxp);
+	uint32_t code;
+	int width, cw;
+
+	width = 0;
+	while (ptr != end) {
+		corpus_decode_utf8(&ptr, &code);
+		cw = corpus_unicode_charwidth(code);
+
+		switch (cw) {
+		case CORPUS_CHARWIDTH_NARROW:
+		case CORPUS_CHARWIDTH_AMBIGUOUS:
+			width += 1;
+			break;
+
+		case CORPUS_CHARWIDTH_WIDE:
+		case CORPUS_CHARWIDTH_EMOJI:
+			width += 2;
+			break;
+
+		default:
+			continue;
+		}
+	}
+
+	return width;
+}
+
 
 static const char *encoding_name(cetype_t ce)
 {
@@ -426,6 +457,34 @@ SEXP utf8_valid(SEXP sx)
 	ans = ScalarLogical(TRUE);
 out:
 	UNPROTECT(nprot);
+	return ans;
+}
+
+
+SEXP utf8_width(SEXP sx)
+{
+	SEXP ans, elt;
+	R_xlen_t i, n;
+	int w;
+
+	if (!isString(sx)) {
+		error("argument 'x' is not a character vector");
+	}
+	n = XLENGTH(sx);
+
+	PROTECT(ans = allocVector(INTSXP, n));
+
+	for (i = 0; i < n; i++) {
+		elt = STRING_ELT(sx, i);
+		if (elt == NA_STRING) {
+			w = NA_INTEGER;
+		} else {
+			w = charsxp_width(elt);
+		}
+		INTEGER(ans)[i] = w;
+	}
+
+	UNPROTECT(1);
 	return ans;
 }
 

@@ -15,11 +15,11 @@
 
 utf8_valid <- function(x)
 {
-    if (is_text(x)) {
+    if (is.null(x)) {
         return(TRUE)
     }
-    if (!is.character(x) || is.null(x)) {
-        x <- as.character(x)
+    if (!is.character(x)) {
+        stop("argument is not a character vector")
     }
     .Call(C_utf8_valid, x)
 }
@@ -32,9 +32,27 @@ utf8_encode <- function(x)
     }
 
     if (!is.character(x)) {
-        stop("argument must be a character vector")
+        stop("argument is not a character vector")
     }
 
     utf8 <- (Sys.getlocale("LC_CTYPE") != "C")
     .Call(C_utf8_encode, x, utf8)
+}
+
+
+utf8_width <- function(x)
+{
+    if (is.null(x)) {
+        return(NULL)
+    }
+
+    if (!is.character(x)) {
+        stop("argument is not a character vector")
+    }
+
+    if (isTRUE(msg <- utf8_valid(x))) {
+        stop(sprintf("argument is invalid: %s", msg))
+    }
+
+    .Call(C_utf8_width, x)
 }

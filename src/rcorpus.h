@@ -182,6 +182,7 @@ SEXP stopwords(SEXP kind);
 /* utf8 */
 SEXP utf8_encode(SEXP x, SEXP utf8);
 SEXP utf8_valid(SEXP x);
+SEXP utf8_width(SEXP x);
 
 /* data schema */
 SEXP alloc_schema(void);
@@ -194,6 +195,7 @@ SEXP read_ndjson(SEXP buffer);
 
 /* internal utility functions */
 double *as_weights(SEXP sweights, R_xlen_t n);
+int charsxp_width(SEXP charsxp);
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
 

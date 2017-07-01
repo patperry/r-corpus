@@ -68,6 +68,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(text_valid, 1),
 	CALLDEF(utf8_encode, 2),
 	CALLDEF(utf8_valid, 1),
+	CALLDEF(utf8_width, 1),
         {NULL, NULL, 0}
 };
 
