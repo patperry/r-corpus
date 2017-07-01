@@ -70,14 +70,15 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
 
     dims <- dimnames(m)
-    udims <- lapply(dims, function(x) if (is.null(x)) NULL else utf8_encode(x))
-    um <- utf8_encode(m)
+    udims <- lapply(dims, function(x) if (is.null(x)) NULL
+                                      else utf8_encode(x, display))
+    um <- utf8_encode(m, display)
     dimnames(um) <- udims
 
     if (is.null(na.print)) {
         na.print <- ifelse(quote, "<NA>", "NA")
     }
-    na.print <- utf8_encode(na.print)
+    na.print <- utf8_encode(na.print, display)
 
     if (is.null(print.gap)) {
         print.gap <- 1L
@@ -86,8 +87,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     width <- getOption("width")
 
     utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-    .Call(C_print_table, um, quote, na.print, print.gap, right, width,
-          display, utf8)
+    .Call(C_print_table, um, quote, na.print, print.gap, right, width)
 
     if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
