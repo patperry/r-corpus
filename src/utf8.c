@@ -473,6 +473,7 @@ SEXP utf8_width(SEXP sx)
 	n = XLENGTH(sx);
 
 	PROTECT(ans = allocVector(INTSXP, n));
+	setAttrib(ans, R_NamesSymbol, getAttrib(sx, R_NamesSymbol));
 
 	for (i = 0; i < n; i++) {
 		elt = STRING_ELT(sx, i);

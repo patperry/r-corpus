@@ -50,7 +50,7 @@ utf8_width <- function(x)
         stop("argument is not a character vector")
     }
 
-    if (isTRUE(msg <- utf8_valid(x))) {
+    if (!isTRUE(msg <- utf8_valid(x))) {
         stop(sprintf("argument is invalid: %s", msg))
     }
 
