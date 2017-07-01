@@ -172,3 +172,7 @@ head(text_locate(data, "\u6027", f))
 5    2   性 …在劳动战线上的高度的积极    性    和创造性，依靠全国人民在…
 6    2   性 …线上的高度的积极性和创造    性    ，依靠全国人民在改革土地…
 ```
+*Note: the alignment looks bad here because the Chinese characters have
+widths between 1 and 2 spaces each. The spacing in the table is set assuming
+that Chinese characters take exactly 2 spaces each. If you know how to set
+the font to make the widths agree, please contact me.*
