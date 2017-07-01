@@ -81,6 +81,7 @@ test_that("'utf8_encode' can handle ASCII escapes", {
 
 test_that("'utf8_encode' can handle invalid UTF-8", {
     x <- "\xfe"
+    Encoding(x) <- "bytes"
     expect_equal(utf8_encode(x), "\\xfe")
 })
 
