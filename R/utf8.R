@@ -27,6 +27,21 @@ utf8_encode <- function(x)
     .Call(C_utf8_encode, x, utf8)
 }
 
+
+utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
+                        width = NULL, na.encode = TRUE, display = FALSE)
+{
+    with_rethrow({
+        x <- as_text.character(x)
+        if (is.null(chars)) {
+            chars <- .Machine$integer.max
+        }
+        format(x, trim = trim, chars = chars, justify = justify,
+               width = width, na.encode = na.encode, display = display)
+    })
+}
+
+
 # test whether the elements can be converted to valid UTF-8
 utf8_valid <- function(x)
 {

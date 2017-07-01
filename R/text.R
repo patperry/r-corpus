@@ -19,7 +19,10 @@ as_text <- function(x, ...)
 
 as_text.character <- function(x, ...)
 {
-    .Call(C_as_text_character, c(x)) # c(x) drops attributes, keeps names
+    with_rethrow({
+        x <- as_utf8(x)
+        .Call(C_as_text_character, x)
+    })
 }
 
 as_text.default <- function(x, ...)
