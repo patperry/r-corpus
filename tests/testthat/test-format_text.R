@@ -102,32 +102,28 @@ test_that("'format' can handle long text in C locale", {
     #            6         7          8           9            10
     raw    <- c("\u6027", "?\u6027", "\n\u6027", "?\n\u6027", "\u0001\u6027",
                           "\u6027?", "\u6027\n", "\u6027?\n", "\u6027\u0001")
-    short  <- c("\\u6027", "?\\u6027", "\\n\\u6027", "?\\n...",     "\\001...",
+    short  <- c("\\u6027", "?\\u6027", "\\n\\u6027", "?\\n...",     "\\x01...",
                           "\\u6027?", "\\u6027\\n", "\\u6027?...", "\\u6027...")
     rshort <- c("\\u6027", "?\\u6027", "\\n\\u6027", "...\\n\\u6027",
                  "...\\u6027", "\\u6027?", "\\u6027\\n", "...?\\n",
-                  "...\\001")
+                  "...\\x01")
     text <- as_text(raw)
-
-    # encodeString() doesn't work on Windows
-    # https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17301
-    skip_on_os("windows")
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(encodeString(format(text, chars = 8, justify = "none")),
+    expect_equal(utf8_encode(format(text, chars = 8, justify = "none")),
                  format(short, justify = "none"))
 
-    left <- encodeString(format(text, chars = 8, justify = "left"))
+    left <- utf8_encode(format(text, chars = 8, justify = "left"))
     expect_equal(sub("\\s+$", "", left), short)
     expect_equal(nchar(left), rep(10, length(text)))
 
-    centre <- encodeString(format(text, chars = 8, justify = "centre"))
+    centre <- utf8_encode(format(text, chars = 8, justify = "centre"))
     expect_equal(sub("^\\s+", "", sub("\\s+$", "", centre)), short)
     expect_equal(nchar(centre), rep(10, length(text)))
 
-    right <- encodeString(format(text, chars = 8, justify = "right"))
+    right <- utf8_encode(format(text, chars = 8, justify = "right"))
     expect_equal(sub("^\\s+", "", right), rshort)
     expect_equal(nchar(right), rep(11, length(text)))
 })
