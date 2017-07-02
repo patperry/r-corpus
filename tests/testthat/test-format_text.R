@@ -102,12 +102,16 @@ test_that("'format' can handle long text in C locale", {
     #            6         7          8           9            10
     raw    <- c("\u6027", "?\u6027", "\n\u6027", "?\n\u6027", "\u0001\u6027",
                           "\u6027?", "\u6027\n", "\u6027?\n", "\u6027\u0001")
-    short <- c("\\u6027", "?\\u6027", "\\n\\u6027", "?\\n...",     "\\001...",
+    short  <- c("\\u6027", "?\\u6027", "\\n\\u6027", "?\\n...",     "\\001...",
                           "\\u6027?", "\\u6027\\n", "\\u6027?...", "\\u6027...")
     rshort <- c("\\u6027", "?\\u6027", "\\n\\u6027", "...\\n\\u6027",
                  "...\\u6027", "\\u6027?", "\\u6027\\n", "...?\\n",
                   "...\\001")
     text <- as_text(raw)
+
+    # encodeString() doesn't work on Windows
+    # https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17301
+    skip_on_os("windows")
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))

@@ -66,7 +66,7 @@ test_that("'utf8_encode' can encode basic Unicode", {
 
 
 test_that("'utf8_encode' can encode extended Unicode", {
-    x <- "\U0001f60d"
+    x <- intToUtf8(0x0001f60d)
     Encoding(x) <- "UTF-8"
 
     ctype <- switch_ctype("Unicode")
