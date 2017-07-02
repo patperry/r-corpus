@@ -78,7 +78,7 @@ test_that("'utf8_encode' can encode extended Unicode", {
 
 test_that("'utf8_encode' can handle ASCII escapes", {
     x <- "\x01\a\b\f\n\r\t\v\x7f"
-    expect_equal(utf8_encode(x), "\\x01\\a\\b\\f\\n\\r\\t\\v\\x7f")
+    expect_equal(utf8_encode(x), "\\u0001\\a\\b\\f\\n\\r\\t\\v\\u007f")
 })
 
 test_that("'utf8_encode' can handle invalid UTF-8", {

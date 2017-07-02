@@ -165,7 +165,7 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 			default:
 				if (!isprint((int)code)) {
 					needs = 1;
-					nbyte = 4; // \xHH
+					nbyte = 6; // \uXXXX
 				}
 				break;
 			}
@@ -275,9 +275,9 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 				break;
 			default:
 				if (!isprint((int)code)) {
-					sprintf((char *)dst, "\\x%02x",
+					sprintf((char *)dst, "\\u%04x",
 						(unsigned)code);
-					dst += 4;
+					dst += 6;
 				} else {
 					*dst++ = (uint8_t)code;
 				}

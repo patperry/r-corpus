@@ -42,7 +42,7 @@ static int char_width(uint32_t code, int type, int utf8)
 		case '\v':
 			return 2;
 		default:
-			return isprint((int)code) ? 1 : 4; // \xXX
+			return isprint((int)code) ? 1 : 6; // \uXXXX
 		}
 	}
 
