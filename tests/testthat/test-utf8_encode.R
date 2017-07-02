@@ -6,7 +6,7 @@ switch_ctype <- function(mode = c("C", "Unicode"))
 
     if (mode == "Unicode") {
         sysname <- Sys.info()[["sysname"]]
-        if (sysname == "windows") {
+        if (sysname == "Windows") {
             ctype <- "English_United States.1252"
         } else if (sysname == "Darwin") {
             ctype <- "UTF-8"
@@ -18,7 +18,9 @@ switch_ctype <- function(mode = c("C", "Unicode"))
     }
 
     ctype0 <- Sys.getlocale("LC_CTYPE")
-    Sys.setlocale("LC_CTYPE", ctype)
+    suppressWarnings({
+        Sys.setlocale("LC_CTYPE", ctype)
+    })
     if (Sys.getlocale("LC_CTYPE") != ctype) {
         skip(paste0("Cannot change locale to '", ctype, "'"))
     }
