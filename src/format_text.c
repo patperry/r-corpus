@@ -235,6 +235,8 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 		for (i = 0; i < bfill; i++) {
 			*dst++ = ' ';
 		}
+	} else {
+		bfill = 0;
 	}
 
 	width = 0;

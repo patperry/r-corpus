@@ -109,11 +109,10 @@ static int is_valid(const uint8_t *str, size_t size, size_t *errptr)
 	const uint8_t *start;
 	const uint8_t *ptr = str;
 	size_t err = (size_t)-1;
-	int valid, nbyte;
+	int valid;
 
 	valid = 1;
 	while (ptr != end) {
-		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
 		start = ptr;
 		if (corpus_scan_utf8(&ptr, end)) {
 			err = (size_t)(start - str);
