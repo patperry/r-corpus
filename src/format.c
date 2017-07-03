@@ -145,74 +145,9 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 		} \
 	} while (0)
 
-static SEXP format_left(const struct corpus_text *text, int trim,
-			int chars, int width_max, int utf8,
+static SEXP format_left(const struct corpus_text *text, int trim, int chars,
+			int width_max, int utf8, int centre,
 			uint8_t **bufptr, int *nbufptr)
-{
-	uint8_t *buf = *bufptr;
-	int nbuf = *nbufptr;
-	uint8_t *end = buf + nbuf;
-	struct corpus_text_iter it;
-	uint8_t *dst;
-	uint32_t code;
-	int w, trunc, type, nbyte, fill, len, off, width;
-
-	dst = buf;
-	width = 0;
-	trunc = 0;
-	corpus_text_iter_make(&it, text);
-
-	while (!trunc && corpus_text_iter_advance(&it)) {
-		code = it.current;
-		type = corpus_unicode_charwidth(code);
-		w = char_width(code, type, utf8);
-
-		if (width > chars - w) {
-			code = ELLIPSIS;
-			w = utf8 ? 1 : 3;
-			trunc = 1;
-		}
-
-		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
-		ENSURE(nbyte);
-
-		if (trunc) {
-			if (utf8) {
-				corpus_encode_utf8(ELLIPSIS, &dst);
-			} else {
-				// no need to reserve
-				assert(ELLIPSIS_NBYTE == 3); 
-
-				*dst++ = '.';
-				*dst++ = '.';
-				*dst++ = '.';
-			}
-		} else {
-			corpus_encode_utf8(code, &dst);
-		}
-		width += w;
-	}
-
-	if (!trim && ((fill = width_max - width)) > 0) {
-		ENSURE(fill);
-
-		while (fill-- > 0) {
-			*dst++ = ' ';
-		}
-	}
-
-
-	*bufptr = buf;
-	*nbufptr = nbuf;
-
-	len = (int)(dst - buf);
-	return mkCharLenCE((char *)buf, len, CE_UTF8);
-}
-
-
-static SEXP format_centre(const struct corpus_text *text, int chars,
-			  int width_max, int utf8, uint8_t **bufptr,
-			  int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
@@ -225,18 +160,18 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 
 	dst = buf;
 
-	fullwidth = text_width(text, chars, utf8);
+	bfill = 0;
+	if (centre && !trim) {
+		fullwidth = text_width(text, chars, utf8);
+		if ((fill = width_max - fullwidth) > 0) {
+			bfill = fill / 2;
 
-	if ((fill = width_max - fullwidth) > 0) {
-		bfill = fill / 2;
+			ENSURE(bfill);
 
-		ENSURE(bfill);
-
-		for (i = 0; i < bfill; i++) {
-			*dst++ = ' ';
+			for (i = 0; i < bfill; i++) {
+				*dst++ = ' ';
+			}
 		}
-	} else {
-		bfill = 0;
 	}
 
 	width = 0;
@@ -271,7 +206,7 @@ static SEXP format_centre(const struct corpus_text *text, int chars,
 		width += w;
 	}
 
-	if (((fill = width_max - width - bfill)) > 0) {
+	if (!trim && ((fill = width_max - width - bfill)) > 0) {
 		ENSURE(fill);
 
 		while (fill-- > 0) {
@@ -468,13 +403,13 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		switch (justify) {
 		case JUSTIFY_LEFT:
 		case JUSTIFY_NONE:
-			ans_i = format_left(text_i, trim, chars_i,
-					    width_max, utf8, &buf, &nbuf);
+			ans_i = format_left(text_i, trim, chars_i, width_max,
+					    utf8, 0, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_CENTRE:
-			ans_i = format_centre(text_i, chars_i, width_max,
-					      utf8, &buf, &nbuf);
+			ans_i = format_left(text_i, trim, chars_i, width_max,
+					    utf8, 1, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_RIGHT:
