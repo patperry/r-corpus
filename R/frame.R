@@ -100,21 +100,21 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         return(invisible(x))
     }
 
-    fmt <- format.corpus_frame(x, chars = chars, digits = digits,
+    len <- n * nc
+    if (trunc <- (len > max)) {
+        limit <- max(1, max %/% nc)
+        xsub <- x[1:limit, , drop = FALSE]
+    } else {
+        xsub <- x
+    }
+
+    fmt <- format.corpus_frame(xsub, chars = chars, digits = digits,
                                na.encode = FALSE)
     m <- as.matrix(fmt)
     storage.mode(m) <- "character"
 
     if (!isTRUE(row.names)) {
         rownames(m) <- row.names
-    }
-
-    nr <- nrow(m)
-    nc <- ncol(m)
-    len <- length(m)
-    if (trunc <- (len > max)) {
-        limit <- max(1, max %/% nc)
-        m <- m[1:limit, , drop = FALSE]
     }
 
     dims <- dimnames(m)
@@ -141,7 +141,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         cat("(0 rows)\n")
     } else if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
-        cat(sprintf("%s\n(%d rows total)\n", ellipsis, nr))
+        cat(sprintf("%s\n(%d rows total)\n", ellipsis, n))
     }
 
     invisible(x)

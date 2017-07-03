@@ -39,12 +39,18 @@
 int charsxp_width(SEXP charsxp)
 {
 	const uint8_t *ptr = (const uint8_t *)CHAR(charsxp);
+	const uint8_t *start;
 	const uint8_t *end = ptr + XLENGTH(charsxp);
 	uint32_t code;
-	int width, cw;
+	int width, cw, err;
 
 	width = 0;
 	while (ptr != end) {
+		start = ptr;
+		if ((err = corpus_scan_utf8(&start, end))) {
+			return NA_INTEGER;
+		}
+
 		corpus_decode_utf8(&ptr, &code);
 		cw = corpus_unicode_charwidth(code);
 

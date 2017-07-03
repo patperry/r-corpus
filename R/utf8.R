@@ -58,13 +58,11 @@ utf8_valid <- function(x)
     .Call(C_utf8_valid, x)
 }
 
-# gets the width; invalid sequences (?)
+# gets the width; NA for invalid sequences
 utf8_width <- function(x, encode = FALSE)
 {
     if (encode) {
         x <- utf8_encode(x)
-    } else {
-        x <- as_utf8(x)
     }
     .Call(C_utf8_width, x)
 }
