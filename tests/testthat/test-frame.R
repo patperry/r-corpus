@@ -120,6 +120,10 @@ test_that("'print.corpus_frame' handles empty data frames", {
 
 
 test_that("'print.corpus_frame' handles Unicode correctly", {
+    # R can't print all UTF-8 on windows:
+    # https://stat.ethz.ch/pipermail/r-devel/2017-June/074556.html
+    skip_on_os("windows")
+
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
@@ -158,6 +162,12 @@ test_that("'print.corpus_frame' handles Unicode correctly", {
                         intToUtf8(0x1F604), intToUtf8(0x1F483))
     desc[11] <- "Emoji"
 
+    chars[12] <- paste0("x", intToUtf8(0x10ffff), "x")
+    desc[12] <- "Unassigned"
+
+    chars[13] <- "\xfd\xfe\xff"
+    desc[13] <- "Invalid"
+
     x <- data.frame(chars, desc, stringsAsFactors = FALSE)
 
     actual <- strsplit(capture_output(print.corpus_frame(x, right = FALSE)),
@@ -179,7 +189,9 @@ test_that("'print.corpus_frame' handles Unicode correctly", {
         paste0("11 ", paste(intToUtf8(0x1F600), intToUtf8(0x1F601),
                             intToUtf8(0x1F602), intToUtf8(0x1F603),
                             intToUtf8(0x1F604), intToUtf8(0x1F483), "",
-                            sep = "\u200b"), " Emoji             "))
+                            sep = "\u200b"), " Emoji             "),
+        "12 x\\U0010ffffx Unassigned        ",
+        "13 \\xfd\\xfe\\xff Invalid           ")
     Encoding(expected) <- "UTF-8"
 
     expect_equal(actual, expected)
