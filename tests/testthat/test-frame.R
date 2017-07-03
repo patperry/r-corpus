@@ -162,6 +162,8 @@ chartype_frame <- function()
     chars[13] <- "\xfd\xfe\xff"
     desc[13] <- "Invalid"
 
+    Encoding(chars) <- "UTF-8"
+
     x <- data.frame(chars, desc, stringsAsFactors = FALSE)
 }
 
