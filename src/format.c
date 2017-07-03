@@ -519,14 +519,6 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		 SEXP sna_encode, SEXP sutf8)
 {
-	if (sx == R_NilValue) {
-		return R_NilValue;
-	}
-
-	if (!is_text(sx)) {
-		error("argument is not a text vector");
-	}
-
 	return utf8_format(sx, strim, schars, sjustify, swidth, sna_encode,
 			   sutf8);
 }
