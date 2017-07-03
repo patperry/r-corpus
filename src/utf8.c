@@ -579,6 +579,8 @@ SEXP utf8_valid(SEXP sx)
 	n = XLENGTH(sx);
 	PROTECT(ans = allocVector(LGLSXP, n));
 	setAttrib(ans, R_NamesSymbol, getAttrib(sx, R_NamesSymbol));
+	setAttrib(ans, R_DimSymbol, getAttrib(sx, R_DimSymbol));
+	setAttrib(ans, R_DimNamesSymbol, getAttrib(sx, R_DimNamesSymbol));
 
 	n = XLENGTH(sx);
 	for (i = 0; i < n; i++) {
@@ -624,6 +626,8 @@ SEXP utf8_width(SEXP sx)
 	n = XLENGTH(sx);
 	PROTECT(ans = allocVector(INTSXP, n));
 	setAttrib(ans, R_NamesSymbol, getAttrib(sx, R_NamesSymbol));
+	setAttrib(ans, R_DimSymbol, getAttrib(sx, R_DimSymbol));
+	setAttrib(ans, R_DimNamesSymbol, getAttrib(sx, R_DimNamesSymbol));
 
 	for (i = 0; i < n; i++) {
 		elt = STRING_ELT(sx, i);
