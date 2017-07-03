@@ -45,6 +45,21 @@ test_that("'print.corpus_frame' wraps correctly", {
 
     expect_equal(capture_output(print.corpus_frame(d2[,c(2,3,1)])),
                  capture_output(print(d2[,c(2,3,1)])))
+
+    d3 <- data.frame(x = "X", y = "Y", z = "Z",
+                     row.names = paste(rep("x", w), collapse=""))
+    expect_equal(capture_output(print.corpus_frame(d3)),
+                 capture_output(print(d3)))
+
+    d4 <- data.frame(x = "X", y = "Y", z = "Z",
+                     row.names = paste(rep("x", w - 1), collapse=""))
+    expect_equal(capture_output(print.corpus_frame(d4)),
+                 capture_output(print(d4)))
+    
+    d5 <- data.frame(x = "X", y = "Y", z = "Z",
+                     row.names = paste(rep("x", w + 1), collapse=""))
+    expect_equal(capture_output(print.corpus_frame(d5)),
+                 capture_output(print(d5)))
 })
 
 
