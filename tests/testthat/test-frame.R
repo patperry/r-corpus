@@ -35,6 +35,16 @@ test_that("'print.corpus_frame' wraps correctly", {
 
     expect_equal(capture_output(print.corpus_frame(d)),
                  capture_output(print(d)))
+
+    d2 <- data.frame(x = paste(rep("x", w - 2), collapse=""), y = "y", z = "z")
+    expect_equal(capture_output(print.corpus_frame(d2)),
+                 capture_output(print(d2)))
+
+    expect_equal(capture_output(print.corpus_frame(d2[,c(2,1,3)])),
+                 capture_output(print(d2[,c(2,1,3)])))
+
+    expect_equal(capture_output(print.corpus_frame(d2[,c(2,3,1)])),
+                 capture_output(print(d2[,c(2,3,1)])))
 })
 
 
@@ -61,6 +71,17 @@ test_that("'print.corpus_frame' handles NA elements", {
 
     expect_equal(capture_output(print.corpus_frame(d, na.print = "foo", quote = TRUE)),
                  capture_output(print(d, na.print = "foo", quote = TRUE)))
+})
+
+
+test_that("'print.corpus_frame' handles NA row or column names", {
+    d1 <- structure(list(x=1), row.names=NA_character_, class = "data.frame")
+    expect_equal(capture_output(print.corpus_frame(d1)), "   x\nNA 1")
+
+    x <- list(1)
+    names(x) <- NA
+    d2 <- structure(x, row.names="foo", class = "data.frame")
+    expect_equal(capture_output(print.corpus_frame(d2)), "    NA\nfoo  1")
 })
 
 
