@@ -32,17 +32,17 @@ test_that("'format' can handle short text", {
     raw <- c(NA, "", "a", "foo", "short text")
     text <- as_text(raw)
 
-    expect_equal(format(text, justify = "none"),
-                 format(raw, justify = "none"))
+    expect_equal(format(text, justify = "none"), format(raw, justify = "none"))
+    expect_equal(utf8_format(raw, justify = "none"), format(raw, justify = "none"))
 
-    expect_equal(format(text, justify = "left"),
-                 format(raw, justify = "left"))
+    expect_equal(format(text, justify = "left"), format(raw, justify = "left"))
+    expect_equal(utf8_format(raw, justify = "left"), format(raw, justify = "left"))
 
-    expect_equal(format(text, justify = "centre"),
-                 format(raw, justify = "centre"))
+    expect_equal(format(text, justify = "centre"), format(raw, justify = "centre"))
+    expect_equal(utf8_format(raw, justify = "centre"), format(raw, justify = "centre"))
 
-    expect_equal(format(text, justify = "right"),
-                 format(raw, justify = "right"))
+    expect_equal(format(text, justify = "right"), format(raw, justify = "right"))
+    expect_equal(utf8_format(raw, justify = "right"), format(raw, justify = "right"))
 })
 
 
@@ -58,17 +58,17 @@ test_that("'format' can handle long text in Unicode locale", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(format(text, chars = 2, justify = "none"),
-                 format(short, justify = "none"))
+    expect_equal(format(text, chars = 2, justify = "none"), format(short, justify = "none"))
+    expect_equal(utf8_format(raw, chars = 2, justify = "none"), format(short, justify = "none"))
 
-    expect_equal(format(text, chars = 2, justify = "left"),
-                 format(short, justify = "left"))
+    expect_equal(format(text, chars = 2, justify = "left"), format(short, justify = "left"))
+    expect_equal(utf8_format(raw, chars = 2, justify = "left"), format(short, justify = "left"))
 
-    expect_equal(format(text, chars = 2, justify = "centre"),
-                 format(short, justify = "centre"))
+    expect_equal(format(text, chars = 2, justify = "centre"), format(short, justify = "centre"))
+    expect_equal(utf8_format(raw, chars = 2, justify = "centre"), format(short, justify = "centre"))
 
-    expect_equal(format(text, chars = 2, justify = "right"),
-                 format(rshort, justify = "right"))
+    expect_equal(format(text, chars = 2, justify = "right"), format(rshort, justify = "right"))
+    expect_equal(utf8_format(raw, chars = 2, justify = "right"), format(rshort, justify = "right"))
 })
 
 
@@ -84,17 +84,17 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(format(text, chars = 1, justify = "none"),
-                 format(short, justify = "none"))
+    expect_equal(format(text, chars = 1, justify = "none"), format(short, justify = "none"))
+    expect_equal(utf8_format(raw, chars = 1, justify = "none"), format(short, justify = "none"))
 
-    expect_equal(format(text, chars = 1, justify = "left"),
-                 format(short, justify = "left"))
+    expect_equal(format(text, chars = 1, justify = "left"), format(short, justify = "left"))
+    expect_equal(utf8_format(raw, chars = 1, justify = "left"), format(short, justify = "left"))
 
-    expect_equal(format(text, chars = 1, justify = "centre"),
-                 format(short, justify = "centre"))
+    expect_equal(format(text, chars = 1, justify = "centre"), format(short, justify = "centre"))
+    expect_equal(utf8_format(raw, chars = 1, justify = "centre"), format(short, justify = "centre"))
 
-    expect_equal(format(text, chars = 1, justify = "right"),
-                 format(rshort, justify = "right"))
+    expect_equal(format(text, chars = 1, justify = "right"), format(rshort, justify = "right"))
+    expect_equal(utf8_format(raw, chars = 1, justify = "right"), format(rshort, justify = "right"))
 })
 
 
@@ -112,8 +112,7 @@ test_that("'format' can handle long text in C locale", {
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(utf8_encode(format(text, chars = 8, justify = "none")),
-                 format(short, justify = "none"))
+    expect_equal(utf8_encode(format(text, chars = 8, justify = "none")), format(short, justify = "none"))
 
     left <- utf8_encode(format(text, chars = 8, justify = "left"))
     expect_equal(sub("\\s+$", "", left), short)
@@ -126,6 +125,11 @@ test_that("'format' can handle long text in C locale", {
     right <- utf8_encode(format(text, chars = 8, justify = "right"))
     expect_equal(sub("^\\s+", "", right), rshort)
     expect_equal(nchar(right), rep(11, length(text)))
+
+    expect_equal(format(text, chars = 8, justify = "none"), utf8_format(raw, chars = 8, justify = "none"))
+    expect_equal(format(text, chars = 8, justify = "left"), utf8_format(raw, chars = 8, justify = "left"))
+    expect_equal(format(text, chars = 8, justify = "centre"), utf8_format(raw, chars = 8, justify = "centre"))
+    expect_equal(format(text, chars = 8, justify = "right"), utf8_format(raw, chars = 8, justify = "right"))
 })
 
 
@@ -138,7 +142,9 @@ test_that("'format' can handle high code points in C locale", {
     fmt <- raw
 
     expect_equal(format(text, justify = "left"), fmt)
+    expect_equal(utf8_format(raw, justify = "left"), fmt)
     expect_equal(format(text, justify = "right"), fmt)
+    expect_equal(utf8_format(raw, justify = "right"), fmt)
 })
 
 
@@ -152,7 +158,9 @@ test_that("'format' can handle high code points in Unicode locale", {
 
     text <- as_text(raw)
     expect_equal(format(text, justify = "left"), left)
+    expect_equal(utf8_format(raw, justify = "left"), left)
     expect_equal(format(text, justify = "right"), right)
+    expect_equal(utf8_format(raw, justify = "right"), right)
 })
 
 
@@ -167,11 +175,19 @@ test_that("'format' can handle ignorable code points", {
     expect_equal(format(text, justify = "centre"), raw)
     expect_equal(format(text, justify = "right"), raw)
 
+    expect_equal(utf8_format(raw, justify = "left"), raw)
+    expect_equal(utf8_format(raw, justify = "centre"), raw)
+    expect_equal(utf8_format(raw, justify = "right"), raw)
+
     switch_ctype("Unicode")
 
     expect_equal(format(text, justify = "left"), raw)
     expect_equal(format(text, justify = "centre"), raw)
     expect_equal(format(text, justify = "right"), raw)
+
+    expect_equal(utf8_format(raw, justify = "left"), raw)
+    expect_equal(utf8_format(raw, justify = "centre"), raw)
+    expect_equal(utf8_format(raw, justify = "right"), raw)
 })
 
 
@@ -183,14 +199,22 @@ test_that("'format' can handle marks", {
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     expect_equal(format(text, chars = 1, justify = "left"), "e...")
+    expect_equal(utf8_format(raw, chars = 1, justify = "left"), "e...")
+
     expect_equal(format(text, chars = 1, justify = "centre"), "e...")
+    expect_equal(utf8_format(raw, chars = 1, justify = "centre"), "e...")
+
     expect_equal(format(text, chars = 1, justify = "right"), "...")
+    expect_equal(utf8_format(raw, chars = 1, justify = "right"), "...")
 
     ctype <- switch_ctype("Unicode")
 
     expect_equal(format(text, chars = 1, justify = "left"), raw)
     expect_equal(format(text, chars = 1, justify = "centre"), raw)
     expect_equal(format(text, chars = 1, justify = "right"), raw)
+    expect_equal(utf8_format(raw, chars = 1, justify = "left"), raw)
+    expect_equal(utf8_format(raw, chars = 1, justify = "centre"), raw)
+    expect_equal(utf8_format(raw, chars = 1, justify = "right"), raw)
 })
 
 
@@ -204,12 +228,18 @@ test_that("'format' can handle UTF-8 'Other' codes", {
     expect_equal(format(text, justify = "left"), raw)
     expect_equal(format(text, justify = "centre"), raw)
     expect_equal(format(text, justify = "right"), raw)
+    expect_equal(utf8_format(raw, justify = "left"), raw)
+    expect_equal(utf8_format(raw, justify = "centre"), raw)
+    expect_equal(utf8_format(raw, justify = "right"), raw)
 
     switch_ctype("Unicode")
 
     expect_equal(format(text, justify = "left"), raw)
     expect_equal(format(text, justify = "centre"), raw)
     expect_equal(format(text, justify = "right"), raw)
+    expect_equal(utf8_format(raw, justify = "left"), raw)
+    expect_equal(utf8_format(raw, justify = "centre"), raw)
+    expect_equal(utf8_format(raw, justify = "right"), raw)
 })
 
 
@@ -236,6 +266,7 @@ test_that("'format' can handle negative or zero, or NA chars", {
 test_that("'format' can skip NA", {
     text <- as_text(NA)
     expect_equal(format(text, na.encode = FALSE), NA_character_)
+    expect_equal(utf8_format(NA_character_, na.encode = FALSE), NA_character_)
 })
 
 
@@ -281,4 +312,16 @@ test_that("'format' error for invalid integers", {
     expect_error(format(text, width = "3"),
                  "'width' must be an integer scalar",
                  fixed = TRUE)
+})
+
+
+test_that("'utf8_format' can handle invalid UTF-8", {
+    invalid <- "\xff\xfe"
+    Encoding(invalid) <- "UTF-8"
+    x <- c("a", invalid)
+
+    expect_equal(utf8_format(x, justify = "none"), x)
+    expect_equal(utf8_format(x, justify = "left"), c("a       ", invalid))
+    expect_equal(utf8_format(x, justify = "centre"), c("   a    ", invalid))
+    expect_equal(utf8_format(x, justify = "right"), c("       a", invalid))
 })

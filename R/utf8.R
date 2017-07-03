@@ -29,19 +29,25 @@ utf8_encode <- function(x, display = FALSE)
 
 
 utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
-                        width = NULL, na.encode = TRUE)
+                        width = NULL, na.encode = TRUE, ...)
 {
     if (is.null(x)) {
         return(NULL)
     }
 
     with_rethrow({
-        x <- as_text.character(x)
+        trim <- as_option("trim", trim)
         if (is.null(chars)) {
             chars <- .Machine$integer.max
+        } else {
+            chars <- as_integer_scalar("chars", chars)
         }
-        format(x, trim = trim, chars = chars, justify = justify,
-               width = width, na.encode = na.encode)
+        justify <- as_justify("justify", justify)
+        width <- as_integer_scalar("width", width)
+        na.encode <- as_option("na.encode", na.encode)
+
+        utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+        .Call(C_utf8_format, x, trim, chars, justify, width, na.encode, utf8)
     })
 }
 

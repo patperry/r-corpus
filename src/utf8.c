@@ -87,7 +87,7 @@ static const char *encoding_name(cetype_t ce)
 }
 
 
-static int encodes_utf8(cetype_t ce)
+int encodes_utf8(cetype_t ce)
 {
 	switch (ce) {
 	case CE_ANY:

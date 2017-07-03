@@ -28,9 +28,227 @@
 #define ELLIPSIS 0x2026
 #define ELLIPSIS_NBYTE 3
 
+enum justify_type {
+	JUSTIFY_NONE = 0,
+	JUSTIFY_LEFT,
+	JUSTIFY_CENTRE,
+	JUSTIFY_RIGHT
+};
 
-static int char_width(uint32_t code, int type, int utf8)
+enum text_type { TEXT_CORPUS, TEXT_RAW };
+
+struct text {
+	enum text_type type;
+	union {
+		struct corpus_text corpus;
+		struct {
+			const uint8_t *ptr;
+			size_t size;
+		} raw;
+	} data;
+	int na;
+};
+
+struct text_iter {
+	enum text_type type;
+	union {
+		struct corpus_text_iter corpus;
+		struct {
+			const uint8_t *begin;
+			const uint8_t *end;
+			const uint8_t *ptr;
+		} raw;
+	} data;
+	int current;
+};
+
+
+static void text_init_corpus(struct text *text, struct corpus_text *corpus)
 {
+	text->type = TEXT_CORPUS;
+
+	if (corpus->ptr == NULL) {
+		text->data.corpus.ptr = (uint8_t *)"NA";
+		text->data.corpus.attr = 2;
+		text->na = 1;
+	} else {
+		text->data.corpus = *corpus;
+		text->na = 0;
+	}
+}
+
+
+static void text_init_charsxp(struct text *text, SEXP charsxp)
+{
+	const uint8_t *ptr, *ptr2;
+	size_t size;
+	cetype_t ce;
+
+	text->type = TEXT_RAW;
+	if (charsxp == NA_STRING) {
+		text->data.raw.ptr = (const uint8_t *)"NA";
+		text->data.raw.size = 2;
+		text->na = 1;
+	} else {
+		ce = getCharCE(charsxp);
+		ptr = (const uint8_t *)CHAR(charsxp);
+		size = (size_t)XLENGTH(charsxp);
+
+		if (!encodes_utf8(ce)) {
+			ptr2 = (const uint8_t *)translateCharUTF8(charsxp);
+			if (ptr2 != ptr) {
+				ptr = ptr2;
+				size = strlen((const char *)ptr);
+			}
+		}
+		text->data.raw.ptr = ptr;
+		text->data.raw.size = size;
+		text->na = 0;
+	}
+}
+
+
+static void text_iter_make(struct text_iter *iter, const struct text *text)
+{
+	const uint8_t *ptr;
+	size_t size;
+
+	iter->type = text->type;
+	iter->current = -1;
+
+	if (text->type == TEXT_CORPUS) {
+		corpus_text_iter_make(&iter->data.corpus, &text->data.corpus);
+		return;
+	}
+
+	ptr = text->data.raw.ptr;
+	size = text->data.raw.size;
+	iter->data.raw.begin = ptr;
+	iter->data.raw.ptr = ptr;
+	iter->data.raw.end = ptr + size;
+}
+
+
+static void text_iter_skip(struct text_iter *iter)
+{
+	const uint8_t *end;
+
+	if (iter->type == TEXT_CORPUS) {
+		corpus_text_iter_skip(&iter->data.corpus);
+	} else {
+		end = iter->data.raw.end;
+		iter->data.raw.ptr = end;
+		iter->current = -1;
+	}
+}
+
+
+static int text_iter_advance(struct text_iter *iter)
+{
+	const uint8_t *start, *ptr, *end;
+	uint32_t code;
+	int err, ret;
+
+	if (iter->type == TEXT_CORPUS) {
+		ret = corpus_text_iter_advance(&iter->data.corpus);
+		iter->current = iter->data.corpus.current;
+		return ret;
+	}
+
+	ptr = iter->data.raw.ptr;
+	end = iter->data.raw.end;
+
+	if (ptr == end) {
+		ret = 0;
+		iter->current = -1;
+	} else {
+		ret = 1;
+		start = ptr;
+		if ((err = corpus_scan_utf8(&start, end))) {
+			iter->current = -(int)*ptr++;
+		} else {
+			corpus_decode_utf8(&ptr, &code);
+			iter->current = (int)code;
+		}
+		iter->data.raw.ptr = ptr;
+	}
+
+	return ret;
+}
+
+
+static int text_iter_retreat(struct text_iter *iter)
+{
+	const uint8_t *start, *begin, *ptr, *end;
+	uint32_t code;
+	int nbyte, err, ret;
+
+	if (iter->type == TEXT_CORPUS) {
+		ret = corpus_text_iter_retreat(&iter->data.corpus);
+		iter->current = iter->data.corpus.current;
+		return ret;
+	}
+
+	begin = iter->data.raw.begin;
+	ptr = iter->data.raw.ptr;
+	end = iter->data.raw.end;
+
+	// at SOT
+	if (ptr == begin) {
+		iter->current = -1;
+		return 0;
+	}
+
+	// if not at EOT, move the pointer to the end of
+	// the current character
+	if (iter->current != -1) {
+		if (iter->current < 0) {
+			ptr--; // invalid byte
+		} else {
+			code = (uint32_t)iter->current;
+			ptr -= CORPUS_UTF8_ENCODE_LEN(code);
+		}
+	}
+
+	// at this point, ptr is at the end of the code
+	iter->data.raw.ptr = ptr;
+
+	// if at SOT, we can't retreat
+	if (ptr == begin) {
+		iter->current = -1;
+		return 0;
+	}
+
+	// search backwards for the first valid sequence
+	for (nbyte = 1; nbyte <= 4; nbyte++) {
+		start = ptr - nbyte;
+		if (start < begin) {
+			break;
+		}
+		if (!(err = corpus_scan_utf8(&start, ptr))) {
+			break;
+		}
+	}
+
+	// no valid sequence
+	if (err) {
+		iter->current = -(int)ptr[-1];
+	} else {
+		start = ptr - nbyte;
+		corpus_decode_utf8(&start, &code);
+		iter->current = (int)code;
+	}
+
+	return 1;
+}
+
+
+static int char_width(int code, int type, int utf8)
+{
+	if (code < 0) {
+		return 4; // \xXX invalid byte
+	}
+
 	if (code < 0x80) {
 		switch (code) {
 		case '\a':
@@ -42,7 +260,7 @@ static int char_width(uint32_t code, int type, int utf8)
 		case '\v':
 			return 2;
 		default:
-			return isprint((int)code) ? 1 : 6; // \uXXXX
+			return isprint(code) ? 1 : 6; // \uXXXX
 		}
 	}
 
@@ -69,18 +287,18 @@ static int char_width(uint32_t code, int type, int utf8)
 }
 
 
-static int text_width(const struct corpus_text *text, int limit, int utf8)
+static int text_width(const struct text *text, int limit, int utf8)
 {
-	struct corpus_text_iter it;
+	struct text_iter it;
 	int32_t code;
 	int type, width, w;
 	int ellipsis = utf8 ? 1 : 3;
 
-	corpus_text_iter_make(&it, text);
+	text_iter_make(&it, text);
 	width = 0;
-	while (corpus_text_iter_advance(&it)) {
+	while (text_iter_advance(&it)) {
 		code = it.current;
-		type = corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
 		w = char_width(code, type, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
@@ -92,19 +310,18 @@ static int text_width(const struct corpus_text *text, int limit, int utf8)
 }
 
 
-static int text_rwidth(const struct corpus_text *text, int limit, int utf8)
+static int text_rwidth(const struct text *text, int limit, int utf8)
 {
-	struct corpus_text_iter it;
-	int32_t code;
-	int type, width, w;
+	struct text_iter it;
+	int code, type, width, w;
 	int ellipsis = utf8 ? 1 : 3;
 
-	corpus_text_iter_make(&it, text);
-	corpus_text_iter_skip(&it);
+	text_iter_make(&it, text);
+	text_iter_skip(&it);
 	width = 0;
-	while (corpus_text_iter_retreat(&it)) {
+	while (text_iter_retreat(&it)) {
 		code = it.current;
-		type = corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
 		w = char_width(code, type, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
@@ -145,17 +362,16 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 		} \
 	} while (0)
 
-static SEXP format_left(const struct corpus_text *text, int trim, int chars,
-			int width_max, int utf8, int centre,
-			uint8_t **bufptr, int *nbufptr)
+static SEXP format_left(const struct text *text, int trim, int chars,
+			int width_max, int utf8, int centre, uint8_t **bufptr,
+			int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
 	uint8_t *end = buf + nbuf;
-	struct corpus_text_iter it;
+	struct text_iter it;
 	uint8_t *dst;
-	uint32_t code;
-	int i, w, trunc, type, nbyte, bfill, fill, len, off,
+	int i, w, code, trunc, type, nbyte, bfill, fill, len, off,
 	    fullwidth, width;
 
 	dst = buf;
@@ -176,11 +392,11 @@ static SEXP format_left(const struct corpus_text *text, int trim, int chars,
 
 	width = 0;
 	trunc = 0;
-	corpus_text_iter_make(&it, text);
+	text_iter_make(&it, text);
 
-	while (!trunc && corpus_text_iter_advance(&it)) {
+	while (!trunc && text_iter_advance(&it)) {
 		code = it.current;
-		type = corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
 		w = char_width(code, type, utf8);
 
 		if (width > chars - w) {
@@ -189,7 +405,7 @@ static SEXP format_left(const struct corpus_text *text, int trim, int chars,
 			trunc = 1;
 		}
 
-		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
+		nbyte = code < 0 ? 1 : CORPUS_UTF8_ENCODE_LEN(code);
 		ENSURE(nbyte);
 
 		if (trunc) {
@@ -200,6 +416,8 @@ static SEXP format_left(const struct corpus_text *text, int trim, int chars,
 				*dst++ = '.';
 				*dst++ = '.';
 			}
+		} else if (code < 0) {
+			*dst++ = (uint8_t)(-code);
 		} else {
 			corpus_encode_utf8(code, &dst);
 		}
@@ -234,26 +452,25 @@ static SEXP format_left(const struct corpus_text *text, int trim, int chars,
 		} \
 	} while (0)
 
-static SEXP format_right(const struct corpus_text *text, int trim,
-			 int chars, int width_max, int utf8,
-			 uint8_t **bufptr, int *nbufptr)
+static SEXP format_right(const struct text *text, int trim, int chars,
+			 int width_max, int utf8, uint8_t **bufptr,
+			 int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
-	struct corpus_text_iter it;
+	struct text_iter it;
 	uint8_t *dst;
-	uint32_t code;
-	int w, fill, trunc, type, off, len, nbyte, width;
+	int w, code, fill, trunc, type, off, len, nbyte, width;
 
 	dst = buf + nbuf;
 	width = 0;
 	trunc = 0;
-	corpus_text_iter_make(&it, text);
-	corpus_text_iter_skip(&it);
+	text_iter_make(&it, text);
+	text_iter_skip(&it);
 
-	while (!trunc && corpus_text_iter_retreat(&it)) {
+	while (!trunc && text_iter_retreat(&it)) {
 		code = it.current;
-		type = corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
 		w = char_width(code, type, utf8);
 
 		if (width > chars - w) {
@@ -262,7 +479,7 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 			trunc = 1;
 		}
 
-		nbyte = CORPUS_UTF8_ENCODE_LEN(code);
+		nbyte = code < 0 ? 1 : CORPUS_UTF8_ENCODE_LEN(code);
 		ENSURE(nbyte);
 
 		if (trunc) {
@@ -274,6 +491,8 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 				*--dst = '.';
 				*--dst = '.';
 			}
+		} else if (code < 0) {
+			*--dst = (uint8_t)(-code);
 		} else {
 			corpus_rencode_utf8(code, &dst);
 		}
@@ -297,30 +516,55 @@ static SEXP format_right(const struct corpus_text *text, int trim,
 }
 
 
-enum justify_type {
-	JUSTIFY_NONE = 0,
-	JUSTIFY_LEFT,
-	JUSTIFY_CENTRE,
-	JUSTIFY_RIGHT
-};
-
-
 SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		 SEXP sna_encode, SEXP sutf8)
 {
+	if (sx == R_NilValue) {
+		return R_NilValue;
+	}
+
+	if (!is_text(sx)) {
+		error("argument is not a text vector");
+	}
+
+	return utf8_format(sx, strim, schars, sjustify, swidth, sna_encode,
+			   sutf8);
+}
+
+
+SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
+		 SEXP sna_encode, SEXP sutf8)
+{
 	SEXP ans, ans_i;
+	enum text_type type;
 	enum justify_type justify;
 	const char *justify_str;
 	uint8_t *buf;
-	struct corpus_text *text, *text_i;
-	struct corpus_text na_text;
+	struct corpus_text *text;
+	struct text elt;
 	R_xlen_t i, n;
 	int chars, chars_i, ellipsis, width, width_max, nbuf, trim, na_encode,
 	    utf8, nprot;
 
 	nprot = 0;
-	PROTECT(sx = coerce_text(sx)); nprot++;
-	text = as_text(sx, &n);
+
+	if (sx == R_NilValue) {
+		return R_NilValue;
+	}
+
+	if (is_text(sx)) {
+		type = TEXT_CORPUS;
+		text = as_text(sx, &n);
+		PROTECT(ans = allocVector(STRSXP, n)); nprot++;
+		setAttrib(ans, R_NamesSymbol, names_text(sx));
+	} else {
+		if (!isString(sx)) {
+			error("argument is not a character vector");
+		}
+		type = TEXT_RAW;
+		PROTECT(ans = duplicate(sx)); nprot++;
+		n = XLENGTH(ans);
+	}
 
 	PROTECT(strim = coerceVector(strim, LGLSXP)); nprot++;
 	trim = (LOGICAL(strim)[0] == TRUE);
@@ -358,16 +602,20 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	PROTECT(sna_encode = coerceVector(sna_encode, LGLSXP)); nprot++;
 	na_encode = (LOGICAL(sna_encode)[0] == TRUE);
 
-	PROTECT(ans = allocVector(STRSXP, n)); nprot++;
-	setAttrib(ans, R_NamesSymbol, names_text(sx));
 
 	for (i = 0; i < n; i++) {
-		if (text[i].ptr == NULL) {
-			width = na_encode ? 2 : 0;
-		} else if (justify == JUSTIFY_RIGHT) {
-			width = text_rwidth(&text[i], chars, utf8);
+		if (type == TEXT_CORPUS) {
+			text_init_corpus(&elt, &text[i]);
 		} else {
-			width = text_width(&text[i], chars, utf8);
+			text_init_charsxp(&elt, STRING_ELT(sx, i));
+		}
+
+		if (elt.na) {
+			width = 2;
+		} else if (justify == JUSTIFY_RIGHT) {
+			width = text_rwidth(&elt, chars, utf8);
+		} else {
+			width = text_width(&elt, chars, utf8);
 		}
 
 		if (width > width_max) {
@@ -383,37 +631,34 @@ SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	nbuf = width_max;
 	buf = (void *)R_alloc(nbuf, sizeof(uint8_t));
 
-	na_text.ptr = (uint8_t *)"NA";
-	na_text.attr = 2;
-
 	for (i = 0; i < n; i++) {
-		text_i = &text[i];
-		if (text_i->ptr == NULL) {
-			if (!na_encode) {
-				SET_STRING_ELT(ans, i, NA_STRING);
-				continue;
-			} else {
-				text_i = &na_text;
-				chars_i = 2;
-			}
+		if (type == TEXT_CORPUS) {
+			text_init_corpus(&elt, &text[i]);
 		} else {
-			chars_i = chars;
+			text_init_charsxp(&elt, STRING_ELT(sx, i));
 		}
+
+		if (elt.na && !na_encode) {
+			SET_STRING_ELT(ans, i, NA_STRING);
+			continue;
+		}
+
+		chars_i = elt.na ? 2 : chars;
 
 		switch (justify) {
 		case JUSTIFY_LEFT:
 		case JUSTIFY_NONE:
-			ans_i = format_left(text_i, trim, chars_i, width_max,
+			ans_i = format_left(&elt, trim, chars_i, width_max,
 					    utf8, 0, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_CENTRE:
-			ans_i = format_left(text_i, trim, chars_i, width_max,
+			ans_i = format_left(&elt, trim, chars_i, width_max,
 					    utf8, 1, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_RIGHT:
-			ans_i = format_right(text_i, trim, chars_i,
+			ans_i = format_right(&elt, trim, chars_i,
 					     width_max, utf8, &buf, &nbuf);
 			break;
 		}

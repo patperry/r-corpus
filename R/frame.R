@@ -18,7 +18,22 @@ format.corpus_frame <- function(x, ..., justify = "none")
 
     cols <- vector("list", nc)
     for (i in seq_len(nc)) {
-        cols[[i]] <- format(x[[i]], ..., justify = justify)
+        elt <- x[[i]]
+        cl <- class(elt)
+
+        if (is.factor(elt) && (identical(cl, "factor")
+                               || identical(cl, c("AsIs", "factor")))) {
+            elt <- structure(as.character(elt), names = names(elt),
+                             dim = dim(elt), dimnames = dimnames(elt))
+            cl <- class(elt)
+        }
+
+        if (is.character(elt) && (identical(cl, "character")
+                                  || identical(cl, "AsIs"))) {
+            cols[[i]] <- utf8_format(elt, ..., justify = justify)
+        } else {
+            cols[[i]] <- format(elt, ..., justify = justify)
+        }
     }
 
     lens <- vapply(cols, NROW, 1)
