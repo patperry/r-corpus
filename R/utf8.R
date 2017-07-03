@@ -29,15 +29,19 @@ utf8_encode <- function(x, display = FALSE)
 
 
 utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
-                        width = NULL, na.encode = TRUE, display = FALSE)
+                        width = NULL, na.encode = TRUE)
 {
+    if (is.null(x)) {
+        return(NULL)
+    }
+
     with_rethrow({
         x <- as_text.character(x)
         if (is.null(chars)) {
             chars <- .Machine$integer.max
         }
         format(x, trim = trim, chars = chars, justify = justify,
-               width = width, na.encode = na.encode, display = display)
+               width = width, na.encode = na.encode)
     })
 }
 

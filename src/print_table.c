@@ -133,8 +133,9 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 	for (i = 0; i < nrow; i++) {
 		if (row_names == R_NilValue) {
 			NEEDS(namewidth + 1); // +1, sprints adds NUL
-			sprintf(buf + nbuf, "%*d", namewidth, i + 1);
-			nbuf += namewidth;
+			w = sprintf(buf + nbuf, "%d", i + 1);
+			nbuf += w;
+			PRINT_SPACES(namewidth - w);
 		} else {
 			name = STRING_ELT(row_names, i);
 			if (name == NA_STRING) {

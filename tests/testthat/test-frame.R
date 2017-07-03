@@ -2,11 +2,23 @@
 context("frame")
 
 test_that("'print.corpus_frame' produces the same results on ASCII", {
-    options(encoding = "UTF-8")
     d <- data.frame(x = 1:10, f = gl(2,5), ch = I(letters[1:10]))
 
     expect_equal(capture_output(print.corpus_frame(d)),
                  capture_output(print(d)))
+    expect_equal(
+        capture_output(print.corpus_frame(d, quote = TRUE, row.names = FALSE)),
+        capture_output(print(d, quote = TRUE, row.names = FALSE)))
+})
+
+
+test_that("'print.corpus_frame' handles row names", {
+    d <- data.frame(x = 1:10, f = gl(2,5), ch = I(letters[1:10]))
+    row.names(d) <- LETTERS[1:10]
+
+    expect_equal(capture_output(print.corpus_frame(d)),
+                 capture_output(print(d)))
+
     expect_equal(
         capture_output(print.corpus_frame(d, quote = TRUE, row.names = FALSE)),
         capture_output(print(d, quote = TRUE, row.names = FALSE)))
@@ -49,4 +61,23 @@ test_that("'print.corpus_frame' handles NA elements", {
 
     expect_equal(capture_output(print.corpus_frame(d, na.print = "foo", quote = TRUE)),
                  capture_output(print(d, na.print = "foo", quote = TRUE)))
+})
+
+
+test_that("'print.corpus_frame' handles empty data frames", {
+    # no row or column names
+    d1 <- data.frame()
+    expect_equal(capture_output(print.corpus_frame(d1)),
+                 "data frame with 0 columns and 0 rows")
+
+    # no row names
+    d2 <- data.frame(a = integer(), b = integer(), "\n" = logical(),
+                     check.names = FALSE)
+    expect_equal(capture_output(print.corpus_frame(d2)), " a b \\n\n(0 rows)")
+
+    # columns but no column names
+    d3 <- structure(list(integer(), integer()),
+                    class = "data.frame", row.names = c(NA, 0))
+    expect_equal(capture_output(print.corpus_frame(d3)),
+                 "data frame with 2 columns and 0 rows")
 })

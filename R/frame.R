@@ -13,8 +13,35 @@
 
 format.corpus_frame <- function(x, ..., justify = "none")
 {
-    # TODO: format character specially
-    format.data.frame(x, ..., justify = justify)
+    nr <- .row_names_info(x, 2L)
+    nc <- ncol(x)
+
+    cols <- vector("list", nc)
+    for (i in seq_len(nc)) {
+        cols[[i]] <- format(x[[i]], ..., justify = justify)
+    }
+
+    lens <- vapply(cols, NROW, 1)
+    if (any(lens != nr)) {
+        stop("invalid data frame: columns have nonuniform lengths")
+    }
+
+    for (i in seq_len(nc)) {
+        if (is.character(cols[[i]]) && inherits(cols[[i]], "character")) {
+            oldClass(cols[[i]]) <- "AsIs"
+        }
+    }
+
+    # Should we truncate long names? R cuts them off at 256 characters.
+    names(cols) <- names(x)
+    if (.row_names_info(x) > 0) {
+        row.names <- row.names(x)
+    } else {
+        row.names <- c(NA, -nr)
+    }
+
+    structure(cols, class = c("corpus_frame", "data.frame"),
+              row.names = row.names)
 }
 
 
@@ -25,6 +52,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
                                display = TRUE, ...)
 {
     n <- nrow(x)
+    nc <- length(x)
 
     chars <- as_integer_scalar("chars", chars, null = NULL)
     digits <- as_digits("digits", digits)
@@ -36,7 +64,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         if (identical(row.names, FALSE)) {
             row.names <- rep("", n)
         } else {
-            row.names <- as_names("row.names", row.names)
+            row.names <- as_names("row.names", row.names, n)
         }
     }
     max <- as_max_print("max", max)
@@ -46,14 +74,23 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     display <- as_option("display", display)
 
     if (length(x) == 0) {
-        cat(sprintf(ngettext(n, "data frame with 0 columns and %d row", 
-            "data frame with 0 columns and %d rows"), n), "\n", 
-            sep = "")
+        cat(sprintf(ngettext(n, "data frame with 0 columns and %d row",
+                             "data frame with 0 columns and %d rows"), n),
+            "\n", sep = "")
+        return(invisible(x))
+    } else if (n == 0 && is.null(names(x))) {
+        cat(sprintf(ngettext(nc, "data frame with %d column and 0 rows",
+                             "data frame with %d columns and 0 rows"), nc),
+            "\n", sep = "")
+        return(invisible(x))
     }
 
     fmt <- format.corpus_frame(x, chars = chars, digits = digits,
                                na.encode = FALSE)
     m <- as.matrix(fmt)
+    if (n == 0) {
+        storage.mode(m) <- "character"
+    }
     if (!(is.matrix(m) && storage.mode(m) == "character")) {
         stop("'format' returned a malformed value")
     }
@@ -89,7 +126,9 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     utf8 <- Sys.getlocale("LC_CTYPE") != "C"
     .Call(C_print_table, um, quote, na.print, print.gap, right, width)
 
-    if (trunc) {
+    if (n == 0) {
+        cat("(0 rows)\n")
+    } else if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
         cat(sprintf("%s\n(%d rows total)\n", ellipsis, nr))
     }
