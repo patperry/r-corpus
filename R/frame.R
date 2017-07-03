@@ -76,7 +76,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     dimnames(um) <- udims
 
     if (is.null(na.print)) {
-        na.print <- ifelse(quote, "<NA>", "NA")
+        na.print <- ifelse(quote, "NA", "<NA>")
     }
     na.print <- utf8_encode(na.print, display)
 

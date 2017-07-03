@@ -251,25 +251,30 @@ SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 	begin = 0;
 	while (begin != ncol) {
 		linewidth = namewidth;
-		end = begin + 1; // include at least once column
-		do {
-			// break if including the column put us at or over
-			// the width; we do the calculations like this to
+		end = begin;
+
+		while (end != ncol) {
+			// break if including the column puts us over the
+			// width; we do the calculations like this to
 			// avoid integer overflow
 			if (linewidth >= width - print_gap) {
 				break;
 			}
 			linewidth += print_gap;
 
-			if (linewidth >= width - colwidths[end - 1]) {
+			if (linewidth >= width - colwidths[end]) {
 				break;
 			}
-			linewidth += colwidths[end - 1];
+			linewidth += colwidths[end];
 
-			if (end < ncol) {
-				end++;
-			}
-		} while (end != ncol);
+			end++;
+		}
+
+		if (begin == end) {
+			// include at least one column, even if it
+			// puts us over the width
+			end++;
+		}
 
 		print_range(sx, begin, end, quote, na_print, na_width,
 			    print_gap, right, namewidth, colwidths);
