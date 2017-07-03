@@ -88,12 +88,8 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     fmt <- format.corpus_frame(x, chars = chars, digits = digits,
                                na.encode = FALSE)
     m <- as.matrix(fmt)
-    if (n == 0) {
-        storage.mode(m) <- "character"
-    }
-    if (!(is.matrix(m) && storage.mode(m) == "character")) {
-        stop("'format' returned a malformed value")
-    }
+    storage.mode(m) <- "character"
+
     if (!isTRUE(row.names)) {
         rownames(m) <- row.names
     }
