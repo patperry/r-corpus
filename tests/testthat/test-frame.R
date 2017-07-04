@@ -31,35 +31,37 @@ test_that("'print.corpus_frame' wraps correctly", {
     d <- data.frame(x = c("X", paste(rep("x", 2 * w), collapse="")),
                     y = c("Y", paste(rep("y", half + 1), collapse="")),
                     z = c("Z", paste(rep("z", half + 1), collapse="")),
-                    a = 1:2, b = 3:4, c = 5:6)
+                    a = 1:2,
+                    b = 3:4,
+                    c = 5:6)
 
     expect_equal(capture_output(print.corpus_frame(d)),
-                 capture_output(print(d)))
+                 capture_output(print(d, right = FALSE)))
 
     d2 <- data.frame(x = paste(rep("x", w - 2), collapse=""), y = "y", z = "z")
     expect_equal(capture_output(print.corpus_frame(d2)),
-                 capture_output(print(d2)))
+                 capture_output(print(d2, right = FALSE)))
 
     expect_equal(capture_output(print.corpus_frame(d2[,c(2,1,3)])),
-                 capture_output(print(d2[,c(2,1,3)])))
+                 capture_output(print(d2[,c(2,1,3)], right = FALSE)))
 
     expect_equal(capture_output(print.corpus_frame(d2[,c(2,3,1)])),
-                 capture_output(print(d2[,c(2,3,1)])))
+                 capture_output(print(d2[,c(2,3,1)], right = FALSE)))
 
     d3 <- data.frame(x = "X", y = "Y", z = "Z",
                      row.names = paste(rep("x", w), collapse=""))
     expect_equal(capture_output(print.corpus_frame(d3)),
-                 capture_output(print(d3)))
+                 capture_output(print(d3, right = FALSE)))
 
     d4 <- data.frame(x = "X", y = "Y", z = "Z",
                      row.names = paste(rep("x", w - 1), collapse=""))
     expect_equal(capture_output(print.corpus_frame(d4)),
-                 capture_output(print(d4)))
+                 capture_output(print(d4, right = FALSE)))
     
     d5 <- data.frame(x = "X", y = "Y", z = "Z",
                      row.names = paste(rep("x", w + 1), collapse=""))
     expect_equal(capture_output(print.corpus_frame(d5)),
-                 capture_output(print(d5)))
+                 capture_output(print(d5, right = FALSE)))
 })
 
 

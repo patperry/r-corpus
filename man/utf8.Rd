@@ -63,6 +63,12 @@
     wide emoji. When \code{LC_CTYPE = "C"}, this function escapes all
     non-ASCII characters.
 
+    \code{utf8_format} formats a character object for printing, optionally
+    truncating long character strings. Unlike the base R function,
+    setting \code{justify = "none"} produces identical behavior to
+    setting \code{justify = "left"}; to recover the base R behavior,
+    set \code{justify = "none"} and \code{trim = TRUE}.
+
     \code{utf8_valid}{tests whether the elements of a character object
     can be translated to valid UTF-8 strings.}
 
@@ -97,6 +103,9 @@
 
     # test for valid UTF-8
     utf8_valid(x)
+
+    # encoding
+    utf8_encode(x)
 
     # formatting
     utf8_format(x, chars = 3)

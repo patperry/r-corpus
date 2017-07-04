@@ -15,6 +15,7 @@ format.corpus_frame <- function(x, ..., justify = "none")
 {
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
+    names <- names(x)
 
     cols <- vector("list", nc)
     for (i in seq_len(nc)) {
@@ -31,6 +32,11 @@ format.corpus_frame <- function(x, ..., justify = "none")
         if (is.character(elt) && (identical(cl, "character")
                                   || identical(cl, "AsIs"))) {
             cols[[i]] <- utf8_format(elt, ..., justify = justify)
+
+            # use same alignment for name (left-align by default)
+            names[[i]] <- utf8_format(names[[i]],
+                                      width = max(0, utf8_width(cols[[i]])),
+                                      justify = justify)
         } else {
             cols[[i]] <- format(elt, ..., justify = justify)
         }
@@ -48,7 +54,7 @@ format.corpus_frame <- function(x, ..., justify = "none")
     }
 
     # Should we truncate long names? R cuts them off at 256 characters.
-    names(cols) <- names(x)
+    names(cols) <- names
     if (.row_names_info(x) > 0) {
         row.names <- row.names(x)
     } else {
@@ -134,7 +140,6 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
 
     width <- getOption("width")
 
-    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
     .Call(C_print_table, um, quote, na.print, print.gap, right, width)
 
     if (n == 0) {
