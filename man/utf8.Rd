@@ -102,7 +102,7 @@
     \dontrun{as_utf8(x)}
 
     y <- x
-    Encoding(y[2]) <- "latin1" # mark the correct locale
+    Encoding(y[2]) <- "latin1" # mark the correct encoding
     as_utf8(y) # succeeds
 
     # test for valid UTF-8
