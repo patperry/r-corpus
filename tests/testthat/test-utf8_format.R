@@ -22,10 +22,16 @@ test_that("'format' can handle short text", {
 test_that("'format' can handle long text in Unicode locale", {
     raw    <- c(NA, "", "a", "ab", "foo", "food",     "short text",
                 "\u6027", "\u6027\u6027", "\u6027?")
+    Encoding(raw) <- "UTF-8"
+
     short  <- c(NA, "", "a", "ab", "fo\u2026", "fo\u2026", "sh\u2026",
                 "\u6027", "\u6027\u2026", "\u6027\u2026")
+    Encoding(short) <- "UTF-8"
+
     rshort <- c(NA, "", "a", "ab", "\u2026oo", "\u2026od", "\u2026xt",
                 "\u6027", "\u2026\u6027", "\u2026?")
+    Encoding(rshort) <- "UTF-8"
+
     text <- as_text(raw)
 
     ctype <- switch_ctype("Unicode")
