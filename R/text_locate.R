@@ -68,7 +68,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
             colwidths[[i]] <- 0
             nctx <- nctx + 1
         } else {
-            w = utf8_width(i, encode = TRUE)
+            w = utf8_width(i)
             if (i == "text") {
                 # use as_text to format an integer text id like
                 # a character label
@@ -83,13 +83,13 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
                 rval[[i]] = format(x[[i]], width = w, ...,
                                    display = display, justify = justify)
             }
-            colwidths[[i]] <- max(w, utf8_width(rval[[i]], encode = TRUE))
+            colwidths[[i]] <- max(w, utf8_width(rval[[i]]))
         }
     }
 
     row_names <- format(as_text(rownames(x)), width = 0, chars = charmax,
                         display = display, jusitfy = "left")
-    colwidths <- c(colwidths, max(0, utf8_width(row_names, encode = TRUE)))
+    colwidths <- c(colwidths, max(0, utf8_width(row_names)))
 
     extra <- width - sum(colwidths) - print.gap * length(colwidths)
     ctxwidth <- max(12, extra / max(1, nctx))

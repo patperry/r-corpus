@@ -59,7 +59,7 @@ utf8_valid <- function(x)
 }
 
 # gets the width; NA for invalid or nonprintable sequences
-utf8_width <- function(x, encode = FALSE)
+utf8_width <- function(x, encode = TRUE)
 {
     with_rethrow({
         encode <- as_option("encode", encode)
