@@ -56,7 +56,7 @@
     is possible.
 
     \code{utf8_encode} encodes a character object for printing on a UTF-8
-    device, by escaping controls characters and other non-printable
+    device by escaping controls characters and other non-printable
     characters. When \code{display = TRUE}, the function optimizes the
     encoding for display by removing default ignorable characters (soft
     hyphens, zero-width spaces, etc.) and placing zero-width spaces after
