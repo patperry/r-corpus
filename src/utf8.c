@@ -36,7 +36,7 @@
 #define ZWSP "\xE2\x80\x8B" // U+200B
 #define ZWSP_NBYTE 3
 
-int charsxp_width(SEXP charsxp)
+int charsxp_width(SEXP charsxp, int utf8)
 {
 	const uint8_t *ptr = (const uint8_t *)CHAR(charsxp);
 	const uint8_t *start;
@@ -52,9 +52,34 @@ int charsxp_width(SEXP charsxp)
 		}
 
 		corpus_decode_utf8(&ptr, &code);
+		if (code < 0x80) {
+			switch (code) {
+			case '\a':
+			case '\b':
+			case '\f':
+			case '\n':
+			case '\r':
+			case '\t':
+			case '\v':
+				return NA_INTEGER;
+			default:
+				if (!isprint((int)code)) {
+					return NA_INTEGER;
+				}
+				width += 1;
+				continue;
+			}
+		} else if (!utf8) {
+			return NA_INTEGER;
+		}
+
 		cw = corpus_unicode_charwidth(code);
 
 		switch (cw) {
+		case CORPUS_CHARWIDTH_NONE:
+		case CORPUS_CHARWIDTH_IGNORABLE:
+			break;
+
 		case CORPUS_CHARWIDTH_NARROW:
 		case CORPUS_CHARWIDTH_AMBIGUOUS:
 			width += 1;
@@ -65,8 +90,8 @@ int charsxp_width(SEXP charsxp)
 			width += 2;
 			break;
 
-		default:
-			continue;
+		default: // CORPUS_CHARWIDTH_OTHER
+			return NA_INTEGER;
 		}
 	}
 
@@ -616,11 +641,11 @@ SEXP utf8_valid(SEXP sx)
 }
 
 
-SEXP utf8_width(SEXP sx)
+SEXP utf8_width(SEXP sx, SEXP sutf8)
 {
 	SEXP ans, elt;
 	R_xlen_t i, n;
-	int w;
+	int utf8, w;
 
 	if (sx == R_NilValue) {
 		return R_NilValue;
@@ -628,8 +653,9 @@ SEXP utf8_width(SEXP sx)
 	if (!isString(sx)) {
 		error("argument is not a character vector");
 	}
-
 	n = XLENGTH(sx);
+	utf8 = LOGICAL(sutf8)[0] == TRUE;
+
 	PROTECT(ans = allocVector(INTSXP, n));
 	setAttrib(ans, R_NamesSymbol, getAttrib(sx, R_NamesSymbol));
 	setAttrib(ans, R_DimSymbol, getAttrib(sx, R_DimSymbol));
@@ -640,7 +666,7 @@ SEXP utf8_width(SEXP sx)
 		if (elt == NA_STRING) {
 			w = NA_INTEGER;
 		} else {
-			w = charsxp_width(elt);
+			w = charsxp_width(elt, utf8);
 		}
 		INTEGER(ans)[i] = w;
 	}

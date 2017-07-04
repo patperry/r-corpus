@@ -58,7 +58,7 @@ utf8_valid <- function(x)
     .Call(C_utf8_valid, x)
 }
 
-# gets the width; NA for invalid sequences
+# gets the width; NA for invalid or nonprintable sequences
 utf8_width <- function(x, encode = FALSE)
 {
     with_rethrow({
@@ -68,5 +68,6 @@ utf8_width <- function(x, encode = FALSE)
     if (encode) {
         x <- utf8_encode(x)
     }
-    .Call(C_utf8_width, x)
+    utf8 <- (Sys.getlocale("LC_CTYPE") != "C")
+    .Call(C_utf8_width, x, utf8)
 }

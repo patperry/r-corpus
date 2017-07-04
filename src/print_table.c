@@ -96,12 +96,13 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 	const char *str;
 	char *buf;
 	int nbuf, nbuf_max, nbuf_max0;
-	int i, j, nrow, n, w, width, na_size;
+	int i, j, nrow, n, w, width, na_size, utf8;
 
 	dim_names = getAttrib(sx, R_DimNamesSymbol);
 	row_names = VECTOR_ELT(dim_names, 0);
 	col_names = VECTOR_ELT(dim_names, 1);
 	nrow = nrows(sx);
+	utf8 = 1;
 
 	na_size = strlen(na_print);
 
@@ -120,7 +121,7 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 				n = 2;
 			} else {
 				str = translateChar(name);
-				w = charsxp_width(name);
+				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
 			PRINT_SPACES(print_gap);
@@ -144,7 +145,7 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 				n = 2;
 			} else {
 				str = translateChar(name);
-				w = charsxp_width(name);
+				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
 
@@ -164,7 +165,7 @@ static void print_range(SEXP sx, int begin, int end, int quote,
 					      width - na_width);
 			} else {
 				str = translateChar(elt);
-				w = charsxp_width(elt) + (quote ? 2 : 0);
+				w = charsxp_width(elt, utf8) + (quote ? 2 : 0);
 				n = strlen(str);
 				PRINT_ENTRY(str, n, width - w);
 			}
@@ -183,7 +184,7 @@ SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 	const char *na_print;
 	R_xlen_t ix, nx;
 	int i, j, nrow, ncol;
-	int quote, na_width, print_gap, right, width;
+	int quote, na_width, print_gap, right, width, utf8;
 	int begin, end, w, linewidth, namewidth, *colwidths;
 
 	dim_names = getAttrib(sx, R_DimNamesSymbol);
@@ -192,11 +193,12 @@ SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 	nrow = nrows(sx);
 	ncol = ncols(sx);
 	nx = XLENGTH(sx);
+	utf8 = 1;
 
 	quote = (LOGICAL(squote)[0] == TRUE) ? 1 : 0;
 	sna_print = STRING_ELT(sna_print, 0);
 	na_print = translateChar(sna_print);
-	na_width = charsxp_width(sna_print);
+	na_width = charsxp_width(sna_print, utf8);
 	print_gap = INTEGER(sprint_gap)[0];
 	right = LOGICAL(sright)[0] == TRUE;
 	width = INTEGER(swidth)[0];
@@ -211,7 +213,7 @@ SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 	} else {
 		for (i = 0; i < nrow; i++) {
 			elt = STRING_ELT(row_names, i);
-			w = (elt == NA_STRING) ? 2 : charsxp_width(elt);
+			w = (elt == NA_STRING) ? 2 : charsxp_width(elt, utf8);
 			if (w > namewidth) {
 				namewidth = w;
 			}
@@ -226,7 +228,7 @@ SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 			if (elt == NA_STRING) {
 				colwidths[j] = 2;
 			} else {
-				colwidths[j] = charsxp_width(elt);
+				colwidths[j] = charsxp_width(elt, utf8);
 			}
 		}
 	}
@@ -237,7 +239,7 @@ SEXP print_table(SEXP sx, SEXP squote, SEXP sna_print, SEXP sprint_gap,
 		if (elt == NA_STRING) {
 			w = na_width;
 		} else {
-			w = charsxp_width(elt) + (quote ? 2 : 0);
+			w = charsxp_width(elt, utf8) + (quote ? 2 : 0);
 		}
 
 		if (w > colwidths[j]) {

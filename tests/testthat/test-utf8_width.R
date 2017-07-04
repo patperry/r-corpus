@@ -1,15 +1,34 @@
 context("utf8_width")
 
 test_that("'utf8_width' computes widths correctly", {
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
     expect_equal(utf8_width(c("hello", "\u200b", "\u22ee", "\u6027",
                               intToUtf8(0x1f642))),
                  c(5, 0, 1, 2, 2))
 })
 
 
+test_that("'utf8_width' gives NA for non-ASCII in C locale", {
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    expect_equal(utf8_width(c("hello", "\u200b", "\u22ee", "\u6027",
+                              intToUtf8(0x1f642))),
+                 c(5, NA, NA, NA, NA))
+})
+
+
 test_that("'utf8_width' keeps names", {
     expect_equal(utf8_width(c(a = "hello", b = "you")),
                  c(a = 5, b = 3))
+})
+
+
+test_that("'utf8_width' gives NA for control characters", {
+    expect_equal(utf8_width(c("\u0001", "\a", "new\nline")),
+                            c(NA_integer_, NA_integer_, NA_integer_))
 })
 
 

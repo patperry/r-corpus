@@ -184,7 +184,7 @@ SEXP utf8_encode(SEXP x, SEXP display, SEXP utf8);
 SEXP utf8_format(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
 		 SEXP na_encode, SEXP utf8);
 SEXP utf8_valid(SEXP x);
-SEXP utf8_width(SEXP x);
+SEXP utf8_width(SEXP x, SEXP width);
 
 /* data schema */
 SEXP alloc_schema(void);
@@ -197,7 +197,7 @@ SEXP read_ndjson(SEXP buffer);
 
 /* internal utility functions */
 double *as_weights(SEXP sweights, R_xlen_t n);
-int charsxp_width(SEXP charsxp);
+int charsxp_width(SEXP charsxp, int utf8);
 int encodes_utf8(cetype_t ce);
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
