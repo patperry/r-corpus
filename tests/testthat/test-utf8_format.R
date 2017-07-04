@@ -36,6 +36,7 @@ test_that("'format' can handle long text in Unicode locale", {
 
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
+    skip_on_os("windows") # windows can't format \u6027
 
     expect_equal(format(text, chars = 2, justify = "none"), format(short, justify = "none"))
     expect_equal(utf8_format(raw, chars = 2, justify = "none"), format(short, justify = "none"))
