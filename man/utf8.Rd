@@ -91,7 +91,7 @@
     \code{dimnames} as \code{x}.
 }
 \seealso{
-    \code{\link{as_text}}.
+    \code{\link{as_text}}, \code{\link{iconv}}.
 }
 \examples{
     # the second element is encoded in latin-1, but declared as UTF-8
@@ -100,6 +100,10 @@
 
     # attempt to convert to UTF-8 (fails)
     \dontrun{as_utf8(x)}
+
+    y <- x
+    Encoding(y[2]) <- "latin1" # mark the correct locale
+    as_utf8(y) # succeeds
 
     # test for valid UTF-8
     utf8_valid(x)

@@ -322,10 +322,12 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 
 		if (cw == CORPUS_CHARWIDTH_OTHER || !utf8) {
 			if (code <= 0xFFFF) {
-				sprintf((char *)dst, "\\u%04x", (unsigned)code);
+				sprintf((char *)dst, "\\u%04x",
+					(unsigned)code);
 				dst += 6;
 			} else {
-				sprintf((char *)dst, "\\U%08x", (unsigned)code);
+				sprintf((char *)dst, "\\U%08x",
+					(unsigned)code);
 				dst += 10;
 			}
 			continue;

@@ -78,3 +78,17 @@ test_that("'utf8_encode' can handle latin-1", {
     switch_ctype("Unicode")
     expect_equal(utf8_encode(x), "her \u00a320")
 })
+
+
+test_that("'utf8_encode' can handle bytes", {
+    x <- c("fa\u00E7ile", "fa\xE7ile", "fa\xC3\xA7ile")
+    Encoding(x) <- c("UTF-8", "UTF-8", "bytes")
+
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    y <- c("fa\u00e7ile", "fa\\xe7ile", "fa\\xc3\\xa7ile")
+    Encoding(y) <- c("UTF-8", "UTF-8", "bytes")
+
+    expect_equal(utf8_encode(x), y)
+})
