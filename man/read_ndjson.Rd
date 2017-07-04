@@ -76,7 +76,7 @@
     \code{simplify = FALSE}, the result is a \code{corpus_json} object.
 }
 \seealso{
-    \code{\link{text}}.
+    \code{\link{as_text}}, \code{\link{as_utf8}}.
 }
 \examples{
     # Memory mapping

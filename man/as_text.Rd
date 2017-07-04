@@ -65,7 +65,7 @@
         whether its argument is of text type or not.
 }
 \seealso{
-    \code{\link{read_ndjson}}.
+    \code{\link{as_utf8}}, \code{\link{read_ndjson}}.
 }
 \examples{
     as_text("hello, world!")

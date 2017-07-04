@@ -1,7 +1,7 @@
 \name{text_types}
 \alias{text_ntype}
 \alias{text_types}
-\title{Text type sets.}
+\title{Text Type Sets.}
 \description{
     Get or measure the set of types (unique token values).
 }

@@ -1,14 +1,17 @@
 ## Compiled
 useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 
+
 ## Imports
 importFrom(Matrix, sparseMatrix)
 importFrom(utils, str)
+
 
 ## Exports
 export(abbreviations)
 export(as_text)
 export(as_text.default)
+export(as_utf8)
 export(is_text)
 export(read_ndjson)
 export(sentence_filter)
@@ -26,6 +29,12 @@ export(text_split)
 export(text_tokens)
 export(text_types)
 export(token_filter)
+export(text_types)
+export(utf8_encode)
+export(utf8_format)
+export(utf8_valid)
+export(utf8_width)
+
 
 ## New S3 methods
 S3method(as_text, corpus_json)
