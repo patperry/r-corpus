@@ -486,7 +486,7 @@ static SEXP charsxp_encode(SEXP sx, int display, int utf8, char **bufptr,
 
 	if (size2 > nbuf) {
 		corpus_array_size_add(&nbuf, 1, 0, size2);
-		buf = R_alloc(size2, 1);
+		buf = R_alloc(nbuf, 1);
 		*bufptr = buf;
 		*nbufptr = nbuf;
 	}
@@ -702,17 +702,20 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 	nbuf = 0;
 
 	for (i = 0; i < n; i++) {
-		elt = STRING_ELT(sx, i);
+		elt = STRING_ELT(ans, i);
 		elt2 = charsxp_encode(elt, display, utf8, &buf, &nbuf);
-		if (!duped && elt != elt2) {
-			PROTECT(ans = duplicate(ans));
-			duped = 1;
+		if (elt != elt2) {
+			if (!duped) {
+				PROTECT(elt2);
+				PROTECT(ans = duplicate(ans));
+				duped = 1;
+			}
+			SET_STRING_ELT(ans, i, elt2);
 		}
-		SET_STRING_ELT(ans, i, elt2);
 	}
 
 	if (duped) {
-		UNPROTECT(1);
+		UNPROTECT(2);
 	}
 
 	return ans;
