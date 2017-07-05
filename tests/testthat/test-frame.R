@@ -278,3 +278,11 @@ test_that("'print.corpus_frame' works in C locale", {
 
     expect_equal(actual, expected)
 })
+
+
+test_that("'print.corpus_frame' can right justify", {
+    d <- data.frame(ch = c("a", "ab", "abc"))
+
+    expect_equal(capture_output(print.corpus_frame(d, right = TRUE)),
+                 capture_output(print(d, right = TRUE)))
+})

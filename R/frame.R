@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 
 format.corpus_frame <- function(x, quote = FALSE, na.print = NULL, ...,
-                                justify = "none")
+                                justify = "left")
 {
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
@@ -71,7 +71,7 @@ format.corpus_frame <- function(x, quote = FALSE, na.print = NULL, ...,
 
 print.corpus_frame <- function(x, chars = NULL, digits = NULL,
                                quote = FALSE, na.print = NULL,
-                               print.gap = NULL, right = TRUE,
+                               print.gap = NULL, right = FALSE,
                                row.names = TRUE, max = NULL,
                                display = TRUE, ...)
 {
@@ -118,9 +118,11 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         xsub <- x
     }
 
+    justify <- if (right) "right" else "left"
+
     fmt <- format.corpus_frame(xsub, chars = chars, digits = digits,
                                na.encode = TRUE, quote = quote,
-                               na.print = na.print)
+                               na.print = na.print, justify = justify)
     m <- as.matrix(fmt)
     storage.mode(m) <- "character"
 
@@ -129,7 +131,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
 
     utf8_print(m, chars = .Machine$integer.max, quote = FALSE,
-               print.gap = print.gap, right = right,
+               print.gap = print.gap, right = TRUE,
                max = .Machine$integer.max, display = display)
 
     if (n == 0) {
