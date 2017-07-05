@@ -11,8 +11,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 
-format.corpus_frame <- function(x, quote = FALSE, na.print = NULL, ...,
-                                justify = "left")
+format.corpus_frame <- function(x, justify = "left", na.encode = TRUE,
+                                quote = FALSE, na.print = NULL, ...)
 {
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
@@ -34,19 +34,19 @@ format.corpus_frame <- function(x, quote = FALSE, na.print = NULL, ...,
         if (is.character(elt) && (identical(cl, "character")
                                   || identical(cl, "AsIs"))) {
             w <- if (is.na(names[[i]])) 2 else utf8_width(names[[i]])
-            cols[[i]] <- utf8_format(elt, width = w, quote = quote,
-                                     na.print = na.print, ...,
-                                     justify = justify)
+            cols[[i]] <- utf8_format(elt, justify = justify, width = w,
+                                     na.encode = na.encode, quote = quote,
+                                     na.print = na.print, ...)
 
             # use same justification for column and name
             names[[i]] <- utf8_format(names[[i]], justify = justify,
                                       width = max(0, utf8_width(cols[[i]])),
                                       na.encode = TRUE, na.print = "NA")
         } else {
-            cols[[i]] <- format(elt, quote = quote, na.print = na.print,
-                                ..., justify = justify)
+            cols[[i]] <- format(elt, justify = justify,
+                                na.encode = na.encode, quote = quote,
+                                na.print = na.print, ...)
         }
-
     }
 
     lens <- vapply(cols, NROW, 1)
