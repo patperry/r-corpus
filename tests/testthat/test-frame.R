@@ -3,12 +3,20 @@ context("frame")
 
 test_that("'print.corpus_frame' produces the same results on ASCII", {
     d <- data.frame(x = 1:10, f = gl(2,5), ch = I(letters[1:10]))
+    dr <- d
+    dr$ch <- paste0(d$ch, " ")
+
+    dq <- d
+    dq$f <- paste0('"', d$f, '"')
+    dq$ch <- paste0('"', d$ch, '"')
+    names(dq) <- c("x", "f  ", "ch ")
 
     expect_equal(capture_output(print.corpus_frame(d)),
-                 capture_output(print(d)))
+                 capture_output(print(dr)))
     expect_equal(
-        capture_output(print.corpus_frame(d, quote = TRUE, row.names = FALSE)),
-        capture_output(print(d, quote = TRUE, row.names = FALSE)))
+        capture_output(print.corpus_frame(d, quote = TRUE,
+                                          row.names = FALSE)),
+        capture_output(print(dq, row.names = FALSE)))
 })
 
 
@@ -16,12 +24,21 @@ test_that("'print.corpus_frame' handles row names", {
     d <- data.frame(x = 1:10, f = gl(2,5), ch = I(letters[1:10]))
     row.names(d) <- LETTERS[1:10]
 
+    dr <- d
+    dr$ch <- paste0(d$ch, " ")
+
+    dq <- d
+    dq$f <- paste0('"', d$f, '"')
+    dq$ch <- paste0('"', d$ch, '"')
+    names(dq) <- c("x", "f  ", "ch ")
+
     expect_equal(capture_output(print.corpus_frame(d)),
-                 capture_output(print(d)))
+                 capture_output(print(dr)))
 
     expect_equal(
-        capture_output(print.corpus_frame(d, quote = TRUE, row.names = FALSE)),
-        capture_output(print(d, quote = TRUE, row.names = FALSE)))
+        capture_output(print.corpus_frame(d, quote = TRUE,
+                                          row.names = FALSE)),
+        capture_output(print(dq, row.names = FALSE)))
 })
 
 
@@ -67,27 +84,42 @@ test_that("'print.corpus_frame' wraps correctly", {
 
 test_that("'print.corpus_frame' handles NA in column names", {
     d <- data.frame(x = 1:10, f = gl(2,5), ch = I(letters[1:10]))
-    colnames(d) <- c("x", NA, "ch")
+    dr <- d
+    dr$f <- paste0(d$f, " ")
+    dr$ch <- paste0(d$ch, " ")
+
+    names(d) <- c("x", NA, "ch")
+    names(dr) <- c("x", NA, "ch")
 
     expect_equal(capture_output(print.corpus_frame(d)),
-                 capture_output(print(d)))
+                 capture_output(print(dr)))
 })
 
 
 test_that("'print.corpus_frame' handles NA elements", {
-    d <- data.frame(x = NA, ch = I(NA_character_), f = as.factor(NA_character_))
+    d <- data.frame(x = NA, ch = I(NA_character_),
+                    f = as.factor(NA_character_))
+    dr <- d
+    names(dr) <- c("x", "ch  ", "f   ")
+
+    dq <- d
+    names(dq) <- c("x", "ch", "f ")
+
+    dfoo <- d
+    names(dfoo) <- c("x", "ch ", "f  ")
 
     expect_equal(capture_output(print.corpus_frame(d)),
-                 capture_output(print(d)))
+                 capture_output(print(dr)))
 
     expect_equal(capture_output(print.corpus_frame(d, quote = TRUE)),
-                 capture_output(print(d, quote = TRUE)))
+                 capture_output(print(dq, na.print = "NA")))
 
     expect_equal(capture_output(print.corpus_frame(d, na.print = "foo")),
-                 capture_output(print(d, na.print = "foo")))
+                 capture_output(print(dfoo, na.print = "foo")))
 
-    expect_equal(capture_output(print.corpus_frame(d, na.print = "foo", quote = TRUE)),
-                 capture_output(print(d, na.print = "foo", quote = TRUE)))
+    expect_equal(capture_output(print.corpus_frame(d, na.print = "foo",
+                                                   quote = TRUE)),
+                 capture_output(print(dfoo, na.print = "foo")))
 })
 
 

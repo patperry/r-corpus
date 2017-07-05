@@ -18,7 +18,7 @@ as_character_scalar <- function(name, value, utf8 = TRUE)
     if (is.null(value)) {
         return(NULL)
     }
-    value <- as_character_scalar(name, value, utf8)
+    value <- as_character_vector(name, value, utf8)
     if (length(value) != 1) {
         stop("'", name, "' must be a scalar character string")
     }

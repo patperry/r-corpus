@@ -363,8 +363,8 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 	} while (0)
 
 static SEXP format_left(const struct text *text, int trim, int chars,
-			int width_max, int utf8, int centre, uint8_t **bufptr,
-			int *nbufptr)
+			int width_max, int quote, int utf8, int centre,
+			uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
@@ -372,13 +372,14 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 	struct text_iter it;
 	uint8_t *dst;
 	int i, w, code, trunc, type, nbyte, bfill, fill, len, off,
-	    fullwidth, width;
+	    fullwidth, width, quotes;
 
 	dst = buf;
 
+	quotes = quote ? 2 : 0;
 	bfill = 0;
 	if (centre && !trim) {
-		fullwidth = text_width(text, chars, utf8);
+		fullwidth = text_width(text, chars, utf8) + quotes;
 		if ((fill = width_max - fullwidth) > 0) {
 			bfill = fill / 2;
 
@@ -388,6 +389,12 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 				*dst++ = ' ';
 			}
 		}
+	}
+
+
+	if (quote) {
+		ENSURE(1);
+		*dst++ = '"';
 	}
 
 	width = 0;
@@ -424,7 +431,12 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 		width += w;
 	}
 
-	if (!trim && ((fill = width_max - width - bfill)) > 0) {
+	if (quote) {
+		ENSURE(1);
+		*dst++ = '"';
+	}
+
+	if (!trim && ((fill = width_max - width - quotes - bfill)) > 0) {
 		ENSURE(fill);
 
 		while (fill-- > 0) {
@@ -453,16 +465,23 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 	} while (0)
 
 static SEXP format_right(const struct text *text, int trim, int chars,
-			 int width_max, int utf8, uint8_t **bufptr,
-			 int *nbufptr)
+			 int width_max, int quote, int utf8,
+			 uint8_t **bufptr, int *nbufptr)
 {
 	uint8_t *buf = *bufptr;
 	int nbuf = *nbufptr;
 	struct text_iter it;
 	uint8_t *dst;
-	int w, code, fill, trunc, type, off, len, nbyte, width;
+	int w, code, fill, trunc, type, off, len, nbyte, width, quotes;
 
+	quotes = quote ? 2 : 0;
 	dst = buf + nbuf;
+
+	if (quote) {
+		ENSURE(1);
+		*--dst = '"';
+	}
+
 	width = 0;
 	trunc = 0;
 	text_iter_make(&it, text);
@@ -499,7 +518,12 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 		width += w;
 	}
 
-	if (!trim && ((fill = width_max - width)) > 0) {
+	if (quote) {
+		ENSURE(1);
+		*--dst = '"';
+	}
+
+	if (!trim && ((fill = width_max - width - quotes)) > 0) {
 		ENSURE(fill);
 
 		while (fill-- > 0) {
@@ -517,26 +541,26 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 
 
 SEXP format_text(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
-		 SEXP sna_encode, SEXP sutf8)
+		 SEXP sna_encode, SEXP squote, SEXP sna_print, SEXP sutf8)
 {
 	return utf8_format(sx, strim, schars, sjustify, swidth, sna_encode,
-			   sutf8);
+			   squote, sna_print, sutf8);
 }
 
 
 SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
-		 SEXP sna_encode, SEXP sutf8)
+		 SEXP sna_encode, SEXP squote, SEXP sna_print, SEXP sutf8)
 {
-	SEXP ans, ans_i;
+	SEXP ans, na_print, ans_i;
 	enum text_type type;
 	enum justify_type justify;
 	const char *justify_str;
 	uint8_t *buf;
 	struct corpus_text *text;
-	struct text elt;
+	struct text elt, na;
 	R_xlen_t i, n;
 	int chars, chars_i, ellipsis, width, width_max, nbuf, trim, na_encode,
-	    utf8, nprot;
+	    quote, quote_i, quotes, na_width, utf8, nprot;
 
 	nprot = 0;
 
@@ -561,14 +585,18 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	PROTECT(strim = coerceVector(strim, LGLSXP)); nprot++;
 	trim = (LOGICAL(strim)[0] == TRUE);
 
+	PROTECT(squote = coerceVector(squote, LGLSXP)); nprot++;
+	quote = (LOGICAL(squote)[0] == TRUE);
+	quotes = quote ? 2 : 0;
+
 	PROTECT(strim = coerceVector(sutf8, LGLSXP)); nprot++;
 	utf8 = (LOGICAL(sutf8)[0] == TRUE);
 	ellipsis = utf8 ? 1 : 3;
 
 	PROTECT(schars = coerceVector(schars, INTSXP)); nprot++;
 	chars = INTEGER(schars)[0];
-	if (chars == NA_INTEGER || chars > INT_MAX - ellipsis) {
-		chars = INT_MAX - ellipsis;
+	if (chars == NA_INTEGER || chars > INT_MAX - ellipsis - quotes) {
+		chars = INT_MAX - ellipsis - quotes;
 	} else if (chars < 0) {
 		chars = 0;
 	}
@@ -593,6 +621,9 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	PROTECT(sna_encode = coerceVector(sna_encode, LGLSXP)); nprot++;
 	na_encode = (LOGICAL(sna_encode)[0] == TRUE);
 
+	na_print = STRING_ELT(sna_print, 0);
+	text_init_charsxp(&na, na_print);
+	na_width = text_width(&na, INT_MAX, utf8);
 
 	for (i = 0; i < n; i++) {
 		if (type == TEXT_CORPUS) {
@@ -602,19 +633,19 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		}
 
 		if (elt.na) {
-			width = 2;
+			width = na_encode ? na_width : 0;
 		} else if (justify == JUSTIFY_RIGHT) {
-			width = text_rwidth(&elt, chars, utf8);
+			width = text_rwidth(&elt, chars, utf8) + quotes;
 		} else {
-			width = text_width(&elt, chars, utf8);
+			width = text_width(&elt, chars, utf8) + quotes;
 		}
 
 		if (width > width_max) {
 			width_max = width;
 		}
 
-		if (width_max >= chars + ellipsis) {
-			width_max = chars + ellipsis;
+		if (width_max >= chars + ellipsis + quotes) {
+			width_max = chars + ellipsis + quotes;
 			break;
 		}
 	}
@@ -629,28 +660,35 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 			text_init_charsxp(&elt, STRING_ELT(sx, i));
 		}
 
-		if (elt.na && !na_encode) {
-			SET_STRING_ELT(ans, i, NA_STRING);
-			continue;
+		if (elt.na) {
+			if (na_encode) {
+				elt = na;
+				chars_i = na_width;
+				quote_i = 0;
+			} else {
+				SET_STRING_ELT(ans, i, NA_STRING);
+				continue;
+			}
+		} else {
+			chars_i = chars;
+			quote_i = quote;
 		}
-
-		chars_i = elt.na ? 2 : chars;
 
 		switch (justify) {
 		case JUSTIFY_LEFT:
 		case JUSTIFY_NONE:
 			ans_i = format_left(&elt, trim, chars_i, width_max,
-					    utf8, 0, &buf, &nbuf);
+					    quote_i, utf8, 0, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_CENTRE:
 			ans_i = format_left(&elt, trim, chars_i, width_max,
-					    utf8, 1, &buf, &nbuf);
+					    quote_i, utf8, 1, &buf, &nbuf);
 			break;
 
 		case JUSTIFY_RIGHT:
-			ans_i = format_right(&elt, trim, chars_i,
-					     width_max, utf8, &buf, &nbuf);
+			ans_i = format_right(&elt, trim, chars_i, width_max,
+					     quote_i, utf8, &buf, &nbuf);
 			break;
 		}
 

@@ -140,7 +140,8 @@ cbind.corpus_text <- function(..., deparse.level = 1)
 
 format.corpus_text <- function(x, trim = FALSE, chars = NULL,
                                justify = "left", width = NULL,
-                               na.encode = TRUE, ...)
+                               na.encode = TRUE, quote = FALSE,
+                               na.print = NULL, ...)
 {
     with_rethrow({
         x <- as_text(x)
@@ -153,14 +154,21 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)
+        quote <- as_option("quote", quote)
+        na.print <- as_na_print("na.print", na.print)
+        if (is.null(na.print)) {
+            na.print <- ifelse(quote, "NA", "<NA>")
+        }
 
         utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-        .Call(C_format_text, x, trim, chars, justify, width, na.encode, utf8)
+        .Call(C_format_text, x, trim, chars, justify, width, na.encode,
+              quote, na.print, utf8)
     })
 }
 
 
-print.corpus_text <- function(x, max = 6L, display = TRUE, ...)
+print.corpus_text <- function(x, max = 6L, quote = FALSE, na.print = NULL,
+                              display = TRUE, ...)
 {
     if (length(x) == 0) {
         cat("text(0)\n")
@@ -186,7 +194,8 @@ print.corpus_text <- function(x, max = 6L, display = TRUE, ...)
     if (is.null(nm)) {
         lab <- format(paste0("[", seq_along(str), "]"), justify = "right")
     } else {
-        lab <- utf8_encode(format(nm, justify = "left"), display = display)
+        lab <- utf8_encode(format(nm, justify = "left", quote = quote,
+                                  na.print = na.print), display = display)
     }
     for (i in seq_along(str)) {
         cat(lab[[i]], " ", utf8_encode(str[[i]]), "\n", sep="")

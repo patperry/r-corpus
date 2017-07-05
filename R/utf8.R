@@ -29,7 +29,8 @@ utf8_encode <- function(x, display = FALSE)
 
 
 utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
-                        width = NULL, na.encode = TRUE, ...)
+                        width = NULL, na.encode = TRUE, quote = FALSE,
+                        na.print = NULL, ...)
 {
     if (is.null(x)) {
         return(NULL)
@@ -45,9 +46,15 @@ utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)
+        quote <- as_option("quote", quote)
+        na.print <- as_na_print("na.print", na.print)
+        if (is.null(na.print)) {
+            na.print <- ifelse(quote, "NA", "<NA>")
+        }
 
         utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-        .Call(C_utf8_format, x, trim, chars, justify, width, na.encode, utf8)
+        .Call(C_utf8_format, x, trim, chars, justify, width, na.encode,
+              quote, na.print, utf8)
     })
 }
 
@@ -63,6 +70,9 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
     chars <- as_integer_scalar("chars", chars, null = NULL)
     quote <- as_option("quote", quote)
     na.print <- as_na_print("na.print", na.print)
+    if (is.null(na.print)) {
+        na.print <- ifelse(quote, "NA", "<NA>")
+    }
     print.gap <- as_print_gap("print_gap", print.gap)
     right <- as_option("right", right)
     max <- as_max_print("max", max)
@@ -70,11 +80,6 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         max <- getOption("max.print")
     }
     display <- as_option("display", display)
-
-    if (is.null(na.print)) {
-        na.print <- ifelse(quote, "NA", "<NA>")
-    }
-    na.print <- utf8_encode(na.print, display)
 
     if (is.null(print.gap)) {
         print.gap <- 1L
@@ -122,6 +127,8 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         dimnames <- lapply(dimnames, utf8_encode, display = display)
         dimnames(fmt) <- dimnames
     }
+
+    na.print <- utf8_encode(na.print, display)
 
     if (is.null(dim) || length(dim) == 1) {
         # print vector

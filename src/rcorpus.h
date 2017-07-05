@@ -128,7 +128,7 @@ SEXP as_text_character(SEXP text);
 SEXP alloc_na_text(void);
 SEXP coerce_text(SEXP x);
 SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
-		 SEXP na_encode, SEXP utf8);
+		 SEXP na_encode, SEXP quote, SEXP na_print, SEXP utf8);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
 SEXP subset_text_handle(SEXP handle, SEXP i);
@@ -182,7 +182,7 @@ SEXP stopwords(SEXP kind);
 SEXP utf8_coerce(SEXP x);
 SEXP utf8_encode(SEXP x, SEXP display, SEXP utf8);
 SEXP utf8_format(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
-		 SEXP na_encode, SEXP utf8);
+		 SEXP na_encode, SEXP quote, SEXP na_print, SEXP utf8);
 SEXP utf8_valid(SEXP x);
 SEXP utf8_width(SEXP x, SEXP width);
 

@@ -11,7 +11,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 
-format.corpus_frame <- function(x, ..., justify = "none")
+format.corpus_frame <- function(x, quote = FALSE, na.print = NULL, ...,
+                                justify = "none")
 {
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
@@ -21,6 +22,7 @@ format.corpus_frame <- function(x, ..., justify = "none")
     for (i in seq_len(nc)) {
         elt <- x[[i]]
         cl <- class(elt)
+        fac <- FALSE
 
         if (is.factor(elt) && (identical(cl, "factor")
                                || identical(cl, c("AsIs", "factor")))) {
@@ -31,13 +33,18 @@ format.corpus_frame <- function(x, ..., justify = "none")
 
         if (is.character(elt) && (identical(cl, "character")
                                   || identical(cl, "AsIs"))) {
-            cols[[i]] <- utf8_format(elt, ..., justify = justify)
+            w <- if (is.na(names[[i]])) 2 else utf8_width(names[[i]])
+            cols[[i]] <- utf8_format(elt, width = w, quote = quote,
+                                     na.print = na.print, ...,
+                                     justify = justify)
 
             # use same justification for column and name
             names[[i]] <- utf8_format(names[[i]], justify = justify,
-                                      width = max(0, utf8_width(cols[[i]])))
+                                      width = max(0, utf8_width(cols[[i]])),
+                                      na.encode = TRUE, na.print = "NA")
         } else {
-            cols[[i]] <- format(elt, ..., justify = justify)
+            cols[[i]] <- format(elt, quote = quote, na.print = na.print,
+                                ..., justify = justify)
         }
 
     }
@@ -90,6 +97,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
     display <- as_option("display", display)
 
+
     if (length(x) == 0) {
         cat(sprintf(ngettext(n, "data frame with 0 columns and %d row",
                              "data frame with 0 columns and %d rows"), n),
@@ -111,7 +119,8 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
 
     fmt <- format.corpus_frame(xsub, chars = chars, digits = digits,
-                               na.encode = FALSE)
+                               na.encode = TRUE, quote = quote,
+                               na.print = na.print)
     m <- as.matrix(fmt)
     storage.mode(m) <- "character"
 
@@ -119,8 +128,8 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         rownames(m) <- row.names
     }
 
-    utf8_print(m, chars = .Machine$integer.max, quote = quote,
-               na.print = na.print, print.gap = print.gap, right = right,
+    utf8_print(m, chars = .Machine$integer.max, quote = FALSE,
+               print.gap = print.gap, right = right,
                max = .Machine$integer.max, display = display)
 
     if (n == 0) {
