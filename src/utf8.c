@@ -228,7 +228,6 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 					break;
 
 				default:
-					needs = 0;
 					break;
 				}
 			} else {

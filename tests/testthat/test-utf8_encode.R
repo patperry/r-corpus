@@ -92,3 +92,13 @@ test_that("'utf8_encode' can handle bytes", {
 
     expect_equal(utf8_encode(x), y)
 })
+
+
+test_that("'utf8_encode escapes controls in UTF-8 text", {
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    x <- '\n\u2026'; Encoding(x) <- "UTF-8"
+    y <- '\\n\u2026'; Encoding(y) <- "UTF-8"
+    expect_equal(utf8_encode(x), y)
+})
