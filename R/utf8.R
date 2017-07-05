@@ -78,9 +78,6 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         display <- as_option("display", display)
     })
 
-    if (is.null(na.print)) {
-        na.print <- ifelse(quote, "NA", "<NA>")
-    }
     if (is.null(print.gap)) {
         print.gap <- 1L
     }
@@ -92,13 +89,16 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
     n <- length(x)
     dim <- dim(x)
 
-    fmt <- utf8_format(x, chars = chars, na.encode = FALSE,
-                       justify = "none", trim = TRUE)
+    fmt <- utf8_format(x, trim = TRUE, chars = chars,
+                       justify = "none", na.encode = TRUE,
+                       quote = quote, na.print = na.print)
     names <- names(fmt)
     dimnames <- dimnames(fmt)
 
     if (is.null(dim) || length(dim) == 1) {
-        stop("not implemented")
+        if (length(dim) == 1 && !is.null(dimnames)) {
+            names <- dimnames[[1]]
+        }
     } else {
         if (is.null(dimnames)) {
             dimnames <- vector("list", length(dim))
@@ -130,13 +130,39 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         dimnames(fmt) <- dimnames
     }
 
-    na.print <- utf8_encode(na.print, display)
-
     if (is.null(dim) || length(dim) == 1) {
-        # print vector
-        stop("not implemented")
+        if (is.null(names) && n > 0) {
+            labels <- utf8_format(paste0(" [", seq_len(n), "]"),
+                                  justify = "right")
+        } else {
+            labels <- names
+        }
+
+        width <- getOption("width")
+        namewidth <- max(0, utf8_width(labels))
+        elt <- max(0, utf8_width(x))
+        ncol <- max(1, (width - namewidth) %/% (elt + print.gap))
+
+        if (!is.null(names)) {
+            off <- 0
+            while (off + ncol <= n) {
+                ix <- (off+1):(off+ncol)
+                mat <- matrix(x[ix], ncol = ncol, byrow = TRUE,
+                              dimnames = list("", names[ix]))
+                off <- off + ncol
+                .Call(C_print_table, mat, print.gap, right, width)
+            }
+        } else {
+            if (n %% ncol != 0) {
+                pad <- ncol - n %% ncol
+            } else {
+                pad <- 0
+            }
+            mat <- matrix(c(fmt, rep("", pad)), ncol = ncol,
+                          byrow = TRUE)
+        }
     } else if (length(dim) == 2) {
-        .Call(C_print_table, fmt, quote, na.print, print.gap, right, width)
+        .Call(C_print_table, fmt, print.gap, right, width)
     } else {
         # print array
         stop("not implemented")
