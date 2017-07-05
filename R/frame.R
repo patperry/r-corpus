@@ -15,6 +15,14 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                 na.encode = TRUE, quote = FALSE,
                                 na.print = NULL, print.gap = NULL, ...)
 {
+    if (is.null(x)) {
+        return(invisible(NULL))
+    }
+
+    if (!is.data.frame(x)) {
+        stop("argument is not a data frame")
+    }
+
     with_rethrow({
         chars <- as_chars("chars", chars)
         justify <- as_justify("justify", justify)
@@ -23,7 +31,17 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
         na.print <- as_na_print("na.print", na.print)
         print.gap <- as_print_gap("print.gap", print.gap)
     })
-    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+
+    if (is.null(chars)) {
+        utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+        ellipsis <- if (utf8) 1 else 3
+        quotes <- if (quote) 2 else 0
+        gap <- if (is.null(print.gap)) 1 else print.gap
+        width <- getOption("width")
+        chars <- (width - ellipsis - quotes
+                  - gap - max(0, utf8_width(rownames(x))))
+        chars <- max(chars, 12)
+    }
 
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
@@ -48,17 +66,23 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
             cols[[i]] <- utf8_format(elt, chars = chars, justify = justify,
                                      width = w, na.encode = na.encode,
                                      quote = quote, na.print = na.print)
+            char <- TRUE
 
-            # use same justification for column and name
-            names[[i]] <- utf8_format(names[[i]], chars = chars,
-                                      justify = justify,
-                                      width = max(0, utf8_width(cols[[i]])),
-                                      na.encode = TRUE, na.print = "NA")
         } else {
             cols[[i]] <- format(elt, chars = chars, justify = justify,
                                 na.encode = na.encode, quote = quote,
                                 na.print = na.print,
                                 print.gap = print.gap, ...)
+            char <- FALSE
+        }
+
+        if (char || is_text(elt)) {
+            # use same justification for column and name
+            names[[i]] <- utf8_format(names[[i]],
+                                      chars = .Machine$integer.max,
+                                      justify = justify,
+                                      width = max(0, utf8_width(cols[[i]])),
+                                      na.encode = TRUE, na.print = "NA")
         }
     }
 
@@ -88,28 +112,38 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
                                row.names = TRUE, max = NULL,
                                display = TRUE, ...)
 {
+    if (is.null(x)) {
+        return(NULL)
+    }
+
+    if (!is.data.frame(x)) {
+        stop("argument is not a data frame")
+    }
+
     n <- nrow(x)
     nc <- length(x)
 
-    chars <- as_integer_scalar("chars", chars, null = NULL)
-    digits <- as_digits("digits", digits)
-    quote <- as_option("quote", quote)
-    na.print <- as_na_print("na.print", na.print)
-    print.gap <- as_print_gap("print_gap", print.gap)
-    right <- as_option("right", right)
-    if (!isTRUE(row.names)) {
-        if (identical(row.names, FALSE)) {
-            row.names <- rep("", n)
-        } else {
-            row.names <- as_names("row.names", row.names, n)
+    with_rethrow({
+        chars <- as_chars("chars", chars)
+        digits <- as_digits("digits", digits)
+        quote <- as_option("quote", quote)
+        na.print <- as_na_print("na.print", na.print)
+        print.gap <- as_print_gap("print_gap", print.gap)
+        right <- as_option("right", right)
+        if (!isTRUE(row.names)) {
+            if (identical(row.names, FALSE)) {
+                row.names <- rep("", n)
+            } else {
+                row.names <- as_names("row.names", row.names, n)
+            }
         }
-    }
-    max <- as_max_print("max", max)
+        max <- as_max_print("max", max)
+        display <- as_option("display", display)
+    })
+
     if (is.null(max)) {
         max <- getOption("max.print")
     }
-    display <- as_option("display", display)
-
 
     if (length(x) == 0) {
         cat(sprintf(ngettext(n, "data frame with 0 columns and %d row",

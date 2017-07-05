@@ -50,10 +50,6 @@ utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
         na.print <- as_na_print("na.print", na.print)
     })
 
-    if (is.null(na.print)) {
-        na.print <- ifelse(quote, "NA", "<NA>")
-    }
-
     utf8 <- Sys.getlocale("LC_CTYPE") != "C"
     .Call(C_utf8_format, x, trim, chars, justify, width, na.encode,
           quote, na.print, utf8)
@@ -72,24 +68,25 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         stop("argument is not a character object")
     }
 
-    chars <- as_chars("chars", chars)
-    quote <- as_option("quote", quote)
-    na.print <- as_na_print("na.print", na.print)
+    with_rethrow({
+        chars <- as_chars("chars", chars)
+        quote <- as_option("quote", quote)
+        na.print <- as_na_print("na.print", na.print)
+        print.gap <- as_print_gap("print_gap", print.gap)
+        right <- as_option("right", right)
+        max <- as_max_print("max", max)
+        display <- as_option("display", display)
+    })
+
     if (is.null(na.print)) {
         na.print <- ifelse(quote, "NA", "<NA>")
     }
-    print.gap <- as_print_gap("print_gap", print.gap)
-    right <- as_option("right", right)
-    max <- as_max_print("max", max)
-    if (is.null(max)) {
-        max <- getOption("max.print")
-    }
-    display <- as_option("display", display)
-
     if (is.null(print.gap)) {
         print.gap <- 1L
     }
-
+    if (is.null(max)) {
+        max <- getOption("max.print")
+    }
     width <- getOption("width")
     
     n <- length(x)

@@ -626,7 +626,11 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	PROTECT(sna_encode = coerceVector(sna_encode, LGLSXP)); nprot++;
 	na_encode = (LOGICAL(sna_encode)[0] == TRUE);
 
-	na_print = STRING_ELT(sna_print, 0);
+	if (sna_print == R_NilValue) {
+		PROTECT(na_print = mkChar(quote ? "NA" : "<NA>")); nprot++;
+	} else {
+		na_print = STRING_ELT(sna_print, 0);
+	}
 	text_init_charsxp(&na, na_print);
 	na_width = text_width(&na, INT_MAX, utf8);
 

@@ -52,17 +52,19 @@ test_that("'print.corpus_frame' wraps correctly", {
                     b = 3:4,
                     c = 5:6)
 
-    expect_equal(capture_output(print.corpus_frame(d)),
+    expect_equal(capture_output(print.corpus_frame(d, chars = 1000)),
                  capture_output(print(d, right = FALSE)))
 
     d2 <- data.frame(x = paste(rep("x", w - 2), collapse=""), y = "y", z = "z")
-    expect_equal(capture_output(print.corpus_frame(d2)),
+    expect_equal(capture_output(print.corpus_frame(d2, chars = 1000)),
                  capture_output(print(d2, right = FALSE)))
 
-    expect_equal(capture_output(print.corpus_frame(d2[,c(2,1,3)])),
+    expect_equal(capture_output(print.corpus_frame(d2[,c(2,1,3)],
+                                                   chars = 1000)),
                  capture_output(print(d2[,c(2,1,3)], right = FALSE)))
 
-    expect_equal(capture_output(print.corpus_frame(d2[,c(2,3,1)])),
+    expect_equal(capture_output(print.corpus_frame(d2[,c(2,3,1)],
+                                                   chars = 1000)),
                  capture_output(print(d2[,c(2,3,1)], right = FALSE)))
 
     d3 <- data.frame(x = "X", y = "Y", z = "Z",
@@ -243,7 +245,8 @@ test_that("'print.corpus_frame' works in C locale", {
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     x <- chartype_frame()
-    actual <- strsplit(capture_output(print.corpus_frame(x, right = FALSE)),
+    actual <- strsplit(capture_output(print.corpus_frame(x, right = FALSE,
+                                                         chars = 1000)),
                        "\n")[[1]]
 
     expected <- c(
