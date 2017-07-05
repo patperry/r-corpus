@@ -253,23 +253,19 @@ test_that("'format' can handle UTF-8 'Other' codes", {
 })
 
 
-test_that("'format' can handle negative or zero, or NA chars", {
+test_that("'format' can handle zero, or NULL chars", {
     text <- as_text("foo")
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
     
-    expect_equal(format(text, chars = -1, justify = "left"), "...")
-    expect_equal(format(text, chars = -1, justify = "centre"), "...")
-    expect_equal(format(text, chars = -1, justify = "right"), "...")
-
     expect_equal(format(text, chars = 0, justify = "left"), "...")
     expect_equal(format(text, chars = 0, justify = "centre"), "...")
     expect_equal(format(text, chars = 0, justify = "right"), "...")
 
-    expect_equal(format(text, chars = NA, justify = "left"), "foo")
-    expect_equal(format(text, chars = NA, justify = "centre"), "foo")
-    expect_equal(format(text, chars = NA, justify = "right"), "foo")
+    expect_equal(format(text, chars = NULL, justify = "left"), "foo")
+    expect_equal(format(text, chars = NULL, justify = "centre"), "foo")
+    expect_equal(format(text, chars = NULL, justify = "right"), "foo")
 })
 
 

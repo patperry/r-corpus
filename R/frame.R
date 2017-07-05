@@ -11,9 +11,20 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 
-format.corpus_frame <- function(x, justify = "left", na.encode = TRUE,
-                                quote = FALSE, na.print = NULL, ...)
+format.corpus_frame <- function(x, chars = NULL, justify = "left",
+                                na.encode = TRUE, quote = FALSE,
+                                na.print = NULL, print.gap = NULL, ...)
 {
+    with_rethrow({
+        chars <- as_chars("chars", chars)
+        justify <- as_justify("justify", justify)
+        na.encode <- as_option("na.encode", na.encode)
+        quote <- as_option("quote", quote)
+        na.print <- as_na_print("na.print", na.print)
+        print.gap <- as_print_gap("print.gap", print.gap)
+    })
+    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
     names <- names(x)
@@ -34,18 +45,20 @@ format.corpus_frame <- function(x, justify = "left", na.encode = TRUE,
         if (is.character(elt) && (identical(cl, "character")
                                   || identical(cl, "AsIs"))) {
             w <- if (is.na(names[[i]])) 2 else utf8_width(names[[i]])
-            cols[[i]] <- utf8_format(elt, justify = justify, width = w,
-                                     na.encode = na.encode, quote = quote,
-                                     na.print = na.print, ...)
+            cols[[i]] <- utf8_format(elt, chars = chars, justify = justify,
+                                     width = w, na.encode = na.encode,
+                                     quote = quote, na.print = na.print)
 
             # use same justification for column and name
-            names[[i]] <- utf8_format(names[[i]], justify = justify,
+            names[[i]] <- utf8_format(names[[i]], chars = chars,
+                                      justify = justify,
                                       width = max(0, utf8_width(cols[[i]])),
                                       na.encode = TRUE, na.print = "NA")
         } else {
-            cols[[i]] <- format(elt, justify = justify,
+            cols[[i]] <- format(elt, chars = chars, justify = justify,
                                 na.encode = na.encode, quote = quote,
-                                na.print = na.print, ...)
+                                na.print = na.print,
+                                print.gap = print.gap, ...)
         }
     }
 

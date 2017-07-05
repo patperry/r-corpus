@@ -146,11 +146,7 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
     with_rethrow({
         x <- as_text(x)
         trim <- as_option("trim", trim)
-        if (is.null(chars)) {
-            chars <- 45L
-        } else {
-            chars <- as_integer_scalar("chars", chars)
-        }
+        chars <- as_chars("chars", chars)
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)

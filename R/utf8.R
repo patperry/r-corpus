@@ -36,26 +36,27 @@ utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
         return(NULL)
     }
 
+    if (!is.character(x)) {
+        stop("argument is not a character object")
+    }
+
     with_rethrow({
         trim <- as_option("trim", trim)
-        if (is.null(chars)) {
-            chars <- .Machine$integer.max
-        } else {
-            chars <- as_integer_scalar("chars", chars)
-        }
+        chars <- as_chars("chars", chars)
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
         na.encode <- as_option("na.encode", na.encode)
         quote <- as_option("quote", quote)
         na.print <- as_na_print("na.print", na.print)
-        if (is.null(na.print)) {
-            na.print <- ifelse(quote, "NA", "<NA>")
-        }
-
-        utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-        .Call(C_utf8_format, x, trim, chars, justify, width, na.encode,
-              quote, na.print, utf8)
     })
+
+    if (is.null(na.print)) {
+        na.print <- ifelse(quote, "NA", "<NA>")
+    }
+
+    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+    .Call(C_utf8_format, x, trim, chars, justify, width, na.encode,
+          quote, na.print, utf8)
 }
 
 
@@ -63,11 +64,15 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
                        print.gap = NULL, right = FALSE, max = NULL,
                        display = TRUE, ...)
 {
+    if (is.null(x)) {
+        return(invisible(NULL))
+    }
+
     if (!is.character(x)) {
         stop("argument is not a character object")
     }
 
-    chars <- as_integer_scalar("chars", chars, null = NULL)
+    chars <- as_chars("chars", chars)
     quote <- as_option("quote", quote)
     na.print <- as_na_print("na.print", na.print)
     if (is.null(na.print)) {

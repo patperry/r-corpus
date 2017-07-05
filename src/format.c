@@ -593,8 +593,13 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	utf8 = (LOGICAL(sutf8)[0] == TRUE);
 	ellipsis = utf8 ? 1 : 3;
 
-	PROTECT(schars = coerceVector(schars, INTSXP)); nprot++;
-	chars = INTEGER(schars)[0];
+	if (schars == R_NilValue) {
+		chars = NA_INTEGER;
+	} else {
+		PROTECT(schars = coerceVector(schars, INTSXP)); nprot++;
+		chars = INTEGER(schars)[0];
+	}
+
 	if (chars == NA_INTEGER || chars > INT_MAX - ellipsis - quotes) {
 		chars = INT_MAX - ellipsis - quotes;
 	} else if (chars < 0) {
