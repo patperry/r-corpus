@@ -52,6 +52,91 @@ utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
 }
 
 
+utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
+                       print.gap = NULL, right = FALSE, max = NULL,
+                       display = TRUE, ...)
+{
+    if (!is.character(x)) {
+        stop("argument is not a character object")
+    }
+
+    chars <- as_integer_scalar("chars", chars, null = NULL)
+    quote <- as_option("quote", quote)
+    na.print <- as_na_print("na.print", na.print)
+    print.gap <- as_print_gap("print_gap", print.gap)
+    right <- as_option("right", right)
+    max <- as_max_print("max", max)
+    if (is.null(max)) {
+        max <- getOption("max.print")
+    }
+    display <- as_option("display", display)
+
+    if (is.null(na.print)) {
+        na.print <- ifelse(quote, "NA", "<NA>")
+    }
+    na.print <- utf8_encode(na.print, display)
+
+    if (is.null(print.gap)) {
+        print.gap <- 1L
+    }
+
+    width <- getOption("width")
+    
+    n <- length(x)
+    dim <- dim(x)
+
+    fmt <- utf8_format(x, chars = chars, na.encode = FALSE,
+                       justify = "none", trim = TRUE)
+    names <- names(fmt)
+    dimnames <- dimnames(fmt)
+
+    if (is.null(dim) || length(dim) == 1) {
+        stop("not implemented")
+    } else {
+        if (is.null(dimnames)) {
+            dimnames <- vector("list", length(dim))
+        }
+
+        if (is.null(dimnames[[1]]) && dim[[1]] > 0) {
+            dimnames[[1]] <-
+                utf8_format(paste0("[", seq_len(dim[[1]]), ",]"),
+                            justify = "right")
+        }
+        if (is.null(dimnames[[2]]) && dim[[2]] > 0) {
+            dimnames[[2]] <- paste0("[,", seq_len(dim[[2]]), "]")
+        }
+        if (length(dim) > 2) {
+            for (i in 2:length(dim)) {
+                if (is.null(dimnames[[i]] && dim[[i]] > 0)) {
+                    dimnames[[i]] <- as.character(seq_len(dim[[i]]))
+                }
+            }
+        }
+    }
+
+    fmt <- utf8_encode(fmt, display)
+    if (is.null(dim)) {
+        names <- utf8_encode(names, display)
+        names(fmt) <- names
+    } else {
+        dimnames <- lapply(dimnames, utf8_encode, display = display)
+        dimnames(fmt) <- dimnames
+    }
+
+    if (is.null(dim) || length(dim) == 1) {
+        # print vector
+        stop("not implemented")
+    } else if (length(dim) == 2) {
+        .Call(C_print_table, fmt, quote, na.print, print.gap, right, width)
+    } else {
+        # print array
+        stop("not implemented")
+    }
+
+    invisible(x)
+}
+
+
 # test whether the elements can be converted to valid UTF-8
 utf8_valid <- function(x)
 {

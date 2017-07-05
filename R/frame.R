@@ -33,13 +33,13 @@ format.corpus_frame <- function(x, ..., justify = "none")
                                   || identical(cl, "AsIs"))) {
             cols[[i]] <- utf8_format(elt, ..., justify = justify)
 
-            # use same alignment for name (left-align by default)
-            names[[i]] <- utf8_format(names[[i]],
-                                      width = max(0, utf8_width(cols[[i]])),
-                                      justify = justify)
+            # use same justification for column and name
+            names[[i]] <- utf8_format(names[[i]], justify = justify,
+                                      width = max(0, utf8_width(cols[[i]])))
         } else {
             cols[[i]] <- format(elt, ..., justify = justify)
         }
+
     }
 
     lens <- vapply(cols, NROW, 1)
@@ -55,11 +55,7 @@ format.corpus_frame <- function(x, ..., justify = "none")
 
     # Should we truncate long names? R cuts them off at 256 characters.
     names(cols) <- names
-    if (.row_names_info(x) > 0) {
-        row.names <- row.names(x)
-    } else {
-        row.names <- c(NA, -nr)
-    }
+    row.names <- row.names(x)
 
     structure(cols, class = c("corpus_frame", "data.frame"),
               row.names = row.names)
@@ -123,24 +119,9 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         rownames(m) <- row.names
     }
 
-    dims <- dimnames(m)
-    udims <- lapply(dims, function(x) if (is.null(x)) NULL
-                                      else utf8_encode(x, display))
-    um <- utf8_encode(m, display)
-    dimnames(um) <- udims
-
-    if (is.null(na.print)) {
-        na.print <- ifelse(quote, "NA", "<NA>")
-    }
-    na.print <- utf8_encode(na.print, display)
-
-    if (is.null(print.gap)) {
-        print.gap <- 1L
-    }
-
-    width <- getOption("width")
-
-    .Call(C_print_table, um, quote, na.print, print.gap, right, width)
+    utf8_print(m, chars = .Machine$integer.max, quote = quote,
+               na.print = na.print, print.gap = print.gap, right = right,
+               max = .Machine$integer.max, display = display)
 
     if (n == 0) {
         cat("(0 rows)\n")

@@ -515,7 +515,7 @@ SEXP utf8_coerce(SEXP sx)
 		return R_NilValue;
 	}
 	if (!isString(sx)) {
-		error("argument is not a character vector");
+		error("argument is not a character object");
 	}
 
 	ans = sx;
@@ -606,7 +606,7 @@ SEXP utf8_valid(SEXP sx)
 		return R_NilValue;
 	}
 	if (!isString(sx)) {
-		error("argument is not a character vector");
+		error("argument is not a character object");
 	}
 
 	n = XLENGTH(sx);
@@ -653,7 +653,7 @@ SEXP utf8_width(SEXP sx, SEXP sutf8)
 		return R_NilValue;
 	}
 	if (!isString(sx)) {
-		error("argument is not a character vector");
+		error("argument is not a character object");
 	}
 	n = XLENGTH(sx);
 	utf8 = LOGICAL(sutf8)[0] == TRUE;
@@ -690,7 +690,7 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 	}
 
 	if (!isString(sx)) {
-		error("argument is not a character vector");
+		error("argument is not a character object");
 	}
 
 	n = XLENGTH(sx);
