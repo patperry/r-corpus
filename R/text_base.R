@@ -170,7 +170,7 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
             if (n == 0) {
                 namewidth <- 0
             } else {
-                namewidth <- (floor(log10(n)) + 1) + 3 # digits + len(" []")
+                namewidth <- (floor(log10(n)) + 1) + 2 # digits + len("[]")
             }
         } else {
             namewidth <- max(0, utf8_width(names))
