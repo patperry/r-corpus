@@ -113,7 +113,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
                                display = TRUE, ...)
 {
     if (is.null(x)) {
-        return(NULL)
+        return(invisible(NULL))
     }
 
     if (!is.data.frame(x)) {
