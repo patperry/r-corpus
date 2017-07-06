@@ -106,7 +106,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
 }
 
 
-print.corpus_frame <- function(x, chars = NULL, digits = NULL,
+print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
                                quote = FALSE, na.print = NULL,
                                print.gap = NULL, right = FALSE,
                                row.names = TRUE, max = NULL,
@@ -124,6 +124,7 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     nc <- length(x)
 
     with_rethrow({
+        rows <- as_max_print("rows", rows)
         chars <- as_chars("chars", chars)
         digits <- as_digits("digits", digits)
         quote <- as_option("quote", quote)
@@ -141,10 +142,6 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         display <- as_option("display", display)
     })
 
-    if (is.null(max)) {
-        max <- getOption("max.print")
-    }
-
     if (length(x) == 0) {
         cat(sprintf(ngettext(n, "data frame with 0 columns and %d row",
                              "data frame with 0 columns and %d rows"), n),
@@ -157,10 +154,9 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
         return(invisible(x))
     }
 
-    len <- n * nc
-    if (trunc <- (len > max)) {
-        limit <- max(1, max %/% nc)
-        xsub <- x[1:limit, , drop = FALSE]
+    trunc <- (!is.null(rows) && n > rows)
+    if (trunc) {
+        xsub <- x[seq_len(rows), , drop = FALSE]
     } else {
         xsub <- x
     }
@@ -178,8 +174,8 @@ print.corpus_frame <- function(x, chars = NULL, digits = NULL,
     }
 
     utf8_print(m, chars = .Machine$integer.max, quote = FALSE,
-               print.gap = print.gap, right = TRUE,
-               max = .Machine$integer.max, display = display)
+               print.gap = print.gap, right = TRUE, max = max,
+               display = display)
 
     if (n == 0) {
         cat("(0 rows)\n")
