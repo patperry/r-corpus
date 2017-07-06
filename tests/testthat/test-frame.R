@@ -145,7 +145,7 @@ test_that("'print.corpus_frame' handles empty data frames", {
     # no row names
     d2 <- data.frame(a = integer(), b = integer(), "\n" = logical(),
                      check.names = FALSE)
-    expect_equal(capture_output(print.corpus_frame(d2)), " a b \\n\n(0 rows)")
+    expect_equal(capture_output(print.corpus_frame(d2)), "a b \\n\n(0 rows)")
 
     # columns but no column names
     d3 <- structure(list(integer(), integer()),

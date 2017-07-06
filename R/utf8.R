@@ -148,15 +148,17 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         width <- getOption("width")
         namewidth <- max(0, utf8_width(labels))
         elt <- max(0, utf8_width(fmt))
-        ncol <- max(1, (width - namewidth) %/% (elt + print.gap))
-        extra <- n %% ncol
+
 
         if (!is.null(names)) {
+            ncol <- max(1, width %/% (max(namewidth, elt) + print.gap))
+            extra <- n %% ncol
+
             off <- 0
             while (off + ncol <= n) {
                 ix <- (off+1):(off+ncol)
                 mat <- matrix(fmt[ix], ncol = ncol, byrow = TRUE,
-                              dimnames = list("", names[ix]))
+                              dimnames = list(NULL, names[ix]))
                 off <- off + ncol
                 .Call(C_print_table, mat, print.gap, right, width)
             }
@@ -164,16 +166,13 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
             if (extra > 0) {
                 ix <- n - extra + seq_len(extra)
                 last <- rbind(as.vector(fmt[ix]))
-                rownames(last) <- ""
+                rownames(last) <- NULL
                 colnames(last) <-  names[ix]
                 .Call(C_print_table, last, print.gap, right, width)
             }
         } else {
-            if (n %% ncol != 0) {
-                pad <- ncol - n %% ncol
-            } else {
-                pad <- 0
-            }
+            ncol <- max(1, (width - namewidth) %/% (elt + print.gap))
+            extra <- n %% ncol
 
             mat <- matrix(fmt[seq_len(n - extra)], ncol = ncol, byrow = TRUE)
             rownames(mat) <- labels[seq(from = 1, by = ncol,
@@ -187,7 +186,11 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
             }
         }
     } else if (length(dim) == 2) {
-        .Call(C_print_table, fmt, print.gap, right, width)
+        if (dim[1] == 0 && dim[2] == 0) {
+            cat("<0 x 0 matrix>\n")
+        } else {
+            .Call(C_print_table, fmt, print.gap, right, width)
+        }
     } else {
         # print array
         stop("not implemented")

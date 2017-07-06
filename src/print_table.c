@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -103,7 +102,9 @@ static void print_range(SEXP sx, int begin, int end, int print_gap,
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
-			PRINT_SPACES(print_gap);
+			if (j > begin || row_names != R_NilValue) {
+				PRINT_SPACES(print_gap);
+			}
 			PRINT_ENTRY(str, n, colwidths[j] - w);
 		}
 		PRINT_CHAR('\n');
@@ -111,12 +112,7 @@ static void print_range(SEXP sx, int begin, int end, int print_gap,
 	}
 
 	for (i = 0; i < nrow; i++) {
-		if (row_names == R_NilValue) {
-			NEEDS(namewidth + 1); // +1, sprints adds NUL
-			w = sprintf(buf + nbuf, "%d", i + 1);
-			nbuf += w;
-			PRINT_SPACES(namewidth - w);
-		} else {
+		if (row_names != R_NilValue) {
 			name = STRING_ELT(row_names, i);
 			if (name == NA_STRING) {
 				str = "NA";
@@ -137,7 +133,9 @@ static void print_range(SEXP sx, int begin, int end, int print_gap,
 			ix = (R_xlen_t)i + (R_xlen_t)j * (R_xlen_t)nrow;
 			elt = STRING_ELT(sx, ix);
 
-			PRINT_SPACES(print_gap);
+			if (j > begin || row_names != R_NilValue) {
+				PRINT_SPACES(print_gap);
+			}
 
 			str = translateChar(elt);
 			w = charsxp_width(elt, utf8);
@@ -173,11 +171,7 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP swidth)
 
 	namewidth = 0;
 	if (row_names == R_NilValue) {
-		if (nrow == 0) {
-			namewidth = 0;
-		} else {
-			namewidth = (int)floor(log10((double)nrow)) + 1;
-		}
+		namewidth = 0;
 	} else {
 		for (i = 0; i < nrow; i++) {
 			elt = STRING_ELT(row_names, i);
@@ -228,10 +222,13 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP swidth)
 			// break if including the column puts us over the
 			// width; we do the calculations like this to
 			// avoid integer overflow
-			if (linewidth >= width - print_gap) {
-				break;
+
+			if (end > begin || row_names != R_NilValue) {
+				if (linewidth >= width - print_gap) {
+					break;
+				}
+				linewidth += print_gap;
 			}
-			linewidth += print_gap;
 
 			if (linewidth >= width - colwidths[end]) {
 				break;
@@ -251,6 +248,11 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP swidth)
 			    colwidths);
 
 		begin = end;
+	}
+
+	if (ncol == 0) {
+		print_range(sx, 0, 0, print_gap, right, namewidth,
+			    colwidths);
 	}
 
 	return R_NilValue;
