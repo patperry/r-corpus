@@ -115,3 +115,30 @@ test_that("'utf8_print' can print empty matrices", {
     expect_equal(capture_output(utf8_print(x3)),
                  capture_output(print(x3)))
 })
+
+
+test_that("'utf8_print' can print arrays", {
+    x <- array(as.character(1:24), c(2,3,4,5))
+
+    expect_equal(capture_output(utf8_print(x)),
+                 capture_output(print(x)))
+
+    x2 <- x
+    dimnames(x2) <- list(letters[1:2], letters[3:5], letters[6:9],
+                         letters[10:14])
+
+    expect_equal(capture_output(utf8_print(x2)),
+                 capture_output(print(x2)))
+})
+
+
+test_that("'utf8_print' can print empty arrays", {
+    expect_equal(capture_output(utf8_print(array(character(), c(2,3,0)))),
+                 "<2 x 3 x 0 array>")
+
+    expect_equal(capture_output(utf8_print(array(character(), c(2,0,3)))),
+                 "<2 x 0 x 3 array>")
+
+    expect_equal(capture_output(utf8_print(array(character(), c(0,2,3)))),
+                 "<0 x 2 x 3 array>")
+})

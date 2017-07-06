@@ -134,6 +134,7 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
     nprint <- 0L
 
     if (vec) {
+        # vector
         if (n == 0) {
             cat("character(0)\n")
             return(invisible(x))
@@ -196,14 +197,51 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         }
 
     } else if (length(dim) == 2) {
-        if (dim[1] == 0 && dim[2] == 0) {
+        # matrix
+        if (all(dim == 0)) {
             cat("<0 x 0 matrix>\n")
         } else {
             nprint <- .Call(C_print_table, fmt, print.gap, right, max, width)
         }
     } else {
-        # print array
-        stop("not implemented")
+        nrow <- dim[1]
+        ncol <- dim[2]
+
+        # array
+        if (any(dim == 0)) {
+            cat(sprintf("<%s array>\n", paste(dim, collapse = " x ")))
+        } else {
+            off <- 0
+
+            base <- c(NA, NA, rep(1, length(dim) - 2))
+            label <- vector("character", length(dim))
+            for (r in 3:length(dim)) {
+                label[[r]] <- dimnames[[r]][[1]]
+            }
+
+            while (off + nrow * ncol <= n && nprint < max) {
+                cat(paste(label, collapse = ", "), "\n\n", sep = "")
+
+                ix <- off + seq_len(nrow * ncol)
+                mat <- matrix(fmt[ix], nrow, ncol, dimnames = dimnames[1:2])
+                np <- .Call(C_print_table, mat, print.gap, right, max - nprint,
+                            width)
+                nprint <- nprint + np
+                off <- off + (nrow * ncol)
+
+                r <- 3L
+                while (r < length(dim) && base[r] == dim[r]) {
+                    base[r] <- 1L
+                    label[r] <- dimnames[[r]][[1]]
+                    r <- r + 1L
+                }
+                if (base[r] < dim[r]) {
+                    base[r] <- base[r] + 1L
+                    label[r] <- dimnames[[r]][[base[r]]]
+                }
+                cat("\n")
+            }
+        }
     }
 
     if (nprint < length(x)) {
