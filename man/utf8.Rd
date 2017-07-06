@@ -155,7 +155,7 @@
 
     # in C locale, output ASCII (same results on all platforms)
     oldlocale <- Sys.getlocale("LC_CTYPE")
-    Sys.setlocale("LC_CTYPE", "C")
+    Sys.setlocale("LC_CTYPE", "C") # switch to C locale
     utf8_print(intToUtf8(0x1F600 + 0:79))
-    Sys.setlocale("LC_CTYPE", oldlocale)
+    Sys.setlocale("LC_CTYPE", oldlocale) # switch back to old locale
 }
