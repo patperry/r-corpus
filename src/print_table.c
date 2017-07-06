@@ -40,13 +40,14 @@ static const char *translate(SEXP charsxp)
 	wlen = MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, NULL, 0);
 	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
 	MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, wstr, wlen);
+	return wstr;
 
 	// convert from UTF-16 to ANSI code page; (CP_OEM for OEM code page)
-	len = WideCharToMultiByte(CP_ACP, 0, wstr, wlen, NULL, 0, NULL, NULL);
-	str = R_alloc(len, 1);
-	WideCharToMultiByte(CP_ACP, 0, wstr, wlen, str, len, NULL, NULL);
+	//len = WideCharToMultiByte(CP_ACP, 0, wstr, wlen, NULL, 0, NULL, NULL);
+	//str = R_alloc(len, 1);
+	//WideCharToMultiByte(CP_ACP, 0, wstr, wlen, str, len, NULL, NULL);
 
-	return str;
+	//return str;
 }
 
 #else /* not Windows */
