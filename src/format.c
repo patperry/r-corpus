@@ -44,8 +44,10 @@ struct text {
 		struct {
 			const uint8_t *ptr;
 			size_t size;
+			cetype_t ce;
 		} raw;
 	} data;
+	cetype_t ce;
 	int na;
 };
 
@@ -57,6 +59,7 @@ struct text_iter {
 			const uint8_t *begin;
 			const uint8_t *end;
 			const uint8_t *ptr;
+			cetype_t ce;
 		} raw;
 	} data;
 	int current;
@@ -66,6 +69,7 @@ struct text_iter {
 static void text_init_corpus(struct text *text, struct corpus_text *corpus)
 {
 	text->type = TEXT_CORPUS;
+	text->ce = CE_UTF8;
 
 	if (corpus->ptr == NULL) {
 		text->data.corpus.ptr = (uint8_t *)"NA";
@@ -88,6 +92,7 @@ static void text_init_charsxp(struct text *text, SEXP charsxp)
 	if (charsxp == NA_STRING) {
 		text->data.raw.ptr = (const uint8_t *)"NA";
 		text->data.raw.size = 2;
+		text->ce = CE_UTF8;
 		text->na = 1;
 	} else {
 		ce = getCharCE(charsxp);
@@ -100,9 +105,11 @@ static void text_init_charsxp(struct text *text, SEXP charsxp)
 				ptr = ptr2;
 				size = strlen((const char *)ptr);
 			}
+			ce = CE_UTF8;
 		}
 		text->data.raw.ptr = ptr;
 		text->data.raw.size = size;
+		text->ce = (ce == CE_BYTES) ? CE_BYTES : CE_UTF8;
 		text->na = 0;
 	}
 }
@@ -126,6 +133,7 @@ static void text_iter_make(struct text_iter *iter, const struct text *text)
 	iter->data.raw.begin = ptr;
 	iter->data.raw.ptr = ptr;
 	iter->data.raw.end = ptr + size;
+	iter->data.raw.ce = text->ce;
 }
 
 
@@ -147,6 +155,7 @@ static int text_iter_advance(struct text_iter *iter)
 {
 	const uint8_t *start, *ptr, *end;
 	uint32_t code;
+	cetype_t ce;
 	int err, ret;
 
 	if (iter->type == TEXT_CORPUS) {
@@ -157,6 +166,7 @@ static int text_iter_advance(struct text_iter *iter)
 
 	ptr = iter->data.raw.ptr;
 	end = iter->data.raw.end;
+	ce = iter->data.raw.ce;
 
 	if (ptr == end) {
 		ret = 0;
@@ -164,7 +174,10 @@ static int text_iter_advance(struct text_iter *iter)
 	} else {
 		ret = 1;
 		start = ptr;
-		if ((err = corpus_scan_utf8(&start, end))) {
+		if (ce == CE_BYTES) {
+			code = *ptr++;
+			iter->current = (code < 0x80) ? code : -(int)code;
+		} else if ((err = corpus_scan_utf8(&start, end))) {
 			iter->current = -(int)*ptr++;
 		} else {
 			corpus_decode_utf8(&ptr, &code);
@@ -217,6 +230,13 @@ static int text_iter_retreat(struct text_iter *iter)
 	if (ptr == begin) {
 		iter->current = -1;
 		return 0;
+	}
+
+	// handle bytes encoding
+	if (iter->data.raw.ce == CE_BYTES) {
+		code = ptr[-1];
+		iter->current = (code < 0x80) ? (int)code : -(int)code;
+		return 1;
 	}
 
 	// search backwards for the first valid sequence
@@ -449,7 +469,7 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 	*nbufptr = nbuf;
 
 	len = (int)(dst - buf);
-	return mkCharLenCE((char *)buf, len, CE_UTF8);
+	return mkCharLenCE((char *)buf, len, text->ce);
 }
 
 #undef ENSURE
@@ -536,7 +556,7 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 
 	off = (int)(dst - buf);
 	len = nbuf - off;
-	return mkCharLenCE((char *)dst, len, CE_UTF8);
+	return mkCharLenCE((char *)dst, len, text->ce);
 }
 
 

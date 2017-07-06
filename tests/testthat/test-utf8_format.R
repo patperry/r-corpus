@@ -347,3 +347,19 @@ test_that("'utf8_format' can quote", {
     expect_equal(utf8_format(c("a", "abc"), quote = TRUE, justify = "right"),
                  c('  "a"', '"abc"'))
 })
+
+
+test_that("'utf8_format' works on bytes", {
+    x <- "fa\xC3\xA7ile"
+    Encoding(x) <- "bytes"
+
+    l <- utf8_format(x, justify = "left")
+    expect_equal(Encoding(l), "bytes")
+
+    r <- utf8_format(x, justify = "right")
+    expect_equal(Encoding(r), "bytes")
+
+    Encoding(x) <- Encoding(l) <- Encoding(r) <- "UTF-8"
+    expect_equal(l, x)
+    expect_equal(r, x)
+})

@@ -123,7 +123,7 @@
 }
 \examples{
     # the second element is encoded in latin-1, but declared as UTF-8
-    x <- c("fa\u00E7ile", "fa\xE7ile", "fa\xC3\xA7")
+    x <- c("fa\u00E7ile", "fa\xE7ile", "fa\xC3\xA7ile")
     Encoding(x) <- c("UTF-8", "UTF-8", "bytes")
 
     # attempt to convert to UTF-8 (fails)
@@ -155,7 +155,7 @@
 
     # in C locale, output ASCII (same results on all platforms)
     oldlocale <- Sys.getlocale("LC_CTYPE")
-    Sys.setlocale("LC_CTYPE", "C") # switch to C locale
+    invisible(Sys.setlocale("LC_CTYPE", "C")) # switch to C locale
     utf8_print(intToUtf8(0x1F600 + 0:79))
-    Sys.setlocale("LC_CTYPE", oldlocale) # switch back to old locale
+    invisible(Sys.setlocale("LC_CTYPE", oldlocale)) # switch back to old locale
 }
