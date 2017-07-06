@@ -14,12 +14,49 @@
  * limitations under the License.
  */
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "corpus/src/array.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
+
+
+#if (defined(_WIN32) || defined(_WIN64))
+
+#include <windows.h>
+
+static char *translate(SEXP charsxp)
+{
+	const char *raw = CHAR(charsxp);
+	char *wstr, *str;
+	int rawlen = (int)XLENGTH(charsxp);
+	int wlen, len;
+
+	if (rawlen == 0) {
+		return raw; // MultiByteToWideChar fails otherwise
+	}
+
+	// convert from UTF-8 to UTF-16
+	wlen = MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, NULL, 0);
+	wstr = R_alloc(wlen, 1);
+	MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, wstr, wlen);
+
+	// convert from UTF-16 to ANSI code page; (CP_OEM for OEM code page)
+	len = WideCharToMultiByte(CP_ACP, 0, wstr, wlen, NULL, 0, NULL, NULL);
+	str = R_alloc(len, 1);
+	WideCharToMultiByte(CP_ACP, 0, wstr, wlen, str, len, NULL, NULL);
+
+	return str;
+}
+
+#else /* not Windows */
+
+#define translate translateChar
+
+#endif
 
 
 #define NEEDS(n) \
@@ -100,7 +137,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				w = 2;
 				n = 2;
 			} else {
-				str = translateChar(name);
+				str = translate(name);
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
@@ -126,7 +163,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				w = 2;
 				n = 2;
 			} else {
-				str = translateChar(name);
+				str = translate(name);
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
@@ -151,7 +188,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				PRINT_SPACES(print_gap);
 			}
 
-			str = translateChar(elt);
+			str = translate(elt);
 			w = charsxp_width(elt, utf8);
 			n = strlen(str);
 			PRINT_ENTRY(str, n, width - w);
