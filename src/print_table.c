@@ -33,12 +33,8 @@ static const char *translate(SEXP charsxp)
 	const char *raw = CHAR(charsxp);
 	LPWSTR wstr;
 	char *str;
-	int rawlen = (int)XLENGTH(charsxp);
+	int rawlen = (int)XLENGTH(charsxp) + 1; // include NUL
 	int wlen, len;
-
-	if (rawlen == 0) {
-		return raw; // MultiByteToWideChar fails otherwise
-	}
 
 	// convert from UTF-8 to UTF-16
 	wlen = MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, NULL, 0);
