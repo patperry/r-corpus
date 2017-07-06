@@ -33,3 +33,85 @@ test_that("'utf8_print' works with named character vectors", {
     expected <- strsplit(capture_output(print(xr[1:4])), "\n")[[1]]
     expect_equal(paste(actual, ""), expected)
 })
+
+
+test_that("'utf8_print' can use the 'max' argument for unnamed vectors", {
+    x <- as.character(1:100)
+
+    expect_equal(capture_output(utf8_print(x, max = 0)),
+                 " [ reached getOption(\"max.print\") -- omitted 100 entries ]")
+
+    expect_equal(capture_output(utf8_print(x, max = 100)),
+                 capture_output(utf8_print(x)))
+
+    lines <- strsplit(capture_output(utf8_print(x, max = 20)), "\n")[[1]]
+    expect_equal(length(lines), 3)
+    expect_equal(lines[[3]],
+                 " [ reached getOption(\"max.print\") -- omitted 80 entries ]")
+})
+
+
+test_that("'utf8_print' can use the 'max' argument for named vectors", {
+    x <- as.character(1:260)
+    names(x) <- rep(letters, 10)
+
+    expect_equal(capture_output(utf8_print(x, max = 0)),
+                 " [ reached getOption(\"max.print\") -- omitted 260 entries ]")
+
+    expect_equal(capture_output(utf8_print(x, max = 260)),
+                 capture_output(utf8_print(x)))
+
+    lines <- strsplit(capture_output(utf8_print(x, max = 20)), "\n")[[1]]
+    expect_equal(length(lines), 5)
+    expect_equal(lines[[5]],
+                 " [ reached getOption(\"max.print\") -- omitted 240 entries ]")
+})
+
+
+test_that("'utf8_print' can print empty vectors", {
+    expect_equal(capture_output(utf8_print(character())), "character(0)")
+    expect_equal(capture_output(utf8_print(array(character(), 0))), "character(0)")
+})
+
+
+test_that("'utf8_print' can print matrices", {
+    x1 <- matrix(letters, 13, 2)
+
+    x2 <- matrix(letters, 13, 2)
+    rownames(x2) <- LETTERS[1:13]
+
+    x3 <- matrix(letters, 13, 2)
+    colnames(x3) <- c("x", "y")
+
+    x4 <- matrix(letters, 13, 2)
+    rownames(x4) <- LETTERS[1:13]
+    colnames(x4) <- c("x", "y")
+
+    expect_equal(capture_output(utf8_print(x1)),
+                 capture_output(print(x1)))
+
+    expect_equal(capture_output(utf8_print(x2)),
+                 capture_output(print(x2)))
+
+    expect_equal(capture_output(utf8_print(x3)),
+                 capture_output(print(x3)))
+
+    expect_equal(capture_output(utf8_print(x4)),
+                 capture_output(print(x4)))
+})
+
+
+test_that("'utf8_print' can print empty matrices", {
+    x1 <- matrix(character(), 10, 0)
+    x2 <- matrix(character(), 0, 10)
+    x3 <- matrix(character(), 0, 0)
+
+    expect_equal(paste0("     \n", capture_output(utf8_print(x1))),
+                 capture_output(print(x1)))
+
+    expect_equal(paste0("     ", capture_output(utf8_print(x2))),
+                 capture_output(print(x2)))
+
+    expect_equal(capture_output(utf8_print(x3)),
+                 capture_output(print(x3)))
+})

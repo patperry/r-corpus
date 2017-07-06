@@ -106,18 +106,17 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
             dimnames <- vector("list", length(dim))
         }
 
-        if (is.null(dimnames[[1]]) && dim[[1]] > 0) {
-            dimnames[[1]] <-
-                utf8_format(paste0("[", seq_len(dim[[1]]), ",]"),
-                            justify = "right")
-        }
-        if (is.null(dimnames[[2]]) && dim[[2]] > 0) {
-            dimnames[[2]] <- paste0("[,", seq_len(dim[[2]]), "]")
-        }
-        if (length(dim) > 2) {
-            for (i in 2:length(dim)) {
-                if (is.null(dimnames[[i]] && dim[[i]] > 0)) {
-                    dimnames[[i]] <- as.character(seq_len(dim[[i]]))
+        for (i in seq_along(dim)) {
+            d <- dim[[i]]
+            ix <- seq_len(d)
+            if (is.null(dimnames[[i]]) && d > 0) {
+                if (i == 1) {
+                    dimnames[[i]] <- format(paste0("[", ix, ",]"),
+                                            justify = "right")
+                } else if (i == 2) {
+                    dimnames[[i]] <- paste0("[,", ix, "]")
+                } else {
+                    dimnames[[i]] <- as.character(ix)
                 }
             }
         }
@@ -131,6 +130,8 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         dimnames <- lapply(dimnames, utf8_encode, display = display)
         dimnames(fmt) <- dimnames
     }
+
+    nprint <- 0L
 
     if (vec) {
         if (n == 0) {
@@ -149,26 +150,31 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         namewidth <- max(0, utf8_width(labels))
         elt <- max(0, utf8_width(fmt))
 
-
         if (!is.null(names)) {
             ncol <- max(1, width %/% (max(namewidth, elt) + print.gap))
             extra <- n %% ncol
 
             off <- 0
-            while (off + ncol <= n) {
+            while (off + ncol <= n && nprint < max) {
                 ix <- (off+1):(off+ncol)
                 mat <- matrix(fmt[ix], ncol = ncol, byrow = TRUE,
                               dimnames = list(NULL, names[ix]))
+
+                np <- .Call(C_print_table, mat, print.gap, right,
+                            max - nprint, width)
+                nprint <- nprint + np
                 off <- off + ncol
-                .Call(C_print_table, mat, print.gap, right, width)
             }
 
-            if (extra > 0) {
+            if (extra > 0 && nprint < max) {
                 ix <- n - extra + seq_len(extra)
                 last <- rbind(as.vector(fmt[ix]))
                 rownames(last) <- NULL
                 colnames(last) <-  names[ix]
-                .Call(C_print_table, last, print.gap, right, width)
+
+                np <- .Call(C_print_table, last, print.gap, right,
+                            max - nprint, width)
+                nprint <- nprint + np
             }
         } else {
             ncol <- max(1, (width - namewidth) %/% (elt + print.gap))
@@ -177,23 +183,32 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
             mat <- matrix(fmt[seq_len(n - extra)], ncol = ncol, byrow = TRUE)
             rownames(mat) <- labels[seq(from = 1, by = ncol,
                                         length.out = nrow(mat))]
-            .Call(C_print_table, mat, print.gap, right, width)
+            np <- .Call(C_print_table, mat, print.gap, right, max, width)
+            nprint <- nprint + np
 
-            if (extra > 0) {
+            if (extra > 0 && nprint < max) {
                 last <- rbind(as.vector(fmt[n - extra  + seq_len(extra)]))
                 rownames(last) <- labels[n - extra + 1]
-                .Call(C_print_table, last, print.gap, right, width)
+                np <- .Call(C_print_table, last, print.gap, right,
+                            max - nprint, width)
+                nprint <- nprint + np
             }
         }
+
     } else if (length(dim) == 2) {
         if (dim[1] == 0 && dim[2] == 0) {
             cat("<0 x 0 matrix>\n")
         } else {
-            .Call(C_print_table, fmt, print.gap, right, width)
+            nprint <- .Call(C_print_table, fmt, print.gap, right, max, width)
         }
     } else {
         # print array
         stop("not implemented")
+    }
+
+    if (nprint < length(x)) {
+        cat(sprintf(" [ reached getOption(\"max.print\") -- omitted %d entries ]\n",
+                    length(x) - nprint))
     }
 
     invisible(x)
