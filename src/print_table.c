@@ -14,14 +14,57 @@
  * limitations under the License.
  */
 
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <R_ext/Riconv.h>
 
 #include "corpus/src/array.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
+
+static const char *translate(SEXP charsxp)
+{
+	const char *ptr = CHAR(charsxp);
+	size_t n = (size_t)XLENGTH(charsxp);
+	char *buf, *out;
+	size_t nbuf, status;
+	void *cd;
+
+	if (n == 0) {
+		return ptr;
+	}
+
+	cd = Riconv_open("", "UTF-8");
+	nbuf = n;
+	buf = R_alloc(nbuf + 1, 1);
+
+again:
+	out = buf;
+	status = Riconv(cd, &ptr, &n, &out, &nbuf);
+	if (status == (size_t)-1) {
+		switch (errno) {
+		case EILSEQ: // invalid multibyte sequence (can't happen)
+		case EINVAL: // incomplete multibyte sequence (can't happen)
+			error("invalid UTF-8 byte sequence");
+			break;
+
+		case E2BIG: // no room for the next converted character
+			nbuf *= 2;
+			buf = R_alloc(nbuf + 1, 1);
+			ptr = CHAR(charsxp);
+			goto again;
+		default:
+			error("unrecognized iconv errno value");
+		}
+	}
+	*out = '\0';
+
+	Riconv_close(cd);
+	return buf;
+}
 
 
 #define NEEDS(n) \
@@ -102,7 +145,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				w = 2;
 				n = 2;
 			} else {
-				str = translateChar(name);
+				str = translate(name);
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
@@ -128,7 +171,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				w = 2;
 				n = 2;
 			} else {
-				str = translateChar(name);
+				str = translate(name);
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
@@ -153,7 +196,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				PRINT_SPACES(print_gap);
 			}
 
-			str = translateChar(elt);
+			str = translate(elt);
 			w = charsxp_width(elt, utf8);
 			n = strlen(str);
 			PRINT_ENTRY(str, n, width - w);
