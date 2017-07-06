@@ -28,10 +28,11 @@
 
 #include <windows.h>
 
-static char *translate(SEXP charsxp)
+static const char *translate(SEXP charsxp)
 {
 	const char *raw = CHAR(charsxp);
-	char *wstr, *str;
+	LPWSTR *wstr;
+	char *str;
 	int rawlen = (int)XLENGTH(charsxp);
 	int wlen, len;
 
@@ -41,7 +42,7 @@ static char *translate(SEXP charsxp)
 
 	// convert from UTF-8 to UTF-16
 	wlen = MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, NULL, 0);
-	wstr = R_alloc(wlen, 1);
+	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
 	MultiByteToWideChar(CP_UTF8, 0, raw, rawlen, wstr, wlen);
 
 	// convert from UTF-16 to ANSI code page; (CP_OEM for OEM code page)
