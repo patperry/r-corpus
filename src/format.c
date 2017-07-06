@@ -176,7 +176,7 @@ static int text_iter_advance(struct text_iter *iter)
 		start = ptr;
 		if (ce == CE_BYTES) {
 			code = *ptr++;
-			iter->current = (code < 0x80) ? code : -(int)code;
+			iter->current = (code < 0x80) ? (int)code : -(int)code;
 		} else if ((err = corpus_scan_utf8(&start, end))) {
 			iter->current = -(int)*ptr++;
 		} else {
@@ -192,7 +192,7 @@ static int text_iter_advance(struct text_iter *iter)
 
 static int text_iter_retreat(struct text_iter *iter)
 {
-	const uint8_t *start, *begin, *ptr, *end;
+	const uint8_t *start, *begin, *ptr;
 	uint32_t code;
 	int nbyte, err, ret;
 
@@ -204,7 +204,6 @@ static int text_iter_retreat(struct text_iter *iter)
 
 	begin = iter->data.raw.begin;
 	ptr = iter->data.raw.ptr;
-	end = iter->data.raw.end;
 
 	// at SOT
 	if (ptr == begin) {
@@ -598,6 +597,7 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 			error("argument is not a character vector");
 		}
 		type = TEXT_RAW;
+		text = NULL;
 		PROTECT(ans = duplicate(sx)); nprot++;
 		n = XLENGTH(ans);
 	}
