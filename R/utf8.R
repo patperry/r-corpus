@@ -30,7 +30,7 @@ utf8_encode <- function(x, display = FALSE)
 
 utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
                         width = NULL, na.encode = TRUE, quote = FALSE,
-                        na.print = NULL, ...)
+                        na.print = NULL, print.gap = NULL, ...)
 {
     if (is.null(x)) {
         return(NULL)
@@ -48,9 +48,40 @@ utf8_format <- function(x, trim = FALSE, chars = NULL, justify = "left",
         na.encode <- as_option("na.encode", na.encode)
         quote <- as_option("quote", quote)
         na.print <- as_na_print("na.print", na.print)
+        print.gap <- as_print_gap("print_gap", print.gap)
     })
 
     utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+
+    if (is.null(chars) && length(x) > 0) {
+        linewidth <- getOption("width")
+        ellipsis <- if (utf8) 1 else 3
+        quotes <- if (quote) 2 else 0
+        gap <- if (is.null(print.gap)) 1 else NULL
+
+        dim <- dim(x)
+        dimnames <- dimnames(x)
+
+        if (is.null(dim) || length(dim) == 1) {
+            names <- if (is.null(dimnames)) names(x) else dimnames[[1]]
+            if (is.null(names)) {
+                namewidth <- floor(log10(length(x)) + 1) + 2
+            } else {
+                namewidth <- 0
+            }
+        } else {
+            names <- if (is.null(dimnames)) NULL else dimnames[[1]]
+            if (is.null(names)) {
+                namewidth <- floor(log10(length(x)) + 1) + 3 # add comma
+            } else {
+                namewidth <- max(0, utf8_width(names))
+            }
+        }
+
+        chars <- (linewidth - ellipsis - quotes - gap - namewidth)
+        chars <- max(chars, 12)
+    }
+
     .Call(C_utf8_format, x, trim, chars, justify, width, na.encode,
           quote, na.print, utf8)
 }

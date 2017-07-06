@@ -159,10 +159,10 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
     utf8 <- Sys.getlocale("LC_CTYPE") != "C"
 
     if (is.null(chars)) {
+        linewidth <- getOption("width")
         ellipsis <- if (utf8) 1 else 3
         quotes <- if (quote) 2 else 0
         gap <- if (is.null(print.gap)) 1 else print.gap
-        screenwidth <- getOption("width")
 
         names <- names(x)
         if (is.null(names)) {
@@ -175,7 +175,7 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         } else {
             namewidth <- max(0, utf8_width(names))
         }
-        chars <- (screenwidth - ellipsis - quotes - gap - namewidth)
+        chars <- (linewidth - ellipsis - quotes - gap - namewidth)
         chars <- max(chars, 12)
     }
 
@@ -231,7 +231,7 @@ print.corpus_text <- function(x, chars = NULL, quote = FALSE,
 
     if (nextra > 0) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
-        cat(sprintf("%s\n(%d entries total)\n", ellipsis, n))
+        cat(sprintf("%s\n(%d entries total)\n", ellipsis, length(x)))
     }
 
     invisible(x)

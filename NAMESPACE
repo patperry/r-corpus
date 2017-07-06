@@ -32,6 +32,7 @@ export(token_filter)
 export(text_types)
 export(utf8_encode)
 export(utf8_format)
+export(utf8_print)
 export(utf8_valid)
 export(utf8_width)
 

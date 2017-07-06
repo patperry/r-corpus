@@ -1,13 +1,14 @@
 \name{utf8}
-\title{UTF-8 Text}
+\title{UTF-8 Text Handling}
 \alias{utf8}
 \alias{as_utf8}
 \alias{utf8_encode}
 \alias{utf8_format}
+\alias{utf8_print}
 \alias{utf8_valid}
 \alias{utf8_width}
 \description{
-    UTF-8 text conversion and formatting.
+    UTF-8 text conversion, formatting, and printing.
 }
 \usage{
     as_utf8(x)
@@ -15,17 +16,22 @@
     utf8_encode(x, display = FALSE)
 
     utf8_format(x, trim = FALSE, chars = NULL, justify = "left",
-                width = NULL, na.encode = TRUE, ...)
+                width = NULL, na.encode = TRUE, quote = FALSE,
+                na.print = NULL, print.gap = NULL, ...)
+
+    utf8_print(x, chars = NULL, quote = TRUE, na.print = NULL,
+               print.gap = NULL, right = FALSE, max = NULL,
+               display = TRUE, ...)
 
     utf8_width(x, encode = TRUE)
 
     utf8_valid(x)
 }
 \arguments{
-    \item{x}{character object}
+    \item{x}{character object.}
 
     \item{display}{logical scalar indicating whether to optimize the
-        encoding for display, not lossless communication.}
+        encoding for display, not byte-for-byte data transmission.}
 
     \item{trim}{logical scalar indicating whether to suppress
         padding spaces around elements.}
@@ -35,20 +41,40 @@
         two character units; combining marks and default ignorables
         take none. Longer strings get truncated and suffixed or prefixed
         with an ellipsis (\code{"..."} in C locale, \code{"\u2026"} in
-        others).}
+        others). Set to \code{NULL} to limit output to the line width
+        as determined by \code{getOption("width")}.}
 
     \item{justify}{justification; one of \code{"left"}, \code{"right"},
        \code{"centre"}, or \code{"none"}. Can be abbreviated.}
 
-   \item{width}{the minimum field width; set to \code{NULL} or
-       \code{0} for no restriction.}
+    \item{width}{the minimum field width; set to \code{NULL} or
+        \code{0} for no restriction.}
 
-   \item{na.encode}{logical scalar indicating whether to incode
-       \code{NA} values as \code{"NA"}.}
+    \item{na.encode}{logical scalar indicating whether to encode
+        \code{NA} values as character strings.}
 
-   \item{...}{further arguments passed from other methods. Ignored.}
+    \item{quote}{logical scalar indicating whether to put surrounding
+        quotes around character strings.}
 
-   \item{encode}{whether to encode the object before measuring its width.}
+    \item{na.print}{character string (or \code{NULL}) indicating
+        the encoding for \code{NA} values. Ignored when
+        \code{na.encode} is \code{FALSE}.}
+
+    \item{print.gap}{non-negative integer (or \code{NULL}) giving the
+        number of spaces in gaps between columns; set to \code{NULL}
+        or \code{1} for a single space.}
+
+    \item{right}{logical scalar indicating whether to right-justify
+        character strings.}
+
+    \item{max}{non-negative integer (or \code{NULL}) indicating the
+        maximum number of elements to print; set to
+        \code{getOption("max.print")} if argument is \code{NULL}.}
+
+    \item{encode}{whether to encode the object before measuring its
+        width.}
+
+    \item{...}{further arguments passed from other methods. Ignored.}
 }
 \details{
     \code{as_utf8} converts a character object from its declared encoding
@@ -60,11 +86,14 @@
     characters. When \code{display = TRUE}, the function optimizes the
     encoding for display by removing default ignorable characters (soft
     hyphens, zero-width spaces, etc.) and placing zero-width spaces after
-    wide emoji. When \code{LC_CTYPE = "C"}, this function escapes all
-    non-ASCII characters.
+    wide emoji. When \code{LC_CTYPE = "C"}, the function escapes all
+    non-ASCII characters and gives the same results on all platforms.
 
     \code{utf8_format} formats a character object for printing, optionally
     truncating long character strings.
+
+    \code{utf8_print} prints a character object after formatting it with
+    \code{utf8_format}.
 
     \code{utf8_valid}{tests whether the elements of a character object
     can be translated to valid UTF-8 strings.}
@@ -82,6 +111,8 @@
     For \code{as_utf8} or \code{utf8_encode}, a character object with
     the same attributes as \code{x} but with \code{Encoding} set to
     \code{"UTF-8"}.
+
+    For \code{utf8_print}, the function returns \code{x} invisibly.
 
     For \code{utf8_valid} or \code{utf8_width}, a logical or integer
     object, respectively, with the same \code{names}, \code{dim}, and
@@ -116,4 +147,15 @@
     # get widths
     utf8_width(x)
     utf8_width(x, encode = FALSE)
+
+    # printing (assumes that output is capable of displaying Unicode 10.0.0)
+    print(intToUtf8(0x1F600 + 0:79)) # with default R print function
+    utf8_print(intToUtf8(0x1F600 + 0:79)) # with utf8_print, truncates line
+    utf8_print(intToUtf8(0x1F600 + 0:79), chars = 1000) # higher character limit
+
+    # in C locale, output ASCII (same results on all platforms)
+    oldlocale <- Sys.getlocale("LC_CTYPE")
+    Sys.setlocale("LC_CTYPE", "C")
+    utf8_print(intToUtf8(0x1F600 + 0:79))
+    Sys.setlocale("LC_CTYPE", oldlocale)
 }

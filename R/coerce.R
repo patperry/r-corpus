@@ -51,7 +51,7 @@ as_chars <- function(name, value)
 
     value <- as_integer_scalar(name, value)
     if (is.na(value) || value < 0) {
-        stop(sprintf("'%s' must be NULL or a non-negative integer"))
+        stop(sprintf("'%s' must be NULL, or a non-negative integer", name))
     }
     value
 }
