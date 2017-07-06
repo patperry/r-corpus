@@ -64,10 +64,7 @@
     non-ASCII characters.
 
     \code{utf8_format} formats a character object for printing, optionally
-    truncating long character strings. Unlike the base R function,
-    setting \code{justify = "none"} produces identical behavior to
-    setting \code{justify = "left"}; to recover the base R behavior,
-    set \code{justify = "none"} and \code{trim = TRUE}.
+    truncating long character strings.
 
     \code{utf8_valid}{tests whether the elements of a character object
     can be translated to valid UTF-8 strings.}

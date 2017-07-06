@@ -615,6 +615,7 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		justify = JUSTIFY_CENTRE;
 	} else {
 		justify = JUSTIFY_NONE;
+		trim = 1;
 	}
 
 	PROTECT(swidth = coerceVector(swidth, INTSXP)); nprot++;
