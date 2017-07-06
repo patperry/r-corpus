@@ -22,6 +22,7 @@
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
+SEXP test_print(SEXP x);
 
 static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(abbreviations, 1),
@@ -55,6 +56,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(subset_text_handle, 2),
 	CALLDEF(term_counts_text, 7),
 	CALLDEF(term_matrix_text, 6),
+	CALLDEF(test_print, 1),
 	CALLDEF(text_count, 3),
 	CALLDEF(text_detect, 3),
 	CALLDEF(text_locate, 3),
