@@ -31,7 +31,7 @@
 static const char *translate(SEXP charsxp)
 {
 	const char *raw = CHAR(charsxp);
-	LPWSTR *wstr;
+	LPWSTR wstr;
 	char *str;
 	int rawlen = (int)XLENGTH(charsxp);
 	int wlen, len;
