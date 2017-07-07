@@ -307,20 +307,15 @@ SEXP decode_record(struct decode *d, const struct corpus_data *val,
 	struct corpus_data_fields it;
 	int err, i, n;
 
-	if ((err = corpus_data_nfield(val, s, &n))) {
-		ans = R_NilValue;
-		goto out;
-	}
-	corpus_data_fields(val, s, &it); // won't fail if data_nfield succeeds
-
+	corpus_data_nfield(val, s, &n); // won't fail, kind is DATATYPE_RECORD
 	PROTECT(ans = allocVector(VECSXP, n));
 	PROTECT(names = allocVector(STRSXP, n));
-
 	if (n > 0) {
 		setAttrib(ans, R_NamesSymbol, names);
 	}
 
 	i = 0;
+	corpus_data_fields(val, s, &it);
 	while (corpus_data_fields_advance(&it)) {
 		SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));
 
@@ -329,7 +324,5 @@ SEXP decode_record(struct decode *d, const struct corpus_data *val,
 		i++;
 	}
 	UNPROTECT(2);
-
-out:
 	return ans;
 }
