@@ -25,6 +25,10 @@
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
+#if (defined(_WIN32) || defined(_WIN64))
+#include <R_ext/RStartup.h>
+extern UImode  CharacterMode;
+
 static const char *translate(SEXP charsxp)
 {
 	const char *ptr = CHAR(charsxp);
@@ -35,6 +39,14 @@ static const char *translate(SEXP charsxp)
 
 	if (n == 0) {
 		return ptr;
+	}
+
+	if (CharacterMode == RGui) {
+		buf = R_alloc(n + 6);
+		memcpy(buf, "\x02\xFF\xFE", 3);
+		memcpy(buf + 3, ptr, n);
+		memcpy(buf + 3 + n, "\x03\xFF\xFE", 3);
+		return buf;
 	}
 
 	cd = Riconv_open("", "UTF-8");
@@ -65,6 +77,9 @@ again:
 	Riconv_close(cd);
 	return buf;
 }
+#else
+#define translate translateChar
+#endif
 
 
 #define NEEDS(n) \

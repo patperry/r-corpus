@@ -6,7 +6,6 @@ useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 importFrom(Matrix, sparseMatrix)
 importFrom(utils, str)
 
-export(test_print) # temporary, testing
 
 ## Exports
 export(abbreviations)
