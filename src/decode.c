@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include "corpus/src/error.h"
 #include "corpus/src/text.h"
@@ -87,9 +88,7 @@ SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
 	SEXP ans;
 	int kind, i, overflow;
 
-	if (val->type_id < 0) {
-		error("invalid data object");
-	}
+	assert(val->type_id >= 0); // type cannot be ANY
 
 	kind = s->types[val->type_id].kind;
 
@@ -305,7 +304,10 @@ SEXP decode_record(struct decode *d, const struct corpus_data *val,
 	SEXP ans, names;
 	const struct corpus_text *name;
 	struct corpus_data_fields it;
-	int err, i, n;
+	int i, n;
+
+	assert(val->type_id >= 0);
+	assert(s->types[val->type_id].kind == CORPUS_DATATYPE_RECORD);
 
 	corpus_data_nfield(val, s, &n); // won't fail, kind is DATATYPE_RECORD
 	PROTECT(ans = allocVector(VECSXP, n));
