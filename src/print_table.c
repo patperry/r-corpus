@@ -26,6 +26,8 @@
 #include "rcorpus.h"
 
 #if (defined(_WIN32) || defined(_WIN64))
+#include <windows.h>
+
 #define Win32
 #include <R_ext/RStartup.h>
 extern UImode CharacterMode;
