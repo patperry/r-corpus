@@ -157,6 +157,7 @@ test_that("'format' can handle high code points in C locale", {
 test_that("'format' can handle high code points in Unicode locale", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
+    skip_on_os("windows") # no Unicode above 0xFFFF on Windows
 
     raw   <- c(intToUtf8(0x00010000), intToUtf8(0x010ffff))
     left  <- c(paste0(intToUtf8(0x00010000), "         "), intToUtf8(0x010ffff))
