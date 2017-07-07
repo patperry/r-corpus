@@ -30,56 +30,39 @@
 #include <R_ext/RStartup.h>
 extern UImode CharacterMode;
 
-static const char *translate(SEXP charsxp)
+static const char *translate(SEXP charsxp, int is_stdout)
 {
-	const char *ptr = CHAR(charsxp);
-	size_t n = (size_t)XLENGTH(charsxp);
-	char *buf, *out;
-	size_t nbuf, status;
-	void *cd;
+	const char *raw;
+	LPWSTR wstr;
+	char *str;
+	int wlen, len, n;
 
-	if (n == 0) {
-		return ptr;
+	raw = CHAR(charsxp);
+	n = XLENGTH(charsxp);
+
+	if (CharacterMode == RGui && is_stdout) {
+		str = R_alloc(n + 7, 1);
+		memcpy(str, "\x02\xFF\xFE", 3);
+		memcpy(str + 3, raw, n);
+		memcpy(str + 3 + n, "\x03\xFF\xFE", 4); // include NUL
+		return str;
 	}
 
-	if (CharacterMode == RGui) {
-		buf = R_alloc(n + 6, 1);
-		memcpy(buf, "\x02\xFF\xFE", 3);
-		memcpy(buf + 3, ptr, n);
-		memcpy(buf + 3 + n, "\x03\xFF\xFE", 3);
-		return buf;
-	}
+	// convert from UTF-8 to UTF-16
+	// use n + 1 for length to include trailing NUL
+	wlen = MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, NULL, 0);
+	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
+	MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, wstr, wlen);
 
-	cd = Riconv_open("", "UTF-8");
-	nbuf = n;
-	buf = R_alloc(nbuf + 1, 1);
+	// convert from UTF-16 to ANSI code page
+	len = WideCharToMultiByte(CP_ACP, 0, wstr, wlen, NULL, 0, NULL, NULL);
+	str = R_alloc(len, 1);
+	WideCharToMultiByte(CP_ACP, 0, wstr, wlen, str, len, NULL, NULL);
 
-again:
-	out = buf;
-	status = Riconv(cd, &ptr, &n, &out, &nbuf);
-	if (status == (size_t)-1) {
-		switch (errno) {
-		case EILSEQ: // invalid multibyte sequence (can't happen)
-		case EINVAL: // incomplete multibyte sequence (can't happen)
-			error("invalid UTF-8 byte sequence");
-			break;
-
-		case E2BIG: // no room for the next converted character
-			nbuf *= 2;
-			buf = R_alloc(nbuf + 1, 1);
-			ptr = CHAR(charsxp);
-			goto again;
-		default:
-			error("unrecognized iconv errno value");
-		}
-	}
-	*out = '\0';
-
-	Riconv_close(cd);
-	return buf;
+	return str;
 }
 #else
-#define translate translateChar
+#define translate(x, is_stdout) translateChar(x)
 #endif
 
 
@@ -130,7 +113,7 @@ again:
 	} while (0)
 
 static int print_range(SEXP sx, int begin, int end, int print_gap,
-			int right, int max, int namewidth,
+			int right, int max, int is_stdout, int namewidth,
 			const int *colwidths)
 {
 	SEXP elt, name, dim_names, row_names, col_names;
@@ -161,7 +144,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				w = 2;
 				n = 2;
 			} else {
-				str = translate(name);
+				str = translate(name, is_stdout);
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
@@ -187,7 +170,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				w = 2;
 				n = 2;
 			} else {
-				str = translate(name);
+				str = translate(name, is_stdout);
 				w = charsxp_width(name, utf8);
 				n = strlen(str);
 			}
@@ -212,7 +195,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 				PRINT_SPACES(print_gap);
 			}
 
-			str = translate(elt);
+			str = translate(elt, is_stdout);
 			w = charsxp_width(elt, utf8);
 			n = strlen(str);
 			PRINT_ENTRY(str, n, width - w);
@@ -226,17 +209,19 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 		}
 	}
 
+	(void)is_stdout; // unused unless on Windows
+
 	return nprint;
 }
 
 
 SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
-		SEXP swidth)
+		SEXP swidth, SEXP sis_stdout)
 {
 	SEXP elt, dim_names, row_names, col_names;
 	R_xlen_t ix, nx;
 	int i, j, nrow, ncol;
-	int print_gap, right, max, width, utf8;
+	int print_gap, right, max, width, is_stdout, utf8;
 	int begin, end, w, nprint, linewidth, namewidth, *colwidths;
 
 	dim_names = getAttrib(sx, R_DimNamesSymbol);
@@ -251,6 +236,7 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 	right = LOGICAL(sright)[0] == TRUE;
 	width = INTEGER(swidth)[0];
 	max = INTEGER(smax)[0];
+	is_stdout = LOGICAL(sis_stdout)[0] == TRUE;
 
 	namewidth = 0;
 	if (row_names == R_NilValue) {
@@ -329,13 +315,15 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 		}
 
 		nprint += print_range(sx, begin, end, print_gap, right,
-				      max - nprint, namewidth, colwidths);
+				      max - nprint, is_stdout, namewidth,
+				      colwidths);
 		begin = end;
 	}
 
 	if (ncol == 0) {
 		nprint += print_range(sx, 0, 0, print_gap, right,
-				      max - nprint, namewidth, colwidths);
+				      max - nprint, is_stdout, namewidth,
+				      colwidths);
 	}
 
 	return ScalarInteger(nprint);

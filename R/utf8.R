@@ -116,6 +116,7 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         max <- getOption("max.print")
     }
     width <- getOption("width")
+    stdout <- as.integer(stdout()) == 1
     
     n <- length(x)
     dim <- dim(x)
@@ -193,7 +194,7 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
                               dimnames = list(NULL, names[ix]))
 
                 np <- .Call(C_print_table, mat, print.gap, right,
-                            max - nprint, width)
+                            max - nprint, width, stdout)
                 nprint <- nprint + np
                 off <- off + ncol
             }
@@ -205,7 +206,7 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
                 colnames(last) <-  names[ix]
 
                 np <- .Call(C_print_table, last, print.gap, right,
-                            max - nprint, width)
+                            max - nprint, width, stdout)
                 nprint <- nprint + np
             }
         } else {
@@ -215,14 +216,15 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
             mat <- matrix(fmt[seq_len(n - extra)], ncol = ncol, byrow = TRUE)
             rownames(mat) <- labels[seq(from = 1, by = ncol,
                                         length.out = nrow(mat))]
-            np <- .Call(C_print_table, mat, print.gap, right, max, width)
+            np <- .Call(C_print_table, mat, print.gap, right, max, width,
+                        stdout)
             nprint <- nprint + np
 
             if (extra > 0 && nprint < max) {
                 last <- rbind(as.vector(fmt[n - extra  + seq_len(extra)]))
                 rownames(last) <- labels[n - extra + 1]
                 np <- .Call(C_print_table, last, print.gap, right,
-                            max - nprint, width)
+                            max - nprint, width, stdout)
                 nprint <- nprint + np
             }
         }
@@ -232,7 +234,8 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
         if (all(dim == 0)) {
             cat("<0 x 0 matrix>\n")
         } else {
-            nprint <- .Call(C_print_table, fmt, print.gap, right, max, width)
+            nprint <- .Call(C_print_table, fmt, print.gap, right, max, width,
+                            stdout)
         }
     } else {
         nrow <- dim[1]
@@ -256,7 +259,7 @@ utf8_print <- function(x, chars = NULL, quote = TRUE, na.print = NULL,
                 ix <- off + seq_len(nrow * ncol)
                 mat <- matrix(fmt[ix], nrow, ncol, dimnames = dimnames[1:2])
                 np <- .Call(C_print_table, mat, print.gap, right, max - nprint,
-                            width)
+                            width, stdout)
                 nprint <- nprint + np
                 off <- off + (nrow * ncol)
 

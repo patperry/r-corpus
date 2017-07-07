@@ -116,7 +116,8 @@ int is_filebuf(SEXP sbuf);
 struct corpus_filebuf *as_filebuf(SEXP sbuf);
 
 /* printing */
-SEXP print_table(SEXP x, SEXP print_gap, SEXP right, SEXP max, SEXP width);
+SEXP print_table(SEXP x, SEXP print_gap, SEXP right, SEXP max, SEXP width,
+		 SEXP is_stdout);
 
 /* text (core) */
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop);
