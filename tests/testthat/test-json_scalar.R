@@ -235,3 +235,15 @@ test_that("reading heterogeneous works", {
     ds <- read_ndjson(file, simplify = FALSE)
     expect_equal(as.list(ds), list(TRUE, NULL, 1, list(a=1), list(a=1, b=2)))
 })
+
+
+test_that("reading array of heterogeneous array works", {
+    file <- tempfile()
+    writeLines(c('[[null, true, 1, 10000000000, 3.14, "hello"]]',
+                 '[[1], [1,2,3]]'),
+               file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(list(list(NULL, TRUE, 1, 10000000000, 3.14,
+                                             "hello")),
+                                   list(list(1), list(1,2,3))))
+})
