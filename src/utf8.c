@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <wchar.h>
+#include <wctype.h>
 #include "corpus/src/array.h"
 #include "corpus/src/unicode.h"
 #include "rcorpus.h"
@@ -164,7 +166,7 @@ out:
 int charwidth(uint32_t code)
 {
 #if (defined(_WIN32) || defined(_WIN64))
-	if (code > 0xFFFF) {
+	if (code > WCHAR_MAX || !iswprint((wint_t)code)) {
 		return CORPUS_CHARWIDTH_OTHER;
 	}
 #endif
