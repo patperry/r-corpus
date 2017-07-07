@@ -4,11 +4,21 @@ test_that("'utf8_width' computes widths correctly", {
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(utf8_width(c("hello", "\u200b", "\u22ee", "\u6027",
-                              intToUtf8(0x1f642)),
+    expect_equal(utf8_width(c("hello", "\u200b", "\u22ee", "\u6027"),
                             encode = FALSE),
-                 c(5, 0, 1, 2, 2))
+                 c(5, 0, 1, 2))
 })
+
+
+test_that("'utf8_width' computes widths for extended unicode correctly", {
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+    skip_on_os("windows") # no extended Unicode
+
+    expect_equal(utf8_width(intToUtf8(0x1f642), encode = FALSE), 2)
+})
+
+
 
 
 test_that("'utf8_width' gives NA for non-ASCII in C locale", {

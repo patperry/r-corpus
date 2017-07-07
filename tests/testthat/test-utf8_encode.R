@@ -38,6 +38,8 @@ test_that("'utf8_encode' can encode basic Unicode", {
 
 
 test_that("'utf8_encode' can encode extended Unicode", {
+    skip_on_os("windows") # no extended Unicode
+
     x <- intToUtf8(0x0001f60d)
     Encoding(x) <- "UTF-8"
 
