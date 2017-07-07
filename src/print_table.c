@@ -26,8 +26,9 @@
 #include "rcorpus.h"
 
 #if (defined(_WIN32) || defined(_WIN64))
+#define Win32
 #include <R_ext/RStartup.h>
-extern UImode  CharacterMode;
+extern UImode CharacterMode;
 
 static const char *translate(SEXP charsxp)
 {
