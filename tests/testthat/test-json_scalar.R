@@ -217,3 +217,21 @@ test_that("reading record array works", {
     ds <- read_ndjson(file, simplify=FALSE)
     expect_equal(as.list(ds), x)
 })
+
+
+test_that("reading heterogeneous array works", {
+    file <- tempfile()
+    writeLines(c('[true]', '[null]', '[1]', '[{"a":1}]',
+                 '[{"a":1, "b":2}]'), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(list(TRUE), list(NULL), list(1),
+                                   list(list(a=1)), list(list(a=1,b=2))))
+})
+
+
+test_that("reading heterogeneous works", {
+    file <- tempfile()
+    writeLines(c('true', 'null', '1', '{"a": 1}', '{"a":1, "b":2}'), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(TRUE, NULL, 1, list(a=1), list(a=1, b=2)))
+})
