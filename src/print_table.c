@@ -38,12 +38,22 @@ static const char *translate(SEXP charsxp, int is_stdout)
 	LPWSTR wstr;
 	char *str;
 	int wlen, len, n;
+	ce_type_t ce;
 
 	raw = CHAR(charsxp);
 	n = XLENGTH(charsxp);
+	ce = getCharCE(charsxp);
 
+	if (ce == CE_ANY) {
+		return raw; // no need to translate ASCII
+	}
+
+	// mimic the WinCheckUTF8 behavior in base R main/connections.c
 	if (CharacterMode == RGui && is_stdout) {
 		str = R_alloc(n + 7, 1);
+		// mimic the EncodeString behavior in main/printutils.c
+		//   prepend UTF8in  (02 FF FE)
+		//   append  UTF8out (03 FF FE)
 		memcpy(str, "\x02\xFF\xFE", 3);
 		memcpy(str + 3, raw, n);
 		memcpy(str + 3 + n, "\x03\xFF\xFE", 4); // include NUL
