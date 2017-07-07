@@ -43,7 +43,7 @@ static const char *translate(SEXP charsxp)
 	}
 
 	if (CharacterMode == RGui) {
-		buf = R_alloc(n + 6);
+		buf = R_alloc(n + 6, 1);
 		memcpy(buf, "\x02\xFF\xFE", 3);
 		memcpy(buf + 3, ptr, n);
 		memcpy(buf + 3 + n, "\x03\xFF\xFE", 3);
