@@ -67,8 +67,15 @@ static const char *translate(SEXP charsxp, int is_stdout)
 	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
 	MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, wstr, wlen);
 
-	// convert from UTF-16 to ANSI code page
-	cp = GetACP();
+	// Use ConsoleCP for terminal output to stdout, ACP otherwise
+	// (see https://go-review.googlesource.com/c/27575/ )
+	if (CharacterMode == RTerm && is_stdout) {
+		cp = GetConsoleCP();
+	} else {
+		cp = GetACP();
+	}
+
+	// convert from UTF-16 to native code page
 	len = WideCharToMultiByte(cp, 0, wstr, wlen, NULL, 0, NULL, NULL);
 	str = R_alloc(len, 1);
 	WideCharToMultiByte(cp, 0, wstr, wlen, str, len, NULL, NULL);
