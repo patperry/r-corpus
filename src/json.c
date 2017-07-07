@@ -1151,6 +1151,7 @@ SEXP as_list_json(SEXP sdata, SEXP stext, SEXP stringsAsFactors)
 
 	for (i = 0; i < n; i++) {
 		data = d->rows[i];
+		data.type_id = d->type_id; // promote the type
 		val = decode_sexp(&decode, &data, &d->schema);
 		SET_VECTOR_ELT(ans, i, val);
 	}

@@ -104,8 +104,8 @@ test_that("reading empty works", {
 })
 
 
-test_that("reading double array words", {
-    x <- list(3.14, c(1, 2, 3), c(), c(5.6, -3.0),
+test_that("reading double array works", {
+    x <- list(3.14, c(1, 2, 3), numeric(), c(5.6, -3.0),
               c(2.18, 0.0028, 1e99, -2.1e12))
     file <- tempfile()
     writeLines(sapply(x, function(xi)
@@ -118,17 +118,63 @@ test_that("reading double array words", {
 })
 
 
+test_that("reading double array with null works", {
+    file <- tempfile()
+    writeLines("[1.2, null]", file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(c(1.2, NA)))
+})
 
-test_that("reading integer array words", {
-    x <- list(c(4L,-1L,2L), c(), c(), c(1L, 1L, 2L, 3L, 5L))
+
+test_that("reading double array with overflow works", {
+    file <- tempfile()
+    writeLines(c("[1e999999, -1e9999999]", "[0]"), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_warning((y <- as.list(ds)),
+                   "Inf introduced by coercion to double-precision range",
+                   fixed = TRUE)
+    expect_equal(y, list(c(Inf, -Inf), 0))
+})
+
+
+test_that("reading integer array works", {
+    x <- list(c(4L,-1L,2L), integer(), integer(), c(1L, 1L, 2L, 3L, 5L))
     file <- tempfile()
     writeLines(sapply(x, function(xi)
                       paste0("[", paste0(xi, collapse=", "), "]")), file)
-    ds <- read_ndjson(file, simplify=FALSE)
+    ds <- read_ndjson(file, simplify = FALSE)
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
     expect_equal(names(ds), NULL)
     expect_equal(as.list(ds), x)
+})
+
+
+test_that("reading integer array with null works", {
+    file <- tempfile()
+    writeLines("[1, null, -3]", file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(c(1L, NA_integer_, -3L)))
+})
+
+
+test_that("reading integer array with overflow works", {
+    file <- tempfile()
+    writeLines(c("[-2147483648]", "[2147483648]"), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(-2147483648, 2147483648))
+})
+
+
+test_that("reading logical array works", {
+    file <- tempfile()
+    writeLines(c("[true, true, false]", "[]", "[false, null]", "null"), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(length(ds), 4)
+    expect_equal(dim(ds), NULL)
+    expect_equal(names(ds), NULL)
+    expect_equal(as.list(ds), list(c(TRUE, TRUE, FALSE), logical(),
+                                   c(FALSE, NA), NULL))
 })
 
 
@@ -142,6 +188,15 @@ test_that("reading character array works", {
     expect_equal(dim(ds), NULL)
     expect_equal(names(ds), NULL)
     expect_equal(as.list(ds), x)
+})
+
+
+test_that("reading character array with null works", {
+    file <- tempfile()
+    writeLines(c('["hello", null, ""]', '[]', '[null]', 'null'), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.list(ds), list(c("hello", NA, ""), character(),
+                                   NA_character_, NULL))
 })
 
 

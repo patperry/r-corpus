@@ -71,7 +71,7 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text);
 
 /* converting data to R values */
 void decode_init(struct decode *d);
-void decode_clear(struct decode *d);
+int decode_set_overflow(struct decode *d, int overflow);
 
 int decode_logical(struct decode *d, const struct corpus_data *val);
 int decode_integer(struct decode *d, const struct corpus_data *val);

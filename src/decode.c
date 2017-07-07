@@ -34,13 +34,15 @@ static SEXP decode_record(struct decode *d, const struct corpus_data *val,
 void decode_init(struct decode *d)
 {
 	mkchar_init(&d->mkchar);
-	decode_clear(d);
+	decode_set_overflow(d, 0);
 }
 
 
-void decode_clear(struct decode *d)
+int decode_set_overflow(struct decode *d, int overflow)
 {
-	d->overflow = 0;
+	int old = d->overflow;
+	d->overflow = overflow;
+	return old;
 }
 
 
@@ -53,13 +55,23 @@ int decode_logical(struct decode *d, const struct corpus_data *val)
 
 int decode_integer(struct decode *d, const struct corpus_data *val)
 {
-	return integer_data(val, &d->overflow);
+	int overflow = 0;
+	int i = integer_data(val, &overflow);
+	if (overflow) {
+		d->overflow = overflow;
+	}
+	return i;
 }
 
 
 double decode_real(struct decode *d, const struct corpus_data *val)
 {
-	return real_data(val, &d->overflow);
+	int overflow = 0;
+	double x = real_data(val, &overflow);
+	if (overflow) {
+		d->overflow = overflow;
+	}
+	return x;
 }
 
 
@@ -73,7 +85,7 @@ SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
 		 const struct corpus_schema *s)
 {
 	SEXP ans;
-	int kind, i;
+	int kind, i, overflow;
 
 	if (val->type_id < 0) {
 		error("invalid data object");
@@ -87,11 +99,14 @@ SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
 		break;
 
 	case CORPUS_DATATYPE_INTEGER:
+		overflow = decode_set_overflow(d, 0);
 		i = decode_integer(d, val);
 		if (!d->overflow) {
+			d->overflow = overflow;
 			ans = ScalarInteger(i);
 			break;
 		}
+		d->overflow = overflow;
 		// else fall through to CORPUS_DATATYPE_REAL
 
 	case CORPUS_DATATYPE_REAL:
@@ -205,7 +220,7 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 {
 	SEXP ans;
 	struct corpus_data_items it;
-	int err, i, n;
+	int err, overflow, i, n;
 	int arr_id, type_id;
 
 	if ((err = corpus_data_nitem(val, s, &n))) {
@@ -218,8 +233,6 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 	arr_id = val->type_id;
 	type_id = s->types[arr_id].meta.array.type_id;
 
-	decode_clear(d);
-
 	switch (type_id) {
 	case CORPUS_DATATYPE_BOOLEAN:
 		PROTECT(ans = allocVector(LGLSXP, n));
@@ -231,6 +244,8 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 
 	case CORPUS_DATATYPE_INTEGER:
 		PROTECT(ans = allocVector(INTSXP, n));
+		overflow = decode_set_overflow(d, 0);
+
 		while (corpus_data_items_advance(&it)) {
 			INTEGER(ans)[i] = decode_integer(d, &it.current);
 			if (d->overflow) {
@@ -239,9 +254,11 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 			i++;
 		}
 		if (!d->overflow) {
+			d->overflow = overflow;
 			break;
 		}
 
+		d->overflow = overflow;
 		UNPROTECT(1);
 		corpus_data_items_reset(&it);
 		// fall through, decode as CORPUS_DATATYPE_REAL
