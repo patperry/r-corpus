@@ -80,9 +80,3 @@ void R_init_corpus(DllInfo *dll)
 	R_useDynamicSymbols(dll, FALSE);
 	R_forceSymbols(dll, TRUE);
 }
-
-
-void R_unload_corpus(DllInfo *dll)
-{
-	(void)dll;
-}
