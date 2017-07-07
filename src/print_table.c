@@ -38,7 +38,7 @@ static const char *translate(SEXP charsxp, int is_stdout)
 	LPWSTR wstr;
 	char *str;
 	int wlen, len, n;
-	ce_type_t ce;
+	cetype_t ce;
 	UINT cp;
 
 	raw = CHAR(charsxp);
