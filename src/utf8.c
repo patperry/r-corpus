@@ -73,7 +73,7 @@ int charsxp_width(SEXP charsxp, int utf8)
 			return NA_INTEGER;
 		}
 
-		cw = corpus_unicode_charwidth(code);
+		cw = charwidth(code);
 
 		switch (cw) {
 		case CORPUS_CHARWIDTH_NONE:
@@ -161,6 +161,17 @@ out:
 }
 
 
+int charwidth(uint32_t code)
+{
+#if (defined(_WIN32) || defined(_WIN64))
+	if (code > 0xFFFF) {
+		return CORPUS_CHARWIDTH_OTHER;
+	}
+#endif
+	return corpus_unicode_charwidth(code);
+}
+
+
 static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 			      int utf8, int *sizeptr)
 {
@@ -203,7 +214,7 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 		} else {
 			corpus_decode_utf8(&ptr, &code);
 			if (utf8) {
-				cw = corpus_unicode_charwidth(code);
+				cw = charwidth(code);
 				switch (cw) {
 				case CORPUS_CHARWIDTH_OTHER:
 					// \uXXXX or \UXXXXYYYY
@@ -317,7 +328,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 		}
 
 		corpus_decode_utf8(&ptr, &code);
-		cw = corpus_unicode_charwidth(code);
+		cw = charwidth(code);
 
 		if (cw == CORPUS_CHARWIDTH_OTHER || !utf8) {
 			if (code <= 0xFFFF) {

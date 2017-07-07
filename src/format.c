@@ -317,7 +317,7 @@ static int text_width(const struct text *text, int limit, int utf8)
 	width = 0;
 	while (text_iter_advance(&it)) {
 		code = it.current;
-		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : charwidth(code);
 		w = char_width(code, type, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
@@ -340,7 +340,7 @@ static int text_rwidth(const struct text *text, int limit, int utf8)
 	width = 0;
 	while (text_iter_retreat(&it)) {
 		code = it.current;
-		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : charwidth(code);
 		w = char_width(code, type, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
@@ -422,7 +422,7 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 
 	while (!trunc && text_iter_advance(&it)) {
 		code = it.current;
-		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : charwidth(code);
 		w = char_width(code, type, utf8);
 
 		if (width > chars - w) {
@@ -508,7 +508,7 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 
 	while (!trunc && text_iter_retreat(&it)) {
 		code = it.current;
-		type = code < 0 ? 0 : corpus_unicode_charwidth(code);
+		type = code < 0 ? 0 : charwidth(code);
 		w = char_width(code, type, utf8);
 
 		if (width > chars - w) {

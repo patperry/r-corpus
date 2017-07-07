@@ -197,6 +197,7 @@ SEXP read_ndjson(SEXP buffer);
 
 /* internal utility functions */
 double *as_weights(SEXP sweights, R_xlen_t n);
+int charwidth(uint32_t code);
 int charsxp_width(SEXP charsxp, int utf8);
 int encodes_utf8(cetype_t ce);
 int findListElement(SEXP list, const char *str);
