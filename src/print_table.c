@@ -39,6 +39,7 @@ static const char *translate(SEXP charsxp, int is_stdout)
 	char *str;
 	int wlen, len, n;
 	ce_type_t ce;
+	UINT cp;
 
 	raw = CHAR(charsxp);
 	n = XLENGTH(charsxp);
@@ -67,9 +68,10 @@ static const char *translate(SEXP charsxp, int is_stdout)
 	MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, wstr, wlen);
 
 	// convert from UTF-16 to ANSI code page
-	len = WideCharToMultiByte(CP_ACP, 0, wstr, wlen, NULL, 0, NULL, NULL);
+	cp = GetACP();
+	len = WideCharToMultiByte(cp, 0, wstr, wlen, NULL, 0, NULL, NULL);
 	str = R_alloc(len, 1);
-	WideCharToMultiByte(CP_ACP, 0, wstr, wlen, str, len, NULL, NULL);
+	WideCharToMultiByte(cp, 0, wstr, wlen, str, len, NULL, NULL);
 
 	return str;
 }
