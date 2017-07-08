@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <Rdefines.h>
+#include "corpus/src/array.h"
 #include "corpus/src/error.h"
 #include "corpus/src/filebuf.h"
 #include "corpus/src/render.h"
@@ -101,45 +102,24 @@ SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 
 static void grow_datarows(struct corpus_data **rowsptr, R_xlen_t *nrow_maxptr)
 {
-	void *base1, *base = *rowsptr;
-	size_t size1, size = (size_t)*nrow_maxptr;
-	size_t width = sizeof(**rowsptr);
+	struct corpus_data *rows = *rowsptr;
+	void *base = rows;
+	size_t size = (size_t)*nrow_maxptr;
+	int err;
 
-	if (size == 0) {
-		size1 = 1;
-	} else {
-		size1 = 1.618 * size + 1; // (golden ratio)
-	}
-
-	if (size1 < size) { // overflow
-		size1 = SIZE_MAX;
-	}
-
-	if (size1 > SIZE_MAX / width) {
-		free(base);
-		error("number of rows (%"PRIu64")"
-			" exceeds maximum (%"PRIu64")",
-			(uint64_t)size1, (uint64_t)SIZE_MAX / width);
-	}
-	if (size1 > R_XLEN_T_MAX) {
-		free(base);
+	if (size == R_XLEN_T_MAX) {
 		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
-			(uint64_t)size1, (uint64_t)R_XLEN_T_MAX);
-	}
-	if (size1 > (((uint64_t)1) << DBL_MANT_DIG)) {
-		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
-			(uint64_t)size1, ((uint64_t)1) << DBL_MANT_DIG);
+			(uint64_t)size, (uint64_t)R_XLEN_T_MAX);
 	}
 
-	base1 = realloc(base, size1 * width);
-	if (size1 > 0 && base1 == NULL) {
-		free(base);
-		error("failed allocating %"PRIu64" bytes",
-			(uint64_t)size1 * width);
+	if ((err = corpus_bigarray_grow(&base, &size, sizeof(*rows),
+					size, 1))) {
+		error("failed allocating memory (%"PRIu64" bytes)",
+		      (uint64_t)(size + 1) * sizeof(*rows));
 	}
 
-	*rowsptr = base1;
-	*nrow_maxptr = size1;
+	*rowsptr = base;
+	*nrow_maxptr = size;
 }
 
 
@@ -147,8 +127,7 @@ static void json_load(SEXP sdata)
 {
 	SEXP shandle, sparent_handle, sbuffer, sfield, sfield_path,
 	     srows, sparent, sparent2;
-	struct json *obj;
-	struct corpus_data *rows;
+	struct json *obj, *parent;
 	struct corpus_filebuf *buf;
 	struct corpus_filebuf_iter it;
 	const uint8_t *ptr, *begin, *line_end, *end;
@@ -166,12 +145,11 @@ static void json_load(SEXP sdata)
 	sbuffer = getListElement(sdata, "buffer");
 	PROTECT(sparent = alloc_json(sbuffer, R_NilValue, R_NilValue));
 	sparent_handle = getListElement(sparent, "handle");
-	obj = R_ExternalPtrAddr(sparent_handle);
+	parent = R_ExternalPtrAddr(sparent_handle);
 
 	type_id = CORPUS_DATATYPE_NULL;
 	nrow = 0;
 	nrow_max = 0;
-	rows = NULL;
 
 	if (is_filebuf(sbuffer)) {
 		buf = as_filebuf(sbuffer);
@@ -179,28 +157,29 @@ static void json_load(SEXP sdata)
 		corpus_filebuf_iter_make(&it, buf);
 		while (corpus_filebuf_iter_advance(&it)) {
 			if (nrow == nrow_max) {
-				grow_datarows(&rows, &nrow_max);
+				grow_datarows(&parent->rows, &nrow_max);
 			}
 
 			ptr = it.current.ptr;
 			size = it.current.size;
 
-			if ((err = corpus_data_assign(&rows[nrow],
-						      &obj->schema,
+			if ((err = corpus_data_assign(&parent->rows[nrow],
+						      &parent->schema,
 						      ptr, size))) {
-				free(rows);
 				error("error parsing row %"PRIu64
 				      " of JSON data", (uint64_t)(nrow + 1));
 			}
 
-			if ((err = corpus_schema_union(&obj->schema, type_id,
-						       rows[nrow].type_id,
-						       &type_id))) {
-				free(rows);
+			if ((err = corpus_schema_union(&parent->schema, type_id,
+					       parent->rows[nrow].type_id,
+					       &type_id))) {
 				error("memory allocation failure"
 				      " after parsing row %"PRIu64
 				      " of JSON data", (uint64_t)(nrow + 1));
 			}
+
+			RCORPUS_CHECK_INTERRUPT(nrow);
+
 			nrow++;
 		}
 	} else {
@@ -211,7 +190,7 @@ static void json_load(SEXP sdata)
 
 		while (ptr != end) {
 			if (nrow == nrow_max) {
-				grow_datarows(&rows, &nrow_max);
+				grow_datarows(&parent->rows, &nrow_max);
 			}
 
 			line_end = ptr;
@@ -221,47 +200,47 @@ static void json_load(SEXP sdata)
 
 			size = (size_t)(line_end - ptr);
 
-			if ((err = corpus_data_assign(&rows[nrow],
-						      &obj->schema,
+			if ((err = corpus_data_assign(&parent->rows[nrow],
+						      &parent->schema,
 						      ptr, size))) {
-				free(rows);
 				error("error parsing row %"PRIu64
 				      " of JSON data", (uint64_t)(nrow + 1));
 			}
 
-			if ((err = corpus_schema_union(&obj->schema, type_id,
-						       rows[nrow].type_id,
-						       &type_id))) {
-				free(rows);
+			if ((err = corpus_schema_union(&parent->schema, type_id,
+						parent->rows[nrow].type_id,
+						&type_id))) {
 				error("memory allocation failure"
 				      " after parsing row %"PRIu64
 				      " of JSON data", (uint64_t)(nrow + 1));
 			}
+
+			RCORPUS_CHECK_INTERRUPT(nrow);
+
 			nrow++;
 			ptr = line_end;
 		}
 	}
 
 	// free excess memory
-	rows = realloc(rows, nrow * sizeof(*rows));
+	parent->rows = realloc(parent->rows, nrow * sizeof(*parent->rows));
 
 	// ensure rows is non-NULL even if nrow == 0
-	if (rows == NULL) {
-		rows = malloc(sizeof(*rows));
-		if (!rows) {
+	if (parent->rows == NULL) {
+		parent->rows = malloc(sizeof(*parent->rows));
+		if (!parent->rows) {
 			error("failed allocating memory (%u bytes)",
-				sizeof(*rows));
+				sizeof(*parent->rows));
 		}
 	}
 
-	// set the fields
-	obj->rows = rows;
-	obj->nrow = nrow;
-	obj->type_id = type_id;
+	// set the attribute fields
+	parent->nrow = nrow;
+	parent->type_id = type_id;
 	if (type_id < 0) {
-		obj->kind = CORPUS_DATATYPE_ANY;
+		parent->kind = CORPUS_DATATYPE_ANY;
 	} else {
-		obj->kind = obj->schema.types[type_id].kind;
+		parent->kind = parent->schema.types[type_id].kind;
 	}
 
 	// first extract the rows from the parent...
@@ -291,9 +270,10 @@ static void json_load(SEXP sdata)
 	}
 
 	// steal the handle from the parent
-	free_json(shandle);
-	R_SetExternalPtrAddr(shandle, R_ExternalPtrAddr(sparent_handle));
+	obj = R_ExternalPtrAddr(sparent_handle);
 	R_SetExternalPtrAddr(sparent_handle, NULL);
+	free_json(shandle);
+	R_SetExternalPtrAddr(shandle, obj);
 	UNPROTECT(1);
 }
 
