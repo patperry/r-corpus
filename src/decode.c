@@ -279,11 +279,6 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 		break;
 
 	default:
-		if (n == 0) {
-			ans = R_NilValue;
-			goto out;
-		}
-
 		PROTECT(ans = allocVector(VECSXP, n));
 		while (corpus_data_items_advance(&it)) {
 			SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));

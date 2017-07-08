@@ -204,10 +204,12 @@ test_that("reading record array works", {
     json <- c('[{"a": true, "b": false, "c": null}]',
               '[{"a": false, "c": true}]',
               '[]',
+              'null',
               '[{}]',
               '[{"a": true}, {"b": null}, {"c": true}]')
     x <- list(list(list(a = TRUE, b = FALSE, c = NA)),
               list(list(a = FALSE, c = TRUE)),
+              list(),
               NULL,
               list(list()),
               list(list(a = TRUE), list(b = NA), list(c = TRUE)))
