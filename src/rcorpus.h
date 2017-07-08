@@ -104,7 +104,6 @@ SEXP as_character_json(SEXP data);
 SEXP as_text_json(SEXP data);
 SEXP dim_json(SEXP data);
 SEXP json_datatype(SEXP data);
-SEXP json_datatypes(SEXP data);
 SEXP length_json(SEXP data);
 SEXP names_json(SEXP data);
 SEXP print_json(SEXP data);

@@ -37,7 +37,6 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(format_text, 9),
 	CALLDEF(is_na_text, 1),
 	CALLDEF(json_datatype, 1),
-	CALLDEF(json_datatypes, 1),
 	CALLDEF(length_json, 1),
 	CALLDEF(length_text, 1),
 	CALLDEF(logging_off, 0),

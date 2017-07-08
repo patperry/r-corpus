@@ -439,49 +439,6 @@ SEXP json_datatype(SEXP sdata)
 }
 
 
-SEXP json_datatypes(SEXP sdata)
-{
-	SEXP types, str, names;
-	const struct json *d = as_json(sdata);
-	const struct corpus_datatype *t;
-	const struct corpus_datatype_record *rec;
-	struct corpus_render r;
-	int i;
-
-	if (d->kind != CORPUS_DATATYPE_RECORD) {
-		return R_NilValue;
-	}
-
-	PROTECT(names = names_json(sdata));
-
-	t = &d->schema.types[d->type_id];
-	rec = &t->meta.record;
-
-	if (corpus_render_init(&r, CORPUS_ESCAPE_NONE) != 0) {
-		error("memory allocation failure");
-	}
-	corpus_render_set_tab(&r, "");
-	corpus_render_set_newline(&r, " ");
-
-	PROTECT(types = allocVector(STRSXP, rec->nfield));
-	for (i = 0; i < rec->nfield; i++) {
-		corpus_render_datatype(&r, &d->schema, rec->type_ids[i]);
-		if (r.error) {
-			corpus_render_destroy(&r);
-			error("memory allocation failure");
-		}
-		str = mkCharLenCE(r.string, r.length, CE_UTF8);
-		SET_STRING_ELT(types, i, str);
-		corpus_render_clear(&r);
-	}
-	setAttrib(types, R_NamesSymbol, names);
-
-	corpus_render_destroy(&r);
-	UNPROTECT(2);
-	return types;
-}
-
-
 SEXP print_json(SEXP sdata)
 {
 	const struct json *d = as_json(sdata);

@@ -108,12 +108,6 @@ json_datatype <- function(x)
 }
 
 
-json_datatypes <- function(x)
-{
-    .Call(C_json_datatypes, x)
-}
-
-
 print.corpus_json <- function(x, ...)
 {
     invisible(.Call(C_print_json, x))
