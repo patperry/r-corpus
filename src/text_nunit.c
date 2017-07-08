@@ -85,9 +85,7 @@ SEXP text_nsentence(SEXP sx, SEXP sfilter)
 
 		count[i] = (double)nunit;
 
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(nprot);
@@ -146,9 +144,7 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 
 		count[i] = (double)nunit;
 
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(nprot);

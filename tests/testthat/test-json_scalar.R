@@ -249,3 +249,11 @@ test_that("reading array of heterogeneous array works", {
                                              "hello")),
                                    list(list(1), list(1,2,3))))
 })
+
+
+test_that("reading string with escapes works", {
+    file <- tempfile()
+    writeLines(c('null', '"\\n"', '"\\u6025"', '"\\uD834\\uDD1E"'), file)
+    ds <- read_ndjson(file)
+    expect_equal(as.character(ds), c(NA, "\n", "\u6025", intToUtf8(0x1d11e)))
+})

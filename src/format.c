@@ -724,9 +724,7 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 
 		SET_STRING_ELT(ans, i, ans_i);
 
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(nprot);

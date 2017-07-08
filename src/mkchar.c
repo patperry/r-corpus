@@ -38,9 +38,8 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 	size_t len = CORPUS_TEXT_SIZE(text);
 	struct corpus_text_iter it;
 
-	if (len >= INT_MAX) {
-		error("character string length exceeds maximum (%d)",
-			INT_MAX - 1);
+	if (len > INT_MAX) {
+		error("character string length exceeds maximum (%d)", INT_MAX);
 	}
 
 	if (text->ptr == NULL) {

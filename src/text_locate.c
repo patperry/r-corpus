@@ -141,9 +141,7 @@ SEXP text_count(SEXP sx, SEXP sterms, SEXP sfilter)
 
 		TRY(search->error);
 
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	err = 0;
@@ -196,9 +194,7 @@ SEXP text_detect(SEXP sx, SEXP sterms, SEXP sfilter)
 
 		TRY(search->error);
 
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	err = 0;
@@ -251,9 +247,7 @@ SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 
 		TRY(search->error);
 
-		if ((i + 1) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	PROTECT(ans = make_instances(&loc, sx, sitems, text)); nprot++;

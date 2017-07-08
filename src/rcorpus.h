@@ -31,7 +31,13 @@
 #include "corpus/src/datatype.h"
 #include "corpus/src/data.h"
 
-#define RCORPUS_CHECK_INTERRUPT 1000
+#define RCORPUS_CHECK_EVERY 1000
+#define RCORPUS_CHECK_INTERRUPT(i) \
+	do { \
+		if (((i) + 1) % RCORPUS_CHECK_EVERY == 0) { \
+			R_CheckUserInterrupt(); \
+		} \
+	} while (0)
 
 struct corpus_data;
 struct corpus_filebuf;

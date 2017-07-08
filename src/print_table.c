@@ -225,9 +225,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 		PRINT_CHAR('\n');
 		FLUSH();
 
-		if ((i + i) % RCORPUS_CHECK_INTERRUPT == 0) {
-			R_CheckUserInterrupt();
-		}
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	(void)is_stdout; // unused unless on Windows
