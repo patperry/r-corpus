@@ -257,3 +257,23 @@ test_that("reading string with escapes works", {
     ds <- read_ndjson(file)
     expect_equal(as.character(ds), c(NA, "\n", "\u6025", intToUtf8(0x1d11e)))
 })
+
+
+test_that("printing text works", {
+    file <- tempfile()
+    writeLines(c('"hello"', '"world"', '"how are you?"'),
+               file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(capture_output(print(ds)),
+        paste('JSON data set with 3 rows of type text'))
+})
+
+
+test_that("printing text array works", {
+    file <- tempfile()
+    writeLines(c('["hello"]', 'null', '["world"]', '["how", "are", "you?"]'),
+               file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(capture_output(print(ds)),
+        paste('JSON data set with 4 rows of type [text]'))
+})
