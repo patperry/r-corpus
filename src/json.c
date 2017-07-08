@@ -21,6 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <Rdefines.h>
 #include "corpus/src/array.h"
 #include "corpus/src/error.h"
@@ -66,6 +67,25 @@ static void *realloc_nonnull(void *ptr, size_t size)
 		      size > 0 ? (uint64_t)size : 1);
 	}
 	return ans;
+}
+
+
+static void *calloc_nonnull(size_t count, size_t size)
+{
+	size_t nbyte;
+	void *mem;
+
+	if (size > 0 && count > SIZE_MAX / size) {
+		error("allocation size (%"PRIu64" objects"
+		      " of size %"PRIu64" bytes)"
+		      " exceeds maximum",
+		      (uint64_t)count, (uint64_t)size);
+	}
+
+	nbyte = count * size;
+	mem = realloc_nonnull(NULL, nbyte);
+	memset(mem, 0, nbyte);
+	return mem;
 }
 
 
@@ -875,10 +895,11 @@ SEXP as_factor_json(SEXP sdata)
 	}
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		err = corpus_data_text(&d->rows[i], &text);
 		if (err == CORPUS_ERROR_INVAL) {
 			INTEGER(ans)[i] = NA_INTEGER;
-			RCORPUS_CHECK_INTERRUPT(i);
 			continue;
 		}
 
@@ -924,7 +945,6 @@ SEXP as_factor_json(SEXP sdata)
 		}
 
 		INTEGER(ans)[i] = id + 1;
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	PROTECT(levels = allocVector(STRSXP, ctx->set.nitem)); nprot++;
@@ -1012,12 +1032,6 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext,
 	type_id = (int *)R_alloc(nfield, sizeof(type_id));
 
 	for (j = 0; j < nfield; j++) {
-		// use calloc so that all items are initialized to null
-		rows[j] = calloc(n, sizeof(*rows[j]));
-		if (!rows[j] && n) {
-			error("failed allocating memory (%"PRIu64" bytes)",
-			      (uint64_t)n * sizeof(*rows[j]));
-		}
 		cols[r->name_ids[j]] = j;
 
 		sname = STRING_ELT(names, j);
@@ -1034,6 +1048,9 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext,
 
 		shandle = getListElement(ans_j, "handle");
 		d_j = R_ExternalPtrAddr(shandle);
+
+		// use calloc so that all items are initialized to null
+		rows[j] = calloc_nonnull(n, sizeof(*rows[j]));
 		d_j->rows = rows[j];
 		d_j->nrow = n;
 		schema[j] = &d_j->schema;
@@ -1041,6 +1058,8 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext,
 	}
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if ((err = corpus_data_fields(&d->rows[i], &d->schema, &it))) {
 			continue;
 		}
@@ -1111,6 +1130,8 @@ SEXP as_list_json(SEXP sdata, SEXP stext, SEXP stringsAsFactors)
 		}
 		val = decode_sexp(&decode, &data, &d->schema);
 		SET_VECTOR_ELT(ans, i, val);
+
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	if (decode.overflow) {
