@@ -667,22 +667,19 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 SEXP subset_json(SEXP sdata, SEXP si, SEXP sj)
 {
-	SEXP ans, sname;
-	const struct json *d = as_json(sdata);
+	SEXP ans;
 
 	if (si == R_NilValue) {
 		if (sj == R_NilValue) {
 			return sdata;
 		} else {
 			// i is NULL, j is non-NULL
-			assert(d->kind == CORPUS_DATATYPE_RECORD);
 			return subscript_json(sdata, sj);
 		}
 	} else if (sj == R_NilValue) {
 		return subrows_json(sdata, si);
 	} else {
 		// both i and j are non-NULL
-		assert(d->kind == CORPUS_DATATYPE_RECORD);
 
 		// get the column (do this first to preserve the column type)
 		PROTECT(sdata = subscript_json(sdata, sj));
@@ -714,6 +711,8 @@ SEXP as_double_json(SEXP sdata)
 		} else if (err == CORPUS_ERROR_OVERFLOW) {
 			overflow = 1;
 		}
+
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	if (overflow) {
@@ -748,6 +747,8 @@ static SEXP as_integer_json_check(SEXP sdata, int *overflowptr)
 				val[i] = NA_INTEGER;
 			}
 		}
+
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	if (overflowptr) {
@@ -792,6 +793,8 @@ SEXP as_logical_json(SEXP sdata)
 		} else {
 			val[i] = b ? TRUE : FALSE;
 		}
+
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(1);
@@ -819,6 +822,8 @@ SEXP as_character_json(SEXP sdata)
 		} else {
 			SET_STRING_ELT(ans, i, mkchar_get(&mkchar, &text));
 		}
+
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(1);
@@ -826,105 +831,115 @@ SEXP as_character_json(SEXP sdata)
 }
 
 
+struct factor_context {
+	struct corpus_textset set;
+	struct corpus_text buf;
+	int has_set;
+	size_t nbuf;
+};
+
+
+static void factor_context_destroy(void *obj)
+{
+	struct factor_context *ctx = obj;
+
+	if (ctx->has_set) {
+		corpus_textset_destroy(&ctx->set);
+	}
+
+	free(ctx->buf.ptr);
+}
+
+
 SEXP as_factor_json(SEXP sdata)
 {
-	SEXP ans, lev, levels;
+	SEXP ans, sctx, lev, levels;
+	struct factor_context *ctx;
 	const struct json *d = as_json(sdata);
 	struct corpus_text text;
 	struct corpus_text_iter it;
-	struct corpus_textset set;
 	struct mkchar mkchar;
 	R_xlen_t i, n = d->nrow;
 	int err, id, utf8, nprot = 0;
-	struct corpus_text buf;
 	uint8_t *ptr;
-	size_t nbuf;
-
-	buf.ptr = NULL;
-	buf.attr = 0;
-	nbuf = 0;
 
 	PROTECT(ans = allocVector(INTSXP, n)); nprot++;
 
-	if ((err = corpus_textset_init(&set))) {
-		goto error_init;
+	PROTECT(sctx = alloc_context(sizeof(*ctx), factor_context_destroy));
+	nprot++;
+
+	ctx = as_context(sctx);
+
+	if ((err = corpus_textset_init(&ctx->set))) {
+		error("memory allocation failure");
 	}
 
 	for (i = 0; i < n; i++) {
 		err = corpus_data_text(&d->rows[i], &text);
 		if (err == CORPUS_ERROR_INVAL) {
 			INTEGER(ans)[i] = NA_INTEGER;
-		} else {
-			// decode escapes in the input
-			if (CORPUS_TEXT_HAS_ESC(&text)) {
-				if (CORPUS_TEXT_SIZE(&text) >= nbuf) {
-					nbuf = CORPUS_TEXT_SIZE(&text);
-					ptr = realloc(buf.ptr, nbuf);
-					if (!ptr) {
-						corpus_textset_destroy(&set);
-						free(buf.ptr);
-						error("failed allocating"
-						      " %"PRIu64" bytes",
-						      (uint64_t)nbuf);
-					}
-					buf.ptr = ptr;
-				}
-
-				utf8 = 0;
-				ptr = buf.ptr;
-				corpus_text_iter_make(&it, &text);
-
-				while (corpus_text_iter_advance(&it)) {
-					if (!CORPUS_IS_ASCII(it.current)) {
-						utf8 = 1;
-					}
-					corpus_encode_utf8(it.current,
-							   &ptr);
-				}
-
-				buf.attr = (size_t)(ptr - buf.ptr);
-				if (utf8) {
-					buf.attr |= CORPUS_TEXT_UTF8_BIT;
-				}
-
-				err = corpus_textset_add(&set, &buf, &id);
-			} else {
-				err = corpus_textset_add(&set, &text, &id);
-			}
-
-			if (err) {
-				goto error_add;
-			}
-			if (id == INT_MAX || id + 1 == NA_INTEGER) {
-				corpus_textset_destroy(&set);
-				free(buf.ptr);
-				error("number of factor levels (%d)"
-				      " exceeds maximum", id);
-			}
-			INTEGER(ans)[i] = id + 1;
+			RCORPUS_CHECK_INTERRUPT(i);
+			continue;
 		}
+
+		// decode escapes in the input
+		if (CORPUS_TEXT_HAS_ESC(&text)) {
+			if (CORPUS_TEXT_SIZE(&text) >= ctx->nbuf) {
+				ctx->nbuf = CORPUS_TEXT_SIZE(&text);
+				ptr = realloc(ctx->buf.ptr, ctx->nbuf);
+				if (!ptr) {
+					error("failed allocating"
+					      " %"PRIu64" bytes",
+					      (uint64_t)ctx->nbuf);
+				}
+				ctx->buf.ptr = ptr;
+			}
+
+			utf8 = 0;
+			ptr = ctx->buf.ptr;
+			corpus_text_iter_make(&it, &text);
+
+			while (corpus_text_iter_advance(&it)) {
+				utf8 = !CORPUS_IS_ASCII(it.current);
+				corpus_encode_utf8(it.current, &ptr);
+			}
+
+			ctx->buf.attr = (size_t)(ptr - ctx->buf.ptr);
+			if (utf8) {
+				ctx->buf.attr |= CORPUS_TEXT_UTF8_BIT;
+			}
+
+			err = corpus_textset_add(&ctx->set, &ctx->buf, &id);
+		} else {
+			err = corpus_textset_add(&ctx->set, &text, &id);
+		}
+
+		if (err) {
+			error("memory allocation failure");
+		}
+
+		if (id == INT_MAX || id + 1 == NA_INTEGER) {
+			error("number of factor levels (%d)"
+			      " exceeds maximum", id);
+		}
+
+		INTEGER(ans)[i] = id + 1;
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
-	PROTECT(levels = allocVector(STRSXP, set.nitem)); nprot++;
+	PROTECT(levels = allocVector(STRSXP, ctx->set.nitem)); nprot++;
 
 	mkchar_init(&mkchar);
 
-	for (id = 0; id < set.nitem; id++) {
-		lev = mkchar_get(&mkchar, &set.items[id]);
+	for (id = 0; id < ctx->set.nitem; id++) {
+		lev = mkchar_get(&mkchar, &ctx->set.items[id]);
 		SET_STRING_ELT(levels, id, lev);
 	}
 
 	setAttrib(ans, R_LevelsSymbol, levels);
 	setAttrib(ans, R_ClassSymbol, mkString("factor"));
-	err = 0;
 
-error_add:
-	corpus_textset_destroy(&set);
-	free(buf.ptr);
-error_init:
-	if (err) {
-		error("failed decoding JSON data to factor type");
-	}
+	free_context(sctx);
 	UNPROTECT(nprot);
 	return ans;
 }

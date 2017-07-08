@@ -45,14 +45,6 @@ struct corpus_filter;
 struct corpus_search;
 struct corpus_sentfilter;
 
-struct json {
-	struct corpus_schema schema;
-	struct corpus_data *rows;
-	R_xlen_t nrow;
-	int type_id;
-	int kind;
-};
-
 struct mkchar {
 	uint8_t *buf;
 	int size;
@@ -63,6 +55,14 @@ struct decode {
 	int overflow;
 };
 
+struct json {
+	struct corpus_schema schema;
+	struct corpus_data *rows;
+	R_xlen_t nrow;
+	int type_id;
+	int kind;
+};
+
 struct termset {
 	struct corpus_termset set;
 	struct corpus_text *items;
@@ -70,6 +70,12 @@ struct termset {
 	int max_length;
 	int nitem;
 };
+
+/* context */
+SEXP alloc_context(size_t size, void (*destroy_func)(void *));
+void free_context(SEXP x);
+void *as_context(SEXP x);
+int is_context(SEXP x);
 
 /* converting text to CHARSXP */
 void mkchar_init(struct mkchar *mk);
