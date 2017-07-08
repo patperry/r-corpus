@@ -192,11 +192,6 @@ SEXP utf8_format(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
 SEXP utf8_valid(SEXP x);
 SEXP utf8_width(SEXP x, SEXP width);
 
-/* data schema */
-SEXP alloc_schema(void);
-int is_schema(SEXP schema);
-struct corpus_schema *as_schema(SEXP schema);
-
 /* json values */
 SEXP mmap_ndjson(SEXP file);
 SEXP read_ndjson(SEXP buffer);
