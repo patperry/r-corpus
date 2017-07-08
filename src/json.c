@@ -53,6 +53,28 @@ static void free_json(SEXP sjson)
 }
 
 
+static void *realloc_nonnull(void *ptr, size_t size)
+{
+	void *ans = realloc(ptr, size);
+
+	if (ans == NULL && size == 0) {
+		ans = malloc(1);
+	}
+
+	if (!ans) {
+		error("failed allocating memory (%"PRIu64") bytes",
+		      size > 0 ? (uint64_t)size : 1);
+	}
+	return ans;
+}
+
+
+static void *malloc_nonnull(size_t size)
+{
+	return realloc_nonnull(NULL, size);
+}
+
+
 SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 {
 	SEXP ans, sclass, shandle, snames;
@@ -222,17 +244,9 @@ static void json_load(SEXP sdata)
 		}
 	}
 
-	// free excess memory
-	parent->rows = realloc(parent->rows, nrow * sizeof(*parent->rows));
-
-	// ensure rows is non-NULL even if nrow == 0
-	if (parent->rows == NULL) {
-		parent->rows = malloc(sizeof(*parent->rows));
-		if (!parent->rows) {
-			error("failed allocating memory (%u bytes)",
-				sizeof(*parent->rows));
-		}
-	}
+	// free excess memory, ensuring result is non-NULL
+	parent->rows = realloc_nonnull(parent->rows,
+				       nrow * sizeof(*parent->rows));
 
 	// set the attribute fields
 	parent->nrow = nrow;
@@ -541,7 +555,6 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	SEXP ans, shandle, sbuffer, sfield, srows, srows2;
 	const struct json *obj = as_json(sdata);
 	struct json *obj2;
-	struct corpus_data *rows;
 	const struct corpus_data *src;
 	const double *index;
 	double *irows;
@@ -567,19 +580,11 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
-	rows = malloc(n * sizeof(*rows));
-	obj2->rows = rows;
-
-	if (n > 0 && !rows) {
-		error("failed allocating %"PRIu64" bytes",
-		      (uint64_t)n * sizeof(*rows));
-	}
-
+	obj2->rows = malloc_nonnull(n * sizeof(*obj2->rows));
 	type_id = CORPUS_DATATYPE_NULL;
 
 	for (i = 0; i < n; i++) {
 		if (!(1 <= index[i] && index[i] <= (double)obj->nrow)) {
-			free(rows);
 			error("invalid index: %g", index[i]);
 		}
 
@@ -591,19 +596,21 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 		}
 		src = &obj->rows[ind];
 
-		if ((err = corpus_data_assign(&rows[i], &obj2->schema,
+		if ((err = corpus_data_assign(&obj2->rows[i], &obj2->schema,
 					      src->ptr, src->size))) {
 			error("error parsing row %"PRIu64
 			      " of JSON file", (uint64_t)(irows[i] + 1));
 		}
 
 		if ((err = corpus_schema_union(&obj2->schema, type_id,
-					       rows[i].type_id, &type_id))) {
+					       obj2->rows[i].type_id,
+					       &type_id))) {
 			error("memory allocation failure"
 			      " after parsing row %"PRIu64
 			      " of JSON file", (uint64_t)(irows[i] + 1));
 		}
 
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	// set the fields
@@ -626,7 +633,6 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	SEXP ans, sbuffer, sfield, sfield2, shandle, srows;
 	const struct json *obj = as_json(sdata);
 	struct corpus_text name;
-	struct corpus_data *rows;
 	struct corpus_data field;
 	const char *name_ptr;
 	size_t name_len;
@@ -672,24 +678,20 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	obj2 = R_ExternalPtrAddr(shandle);
 
 	n = obj->nrow;
-	rows = malloc(n * sizeof(*rows));
-
-	if (n > 0 && !rows) {
-		error("failed allocating %"PRIu64" bytes",
-		      (uint64_t)n * sizeof(*rows));
-	}
-	obj2->rows = rows;
+	obj2->rows = malloc_nonnull(n * sizeof(*obj2->rows));
 
 	type_id = CORPUS_DATATYPE_NULL;
 	for (i = 0; i < n; i++) {
 		corpus_data_field(&obj->rows[i], &obj->schema, name_id,
 				  &field);
-		corpus_data_assign(&rows[i], &obj2->schema, field.ptr,
+		corpus_data_assign(&obj2->rows[i], &obj2->schema, field.ptr,
 				   field.size);
 		if (corpus_schema_union(&obj2->schema, type_id,
-					rows[i].type_id, &type_id) != 0) {
+					obj2->rows[i].type_id, &type_id) != 0) {
 			error("memory allocation failure");
 		}
+
+		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	obj2->nrow = n;
