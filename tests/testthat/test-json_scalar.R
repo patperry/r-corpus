@@ -206,11 +206,11 @@ test_that("reading record array works", {
               '[]',
               '[{}]',
               '[{"a": true}, {"b": null}, {"c": true}]')
-    x <- list(list(list(a = TRUE, b = FALSE, c = NULL)),
+    x <- list(list(list(a = TRUE, b = FALSE, c = NA)),
               list(list(a = FALSE, c = TRUE)),
               NULL,
               list(list()),
-              list(list(a = TRUE), list(b = NULL), list(c = TRUE)))
+              list(list(a = TRUE), list(b = NA), list(c = TRUE)))
 
     file <- tempfile()
     writeLines(json, file)
