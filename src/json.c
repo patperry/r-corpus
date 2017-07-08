@@ -667,27 +667,28 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 SEXP subset_json(SEXP sdata, SEXP si, SEXP sj)
 {
-	SEXP ans;
+	SEXP ans, sname;
 	const struct json *d = as_json(sdata);
 
 	if (si == R_NilValue) {
 		if (sj == R_NilValue) {
 			return sdata;
 		} else {
-			if (d->kind != CORPUS_DATATYPE_RECORD) {
-				error("incorrect number of dimensions");
-			}
+			// i is NULL, j is non-NULL
+			assert(d->kind == CORPUS_DATATYPE_RECORD);
 			return subscript_json(sdata, sj);
 		}
 	} else if (sj == R_NilValue) {
 		return subrows_json(sdata, si);
 	} else {
-		if (d->kind != CORPUS_DATATYPE_RECORD) {
-			error("incorrect number of dimensions");
-		}
+		// both i and j are non-NULL
+		assert(d->kind == CORPUS_DATATYPE_RECORD);
 
-		PROTECT(sdata = subrows_json(sdata, si));
-		ans = subscript_json(sdata, sj);
+		// get the column (do this first to preserve the column type)
+		PROTECT(sdata = subscript_json(sdata, sj));
+
+		// get the rows
+		ans = subrows_json(sdata, si);
 		UNPROTECT(1);
 		return ans;
 	}

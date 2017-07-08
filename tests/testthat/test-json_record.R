@@ -29,3 +29,19 @@ test_that("printing works", {
               '\t"d": text',
               '}', sep = '\n'))
 })
+
+
+test_that("subscripting both dimensions works", {
+    file <- tempfile()
+    writeLines(c('{"a": 1, "b": true, "c": [3.14]}',
+                 '{"b": false, "c":[2.4, -1.0], "d": "hello"}'),
+               file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_error(ds[2, c("c", "a")],
+                 "second subscript of length >1 is not allowed")
+
+    expect_equal(as.list(ds[2, "c"]), list(c(2.4, -1.0)))
+    expect_equal(as.integer(ds[2, "a"]), NA_integer_)
+    expect_equal(as.list(ds[,]), as.list(ds))
+    expect_equal(as.list(ds[]), as.list(ds))
+})
