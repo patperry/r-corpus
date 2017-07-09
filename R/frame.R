@@ -106,7 +106,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
 }
 
 
-print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
+print.corpus_frame <- function(x, rows = 18L, chars = NULL, digits = NULL,
                                quote = FALSE, na.print = NULL,
                                print.gap = NULL, right = FALSE,
                                row.names = TRUE, max = NULL,
