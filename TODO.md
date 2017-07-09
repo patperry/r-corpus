@@ -14,8 +14,6 @@ Features
 
  * `summary.text` could be better
 
- * `format.corpus_frame`
-
  * `text_subset(,terms)`
 
  * Need calls to `R_CheckUserInterrupt()` in long-running computations
@@ -25,5 +23,3 @@ Features
    setting a `filter` property on text objects to act as a default.
 
  * `as_corpus`
-
- * `text_priority`
