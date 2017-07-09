@@ -29,7 +29,8 @@
     vector with the same length and names as the input text, with the elements
     giving the number of units in the corresponding texts.  For
     \code{text_types}, the result is a list of character vector with each
-    vector giving the unique types in the corresponding text.
+    vector giving the unique types in the corresponding text, ordered
+    according to the \code{\link{sort}} function.
 
     If \code{collapse = TRUE}, then we aggregate over all rows of the input.
     In this case, \code{text_ntype} produces a scalar indicating the number

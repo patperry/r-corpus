@@ -15,17 +15,27 @@
 
 text_ntype <- function(x, filter = token_filter(), collapse = FALSE)
 {
-    x <- as_text(x)
-    filter <- as_token_filter(filter)
-    collapse <- as_option("collapse", collapse)
+    with_rethrow({
+        x <- as_text(x)
+        filter <- as_token_filter(filter)
+        collapse <- as_option("collapse", collapse)
+    })
     .Call(C_text_ntype, x, filter, collapse)
 }
 
 
 text_types <- function(x, filter = token_filter(), collapse = FALSE)
 {
-    x <- as_text(x)
-    filter <- as_token_filter(filter)
-    collapse <- as_option("collapse", collapse)
-    .Call(C_text_types, x, filter, collapse)
+    with_rethrow({
+        x <- as_text(x)
+        filter <- as_token_filter(filter)
+        collapse <- as_option("collapse", collapse)
+    })
+    typs <- .Call(C_text_types, x, filter, collapse)
+    if (collapse) {
+        typs <- sort(typs)
+    } else {
+        typs <- lapply(typs, sort)
+    }
+    typs
 }
