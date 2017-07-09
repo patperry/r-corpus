@@ -289,3 +289,12 @@ test_that("'print.corpus_frame' can right justify", {
     expect_equal(capture_output(print.corpus_frame(d, right = TRUE)),
                  capture_output(print(d, right = TRUE)))
 })
+
+
+test_that("'print.corpus_frame' does not need a gap at the end", {
+    w <- getOption("width")
+    d <- data.frame(x = paste0(rep("x", 10), collapse=""),
+                    y = paste0(rep("y", w - 10 - 3), collapse=""))
+    expect_equal(length(strsplit(capture_output(print.corpus_frame(d)),
+                                 "\n")[[1]]), 2)
+})

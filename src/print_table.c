@@ -313,13 +313,13 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 			// avoid integer overflow
 
 			if (end > begin || row_names != R_NilValue) {
-				if (linewidth >= width - print_gap) {
+				if (linewidth > width - print_gap) {
 					break;
 				}
 				linewidth += print_gap;
 			}
 
-			if (linewidth >= width - colwidths[end]) {
+			if (linewidth > width - colwidths[end]) {
 				break;
 			}
 			linewidth += colwidths[end];
