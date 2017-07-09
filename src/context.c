@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "corpus/src/memory.h"
 #include "rcorpus.h"
 
 #define CONTEXT_TAG install("corpus::context")
@@ -37,8 +38,8 @@ void free_context(SEXP x)
 		if (ctx->destroy_func) {
 			(ctx->destroy_func)(ctx->data);
 		}
-		free(ctx->data);
-		free(ctx);
+		corpus_free(ctx->data);
+		corpus_free(ctx);
 	}
 }
 
@@ -46,27 +47,27 @@ void free_context(SEXP x)
 SEXP alloc_context(size_t size, void (*destroy_func)(void *))
 {
 	SEXP ans;
-	struct context *ctx;
-	void *obj;
+	struct context *ctx = NULL;
+	void *obj = NULL;
+	int err = 0;
 
 	PROTECT(ans = R_MakeExternalPtr(NULL, CONTEXT_TAG, R_NilValue));
         R_RegisterCFinalizerEx(ans, free_context, TRUE);
 
-	obj = calloc(1, size);
-	if (size && !obj) {
-		error("failed allocating memory (%"PRIu64" bytes)",
-		      (uint64_t)size);
-	}
+	RCORPUS_TRY_ALLOC(obj = corpus_calloc(1, size == 0 ? 1 : size));
+	RCORPUS_TRY_ALLOC(ctx = corpus_malloc(sizeof(*ctx)));
 
-	if (!(ctx = malloc(size))) {
-		free(obj);
-		error("failed allocating memory (%u bytes)", sizeof(*ctx));
-	}
-
-	 ctx->data = obj;
-	 ctx->destroy_func = destroy_func;
-
+	ctx->data = obj;
+	ctx->destroy_func = destroy_func;
         R_SetExternalPtrAddr(ans, ctx);
+
+out:
+	if (err) {
+		corpus_free(ctx);
+		corpus_free(obj);
+		error("failed allocating memory for context");
+	}
+
 	UNPROTECT(1);
 	return ans;
 }

@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <Rdefines.h>
 
+#include "corpus/src/error.h"
 #include "corpus/src/table.h"
 #include "corpus/src/tree.h"
 #include "corpus/src/termset.h"
@@ -36,6 +37,20 @@
 	do { \
 		if (((i) + 1) % RCORPUS_CHECK_EVERY == 0) { \
 			R_CheckUserInterrupt(); \
+		} \
+	} while (0)
+
+#define RCORPUS_TRY(x) \
+	do { \
+		if ((err = (x))) { \
+			goto out; \
+		} \
+	} while (0)
+
+#define RCORPUS_TRY_ALLOC(x) \
+	do { \
+		if ((err = (x) ? 0 : CORPUS_ERROR_NOMEM)) { \
+			goto out; \
 		} \
 	} while (0)
 
