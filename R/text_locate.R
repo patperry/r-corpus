@@ -47,7 +47,7 @@ text_locate <- function(x, terms, filter = token_filter())
 
 format.corpus_text_locate <- function(x, width = getOption("width"),
                                       print.gap = NULL, ...,
-                                      display = FALSE, justify = "none")
+                                      display = FALSE, justify = "left")
 {
     width <- as_integer_scalar("width", width)
     print.gap <- as_print_gap("print.gap", print.gap)
@@ -61,29 +61,35 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
     rval <- list()
     colwidths <- c()
     charmax <- .Machine$integer.max
+    names <- names(x)
 
-    for (i in names(x)) {
-        if (i %in% c("before", "after")) {
+    for (i in seq_along(x)) {
+        nm <- names[[i]]
+        if (nm %in% c("before", "after")) {
             rval[[i]] <- NA # set to NA and deal with this later
             colwidths[[i]] <- 0
             nctx <- nctx + 1
         } else {
-            w = utf8_width(i)
-            if (i == "text") {
+            w = utf8_width(nm)
+            j <- justify
+            if (nm == "text") {
                 # use as_text to format an integer text id like
                 # a character label
                 rval[[i]] <- format(as_text(x[[i]]), width = 4,
                                     chars = charmax, display = display,
-                                    justify = justify)
-            } else if (i == "instance") {
+                                    justify = j)
+            } else if (nm == "instance") {
+                j <- "centre"
                 rval[[i]] <- format(as_text(x[[i]]), width = 8,
                                     chars = charmax, display = display,
-                                    justify = "centre")
+                                    justify = j)
             } else {
                 rval[[i]] = format(x[[i]], width = w, ...,
-                                   display = display, justify = justify)
+                                   display = display, justify = j)
             }
             colwidths[[i]] <- max(w, utf8_width(rval[[i]]))
+            names[[i]] <- format(nm, width = colwidths[[i]],
+                                 chars = charmax, justify = j)
         }
     }
 
@@ -91,32 +97,42 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
                         display = display, jusitfy = "left")
     colwidths <- c(colwidths, max(0, utf8_width(row_names)))
 
-    extra <- width - sum(colwidths) - print.gap * length(colwidths)
+    extra <- width - sum(colwidths) - print.gap * (length(colwidths) - 1)
     ctxwidth <- max(12, extra / max(1, nctx))
     ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", 3, 1)
 
-    if (!is.null(x$before)) {
-        rval[["before"]] <- format(x$before, chars = ctxwidth - ellipsis,
-                                   display = display, justify = "right")
+    if ("before" %in% names) {
+        i <- match("before", names)
+        rval[[i]] <- format(x[[i]], chars = floor(ctxwidth) - ellipsis,
+                            display = display, justify = "right")
+        names[[i]] <- format("before", width = max(0, utf8_width(rval[[i]])),
+                             chars = charmax, justify = "left")
     }
 
-    if (!is.null(x$after)) {
-        rval[["after"]] <- format(x$after, chars = ctxwidth - ellipsis,
-                                  display = display, justify = "left")
+    if ("after" %in% names) {
+        i <- match("after", names)
+        rval[[i]] <- format(x[[i]], chars = ceiling(ctxwidth) - ellipsis,
+                            display = display, justify = "left")
+        names[[i]] <- format("after", width = max(0, utf8_width(rval[[i]])),
+                             chars = charmax, justify = "right")
     }
+    names(rval) <- names
 
     for (i in seq_along(rval)) {
         oldClass(rval[[i]]) <- "AsIs"
     }
 
-    ans <- as.data.frame(rval, row.names = row_names)
-    class(ans) <- c("corpus_frame", "data.frame")
+    ans <- structure(rval, class = c("corpus_frame", "data.frame"),
+                     row.names = row_names)
     ans
 }
 
 
 print.corpus_text_locate <- function(x, print.gap = NULL, display = TRUE, ...)
 {
-    print(format(x, print.gap = print.gap, display = display))
+    fmt <- format.corpus_text_locate(x, print.gap = print.gap,
+                                     display = display, ...)
+    print.corpus_frame(fmt, chars = .Machine$integer.max,
+                       print.gap = print.gap)
     invisible(x)
 }
