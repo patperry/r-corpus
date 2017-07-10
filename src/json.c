@@ -431,34 +431,6 @@ SEXP names_json(SEXP sdata)
 }
 
 
-SEXP json_datatype(SEXP sdata)
-{
-	SEXP str, ans;
-	const struct json *d = as_json(sdata);
-	struct corpus_render r;
-
-	if (corpus_render_init(&r, CORPUS_ESCAPE_NONE) != 0) {
-		error("memory allocation failure");
-	}
-	corpus_render_set_tab(&r, "");
-	corpus_render_set_newline(&r, " ");
-
-	corpus_render_datatype(&r, &d->schema, d->type_id);
-	if (r.error) {
-		corpus_render_destroy(&r);
-		error("memory allocation failure");
-	}
-
-	PROTECT(ans = allocVector(STRSXP, 1));
-	str = mkCharLenCE(r.string, r.length, CE_UTF8);
-	SET_STRING_ELT(ans, 0, str);
-
-	corpus_render_destroy(&r);
-	UNPROTECT(1);
-	return ans;
-}
-
-
 SEXP print_json(SEXP sdata)
 {
 	const struct json *d = as_json(sdata);
@@ -851,120 +823,6 @@ SEXP as_character_json(SEXP sdata)
 }
 
 
-struct factor_context {
-	struct corpus_textset set;
-	struct corpus_text buf;
-	int has_set;
-	size_t nbuf;
-};
-
-
-static void factor_context_destroy(void *obj)
-{
-	struct factor_context *ctx = obj;
-
-	if (ctx->has_set) {
-		corpus_textset_destroy(&ctx->set);
-	}
-
-	free(ctx->buf.ptr);
-}
-
-
-SEXP as_factor_json(SEXP sdata)
-{
-	SEXP ans, sctx, lev, levels;
-	struct factor_context *ctx;
-	const struct json *d = as_json(sdata);
-	struct corpus_text text;
-	struct corpus_text_iter it;
-	struct mkchar mkchar;
-	R_xlen_t i, n = d->nrow;
-	int err, id, utf8, nprot = 0;
-	uint8_t *ptr;
-
-	PROTECT(ans = allocVector(INTSXP, n)); nprot++;
-
-	PROTECT(sctx = alloc_context(sizeof(*ctx), factor_context_destroy));
-	nprot++;
-
-	ctx = as_context(sctx);
-
-	if ((err = corpus_textset_init(&ctx->set))) {
-		error("memory allocation failure");
-	}
-
-	for (i = 0; i < n; i++) {
-		RCORPUS_CHECK_INTERRUPT(i);
-
-		err = corpus_data_text(&d->rows[i], &text);
-		if (err == CORPUS_ERROR_INVAL) {
-			INTEGER(ans)[i] = NA_INTEGER;
-			continue;
-		}
-
-		// decode escapes in the input
-		if (CORPUS_TEXT_HAS_ESC(&text)) {
-			if (CORPUS_TEXT_SIZE(&text) >= ctx->nbuf) {
-				ctx->nbuf = CORPUS_TEXT_SIZE(&text);
-				ptr = realloc(ctx->buf.ptr, ctx->nbuf);
-				if (!ptr) {
-					error("failed allocating"
-					      " %"PRIu64" bytes",
-					      (uint64_t)ctx->nbuf);
-				}
-				ctx->buf.ptr = ptr;
-			}
-
-			utf8 = 0;
-			ptr = ctx->buf.ptr;
-			corpus_text_iter_make(&it, &text);
-
-			while (corpus_text_iter_advance(&it)) {
-				utf8 = !CORPUS_IS_ASCII(it.current);
-				corpus_encode_utf8(it.current, &ptr);
-			}
-
-			ctx->buf.attr = (size_t)(ptr - ctx->buf.ptr);
-			if (utf8) {
-				ctx->buf.attr |= CORPUS_TEXT_UTF8_BIT;
-			}
-
-			err = corpus_textset_add(&ctx->set, &ctx->buf, &id);
-		} else {
-			err = corpus_textset_add(&ctx->set, &text, &id);
-		}
-
-		if (err) {
-			error("memory allocation failure");
-		}
-
-		if (id == INT_MAX || id + 1 == NA_INTEGER) {
-			error("number of factor levels (%d)"
-			      " exceeds maximum", id);
-		}
-
-		INTEGER(ans)[i] = id + 1;
-	}
-
-	PROTECT(levels = allocVector(STRSXP, ctx->set.nitem)); nprot++;
-
-	mkchar_init(&mkchar);
-
-	for (id = 0; id < ctx->set.nitem; id++) {
-		lev = mkchar_get(&mkchar, &ctx->set.items[id]);
-		SET_STRING_ELT(levels, id, lev);
-	}
-
-	setAttrib(ans, R_LevelsSymbol, levels);
-	setAttrib(ans, R_ClassSymbol, mkString("factor"));
-
-	free_context(sctx);
-	UNPROTECT(nprot);
-	return ans;
-}
-
-
 static int in_string_set(SEXP strs, SEXP item)
 {
 	R_xlen_t i, n;
@@ -996,8 +854,7 @@ static int in_string_set(SEXP strs, SEXP item)
 }
 
 
-static SEXP as_list_json_record(SEXP sdata, SEXP stext,
-				    SEXP stringsAsFactors)
+static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 {
 	SEXP ans, ans_j, names, sbuffer, sfield, sfield2, srows,
 	     shandle, sname;
@@ -1097,7 +954,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext,
 						 STRING_ELT(names, j))) {
 			ans_j = as_text_json(ans_j);
 		} else {
-			ans_j = simplify_json(ans_j, stext, stringsAsFactors);
+			ans_j = simplify_json(ans_j, stext);
 		}
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
@@ -1107,7 +964,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext,
 }
 
 
-SEXP as_list_json(SEXP sdata, SEXP stext, SEXP stringsAsFactors)
+SEXP as_list_json(SEXP sdata, SEXP stext)
 {
 	SEXP ans, val;
 	const struct json *d = as_json(sdata);
@@ -1116,7 +973,7 @@ SEXP as_list_json(SEXP sdata, SEXP stext, SEXP stringsAsFactors)
 	R_xlen_t i, n = d->nrow;
 
 	if (d->kind == CORPUS_DATATYPE_RECORD) {
-		return as_list_json_record(sdata, stext, stringsAsFactors);
+		return as_list_json_record(sdata, stext);
 	}
 
 	PROTECT(ans = allocVector(VECSXP, n));
@@ -1143,7 +1000,7 @@ SEXP as_list_json(SEXP sdata, SEXP stext, SEXP stringsAsFactors)
 }
 
 
-SEXP simplify_json(SEXP sdata, SEXP stext, SEXP sstringsAsFactors)
+SEXP simplify_json(SEXP sdata, SEXP stext)
 {
 	SEXP ans;
 	const struct json *d = as_json(sdata);
@@ -1167,15 +1024,11 @@ SEXP simplify_json(SEXP sdata, SEXP stext, SEXP sstringsAsFactors)
 		break;
 
 	case CORPUS_DATATYPE_TEXT:
-		if (LOGICAL(sstringsAsFactors)[0] == TRUE) {
-			ans = as_factor_json(sdata);
-		} else {
-			ans = as_character_json(sdata);
-		}
+		ans = as_character_json(sdata);
 		break;
 
 	case CORPUS_DATATYPE_ARRAY:
-		ans = as_list_json(sdata, stext, sstringsAsFactors);
+		ans = as_list_json(sdata, stext);
 		break;
 
 	default:

@@ -7,8 +7,7 @@
     (NDJSON) format.
 }
 \usage{
-    read_ndjson(file, mmap = FALSE, simplify = TRUE, text = "text",
-                stringsAsFactors = default.stringsAsFactors())
+    read_ndjson(file, mmap = FALSE, simplify = TRUE, text = NULL)
 }
 \arguments{
     \item{file}{the name of the file which the data are to be read from,
@@ -26,10 +25,8 @@
        will be an integer vector rather than a \code{corpus_json} object.}
 
     \item{text}{a character vector of string fields to interpret as
-       \code{text} instead of \code{character} or \code{factor}.}
-
-    \item{stringsAsFactors}{a logical value indicating whether to interpret
-        JSON character strings as \code{factor} instead of \code{character}.}
+       \code{text} instead of \code{character}, or \code{NULL} to
+       interpret all strings as \code{character}.}
 }
 \details{
     This function is the recommended means of reading data for processing
@@ -37,8 +34,7 @@
 
     When the \code{text} argument is non-\code{NULL} string data
     fields with names indicated by this argument are decoded as
-    \code{text} values, not as \code{character} values. The default behavior
-    is to decode fields named \code{"text"} as \code{text} values.
+    \code{text} values, not as \code{character} values.
 }
 \section{Memory mapping}{
     When you specify \code{mmap = TRUE}, the function memory-maps the file
@@ -49,19 +45,30 @@
     you to transparently process large data sets that do not fit into
     memory.
 
+    In terms of memory usage, enabling \code{mmap = TRUE} reduces the
+    footprint for \code{corpus_json} and \code{corpus_text} objects;
+    native R objects (\code{character}, \code{integer}, \code{list},
+    \code{logical}, and \code{numeric}) get fully deserialized to
+    memory and produce identical results regardless of whether
+    \code{mmap} is \code{TRUE} or \code{FALSE}. To process a large
+    text corpus with a text field named \code{"text"}, you should set
+    \code{text = "text"} and \code{mmap = TRUE}. Or, to reduce the memory
+    footprint even further, set \code{simplify = FALSE} and
+    \code{mmap = TRUE}.
+
     One danger in memory-mapping is that if you delete the file
     after calling \code{read_ndjson} but before processing the data, then
     the results will be undefined, and your computer may crash. (On
     POSIX-compliant systems like Mac OS and Linux, there should be no
     ill effects to deleting the file. On recent versions of Windows,
     the system will not allow you to delete the file as long as the data
-    is active; on older versions, the behavior is undefined.)
+    is active.)
 
     Another danger in memory-mapping is that if you serialize a
-    \code{corpus_json} object or derived \code{text} object using
+    \code{corpus_json} object or derived \code{corpus_text} object using
     \code{\link{saveRDS}} or another similar function, and then you
-    deserialize the object, then R will attempt create a new memory-map
-    using the original \code{file} argument passed to the \code{read_ndjson}
+    deserialize the object, R will attempt create a new memory-map
+    using the \code{file} argument passed to the original \code{read_ndjson}
     call. If \code{file} is a relative path, then your working directory
     at the time of deserialization must agree with your working directory
     at the time of the \code{read_ndjson} call.  You can avoid this
@@ -72,8 +79,9 @@
 \value{
     In the default usage, with argument \code{simplify = TRUE}, when
     the lines of the file are records (JSON object literals), the
-    return value from \code{read_ndjson} is a data frame. With
-    \code{simplify = FALSE}, the result is a \code{corpus_json} object.
+    return value from \code{read_ndjson} is a data frame with class
+    \code{c("corpus_frame", "data.frame")}. With \code{simplify = FALSE},
+    the result is a \code{corpus_json} object.
 }
 \seealso{
     \code{\link{as_text}}, \code{\link{as_utf8}}.
