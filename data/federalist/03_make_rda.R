@@ -31,6 +31,7 @@ federalist <- data.frame(name,
                          author,
                          text = raw$text,
                          stringsAsFactors = FALSE)
+class(federalist) <- c("corpus_frame", "data.frame")
 
 save(federalist, file = "../federalist.rda")
 tools::resaveRdaFiles("../federalist.rda")
