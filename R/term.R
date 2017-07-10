@@ -109,18 +109,20 @@ term_frame <- function(x, filter = token_filter(), weights = NULL,
         factors <- as_option("factors", factors)
     })
 
-    row <- as.integer(mat$i + 1L)
-    term <- as.integer(mat$j + 1L)
+    row_names <- mat$row_names
+    if (is.null(row_names)) {
+        row_names <- as.character(seq_len(mat$nrow))
+    }
+
+    row <- structure(as.integer(mat$i + 1L), class = "factor",
+                     levels = row_names)
+    term <- structure(as.integer(mat$j + 1L), class = "factor",
+                      levels = mat$col_names)
     count <- mat$count
 
-    if (factors) {
-        row_names <- mat$row_names
-        if (is.null(row_names)) {
-            row_names <- as.character(seq_len(mat$nrow))
-        }
-
-        row <- structure(row, class = "factor", levels = row_names)
-        term <- structure(term, class = "factor", levels = mat$col_names)
+    if (!factors) {
+        row <- as.character(row)
+        term <- as.character(term)
     }
 
     if (is.null(group)) {
