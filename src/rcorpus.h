@@ -40,14 +40,14 @@
 		} \
 	} while (0)
 
-#define RCORPUS_TRY(x) \
+#define TRY(x) \
 	do { \
 		if ((err = (x))) { \
 			goto out; \
 		} \
 	} while (0)
 
-#define RCORPUS_TRY_ALLOC(x) \
+#define TRY_ALLOC(x) \
 	do { \
 		if ((err = (x) ? 0 : CORPUS_ERROR_NOMEM)) { \
 			goto out; \
@@ -199,7 +199,8 @@ SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 SEXP text_tokens(SEXP x, SEXP props);
 SEXP text_types(SEXP x, SEXP filter, SEXP collapse);
 SEXP term_counts_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
-		      SEXP min_count, SEXP max_count, SEXP output_types);
+		      SEXP min_count, SEXP max_count, SEXP min_support,
+		      SEXP max_support, SEXP output_types);
 SEXP term_matrix_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
 		      SEXP select, SEXP group);
 SEXP stopwords(SEXP kind);

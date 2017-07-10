@@ -25,20 +25,6 @@
 #include "rcorpus.h"
 
 
-#define TRY(x) \
-	do { \
-		if ((err = (x))) { \
-			goto out; \
-		} \
-	} while (0)
-
-#define TRY_ALLOC(x) \
-	do { \
-		if ((err = (x) ? 0 : CORPUS_ERROR_NOMEM)) { \
-			goto out; \
-		} \
-	} while (0)
-
 #define SEARCH_TAG install("corpus::search")
 
 

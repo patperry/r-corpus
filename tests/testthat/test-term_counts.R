@@ -4,6 +4,7 @@ test_that("'term_counts' works", {
     expect_equal(term_counts("A rose is a rose is a rose."),
                  structure(data.frame(term = c("a", "rose", "is", "."),
                                       count = c(3, 3, 2, 1),
+                                      support = c(1, 1, 1, 1),
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })
@@ -14,6 +15,7 @@ test_that("'term_counts' can use a filter", {
     expect_equal(term_counts("A rose is a rose is a rose.", f),
                  structure(data.frame(term = c("rose"),
                                       count = c(3),
+                                      support = c(1),
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })
@@ -30,6 +32,8 @@ test_that("'term_counts' can use weights", {
                                                "violet"),
                                       count = c(302, 301, 202, 100, 1,
                                                 1, 1, 1, 1),
+                                      support = c(101, 101, 101, 100, 1,
+                                                  1, 1, 1, 1),
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })
@@ -44,6 +48,7 @@ test_that("'term_counts' can use a filter and weights", {
     expect_equal(term_counts(x, f, weights = weights),
                  structure(data.frame(term = c("rose", "blue", "red", "violet"),
                                       count = c(301, 1, 1, 1),
+                                      support = c(101, 1, 1, 1),
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })
@@ -54,6 +59,7 @@ test_that("'term_counts' can count ngrams", {
                  structure(data.frame(term = c("a rose", "is a", "rose is",
                                                "rose ."),
                                       count = c(3, 2, 2, 1),
+                                      support = c(1, 1, 1, 1),
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })
@@ -64,6 +70,7 @@ test_that("'term_counts' can count ngrams above min", {
                              min_count = 2),
                  structure(data.frame(term = c("a rose", "is a", "rose is"),
                                       count = c(3, 2, 2),
+                                      support = c(1, 1, 1),
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })

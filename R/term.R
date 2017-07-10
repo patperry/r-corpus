@@ -15,7 +15,8 @@
 
 term_counts <- function(x, filter = token_filter(), weights = NULL,
                         ngrams = NULL, min_count = NA, max_count = NA,
-                        limit = NA, types = FALSE)
+                        min_support = NA, max_support = NA, limit = NA,
+                        types = FALSE)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
@@ -23,6 +24,8 @@ term_counts <- function(x, filter = token_filter(), weights = NULL,
     ngrams <- as_ngrams(ngrams)
     min_count <- as_min("min_count", min_count)
     max_count <- as_max("max_count", max_count)
+    min_support <- as_min("min_support", min_support)
+    max_support <- as_max("max_support", max_support)
     limit <- as_limit(limit)
 
     if (!(is.logical(types) && length(types) == 1 && !is.na(types))) {
@@ -31,10 +34,10 @@ term_counts <- function(x, filter = token_filter(), weights = NULL,
     types <- as.logical(types)
 
     ans <- .Call(C_term_counts_text, x, filter, weights, ngrams,
-                 min_count, max_count, types)
+                 min_count, max_count, min_support, max_support, types)
 
-    # order descending by count, then ascending by term
-    o <- order(-ans$count, ans$term)
+    # order by descending support, then descending count, then ascending term
+    o <- order(-ans$support, -ans$count, ans$term)
 
     # limit output if desired
     if (!is.na(limit) && length(o) > limit) {

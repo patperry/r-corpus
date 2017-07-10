@@ -66,7 +66,7 @@ static void types_context_init(struct types_context *ctx, SEXP sx,
 
 	ctx->types = (void *)R_alloc(ngroup, sizeof(*ctx->types));
 	for (g = 0; g < ngroup; g++) {
-		RCORPUS_TRY(corpus_intset_init(&ctx->types[g]));
+		TRY(corpus_intset_init(&ctx->types[g]));
 		ctx->ngroup = g + 1;
 	}
 
@@ -80,8 +80,8 @@ static void types_context_init(struct types_context *ctx, SEXP sx,
 			continue;
 		}
 
-		RCORPUS_TRY(corpus_filter_start(ctx->filter, &text[i],
-						CORPUS_FILTER_SCAN_TOKENS));
+		TRY(corpus_filter_start(ctx->filter, &text[i],
+					CORPUS_FILTER_SCAN_TOKENS));
 
 		while (corpus_filter_advance(ctx->filter)) {
 			if (ctx->filter->type_id < 0) {
@@ -89,12 +89,11 @@ static void types_context_init(struct types_context *ctx, SEXP sx,
 				continue;
 			}
 
-			RCORPUS_TRY(corpus_intset_add(&ctx->types[g],
-						      ctx->filter->type_id,
-						      NULL));
+			TRY(corpus_intset_add(&ctx->types[g],
+					      ctx->filter->type_id, NULL));
 		}
 
-		RCORPUS_TRY(ctx->filter->error);
+		TRY(ctx->filter->error);
 	}
 out:
 	if (err) {

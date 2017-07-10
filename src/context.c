@@ -54,8 +54,8 @@ SEXP alloc_context(size_t size, void (*destroy_func)(void *))
 	PROTECT(ans = R_MakeExternalPtr(NULL, CONTEXT_TAG, R_NilValue));
         R_RegisterCFinalizerEx(ans, free_context, TRUE);
 
-	RCORPUS_TRY_ALLOC(obj = corpus_calloc(1, size == 0 ? 1 : size));
-	RCORPUS_TRY_ALLOC(ctx = corpus_malloc(sizeof(*ctx)));
+	TRY_ALLOC(obj = corpus_calloc(1, size == 0 ? 1 : size));
+	TRY_ALLOC(ctx = corpus_malloc(sizeof(*ctx)));
 
 	ctx->data = obj;
 	ctx->destroy_func = destroy_func;
