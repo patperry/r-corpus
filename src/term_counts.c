@@ -183,19 +183,6 @@ out:
 }
 
 
-static double context_support(const struct context *ctx,
-			      const int *type_ids, int length)
-{
-	int term_id;
-
-	if (!corpus_termset_has(&ctx->termset, type_ids, length, &term_id)) {
-		return 0;
-	}
-
-	return ctx->support[term_id];
-}
-
-
 SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		      SEXP smin_count, SEXP smax_count, SEXP smin_support,
 		      SEXP smax_support, SEXP soutput_types)
@@ -211,8 +198,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	const double *weights;
 	double wt, count, supp, min_count, max_count, min_support, max_support;
 	R_xlen_t i, n, iterm, nterm;
-	int output_types, restrict_count, restrict_support;
-	int j, type_id, err = 0, nprot = 0;
+	int output_types;
+	int off, len, j, type_id, err = 0, nprot = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
@@ -228,11 +215,9 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 
 	min_count = REAL(smin_count)[0];
 	max_count = REAL(smax_count)[0];
-	restrict_count = min_count > 0 || max_count < INFINITY;
 
 	min_support = REAL(smin_support)[0];
 	max_support = REAL(smax_support)[0];
-	restrict_support = min_support > 0 || max_support < INFINITY;
 
 	output_types = (LOGICAL(soutput_types)[0] == TRUE);
 
@@ -281,16 +266,12 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 			continue;
 		}
 
-		if (restrict_count) {
-			if (!(min_count <= count && count <= max_count)) {
-				continue;
-			}
+		if (!(min_count <= count && count <= max_count)) {
+			continue;
 		}
 
-		if (restrict_support) {
-			if (!(min_support <= supp && supp <= max_support)) {
-				continue;
-			}
+		if (!(min_support <= supp && supp <= max_support)) {
+			continue;
 		}
 
 		if (nterm == R_XLEN_T_MAX) {
@@ -333,16 +314,12 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 			continue;
 		}
 
-		if (restrict_count) {
-			if (!(min_count <= count && count <= max_count)) {
-				continue;
-			}
+		if (!(min_count <= count && count <= max_count)) {
+			continue;
 		}
 
-		if (restrict_support) {
-			if (!(min_support <= supp && supp <= max_support)) {
-				continue;
-			}
+		if (!(min_support <= supp && supp <= max_support)) {
+			continue;
 		}
 
 		for (j = 0; j < term->length; j++) {
@@ -382,39 +359,37 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		iterm++;
 	}
 
+	len = 3 + (output_types ? ctx->ngram_max : 0);
+	off = 0;
+
+	PROTECT(ans = allocVector(VECSXP, len)); nprot++;
+	PROTECT(snames = allocVector(STRSXP, len)); nprot++;
+
+	SET_VECTOR_ELT(ans, off, sterm);
+	SET_STRING_ELT(snames, off, mkChar("term"));
+	off++;
+
 	if (output_types) {
-		PROTECT(ans = allocVector(VECSXP, 3 + ctx->ngram_max)); nprot++;
-		SET_VECTOR_ELT(ans, 0, sterm);
 		for (j = 0; j < ctx->ngram_max; j++) {
-			SET_VECTOR_ELT(ans, j + 1, stypes[j]);
-		}
-		SET_VECTOR_ELT(ans, ctx->ngram_max + 1, scount);
-		SET_VECTOR_ELT(ans, ctx->ngram_max + 2, ssupport);
+			SET_VECTOR_ELT(ans, off, stypes[j]);
 
-		PROTECT(snames = allocVector(STRSXP, 3 + ctx->ngram_max));
-		nprot++;
-
-		SET_STRING_ELT(snames, 0, mkChar("term"));
-		for (j = 0; j < ctx->ngram_max; j++) {
 			corpus_render_printf(&ctx->render, "type%d", j + 1);
 			TRY(ctx->render.error);
-			SET_STRING_ELT(snames, j + 1,
-				       mkChar(ctx->render.string));
+			SET_STRING_ELT(snames, off, mkChar(ctx->render.string));
 			corpus_render_clear(&ctx->render);
-		}
-		SET_STRING_ELT(snames, ctx->ngram_max + 1, mkChar("count"));
-		SET_STRING_ELT(snames, ctx->ngram_max + 2, mkChar("support"));
-	} else {
-		PROTECT(ans = allocVector(VECSXP, 3)); nprot++;
-		SET_VECTOR_ELT(ans, 0, sterm);
-		SET_VECTOR_ELT(ans, 1, scount);
-		SET_VECTOR_ELT(ans, 2, ssupport);
 
-		PROTECT(snames = allocVector(STRSXP, 3)); nprot++;
-		SET_STRING_ELT(snames, 0, mkChar("term"));
-		SET_STRING_ELT(snames, 1, mkChar("count"));
-		SET_STRING_ELT(snames, 2, mkChar("support"));
+			off++;
+		}
 	}
+
+	SET_VECTOR_ELT(ans, off, scount);
+	SET_STRING_ELT(snames, off, mkChar("count"));
+	off++;
+
+	SET_VECTOR_ELT(ans, off, ssupport);
+	SET_STRING_ELT(snames, off, mkChar("support"));
+	off++;
+
 	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(srow_names = allocVector(REALSXP, 2)); nprot++;
