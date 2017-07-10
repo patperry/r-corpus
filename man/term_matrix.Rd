@@ -11,7 +11,8 @@
                 transpose = FALSE)
 
     term_frame(x, filter = token_filter(), weights = NULL,
-               ngrams = NULL, select = NULL, group = NULL)
+               ngrams = NULL, select = NULL, group = NULL,
+               factors = TRUE)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
@@ -34,6 +35,10 @@
 
     \item{transpose}{a logical value indicating whether to transpose the
         result, putting terms as rows instead of columns.}
+
+    \item{factors}{a logical value indicating whether to return the
+        \code{"text"}, \code{"group"}, and \code{"term"} columns as
+        factors instead of character strings.}
 }
 \details{
     \code{term_matrix} tokenizes a set of texts and computes the occurrence
@@ -76,6 +81,12 @@
     but the result instead has columns named \code{"group"}, \code{"term"},
     and \code{"count"}, with \code{"group"} giving the grouping level, as
     a character string.
+
+    With \code{factors = TRUE} (the default), \code{term_frame} returns
+    the \code{"text"}, \code{"group"}, and \code{"term"} columns as factors
+    with levels equal to the row or column names of the corresponding
+    term matrix; calling \code{as.integer} on these columns converts from
+    the factor values to the integer indices into the term matrix.
 }
 \seealso{
     \code{\link{text_tokens}}, \code{\link{term_counts}}.

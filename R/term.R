@@ -41,9 +41,8 @@ term_counts <- function(x, filter = token_filter(), weights = NULL,
 }
 
 
-term_matrix <- function(x, filter = token_filter(), weights = NULL,
-                        ngrams = NULL, select = NULL, group = NULL,
-                        transpose = FALSE)
+term_matrix_raw <- function(x, filter = token_filter(), weights = NULL,
+                            ngrams = NULL, select = NULL, group = NULL)
 {
     x <- as_text(x)
     filter <- as_token_filter(filter)
@@ -51,7 +50,6 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)
     group <- as_group(group, length(x))
-    transpose <- as_option("transpose", transpose)
 
     if (is.null(group)) {
         n <- length(x)
@@ -61,15 +59,39 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
 
     mat <- .Call(C_term_matrix_text, x, filter, weights, ngrams, select, group)
 
+    if (is.null(select)) {
+        # put the terms in lexicographic order
+        p <- order(mat$col_names)
+        pinv <- integer(length(p))
+        pinv[p] <- seq_along(p)
+
+        mat$col_names <- mat$col_names[p]
+        mat$j <- pinv[mat$j + 1L] - 1L # 0-based index
+    }
+
+    mat$nrow <- n
+    mat
+}
+
+
+term_matrix <- function(x, filter = token_filter(), weights = NULL,
+                        ngrams = NULL, select = NULL, group = NULL,
+                        transpose = FALSE)
+{
+    with_rethrow({
+        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
+        transpose <- as_option("transpose", transpose)
+    })
+
     if (!transpose) {
         i <- mat$i
         j <- mat$j
-        dims <- c(n, length(mat$col_names))
+        dims <- c(mat$nrow, length(mat$col_names))
         dimnames <- list(mat$row_names, mat$col_names)
     } else {
         i <- mat$j
         j <- mat$i
-        dims <- c(length(mat$col_names), n)
+        dims <- c(length(mat$col_names), mat$nrow)
         dimnames <- list(mat$col_names, mat$row_names)
     }
 
@@ -79,30 +101,38 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
 
 
 term_frame <- function(x, filter = token_filter(), weights = NULL,
-                       ngrams = NULL, select = NULL, group = NULL)
+                       ngrams = NULL, select = NULL, group = NULL,
+                       factors = TRUE)
 {
-    x <- as_text(x)
-    filter <- as_token_filter(filter)
-    weights <- as_weights(weights, length(x))
-    ngrams <- as_ngrams(ngrams)
-    select <- as_character_vector("select", select)
-    group <- as_group(group, length(x))
+    with_rethrow({
+        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
+        factors <- as_option("factors", factors)
+    })
 
-    mat <- .Call(C_term_matrix_text, x, filter, weights, ngrams, select, group)
-
-    nm <- mat$row_names
-    if (is.null(nm)) {
-        row <- mat$i + 1
-    } else {
-        row <- nm[mat$i + 1]
-    }
-
-    term <- mat$col_names[mat$j + 1]
+    row <- as.integer(mat$i + 1L)
+    term <- as.integer(mat$j + 1L)
     count <- mat$count
 
-    if (is.null(group)) {
-        data.frame(text = row, term, count, stringsAsFactors = FALSE)
-    } else {
-        data.frame(group = row, term, count, stringsAsFactors = FALSE)
+    if (factors) {
+        row_names <- mat$row_names
+        if (is.null(row_names)) {
+            row_names <- as.character(seq_len(mat$nrow))
+        }
+
+        row <- structure(row, class = "factor", levels = row_names)
+        term <- structure(term, class = "factor", levels = mat$col_names)
     }
+
+    if (is.null(group)) {
+        ans <- data.frame(text = row, term, count, stringsAsFactors = FALSE)
+    } else {
+        ans <- data.frame(group = row, term, count, stringsAsFactors = FALSE)
+    }
+
+    # order by term, then text
+    o <- order(term, row)
+    ans <- ans[o,]
+    row.names(ans) <- NULL
+    class(ans) <- c("corpus_frame", "data.frame")
+    ans
 }
