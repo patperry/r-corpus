@@ -35,8 +35,8 @@ Next, download some demonstration documents. These are in plain text format,
 encoded in UTF-8.
 
 ```r
-govReports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
-raw <- httr::GET(govReports)
+gov_reports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
+raw <- httr::GET(gov_reports)
 paths <- sapply(httr::content(raw), function(x) x$path)
 names <- tools::file_path_sans_ext(basename(paths))
 urls <- sapply(httr::content(raw), function(x) x$download_url)
@@ -59,7 +59,7 @@ and then manually insert zero-width spaces between tokens.
 ```r
 toks <- stringi::stri_split_boundaries(text, type = "word")
 dict <- unique(c(toks, recursive = TRUE)) # unique words
-text2 <- sapply(toks, paste, collapse = "\u200B")
+text2 <- sapply(toks, paste, collapse = "\u200b")
 ```
 and put the input text in a data frame for convenient analysis
 
@@ -120,17 +120,31 @@ head(data.frame(text = data$name,
 and use it to examine term frequencies
 
 ```r
-stats <- term_counts(data, f)
-head(stats, n = 5)
+(stats <- term_counts(data, f))
 ```
 
 ```
-  term count
-1 发展  5627
-2 经济  5036
-3 社会  4255
-4 建设  4248
-5 改革  2931
+   term count support
+1  发展  5627      49
+2  经济  5036      49
+3  社会  4255      49
+4  建设  4248      49
+5  人民  2897      49
+6  主义  2817      49
+7  工作  2642      49
+8  企业  2627      49
+9  国家  2595      49
+10 加强  2438      49
+11 生产  2407      49
+12 年    2021      49
+13 我国  1999      49
+14 提高  1947      49
+15 中    1860      49
+16 增长  1800      49
+17 化    1740      49
+18 继续  1670      49
+⋮
+(11572 rows total)
 ```
 
 ## Visualization
@@ -160,17 +174,31 @@ par(family = font_family) # switch the font back
 Finally, here's how we might show terms in their local context
 
 ```r
-head(text_locate(data, "\u6027", f))
+text_locate(data, "\u6027", f)
 ```
 
 ```
-  text term                    before instance                     after
-1    1   性 …方面的重要问题之一是计划    性    不足。我们现在还有许多计…
-2    1   性 …术和提高劳动生产率的积极    性    ，对于发展经济建设很有害…
-3    1   性 …表现了人民群众的政治积极    性    和政治觉悟的提高，充分表…
-4    1   性 …、氢武器和其他大规模毁灭    性    武器的愿望必须满足。这些…
-5    2   性 …在劳动战线上的高度的积极    性    和创造性，依靠全国人民在…
-6    2   性 …线上的高度的积极性和创造    性    ，依靠全国人民在改革土地…
+     text term before                    instance                     after
+1    1    性   …方面的重要问题之一是计划    性    不足。我们现在还有许多计…
+2    1    性   …术和提高劳动生产率的积极    性    ，对于发展经济建设很有害…
+3    1    性   …表现了人民群众的政治积极    性    和政治觉悟的提高，充分表…
+4    1    性   …、氢武器和其他大规模毁灭    性    武器的愿望必须满足。这些…
+5    2    性   …在劳动战线上的高度的积极    性    和创造性，依靠全国人民在…
+6    2    性   …线上的高度的积极性和创造    性    ，依靠全国人民在改革土地…
+7    2    性   …已经分得了土地，生产积极    性    很高，何必实行合作化呢？…
+8    2    性   …悟，充分地发挥群众的积极    性    和创造性，提高劳动生产率…
+9    2    性   …地发挥群众的积极性和创造    性    ，提高劳动生产率。\n\n　…
+10   2    性   …须照顾单干农户的生产积极    性    ，给单干农户以积极的帮助…
+11   2    性   …要办法。国家从缩减非生产    性    建设的支出和行政机关的经…
+12   2    性   …更重要的是发扬地方的积极    性    ，加强地方党政机关对农业…
+13   2    性   …，提高农民群众的生产积极    性    ，保证这个计划的实现。地…
+14   2    性   …刺激和发挥农民的经营积极    性    。\n\n　　有些农村的地方…
+15   2    性   …以后，为了加强生产的计划    性    ，对许多重要原料，有的由…
+16   2    性   …一步地提高农民的增产积极    性    ，促进农业生产的发展。这…
+17   2    性   …农民特别是中农的生产积极    性    。\n\n　　关于粮食的计划…
+18   2    性   …关系，从而更加积极地创造    性    地参加国家建设。\n\n　　…
+⋮
+(1341 rows total)
 ```
 *Note: the alignment looks bad here because the Chinese characters have
 widths between 1 and 2 spaces each. The spacing in the table is set assuming

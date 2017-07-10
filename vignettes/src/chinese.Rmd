@@ -34,8 +34,8 @@ stop_words <- strsplit(csw, ",")[[1]] # extract the comma-separated words
 Next, download some demonstration documents. These are in plain text format,
 encoded in UTF-8.
 ```{r, message = FALSE, warning = FALSE}
-govReports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
-raw <- httr::GET(govReports)
+gov_reports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
+raw <- httr::GET(gov_reports)
 paths <- sapply(httr::content(raw), function(x) x$path)
 names <- tools::file_path_sans_ext(basename(paths))
 urls <- sapply(httr::content(raw), function(x) x$download_url)
@@ -57,7 +57,7 @@ and then manually insert zero-width spaces between tokens.
 ```{r}
 toks <- stringi::stri_split_boundaries(text, type = "word")
 dict <- unique(c(toks, recursive = TRUE)) # unique words
-text2 <- sapply(toks, paste, collapse = "\u200B")
+text2 <- sapply(toks, paste, collapse = "\u200b")
 ```
 and put the input text in a data frame for convenient analysis
 ```{r}
@@ -84,8 +84,7 @@ head(data.frame(text = data$name,
 ```
 and use it to examine term frequencies
 ```{r}
-stats <- term_counts(data, f)
-head(stats, n = 5)
+(stats <- term_counts(data, f))
 ```
 
 ## Visualization
@@ -108,7 +107,7 @@ par(family = font_family) # switch the font back
 
 Finally, here's how we might show terms in their local context
 ```{r}
-head(text_locate(data, "\u6027", f))
+text_locate(data, "\u6027", f)
 ```
 *Note: the alignment looks bad here because the Chinese characters have
 widths between 1 and 2 spaces each. The spacing in the table is set assuming

@@ -11,7 +11,7 @@ README: README.md
 	sed -e '/^\[!\[/d' $< > $@
 
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
-	cd vignettes && $(RSCRIPT) -e 'knitr::knit("src/chinese.Rmd")'
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/chinese.Rmd")'
 	mv vignettes/chinese.md $@ && touch -r $< $@
 
 bench:
