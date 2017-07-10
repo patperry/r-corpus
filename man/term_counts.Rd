@@ -6,9 +6,8 @@
 }
 \usage{
     term_counts(x, filter = token_filter(), weights = NULL,
-                ngrams = NULL, min_count = NA, max_count = NA,
-                min_support = NA, max_support = NA, limit = NA,
-                types = FALSE)
+                ngrams = NULL, min_count = NULL, max_count = NULL,
+                min_support = NULL, max_support = NULL, types = FALSE)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
@@ -22,20 +21,16 @@
         \code{NULL} for length-1 n-grams only.}
 
     \item{min_count}{a numeric scalar giving the minimum term count to include
-        in the output, or \code{NA} for no minimum count.}
+        in the output, or \code{NULL} for no minimum count.}
 
     \item{max_count}{a numeric scalar giving the maximum term count to include
-        in the output, or \code{NA} for no maximum count.}
+        in the output, or \code{NULL} for no maximum count.}
 
     \item{min_support}{a numeric scalar giving the minimum term support to
-        include in the output, or \code{NA} for no minimum support.}
+        include in the output, or \code{NULL} for no minimum support.}
 
     \item{max_support}{a numeric scalar giving the maximum term support to
-        include in the output, or \code{NA} for no maximum support.}
-
-    \item{limit}{an integer scalar giving the maximum number of terms
-        to include in the output, or \code{NA} for no maximum number of
-        terms.}
+        include in the output, or \code{NULL} for no maximum support.}
 
     \item{types}{a logical value indicating whether to include columns for
         the types that make up the terms.}

@@ -15,6 +15,7 @@
  */
 
 #include <inttypes.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -213,11 +214,13 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 
 	weights = as_weights(sweights, n);
 
-	min_count = REAL(smin_count)[0];
-	max_count = REAL(smax_count)[0];
+	min_count = smin_count == R_NilValue ? -INFINITY : REAL(smin_count)[0];
+	max_count = smax_count == R_NilValue ? INFINITY : REAL(smax_count)[0];
 
-	min_support = REAL(smin_support)[0];
-	max_support = REAL(smax_support)[0];
+	min_support = (smin_support == R_NilValue ? -INFINITY
+						  : REAL(smin_support)[0]);
+	max_support = (smax_support == R_NilValue ? INFINITY
+						  : REAL(smax_support)[0]);
 
 	output_types = (LOGICAL(soutput_types)[0] == TRUE);
 

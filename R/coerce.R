@@ -76,6 +76,29 @@ as_digits <- function(name, value)
 }
 
 
+as_double_scalar <- function(name, value, allow_null = FALSE)
+{
+    if (is.null(value)) {
+        if (allow_null) {
+            return(NULL)
+        } else {
+            stop(sprintf("'%s' cannot be NULL"))
+        }
+    }
+
+    if (length(value) != 1) {
+        stop(sprintf("'%s' must have length 1"))
+    }
+
+    if (!(is.numeric(value) && !is.nan(value) && !is.na(value))) {
+        stop(sprintf("'%s' must be a numeric value%s", name,
+                     if (allow_null) " (or NULL)" else ""))
+    }
+
+    as.double(value)
+}
+
+
 as_enum <- function(name, value, choices)
 {
     if (!(is.character(value) && length(value) == 1 && !is.na(value))) {
@@ -150,35 +173,6 @@ as_kind <- function(kind)
 }
 
 
-as_limit <- function(limit)
-{
-    if (!((is.na(limit) || is.numeric(limit))
-          && length(limit) == 1 && !is.nan(limit))) {
-        stop("'limit' must be a numeric value")
-    }
-    if (is.na(limit)) {
-        return(NA)
-    }
-    if (limit < 0) {
-        limit <- 0
-    }
-    floor(as.double(limit))
-}
-
-
-as_max <- function(name, value)
-{
-    if (!((is.na(value) || is.numeric(value))
-          && length(value) == 1 && !is.nan(value))) {
-        stop(paste0("'", name, "' must be a numeric value"))
-    }
-    if (is.na(value)) {
-        value <- Inf
-    }
-    as.double(value)
-}
-
-
 as_max_print <- function(name, value)
 {
     if (is.null(value)) {
@@ -192,19 +186,6 @@ as_max_print <- function(name, value)
         stop(sprintf("'%s' must be non-negative", name))
     }
     value
-}
-
-
-as_min <- function(name, value)
-{
-    if (!((is.na(value) || is.numeric(value))
-          && length(value) == 1 && !is.nan(value))) {
-        stop(sprintf("'%s' must be a numeric value", name))
-    }
-    if (is.na(value)) {
-        value <- -Inf
-    }
-    as.double(value)
 }
 
 
