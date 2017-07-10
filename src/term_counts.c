@@ -145,7 +145,7 @@ static void context_update(struct context *ctx, double weight)
 	corpus_ngram_iter_make(&it, &ctx->ngram, ctx->buffer);
 	while (corpus_ngram_iter_advance(&it)) {
 		if (!ctx->ngram_set[it.length]) {
-				continue;
+			continue;
 		}
 
 		if (!corpus_termset_has(&ctx->termset, it.type_ids,
@@ -265,10 +265,6 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		count = ctx->count[i];
 		supp = ctx->support[i];
 
-		if (!ctx->ngram_set[term->length]) {
-			continue;
-		}
-
 		if (!(min_count <= count && count <= max_count)) {
 			continue;
 		}
@@ -312,10 +308,6 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		term = &ctx->termset.items[i];
 		count = ctx->count[i];
 		supp = ctx->support[i];
-
-		if (!ctx->ngram_set[term->length]) {
-			continue;
-		}
 
 		if (!(min_count <= count && count <= max_count)) {
 			continue;
