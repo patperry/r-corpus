@@ -223,9 +223,10 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 	int arr_id, type_id;
 
 	if ((err = corpus_data_nitem(val, s, &n))) {
-		ans = R_NilValue;
+		ans = R_NilValue; // null
 		goto out;
 	}
+
 	corpus_data_items(val, s, &it); // won't fail if data_nitem succeeds
 	i = 0;
 
@@ -299,12 +300,15 @@ SEXP decode_record(struct decode *d, const struct corpus_data *val,
 	SEXP ans, names;
 	const struct corpus_text *name;
 	struct corpus_data_fields it;
-	int i, n;
+	int err, i, n;
 
 	assert(val->type_id >= 0);
 	assert(s->types[val->type_id].kind == CORPUS_DATATYPE_RECORD);
 
-	corpus_data_nfield(val, s, &n); // won't fail, kind is DATATYPE_RECORD
+	if ((err = corpus_data_nfield(val, s, &n))) {
+		return R_NilValue; // null
+	}
+
 	PROTECT(ans = allocVector(VECSXP, n));
 	PROTECT(names = allocVector(STRSXP, n));
 	if (n > 0) {
