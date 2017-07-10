@@ -20,6 +20,9 @@ Changes in version 0.8.0
  * Converted the "chinese" demo to a vignette. Thanks to Will Lowe for
    contributing.
 
+ * Remove stringsAsFactors option from read_ndjson(); deserialize all
+   JSON string fields as character by default.
+
  * read_ndjson() de-serializes zero-length arrays as integer(), logical(),
    etc. instead of as NULL.
 
