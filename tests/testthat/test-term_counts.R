@@ -65,10 +65,35 @@ test_that("'term_counts' can count ngrams", {
 })
 
 
-test_that("'term_counts' can count ngrams above min", {
+test_that("'term_counts' can count ngrams above count_min", {
     expect_equal(term_counts("A rose is a rose is a rose.", ngrams = 2,
                              min_count = 2),
                  structure(data.frame(term = c("a rose", "is a", "rose is"),
+                                      count = c(3, 2, 2),
+                                      support = c(1, 1, 1),
+                                      stringsAsFactors = FALSE),
+                           class = c("corpus_frame", "data.frame")))
+})
+
+
+test_that("'term_counts' can count ngrams above support_min", {
+    expect_equal(term_counts(c("A rose is a rose is a rose.", "Rose Red"),
+                             ngrams = 1,
+                             min_support = 2),
+                 structure(data.frame(term = c("rose"),
+                                      count = c(4),
+                                      support = c(2),
+                                      stringsAsFactors = FALSE),
+                           class = c("corpus_frame", "data.frame")))
+})
+
+
+test_that("'term_counts' can output types", {
+    expect_equal(term_counts("A rose is a rose is a rose.", ngrams = 2,
+                             min_count = 2, types = TRUE),
+                 structure(data.frame(term = c("a rose", "is a", "rose is"),
+                                      type1 = c("a", "is", "rose"),
+                                      type2 = c("rose", "a", "is"),
                                       count = c(3, 2, 2),
                                       support = c(1, 1, 1),
                                       stringsAsFactors = FALSE),
