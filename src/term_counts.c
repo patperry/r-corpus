@@ -45,13 +45,12 @@ struct context {
 	int *buffer;
 	int *ngram_set;
 	double *support;
+	double *count;
 	struct corpus_render render;
-	struct corpus_ngram ngram_loc;
-	struct corpus_ngram ngram_tot;
+	struct corpus_ngram ngram;
 	struct corpus_termset termset;
 	int has_render;
-	int has_ngram_loc;
-	int has_ngram_tot;
+	int has_ngram;
 	int has_termset;
 };
 
@@ -105,15 +104,11 @@ static void context_init(struct context *ctx, SEXP sngrams)
 	TRY(corpus_render_init(&ctx->render, CORPUS_ESCAPE_NONE));
 	ctx->has_render = 1;
 
-	TRY(corpus_ngram_init(&ctx->ngram_loc, ngram_max));
-	ctx->has_ngram_loc = 1;
-
-	TRY(corpus_ngram_init(&ctx->ngram_tot, ngram_max));
-	ctx->has_ngram_tot = 1;
+	TRY(corpus_ngram_init(&ctx->ngram, ngram_max));
+	ctx->has_ngram = 1;
 
 	TRY(corpus_termset_init(&ctx->termset));
 	ctx->has_termset = 1;
-
 out:
 	CHECK_ERROR(err);
 }
@@ -128,11 +123,8 @@ static void context_destroy(void *obj)
 	if (ctx->has_termset) {
 		corpus_termset_destroy(&ctx->termset);
 	}
-	if (ctx->has_ngram_tot) {
-		corpus_ngram_destroy(&ctx->ngram_tot);
-	}
-	if (ctx->has_ngram_loc) {
-		corpus_ngram_destroy(&ctx->ngram_loc);
+	if (ctx->has_ngram) {
+		corpus_ngram_destroy(&ctx->ngram);
 	}
 	if (ctx->has_render) {
 		corpus_render_destroy(&ctx->render);
@@ -144,11 +136,12 @@ static void context_update(struct context *ctx, double weight)
 {
 	struct corpus_ngram_iter it;
 	size_t size;
+	double *count;
 	double *support;
 	int term_id = -1, nterm, nterm_max;
 	int err = 0;
 
-	corpus_ngram_iter_make(&it, &ctx->ngram_loc, ctx->buffer);
+	corpus_ngram_iter_make(&it, &ctx->ngram, ctx->buffer);
 	while (corpus_ngram_iter_advance(&it)) {
 		if (!ctx->ngram_set[it.length]) {
 				continue;
@@ -164,19 +157,27 @@ static void context_update(struct context *ctx, double weight)
 
 			if (ctx->termset.nitem_max != nterm_max) {
 				nterm_max = ctx->termset.nitem_max;
+
+				size = nterm_max * sizeof(*count);
+				TRY_ALLOC(count
+					= corpus_realloc(ctx->count, size));
+				ctx->count = count;
+
 				size = nterm_max * sizeof(*support);
 				TRY_ALLOC(support
 					= corpus_realloc(ctx->support, size));
 				ctx->support = support;
 			}
 			while (nterm < ctx->termset.nitem) {
+				ctx->count[nterm] = 0;
 				ctx->support[nterm] = 0;
 				nterm++;
 			}
 		}
+		ctx->count[term_id] += it.weight;
 		ctx->support[term_id] += weight;
 	}
-	corpus_ngram_clear(&ctx->ngram_loc);
+	corpus_ngram_clear(&ctx->ngram);
 out:
 	CHECK_ERROR(err);
 }
@@ -204,16 +205,14 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	SEXP *stypes;
 	struct context *ctx;
 	const struct corpus_text *text, *type;
+	const struct corpus_termset_term *term;
 	struct mkchar mkchar;
-	struct corpus_ngram_iter it;
 	struct corpus_filter *filter;
 	const double *weights;
-	int w;
-	double wt, supp, min_count, max_count, min_support, max_support;
-	R_xlen_t i, n, nterm;
-	int output_types;
-	int type_id, err = 0, nprot = 0;
-	int restrict_count, restrict_support;
+	double wt, count, supp, min_count, max_count, min_support, max_support;
+	R_xlen_t i, n, iterm, nterm;
+	int output_types, restrict_count, restrict_support;
+	int j, type_id, err = 0, nprot = 0;
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
@@ -249,49 +248,46 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 			continue;
 		}
 
-		// add the text[i] n-grams
 		TRY(corpus_filter_start(filter, &text[i],
 					CORPUS_FILTER_SCAN_TOKENS));
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
+
 			if (type_id == CORPUS_FILTER_IGNORED) {
 				continue;
 			} else if (type_id < 0) {
-				TRY(corpus_ngram_break(&ctx->ngram_loc));
-				TRY(corpus_ngram_break(&ctx->ngram_tot));
+				TRY(corpus_ngram_break(&ctx->ngram));
 				continue;
 			}
 
-			TRY(corpus_ngram_add(&ctx->ngram_loc, type_id, wt));
-			TRY(corpus_ngram_add(&ctx->ngram_tot, type_id, wt));
+			TRY(corpus_ngram_add(&ctx->ngram, type_id, wt));
 		}
 		TRY(filter->error);
 
-		TRY(corpus_ngram_break(&ctx->ngram_loc));
-		TRY(corpus_ngram_break(&ctx->ngram_tot));
-
+		TRY(corpus_ngram_break(&ctx->ngram));
 		context_update(ctx, wt);
 	}
 
 	nterm = 0;
-	corpus_ngram_iter_make(&it, &ctx->ngram_tot, ctx->buffer);
-	while (corpus_ngram_iter_advance(&it)) {
-		RCORPUS_CHECK_INTERRUPT(nterm);
+	for (i = 0; i < ctx->termset.nitem; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 
-		if (!ctx->ngram_set[it.length]) {
+		term = &ctx->termset.items[i];
+		count = ctx->count[i];
+		supp = ctx->support[i];
+
+		if (!ctx->ngram_set[term->length]) {
 			continue;
 		}
 
 		if (restrict_count) {
-			wt = it.weight;
-			if (!(min_count <= wt && wt <= max_count)) {
+			if (!(min_count <= count && count <= max_count)) {
 				continue;
 			}
 		}
 
 		if (restrict_support) {
-			supp = context_support(ctx, it.type_ids, it.length);
 			if (!(min_support <= supp && supp <= max_support)) {
 				continue;
 			}
@@ -299,9 +295,9 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 
 		if (nterm == R_XLEN_T_MAX) {
 			err = CORPUS_ERROR_OVERFLOW;
-			corpus_log(err, "number of terms exceeds maximum"
-				   " (%"PRIu64")",
-				   (uint64_t)R_XLEN_T_MAX);
+			Rf_error("number of terms exceeds maximum (%"PRIu64")",
+				 (uint64_t)R_XLEN_T_MAX);
+			goto out;
 		}
 		nterm++;
 	}
@@ -309,11 +305,11 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	PROTECT(sterm = allocVector(STRSXP, nterm)); nprot++;
 	if (output_types) {
 		stypes = (void *)R_alloc(ctx->ngram_max, sizeof(*stypes));
-		for (w = 0; w < ctx->ngram_max; w++) {
-			PROTECT(stypes[w] = allocVector(STRSXP, nterm));
+		for (j = 0; j < ctx->ngram_max; j++) {
+			PROTECT(stypes[j] = allocVector(STRSXP, nterm));
 			nprot++;
 			for (i = 0; i < nterm; i++) {
-				SET_STRING_ELT(stypes[w], i, NA_STRING);
+				SET_STRING_ELT(stypes[j], i, NA_STRING);
 			}
 		}
 	} else {
@@ -324,21 +320,21 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 	PROTECT(ssupport = allocVector(REALSXP, nterm)); nprot++;
 
 	mkchar_init(&mkchar);
-	i = 0;
+	iterm = 0;
 	
-	corpus_ngram_iter_make(&it, &ctx->ngram_tot, ctx->buffer);
-	while (corpus_ngram_iter_advance(&it)) {
+	for (i = 0; i < ctx->termset.nitem; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 
-		wt = it.weight;
-		supp = context_support(ctx, it.type_ids, it.length);
+		term = &ctx->termset.items[i];
+		count = ctx->count[i];
+		supp = ctx->support[i];
 
-		if (!ctx->ngram_set[it.length]) {
+		if (!ctx->ngram_set[term->length]) {
 			continue;
 		}
 
 		if (restrict_count) {
-			if (!(min_count <= wt && wt <= max_count)) {
+			if (!(min_count <= count && count <= max_count)) {
 				continue;
 			}
 		}
@@ -349,48 +345,48 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 			}
 		}
 
-		if (it.length == 1) {
-			type_id = it.type_ids[0];
+		for (j = 0; j < term->length; j++) {
+			type_id = term->type_ids[j];
 			type = corpus_filter_type(filter, type_id);
-			stype = mkchar_get(&mkchar, type);
-			SET_STRING_ELT(sterm, i, stype);
-			if (output_types) {
-				SET_STRING_ELT(stypes[0], i, stype);
-			}
-		} else {
-			for (w = 0; w < it.length; w++) {
-				type_id = it.type_ids[w];
-				type = corpus_filter_type(filter, type_id);
-				if (output_types) {
-					stype = mkchar_get(&mkchar, type);
-					SET_STRING_ELT(stypes[w], i, stype);
-				}
 
-				if (w > 0) {
-					corpus_render_char(&ctx->render, ' ');
-				}
+			if (output_types) {
+				stype = mkchar_get(&mkchar, type);
+				SET_STRING_ELT(stypes[j], iterm, stype);
+			}
+
+			if (j > 0) {
+				corpus_render_char(&ctx->render, ' ');
+			}
+
+			if (term->length > 1) {
 				corpus_render_text(&ctx->render, type);
 			}
+		}
 
+		if (term->length == 1) {
+			if (!output_types) {
+				stype = mkchar_get(&mkchar, type);
+			}
+			SET_STRING_ELT(sterm, iterm, stype);
+		} else {
 			TRY(ctx->render.error);
-
-			SET_STRING_ELT(sterm, i,
+			SET_STRING_ELT(sterm, iterm,
 				       mkCharLenCE(ctx->render.string,
 					           ctx->render.length,
 						   CE_UTF8));
 			corpus_render_clear(&ctx->render);
 		}
 
-		REAL(scount)[i] = wt;
-		REAL(ssupport)[i] = supp;
-		i++;
+		REAL(scount)[iterm] = count;
+		REAL(ssupport)[iterm] = supp;
+		iterm++;
 	}
 
 	if (output_types) {
 		PROTECT(ans = allocVector(VECSXP, 3 + ctx->ngram_max)); nprot++;
 		SET_VECTOR_ELT(ans, 0, sterm);
-		for (w = 0; w < ctx->ngram_max; w++) {
-			SET_VECTOR_ELT(ans, w + 1, stypes[w]);
+		for (j = 0; j < ctx->ngram_max; j++) {
+			SET_VECTOR_ELT(ans, j + 1, stypes[j]);
 		}
 		SET_VECTOR_ELT(ans, ctx->ngram_max + 1, scount);
 		SET_VECTOR_ELT(ans, ctx->ngram_max + 2, ssupport);
@@ -399,10 +395,10 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		nprot++;
 
 		SET_STRING_ELT(snames, 0, mkChar("term"));
-		for (w = 0; w < ctx->ngram_max; w++) {
-			corpus_render_printf(&ctx->render, "type%d", w + 1);
+		for (j = 0; j < ctx->ngram_max; j++) {
+			corpus_render_printf(&ctx->render, "type%d", j + 1);
 			TRY(ctx->render.error);
-			SET_STRING_ELT(snames, w + 1,
+			SET_STRING_ELT(snames, j + 1,
 				       mkChar(ctx->render.string));
 			corpus_render_clear(&ctx->render);
 		}
