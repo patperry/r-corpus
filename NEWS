@@ -1,7 +1,30 @@
 Changes in version 0.8.0
 
+ * Added the _Federalist Papers_ dataset ("federalist").
+
+ * term_counts() now reports the "support" for each term (the number of
+   texts containing the term), and has options for restricting output by
+   the minimum and maximum support.
+
+ * Added new class "corpus_frame" to support better printing of
+   data frame objects: left-align text data, truncate output to screen
+   width, display emoji on Mac OS. Use this class for all data frame
+   return values.
+
+ * Added functions for validating and converting to UTF-8: as_utf8(),
+   utf8_valid().
+
+ * Added functions for formatting and printing utf8 text: utf8_encode(),
+   utf8_format(), utf8_print(), utf8_valid(), and utf8_width().
+
  * Converted the "chinese" demo to a vignette. Thanks to Will Lowe for
    contributing.
+
+ * read_ndjson() de-serializes zero-length arrays as integer(), logical(),
+   etc. instead of as NULL.
+
+ * Fixed a bug where read_ndjson() would de-serialize a boolean "null"
+   as FALSE instead of NA.
 
 
 Changes in version 0.7.0 (2017-06-22)
