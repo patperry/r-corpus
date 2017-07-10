@@ -103,12 +103,6 @@ dimnames.corpus_json <- function(x)
 }
 
 
-json_datatype <- function(x)
-{
-    .Call(C_json_datatype, x)
-}
-
-
 print.corpus_json <- function(x, ...)
 {
     invisible(.Call(C_print_json, x))
