@@ -55,12 +55,6 @@ struct context {
 	int has_termset;
 };
 
-#define CHECK_ERROR(err) \
-	do { \
-		if (err) { \
-			Rf_error("failed computing term counts"); \
-		} \
-	} while (0)
 
 static void context_init(struct context *ctx, SEXP sngrams)
 {

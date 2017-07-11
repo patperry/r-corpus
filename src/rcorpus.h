@@ -54,6 +54,44 @@
 		} \
 	} while (0)
 
+#define CHECK_ERROR_FORMAT_SEP(err, sep, fmt, ...) \
+	do { \
+		switch (err) { \
+		case 0: \
+			break; \
+		case CORPUS_ERROR_INVAL: \
+			Rf_error(fmt sep "invalid input", __VA_ARGS__); \
+			break; \
+		case CORPUS_ERROR_NOMEM: \
+			Rf_error(fmt sep "memory allocation failure", \
+				 __VA_ARGS__); \
+			break; \
+		case CORPUS_ERROR_OS: \
+			Rf_error(fmt sep "operating system error", \
+				 __VA_ARGS__); \
+			break; \
+		case CORPUS_ERROR_OVERFLOW: \
+			Rf_error(fmt sep "overflow error", __VA_ARGS__); \
+			break; \
+		case CORPUS_ERROR_INTERNAL: \
+			Rf_error(fmt sep "internal error", __VA_ARGS__); \
+			break; \
+		default: \
+			Rf_error(fmt sep "unknown error", __VA_ARGS__); \
+			break; \
+		} \
+	} while (0)
+
+#define CHECK_ERROR_FORMAT(err, fmt, ...) \
+	CHECK_ERROR_FORMAT_SEP(err, fmt, ": ", __VA_ARGS__)
+
+#define CHECK_ERROR_MESSAGE(err, msg) \
+	CHECK_ERROR_FORMAT(err, "%s", msg)
+
+#define CHECK_ERROR(err) \
+	CHECK_ERROR_FORMAT_SEP(err, "", "%s", "")
+
+
 struct corpus_data;
 struct corpus_filebuf;
 struct corpus_filter;

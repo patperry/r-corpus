@@ -26,6 +26,7 @@
 #include "corpus/src/array.h"
 #include "corpus/src/error.h"
 #include "corpus/src/filebuf.h"
+#include "corpus/src/memory.h"
 #include "corpus/src/render.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
@@ -48,44 +49,33 @@ static void free_json(SEXP sjson)
 {
         struct json *d = R_ExternalPtrAddr(sjson);
 	if (d) {
-		free(d->rows);
-		free(d);
+		corpus_free(d->rows);
+		corpus_free(d);
 	}
 }
 
 
 static void *realloc_nonnull(void *ptr, size_t size)
 {
-	void *ans = realloc(ptr, size);
+	void *ans;
+	int err = 0;
 
-	if (ans == NULL && size == 0) {
-		ans = malloc(1);
-	}
-
-	if (!ans) {
-		error("failed allocating memory (%"PRIu64") bytes",
-		      size > 0 ? (uint64_t)size : 1);
-	}
+       	TRY_ALLOC(ans = corpus_realloc(ptr, size ? size : 1));
+out:
+	CHECK_ERROR(err);
 	return ans;
 }
 
 
 static void *calloc_nonnull(size_t count, size_t size)
 {
-	size_t nbyte;
-	void *mem;
+	void *ans;
+	int err = 0;
 
-	if (size > 0 && count > SIZE_MAX / size) {
-		error("allocation size (%"PRIu64" objects"
-		      " of size %"PRIu64" bytes)"
-		      " exceeds maximum",
-		      (uint64_t)count, (uint64_t)size);
-	}
-
-	nbyte = count * size;
-	mem = realloc_nonnull(NULL, nbyte);
-	memset(mem, 0, nbyte);
-	return mem;
+	TRY_ALLOC(ans = corpus_calloc(count ? count : 1, size ? size : 1));
+out:
+	CHECK_ERROR(err);
+	return ans;
 }
 
 
@@ -97,21 +87,15 @@ static void *malloc_nonnull(size_t size)
 
 SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 {
-	SEXP ans, sclass, shandle, snames;
-	struct json *obj;
-	int err;
+	SEXP ans = R_NilValue, sclass, shandle, snames;
+	struct json *obj = NULL;
+	int err = 0;
 
 	PROTECT(shandle = R_MakeExternalPtr(NULL, JSON_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(shandle, free_json, TRUE);
 
-	if (!(obj = malloc(sizeof(*obj)))) {
-		error("failed allocating memory (%u bytes)",
-			(unsigned)sizeof(*obj));
-	}
-	if ((err = corpus_schema_init(&obj->schema))) {
-		free(obj);
-		error("failed allocating memory");
-	}
+	TRY_ALLOC(obj = corpus_malloc(sizeof(*obj)));
+	TRY(corpus_schema_init(&obj->schema));
 
 	obj->rows = NULL;
 	obj->nrow = 0;
@@ -119,6 +103,7 @@ SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 	obj->kind = CORPUS_DATATYPE_NULL;
 
 	R_SetExternalPtrAddr(shandle, obj);
+	obj = NULL;
 
 	PROTECT(ans = allocVector(VECSXP, 4));
 	SET_VECTOR_ELT(ans, 0, shandle);
@@ -138,6 +123,9 @@ SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 	setAttrib(ans, R_ClassSymbol, sclass);
 
 	UNPROTECT(4);
+out:
+	corpus_free(obj);
+	CHECK_ERROR(err);
 	return ans;
 }
 
@@ -147,21 +135,15 @@ static void grow_datarows(struct corpus_data **rowsptr, R_xlen_t *nrow_maxptr)
 	struct corpus_data *rows = *rowsptr;
 	void *base = rows;
 	size_t size = (size_t)*nrow_maxptr;
-	int err;
+	int err = 0;
 
-	if (size == R_XLEN_T_MAX) {
-		error("number of rows (%"PRIu64") exceeds maximum (%"PRIu64")",
-			(uint64_t)size, (uint64_t)R_XLEN_T_MAX);
-	}
-
-	if ((err = corpus_bigarray_grow(&base, &size, sizeof(*rows),
-					size, 1))) {
-		error("failed allocating memory (%"PRIu64" bytes)",
-		      (uint64_t)(size + 1) * sizeof(*rows));
-	}
+	TRY(size == R_XLEN_T_MAX ? CORPUS_ERROR_OVERFLOW : 0);
+	TRY(corpus_bigarray_grow(&base, &size, sizeof(*rows), size, 1));
 
 	*rowsptr = base;
 	*nrow_maxptr = size;
+out:
+	CHECK_ERROR(err);
 }
 
 
@@ -176,7 +158,7 @@ static void json_load(SEXP sdata)
 	uint_fast8_t ch;
 	size_t size;
 	R_xlen_t nrow, nrow_max, j, m;
-	int err, type_id;
+	int err = 0, type_id;
 
 	shandle = getListElement(sdata, "handle");
 	obj = R_ExternalPtrAddr(shandle);
@@ -205,20 +187,12 @@ static void json_load(SEXP sdata)
 			ptr = it.current.ptr;
 			size = it.current.size;
 
-			if ((err = corpus_data_assign(&parent->rows[nrow],
-						      &parent->schema,
-						      ptr, size))) {
-				error("error parsing row %"PRIu64
-				      " of JSON data", (uint64_t)(nrow + 1));
-			}
+			TRY(corpus_data_assign(&parent->rows[nrow],
+					       &parent->schema, ptr, size));
 
-			if ((err = corpus_schema_union(&parent->schema, type_id,
-					       parent->rows[nrow].type_id,
-					       &type_id))) {
-				error("memory allocation failure"
-				      " after parsing row %"PRIu64
-				      " of JSON data", (uint64_t)(nrow + 1));
-			}
+			TRY(corpus_schema_union(&parent->schema, type_id,
+						parent->rows[nrow].type_id,
+						&type_id));
 
 			RCORPUS_CHECK_INTERRUPT(nrow);
 
@@ -242,20 +216,12 @@ static void json_load(SEXP sdata)
 
 			size = (size_t)(line_end - ptr);
 
-			if ((err = corpus_data_assign(&parent->rows[nrow],
-						      &parent->schema,
-						      ptr, size))) {
-				error("error parsing row %"PRIu64
-				      " of JSON data", (uint64_t)(nrow + 1));
-			}
+			TRY(corpus_data_assign(&parent->rows[nrow],
+					       &parent->schema, ptr, size));
 
-			if ((err = corpus_schema_union(&parent->schema, type_id,
+			TRY(corpus_schema_union(&parent->schema, type_id,
 						parent->rows[nrow].type_id,
-						&type_id))) {
-				error("memory allocation failure"
-				      " after parsing row %"PRIu64
-				      " of JSON data", (uint64_t)(nrow + 1));
-			}
+						&type_id));
 
 			RCORPUS_CHECK_INTERRUPT(nrow);
 
@@ -309,6 +275,10 @@ static void json_load(SEXP sdata)
 	free_json(shandle);
 	R_SetExternalPtrAddr(shandle, obj);
 	UNPROTECT(1);
+
+out:
+	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64" of JSON data",
+			   (uint64_t)(nrow + 1));
 }
 
 
@@ -435,16 +405,13 @@ SEXP print_json(SEXP sdata)
 {
 	const struct json *d = as_json(sdata);
 	struct corpus_render r;
+	int err = 0, has_render = 0;
 
-	if (corpus_render_init(&r, CORPUS_ESCAPE_CONTROL) != 0) {
-		error("memory allocation failure");
-	}
+	TRY(corpus_render_init(&r, CORPUS_ESCAPE_CONTROL));
+	has_render = 1;
 
 	corpus_render_datatype(&r, &d->schema, d->type_id);
-	if (r.error) {
-		corpus_render_destroy(&r);
-		error("memory allocation failure");
-	}
+	TRY(r.error);
 
 	if (d->kind == CORPUS_DATATYPE_RECORD) {
 		Rprintf("JSON data set with %"PRIu64" rows"
@@ -454,8 +421,12 @@ SEXP print_json(SEXP sdata)
 		Rprintf("JSON data set with %"PRIu64" rows"
 			" of type %s\n", (uint64_t)d->nrow, r.string);
 	}
+out:
+	if (has_render) {
+		corpus_render_destroy(&r);
+	}
+	CHECK_ERROR(err);
 
-	corpus_render_destroy(&r);
 	return sdata;
 }
 
@@ -509,7 +480,7 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	double *irows;
 	R_xlen_t i, n, ind;
 	int type_id;
-	int err;
+	int err = 0;
 
 	if (si == R_NilValue) {
 		return sdata;
@@ -545,19 +516,11 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 		}
 		src = &obj->rows[ind];
 
-		if ((err = corpus_data_assign(&obj2->rows[i], &obj2->schema,
-					      src->ptr, src->size))) {
-			error("error parsing row %"PRIu64
-			      " of JSON file", (uint64_t)(irows[i] + 1));
-		}
+		TRY(corpus_data_assign(&obj2->rows[i], &obj2->schema,
+				       src->ptr, src->size));
 
-		if ((err = corpus_schema_union(&obj2->schema, type_id,
-					       obj2->rows[i].type_id,
-					       &type_id))) {
-			error("memory allocation failure"
-			      " after parsing row %"PRIu64
-			      " of JSON file", (uint64_t)(irows[i] + 1));
-		}
+		TRY(corpus_schema_union(&obj2->schema, type_id,
+					obj2->rows[i].type_id, &type_id));
 
 		RCORPUS_CHECK_INTERRUPT(i);
 	}
@@ -573,6 +536,9 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	}
 
 	UNPROTECT(2);
+out:
+	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64" of JSON file",
+			   (uint64_t)(irows[i] + 1));
 	return ans;
 }
 
@@ -587,20 +553,19 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	size_t name_len;
 	struct json *obj2;
 	R_xlen_t i, n;
-	int err, j, m, name_id, type_id;
+	int err = 0, j, m, name_id, type_id;
 
 	if (sname == R_NilValue) {
 		return sdata;
-	} else if (TYPEOF(sname) != CHARSXP) {
-                error("invalid 'name' argument");
-        }
+	}
+	TRY(TYPEOF(sname) != CHARSXP ? CORPUS_ERROR_INTERNAL : 0);
+
 	name_ptr = translateCharUTF8(sname);
 	name_len = strlen(name_ptr);
 	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8));
-	if ((err = corpus_text_assign(&name, (uint8_t *)name_ptr, name_len,
-				      CORPUS_TEXT_NOESCAPE))) {
-		error("invalid UTF-8 in 'name' argument");
-	}
+	TRY(corpus_text_assign(&name, (uint8_t *)name_ptr, name_len,
+			       CORPUS_TEXT_NOESCAPE));
+
 	if (!corpus_symtab_has_type(&obj->schema.names, &name, &name_id)) {
 		UNPROTECT(1);
 		return R_NilValue;
@@ -631,14 +596,15 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 	type_id = CORPUS_DATATYPE_NULL;
 	for (i = 0; i < n; i++) {
+		// fails if the field is null
 		corpus_data_field(&obj->rows[i], &obj->schema, name_id,
 				  &field);
-		corpus_data_assign(&obj2->rows[i], &obj2->schema, field.ptr,
-				   field.size);
-		if (corpus_schema_union(&obj2->schema, type_id,
-					obj2->rows[i].type_id, &type_id) != 0) {
-			error("memory allocation failure");
-		}
+
+		TRY(corpus_data_assign(&obj2->rows[i], &obj2->schema,
+				       field.ptr, field.size));
+
+		TRY(corpus_schema_union(&obj2->schema, type_id,
+					obj2->rows[i].type_id, &type_id));
 
 		RCORPUS_CHECK_INTERRUPT(i);
 	}
@@ -653,6 +619,8 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	}
 
 	UNPROTECT(3);
+out:
+	CHECK_ERROR(err);
 	return ans;
 }
 
@@ -864,7 +832,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	const struct corpus_datatype_record *r;
 	struct corpus_data_fields it;
 	R_xlen_t i, n = d->nrow, k, m;
-	int err, j, nfield;
+	int err = 0, j, nfield;
 	int *type_id;
 	struct corpus_data **rows;
 	int *cols;
@@ -918,23 +886,18 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 		RCORPUS_CHECK_INTERRUPT(i);
 
 		if ((err = corpus_data_fields(&d->rows[i], &d->schema, &it))) {
+			// record is null
 			continue;
 		}
 
 		while (corpus_data_fields_advance(&it)) {
 			j = cols[it.name_id];
-			if ((err = corpus_data_assign(&rows[j][i], schema[j],
-						      it.current.ptr,
-						      it.current.size))) {
-				error("failed parsing field value");
-			}
+			TRY(corpus_data_assign(&rows[j][i], schema[j],
+					       it.current.ptr,
+					       it.current.size));
 
-			if ((err = corpus_schema_union(schema[j],
-						       rows[j][i].type_id,
-						       type_id[j],
-						       &type_id[j]))) {
-				error("memory allocation failure");
-			}
+			TRY(corpus_schema_union(schema[j], rows[j][i].type_id,
+						type_id[j], &type_id[j]));
 		}
 	}
 
@@ -950,8 +913,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 		}
 
 		if (d_j->kind == CORPUS_DATATYPE_TEXT
-				&& in_string_set(stext,
-						 STRING_ELT(names, j))) {
+				&& in_string_set(stext, STRING_ELT(names, j))) {
 			ans_j = as_text_json(ans_j);
 		} else {
 			ans_j = simplify_json(ans_j, stext);
@@ -960,6 +922,10 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	}
 
 	UNPROTECT(2);
+out:
+	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64
+			   ", field %d of JSON data", (uint64_t)(i + 1),
+			   j + 1);
 	return ans;
 }
 
