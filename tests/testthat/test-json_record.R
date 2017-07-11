@@ -44,4 +44,14 @@ test_that("subscripting both dimensions works", {
     expect_equal(as.integer(ds[2, "a"]), NA_integer_)
     expect_equal(as.list(ds[,]), as.list(ds))
     expect_equal(as.list(ds[]), as.list(ds))
+    expect_equal(as.logical(ds[,"b"]), c(TRUE, FALSE))
+})
+
+
+test_that("deserializing as text works", {
+    file <- tempfile()
+    writeLines('{"a": "hello", "b": "world"}', file)
+    ds <- read_ndjson(file, text = "b")
+    expect_equal(ds$a, "hello")
+    expect_equal(ds$b, as_text("world"))
 })

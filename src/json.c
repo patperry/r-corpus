@@ -237,11 +237,8 @@ static void json_load(SEXP sdata)
 	// set the attribute fields
 	parent->nrow = nrow;
 	parent->type_id = type_id;
-	if (type_id < 0) {
-		parent->kind = CORPUS_DATATYPE_ANY;
-	} else {
-		parent->kind = parent->schema.types[type_id].kind;
-	}
+	parent->kind = (type_id < 0 ? CORPUS_DATATYPE_ANY
+				    : parent->schema.types[type_id].kind);
 
 	// first extract the rows from the parent...
 	srows = getListElement(sdata, "rows");
@@ -528,13 +525,8 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	// set the fields
 	obj2->nrow = n;
 	obj2->type_id = type_id;
-
-	if (type_id < 0) {
-		obj2->kind = CORPUS_DATATYPE_ANY;
-	} else {
-		obj2->kind = obj2->schema.types[type_id].kind;
-	}
-
+	obj2->kind = (type_id < 0 ? CORPUS_DATATYPE_ANY
+				  : obj2->schema.types[type_id].kind);
 	UNPROTECT(2);
 out:
 	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64" of JSON file",
@@ -837,9 +829,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	struct corpus_data **rows;
 	int *cols;
 
-	if (d->kind != CORPUS_DATATYPE_RECORD) {
-		return R_NilValue;
-	}
+	TRY(d->kind != CORPUS_DATATYPE_RECORD ? CORPUS_ERROR_INTERNAL: 0);
 
 	r = &d->schema.types[d->type_id].meta.record;
 	nfield = r->nfield;
