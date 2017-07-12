@@ -1,5 +1,11 @@
 context("text")
 
+test_that("converting to character should work", {
+    x <- c("hello", NA, "world", "")
+    y <- as_text(x)
+    expect_equal(as.character(y), x)
+})
+
 
 test_that("subsetting should work", {
     x <- as_text(LETTERS)
