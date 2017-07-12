@@ -103,18 +103,18 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
 
     if ("before" %in% names) {
         i <- match("before", names)
-        rval[[i]] <- format(x[[i]], chars = floor(ctxwidth) - ellipsis,
+        w <- floor(ctxwidth)
+        rval[[i]] <- format(x[[i]], chars = w - ellipsis, width = w,
                             display = display, justify = "right")
-        names[[i]] <- format("before", width = max(0, utf8_width(rval[[i]])),
-                             chars = charmax, justify = "left")
+        names[[i]] <- format("before", width = w, justify = "left")
     }
 
     if ("after" %in% names) {
         i <- match("after", names)
-        rval[[i]] <- format(x[[i]], chars = ceiling(ctxwidth) - ellipsis,
+        w <- ceiling(ctxwidth)
+        rval[[i]] <- format(x[[i]], chars = w - ellipsis, width = w,
                             display = display, justify = "left")
-        names[[i]] <- format("after", width = max(0, utf8_width(rval[[i]])),
-                             chars = charmax, justify = "right")
+        names[[i]] <- format("after", width = w, justify = "right")
     }
     names(rval) <- names
 

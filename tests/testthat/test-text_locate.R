@@ -88,3 +88,23 @@ test_that("'text_locate' can use a custom filter", {
 
     expect_equal(actual, expected)
 })
+
+
+test_that("'text_locate' prints results correctly", {
+    text <- c("Rose is a rose is a rose is a rose.",
+              "A rose by any other name would smell as sweet.",
+              "Snow White and Rose Red")
+    f <- token_filter(map_case = FALSE)
+    loc <- text_locate(text, "Rose", f)
+
+    oldwidth <- getOption("width")
+    options(width = 80)
+
+    lines <- strsplit(capture_output(print(loc)), "\n")[[1]]
+    expect_equal(lines,
+c("  text term before                        instance                         after",
+  "1 1    Rose                                 Rose    is a rose is a rose is a ...",
+  "2 3    Rose               Snow White and    Rose    Red                         "))
+
+    options(width = oldwidth)
+})
