@@ -69,3 +69,21 @@ test_that("rep should work", {
     y <- rep(x, 7)
     expect_equal(y, as_text(rep(c("a", "b", "c"), 7)))
 })
+
+
+test_that("is.na should work", {
+    x <- as_text(c("a", NA, "", "b"))
+    expect_equal(is.na(x), c(FALSE, TRUE, FALSE, FALSE))
+    expect_equal(is.na(as_text(c())), logical())
+})
+
+
+test_that("anyNA should work", {
+    x <- as_text(c("a", NA, "", "b"))
+    y <- as_text(c())
+    z <- as_text(letters)
+
+    expect_true(anyNA(x))
+    expect_false(anyNA(y))
+    expect_false(anyNA(z))
+})
