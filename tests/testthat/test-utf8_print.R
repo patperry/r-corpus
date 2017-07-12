@@ -1,5 +1,17 @@
 context("utf8_print")
 
+test_that("'utf8_print' can print unicode", {
+    ctype <- switch_ctype("Unicode")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    x <-  c("\u0100\u0101\u0102\u0103\u0104\u0105",
+            "\u0106\u0107\u0108\u0109\u010a\u010b")
+
+    expect_equal(capture_output(utf8_print(x)),
+                 paste("[1] \"\u0100\u0101\u0102\u0103\u0104\u0105\"",
+                       "\"\u0106\u0107\u0108\u0109\u010a\u010b\""))
+})
+
 test_that("'utf8_print' works with unnamed character vectors", {
     x <- as.character(1:100)
 
