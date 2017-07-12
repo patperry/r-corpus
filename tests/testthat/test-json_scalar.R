@@ -245,6 +245,7 @@ test_that("reading record array works", {
     writeLines(json, file)
     ds <- read_ndjson(file, simplify = FALSE)
     expect_equal(as.list(ds), x)
+    expect_equal(dimnames(ds), NULL)
 })
 
 

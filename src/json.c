@@ -958,6 +958,12 @@ SEXP simplify_json(SEXP sdata, SEXP stext)
 
 	switch (d->kind) {
 	case CORPUS_DATATYPE_NULL:
+		if (d->nrow == 0) {
+			ans = R_NilValue;
+			break;
+		}
+		// else fall through
+
 	case CORPUS_DATATYPE_BOOLEAN:
 		ans = as_logical_json(sdata);
 		break;
