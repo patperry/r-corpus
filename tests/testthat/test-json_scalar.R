@@ -327,3 +327,24 @@ test_that("converting scalar to data frame works", {
                            row.names = c(NA, -4),
                            class = c("corpus_frame", "data.frame")))
 })
+
+
+test_that("indexing with empty should succeed", {
+    file <- tempfile()
+    writeLines(c('"a"', '"b"', 'null', '"c"'), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.character(ds[]), as.character(ds))
+    expect_equal(as.character(ds[integer()]), character())
+})
+
+
+test_that("invalid operations should fail", {
+    file <- tempfile()
+    writeLines(c('"a"', '"b"', 'null', '"c"'), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+
+    expect_error(ds$hello, "$ operator is invalid for scalar JSON objects",
+                 fixed = TRUE)
+    expect_error(ds[["1"]], "invalid subscript: \"1\"", fixed = TRUE)
+    expect_error(ds[1, 1], "incorrect number of dimensions")
+})

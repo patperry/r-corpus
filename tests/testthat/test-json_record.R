@@ -162,4 +162,6 @@ test_that("invalid operations don't work", {
     expect_error(ds[1, "foo"], "invalid column name: \"foo\"")
     expect_error(ds[1, NA], "invalid column subscript: \"NA\"")
     expect_error(ds[1, 100], "invalid column subscript: \"100\"")
+
+    expect_error(ds[1, 1, 1], "incorrect number of dimensions")
 })

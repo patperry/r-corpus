@@ -38,3 +38,9 @@ test_that("passing an empty file should succeed", {
     writeLines(character(), file)
     expect_equal(read_ndjson(file), NULL)
 })
+
+
+test_that("passing a nonscalar should fail", {
+    expect_error(read_ndjson(17),
+                 "'file' must be a character string or connection")
+})
