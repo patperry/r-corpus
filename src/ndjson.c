@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include "rcorpus.h"
 
 
@@ -34,9 +35,7 @@ SEXP read_ndjson(SEXP sbuffer)
 {
 	SEXP ans;
 
-	if (TYPEOF(sbuffer) != RAWSXP) {
-		error("'buffer' must be a raw vector");
-	}
+	assert(TYPEOF(sbuffer) == RAWSXP);
 
 	PROTECT(ans = alloc_json(sbuffer, R_NilValue, R_NilValue));
 	as_json(ans); // force data load
