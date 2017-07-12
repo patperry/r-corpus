@@ -73,7 +73,7 @@ static const char *translate(SEXP charsxp, int is_stdout)
 
 		// Use ConsoleCP for terminal output to stdout, ACP otherwise
 		// (see https://go-review.googlesource.com/c/27575/ )
-		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : cp = GetACP();
+		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
 
 		// convert from UTF-16 to native code page
 		len = WideCharToMultiByte(cp, 0, wstr, wlen, NULL, 0, NULL,
