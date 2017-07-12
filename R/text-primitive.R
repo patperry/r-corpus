@@ -85,12 +85,17 @@ as.character.corpus_text <- function(x, ...)
 
 as.complex.corpus_text <- function(x, ...)
 {
-    as.complex(as.character(x), ...)
+    with_rethrow({
+        as.complex(as.character(x), ...)
+    })
 }
 
 as.double.corpus_text <- function(x, ...)
 {
-    as.double(as.character(x), ...)
+    x <- as.character(x)
+    with_rethrow({
+        as.double(x, ...)
+    })
 }
 
 as.environment.corpus_text <- function(x, ...)
@@ -100,22 +105,26 @@ as.environment.corpus_text <- function(x, ...)
 
 as.integer.corpus_text <- function(x, ...)
 {
-    as.integer(as.character(x), ...)
+    x <- as.character(x)
+    with_rethrow({
+        as.integer(x, ...)
+    })
 }
 
 as.logical.corpus_text <- function(x, ...)
 {
-    as.logical(as.character(x), ...)
-}
-
-as.numeric.corpus_text <- function(x, ...)
-{
-    as.numeric(as.character(x), ...)
+    x <- as.character(x)
+    with_rethrow({
+        as.logical(x, ...)
+    })
 }
 
 as.raw.corpus_text <- function(x, ...)
 {
-    as.raw(as.character(x), ...)
+    x <- as.character(x)
+    with_rethrow({
+        as.raw(x, ...)
+    })
 }
 
 c.corpus_text <- function(..., use.names = TRUE)

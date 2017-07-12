@@ -97,6 +97,10 @@ test_that("conversions should work", {
                  c(TRUE, FALSE, NA))
     expect_equal(as.numeric(as_text("3.14")), 3.14)
     expect_equal(as.raw(as_text("1")), as.raw("1"))
+
+    expect_warning(x <- as.numeric(as_text("foo")),
+                   "NAs introduced by coercion")
+    expect_equal(x, NA_real_)
 })
 
 
