@@ -100,6 +100,9 @@ test_that("'text_locate' prints results correctly", {
     oldwidth <- getOption("width")
     options(width = 80)
 
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
     lines <- strsplit(capture_output(print(loc)), "\n")[[1]]
     expect_equal(lines,
 c("  text term before                        instance                         after",
