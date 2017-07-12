@@ -137,6 +137,17 @@ test_that("reading double array with overflow works", {
 })
 
 
+test_that("reading double vector with overflow works", {
+    file <- tempfile()
+    writeLines(c("1e999999", "-1e9999999", "0"), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_warning((y <- as.numeric(ds)),
+                   "Inf introduced by coercion to double-precision range",
+                   fixed = TRUE)
+    expect_equal(y, c(Inf, -Inf, 0))
+})
+
+
 test_that("reading integer array works", {
     x <- list(c(4L,-1L,2L), integer(), integer(), c(1L, 1L, 2L, 3L, 5L))
     file <- tempfile()
@@ -163,6 +174,17 @@ test_that("reading integer array with overflow works", {
     writeLines(c("[-2147483648]", "[2147483648]"), file)
     ds <- read_ndjson(file, simplify = FALSE)
     expect_equal(as.list(ds), list(-2147483648, 2147483648))
+})
+
+
+test_that("reading integer vector with overflow works", {
+    file <- tempfile()
+    writeLines(c("-2147483648", "-2147483647", "2147483647", "2147483648"),
+               file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_warning(y <- as.integer(ds),
+                   "NAs introduced by coercion to integer range")
+    expect_equal(y, c(NA, -2147483647, 2147483647, NA))
 })
 
 

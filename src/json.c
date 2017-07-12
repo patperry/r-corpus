@@ -603,12 +603,8 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 	obj2->nrow = n;
 	obj2->type_id = type_id;
-
-	if (type_id < 0) {
-		obj2->kind = CORPUS_DATATYPE_ANY;
-	} else {
-		obj2->kind = obj2->schema.types[type_id].kind;
-	}
+	obj2->kind = (type_id < 0 ? CORPUS_DATATYPE_ANY
+				  : obj2->schema.types[type_id].kind);
 
 	UNPROTECT(3);
 out:
@@ -668,7 +664,7 @@ SEXP as_double_json(SEXP sdata)
 	}
 
 	if (overflow) {
-		warning("NAs introduced by coercion to double range");
+		warning("Inf introduced by coercion to double-precision range");
 	}
 
 	UNPROTECT(1);
