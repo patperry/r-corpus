@@ -892,11 +892,9 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 		shandle = getListElement(ans_j, "handle");
 		d_j = R_ExternalPtrAddr(shandle);
 		d_j->type_id = type_id[j];
-		if (type_id[j] < 0) {
-			d_j->kind = CORPUS_DATATYPE_ANY;
-		} else {
-			d_j->kind = schema[j]->types[type_id[j]].kind;
-		}
+		d_j->kind = ((type_id[j] < 0)
+				? CORPUS_DATATYPE_ANY
+				: schema[j]->types[type_id[j]].kind);
 
 		if (d_j->kind == CORPUS_DATATYPE_TEXT
 				&& in_string_set(stext, STRING_ELT(names, j))) {
