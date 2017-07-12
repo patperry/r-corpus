@@ -55,3 +55,10 @@ test_that("serialization should work", {
 
     expect_equal(text, text2)
 })
+
+
+test_that("c should work", {
+    x <- c(a=as_text(c("hello", NA, "world")), "!", c=7)
+    expect_equal(x, as_text(c(a1 = "hello", a2 = NA, a3 = "world", "!",
+                              c = "7")))
+})

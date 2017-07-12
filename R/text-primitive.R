@@ -118,11 +118,17 @@ as.raw.corpus_text <- function(x, ...)
     as.raw(as.character(x), ...)
 }
 
-c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
+c.corpus_text <- function(..., use.names = TRUE)
 {
-    stop("'c' is not implemented for text objects yet;",
-         " to request this feature, please file an issue at",
-         " https://github.com/patperry/r-corpus/issues")
+    args <- list(...)
+    for (i in seq_along(args)) {
+        elt <- args[[i]]
+        if (!is.character(elt)) {
+            args[[i]] <- structure(as.character(elt), names = names(elt))
+        }
+    }
+    ans <- c(args, recursive = TRUE, use.names = TRUE)
+    as_text(ans)
 }
 
 dim.corpus_text <-
