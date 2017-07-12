@@ -14,6 +14,17 @@ test_that("converting to list works", {
 })
 
 
+test_that("length works", {
+    x <- as.integer(c(1, 1, 2, 3, 5))
+    y <- c("F", "i", "b", "b", "o")
+    file <- tempfile()
+    writeLines(paste0('{"x":', x, ',"y":"', y, '"}'), file)
+
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(length(ds), 2)
+})
+
+
 test_that("printing works", {
     file <- tempfile()
     writeLines(c('{"a": 1, "b": true, "c": [3.14]}',
