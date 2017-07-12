@@ -251,34 +251,59 @@ as.character.corpus_json <- function(x, ...)
 }
 
 
-as.data.frame.corpus_json <- function(x, row.names = NULL, optional = TRUE,
-                                      text = NULL, ..., cut.names = FALSE,
-                                      col.names = NULL,
-                                      fix.empty.names = FALSE,
-                                      stringsAsFactors = FALSE)
+as.data.frame.corpus_json <- function(x, row.names = NULL, ...,
+                                      text = NULL, stringsAsFactors = FALSE)
 {
     with_rethrow({
         text <- as_character_vector("text", text)
+        stringsAsFactors <- as_option("stringsAsFactors", stringsAsFactors)
     })
 
-    if (is.null(col.names)) {
-        if (is.null(dim(x))) {
-            col.names <- deparse(substitute(x), width.cutoff = 500L)
+    if (is.null(dim(x))) {
+        n <- length(x)
+        l <- list(.Call(C_simplify_json, x, text))
+        names(l) <- deparse(substitute(x), width.cutoff = .Machine$integer.max)
+    } else {
+        n <- nrow(x)
+        l <- as.list.corpus_json(x, text = text)
+    }
+
+    if (!is.null(row.names)) {
+        with_rethrow({
+            row.names <- as_names("row.names", row.names, n)
+        })
+    } else {
+        row.names <- c(NA, -n)
+    }
+
+    cols <- list()
+    names <- character()
+    ncol <- 0
+
+    for (i in seq_along(l)) {
+        elt <- l[[i]]
+        nm <- names(l)[[i]]
+
+        if (inherits(elt, "corpus_json")) {
+            nested <- as.data.frame(elt, ..., text = text,
+                                    stringsAsFactors = stringsAsFactors)
+            for (j in seq_along(nested)) {
+                ncol <- ncol + 1L
+                cols[[ncol]] <- nested[[j]]
+                names[[ncol]] <- paste(nm, names(nested)[[j]], sep = ".")
+            }
         } else {
-            col.names <- names(x)
+            if (is.character(elt) && stringsAsFactors) {
+                elt <- as.factor(elt)
+            }
+            ncol <- ncol + 1L
+            cols[[ncol]] <- elt
+            names[[ncol]] <- nm
         }
     }
 
-    if (is.null(dim(x))) {
-        l <- list(.Call(C_simplify_json, x, text))
-    } else {
-        l <- as.list(x, text = text)
-    }
-
-    structure(as.data.frame(l, row.names = row.names, optional = optional,
-                            ..., cut.names = cut.names, col.names = col.names,
-                            fix.empty.names = fix.empty.names,
-                            stringsAsFactors = stringsAsFactors),
+    names(cols) <- names
+    structure(cols, row.names = row.names,
               class = c("corpus_frame", "data.frame"))
 }
 

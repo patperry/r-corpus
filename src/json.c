@@ -977,12 +977,12 @@ SEXP simplify_json(SEXP sdata, SEXP stext)
 		ans = as_character_json(sdata);
 		break;
 
-	case CORPUS_DATATYPE_ARRAY:
-		ans = as_list_json(sdata, stext);
+	case CORPUS_DATATYPE_RECORD:
+		ans = sdata;
 		break;
 
 	default:
-		ans = sdata;
+		ans = as_list_json(sdata, stext);
 		break;
 	}
 

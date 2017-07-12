@@ -14,6 +14,31 @@ test_that("converting to list works", {
 })
 
 
+test_that("decoding record any works", {
+    file <- tempfile()
+    writeLines(c('{"b": false}',
+                 '{"b": 7}'), file)
+    ds <- read_ndjson(file)
+    expect_equal(ds, structure(list(b = list(FALSE, 7)),
+                               row.names = c(NA, -2),
+                               class = c("corpus_frame", "data.frame")))
+})
+
+
+test_that("converting to list with null works", {
+    file <- tempfile()
+    writeLines(c('{"a": 1, "b": false}',
+                 'null',
+                 '{"b": 7, "c": true}'), file)
+    ds <- read_ndjson(file)
+    expect_equal(ds, structure(list(a = c(1, NA, NA),
+                                    b = list(FALSE, NULL, 7),
+                                    c = c(NA, NA, TRUE)),
+                               row.names = c(NA, -3),
+                               class = c("corpus_frame", "data.frame")))
+})
+
+
 test_that("length works", {
     x <- as.integer(c(1, 1, 2, 3, 5))
     y <- c("F", "i", "b", "b", "o")

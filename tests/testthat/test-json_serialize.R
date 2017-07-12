@@ -119,11 +119,10 @@ test_that("serializing json field subset works", {
     y <- 3.14 * seq_along(LETTERS) - 10
     file <- tempfile()
     writeLines(paste0('{"z": {"x": "', x, '"}, "y": ', y, "}"), file)
-    ds <- read_ndjson(file, simplify=FALSE)
+    ds <- read_ndjson(file, simplify = FALSE)
 
-    ds <- ds$z
     i <- c(20, 2, 9, 4, 6, 2)
-    ds <- ds[i,]
+    ds <- ds[i, "z"]
 
     file2 <- tempfile()
     saveRDS(ds, file2)
