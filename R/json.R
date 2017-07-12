@@ -172,71 +172,59 @@ print.corpus_json <- function(x, ...)
 
 
 
-`[.corpus_json` <- function(x, ...)
+`[.corpus_json` <- function(x, i, j, drop = TRUE)
 {
-    if (!all(names(sys.call()[-1] == ""))) {
-        stop("named arguments are not allowed")
+    if (missing(i)) {
+        i <- NULL
+    } else if (is.null(i)) {
+        i <- numeric()
     }
 
-    ni <- nargs() - 1
-
-    if (is.null(dim(x))) {
-        # Scalar json:
-        # If non-NULL, convert i to a double() vector of indices;
-        # set j to NULL.
-
-        if (ni > 1) {
-            stop("incorrect number of dimensions")
-	    }
-
-        if (ni < 1 || missing(..1)) {
-	        i <- NULL
-	    } else {
-            i <- seq_len(NROW(x))[..1]
-            i <- as.double(i)
-        }
-	    j <- NULL
+    if (missing(j)) {
+        ni <- 1
+        j <- NULL
+    } else if (is.null(dim(x))) {
+        stop("incorrect number of dimensions")
+    } else if (is.null(j)) {
+        j <- integer()
     } else {
-        # Record json:
-        # If non-NULL, convert i to a double() vector of indices;
-        # if non-NULL convert j to a column index
-
-        if (ni > 2) {
-            stop("incorrect number of dimensions")
-	    }
-
-        if (ni < 1 || missing(..1)) {
-            i <- NULL
-	    } else {
-            i <- seq_len(NROW(x))[..1]
-            i <- as.double(i)
-        }
-
-
-        if (ni < 2 || missing(..2)) {
-            j <- NULL
-        } else {
-            j <- ..2
-            if (length(j) == 0) {
-                stop("second subscript of length 0 is not allowed")
-            } else if (length(j) > 1) {
-                stop("second subscript of length >1 is not allowed")
-            }
-
-            if (is.character(j)) {
-                if (!(j %in% names(x))) {
-                    stop(paste0("invalid column name: \"", j, "\""))
-                }
-                j <- match(j, names(x))
-            }
-            if (!is.numeric(j) || is.na(j)) {
-                stop(paste0("invalid column subscript: \"", j, "\""))
-            }
-            j <- floor(as.double(j))
-        }
+        ni <- 2
     }
 
-    .Call(C_subset_json, x, i, j)
+    with_rethrow({
+        drop <- as_option("drop", drop)
+    })
+
+    if (!is.null(i)) {
+        i <- seq_len(NROW(x))[i]
+        i <- as.double(i)
+    }
+
+    if (!is.null(j)) {
+        if (length(j) == 0) {
+            stop("second subscript of length 0 is not allowed")
+        } else if (length(j) > 1) {
+            stop("second subscript of length >1 is not allowed")
+        }
+
+        if (is.character(j)) {
+            if (!j %in% names(x)) {
+                stop(paste0("invalid column name: \"", j, "\""))
+            }
+            j <- match(j, names(x))
+        }
+
+        if (!is.numeric(j) || is.na(j)) {
+            stop(paste0("invalid column subscript: \"", j, "\""))
+        }
+        j <- floor(as.double(j))
+    }
+
+    ans <- .Call(C_subset_json, x, i, j)
+    if (drop && !is.null(dim(ans)) && length(ans) == 1) {
+        ans <- .Call(C_simplify_json, ans, NULL)
+    }
+    ans
 }
 
 

@@ -308,7 +308,7 @@ struct json *as_json(SEXP sdata)
 	struct json *obj;
 
 	if (!is_json(sdata)) {
-		error("invalid 'json' object");
+		error("invalid JSON object");
 	}
 
 	json_load(sdata);

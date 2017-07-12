@@ -87,7 +87,7 @@ test_that("subscripting both dimensions works", {
     expect_error(ds[2, c("c", "a")],
                  "second subscript of length >1 is not allowed")
 
-    expect_equal(as.list(ds[2, "c"]), list(c(2.4, -1.0)))
+    expect_equal(as.list(ds[2, "c", drop = FALSE]), list(c(2.4, -1.0)))
     expect_equal(as.integer(ds[2, "a"]), NA_integer_)
     expect_equal(as.list(ds[,]), as.list(ds))
     expect_equal(as.list(ds[]), as.list(ds))
@@ -163,5 +163,8 @@ test_that("invalid operations don't work", {
     expect_error(ds[1, NA], "invalid column subscript: \"NA\"")
     expect_error(ds[1, 100], "invalid column subscript: \"100\"")
 
-    expect_error(ds[1, 1, 1], "incorrect number of dimensions")
+    expect_error(ds[1, 1, 1], "'drop' must be TRUE or FALSE")
+
+    expect_error(`[.corpus_json`(data.frame(x=1,y=2), 1, 1),
+                 "invalid JSON object")
 })
