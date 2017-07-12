@@ -61,14 +61,14 @@ SEXP alloc_context(size_t size, void (*destroy_func)(void *))
 	ctx->destroy_func = destroy_func;
         R_SetExternalPtrAddr(ans, ctx);
 
-out:
-	if (err) {
-		corpus_free(ctx);
-		corpus_free(obj);
-		error("failed allocating memory for context");
-	}
-
+	ctx = NULL;
+	obj = NULL;
 	UNPROTECT(1);
+out:
+	corpus_free(ctx);
+	corpus_free(obj);
+	CHECK_ERROR(err);
+
 	return ans;
 }
 
@@ -85,7 +85,7 @@ void *as_context(SEXP x)
 	struct context *ctx;
 
 	if (!is_context(x)) {
-		error("invalid 'context' object");
+		error("invalid context object");
 	}
 
 	ctx = R_ExternalPtrAddr(x);
