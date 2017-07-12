@@ -91,3 +91,21 @@ test_that("deserializing as text works", {
     expect_equal(ds$a, "hello")
     expect_equal(ds$b, as_text("world"))
 })
+
+
+test_that("decoding nested records works", {
+    lines <- c('{ "a": 1, "b": true }',
+               '{ "b": false, "nested": { "c": 100, "d": false }}',
+               '{ "a": 3.14, "nested": { "d": true }}')
+    file <- tempfile()
+    writeLines(lines, file)
+    ds <- read_ndjson(file)
+
+    expect_equal(ds,
+                 structure(list(a = c(1, NA, 3.14),
+                                b = c(TRUE, FALSE, NA),
+                                nested.c = c(NA, 100, NA),
+                                nested.d = c(NA, FALSE, TRUE)),
+                           row.names = c(NA, -3),
+                           class = c("corpus_frame", "data.frame")))
+})

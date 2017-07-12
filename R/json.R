@@ -262,7 +262,7 @@ as.data.frame.corpus_json <- function(x, row.names = NULL, ...,
     if (is.null(dim(x))) {
         n <- length(x)
         l <- list(.Call(C_simplify_json, x, text))
-        names(l) <- deparse(substitute(x), width.cutoff = .Machine$integer.max)
+        names(l) <- deparse(substitute(x), width.cutoff = 500L)
     } else {
         n <- nrow(x)
         l <- as.list.corpus_json(x, text = text)

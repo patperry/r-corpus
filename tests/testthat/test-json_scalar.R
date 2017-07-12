@@ -304,3 +304,25 @@ test_that("printing text array works", {
     expect_equal(capture_output(print(ds)),
         paste('JSON data set with 4 rows of type [text]'))
 })
+
+
+test_that("converting scalar to data frame works", {
+    file <- tempfile()
+    writeLines(c('"a"', '"b"', 'null', '"c"'), file)
+
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as.data.frame(ds),
+                 structure(list(ds = c("a", "b", NA, "c")),
+                           row.names = c(NA, -4),
+                           class = c("corpus_frame", "data.frame")))
+
+    expect_equal(as.data.frame(ds, row.names = c("w", "x", "y", "z")),
+                 structure(list(ds = c("a", "b", NA, "c")),
+                           row.names = c("w", "x", "y", "z"),
+                           class = c("corpus_frame", "data.frame")))
+
+    expect_equal(as.data.frame(ds, stringsAsFactors = TRUE),
+                 structure(list(ds = factor(c("a", "b", NA, "c"))),
+                           row.names = c(NA, -4),
+                           class = c("corpus_frame", "data.frame")))
+})
