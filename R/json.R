@@ -185,10 +185,11 @@ print.corpus_json <- function(x, ...)
         j <- NULL
     } else if (is.null(dim(x))) {
         stop("incorrect number of dimensions")
-    } else if (is.null(j)) {
-        j <- integer()
     } else {
         ni <- 2
+        if (is.null(j)) {
+            j <- integer()
+        }
     }
 
     with_rethrow({

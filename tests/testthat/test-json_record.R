@@ -162,6 +162,9 @@ test_that("invalid operations don't work", {
     expect_error(ds[1, "foo"], "invalid column name: \"foo\"")
     expect_error(ds[1, NA], "invalid column subscript: \"NA\"")
     expect_error(ds[1, 100], "invalid column subscript: \"100\"")
+    expect_error(ds[1, NULL], "second subscript of length 0 is not allowed")
+    expect_error(ds[1, integer()],
+                 "second subscript of length 0 is not allowed")
 
     expect_error(ds[1, 1, 1], "'drop' must be TRUE or FALSE")
 
