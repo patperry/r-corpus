@@ -825,7 +825,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	struct corpus_data **rows;
 	int *cols;
 
-	TRY(d->kind != CORPUS_DATATYPE_RECORD ? CORPUS_ERROR_INTERNAL: 0);
+	assert(d->kind == CORPUS_DATATYPE_RECORD);
 
 	r = &d->schema.types[d->type_id].meta.record;
 	nfield = r->nfield;

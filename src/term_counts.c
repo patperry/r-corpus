@@ -182,8 +182,8 @@ SEXP term_counts_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 		      SEXP smin_count, SEXP smax_count, SEXP smin_support,
 		      SEXP smax_support, SEXP soutput_types)
 {
-	SEXP ans, sctx, stype, sterm, scount, ssupport, stext, sfilter,
-	     sclass, snames, srow_names;
+	SEXP ans, sctx, sterm, scount, ssupport, stext,
+	     sfilter, sclass, snames, srow_names, stype = NA_STRING;
 	SEXP *stypes;
 	struct context *ctx;
 	const struct corpus_text *text, *type;
