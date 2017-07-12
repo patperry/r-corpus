@@ -49,13 +49,11 @@ static const char *translate(SEXP charsxp, int is_stdout)
 		return raw; // no need to translate ASCII
 	}
 
-	// leave UTF-8 as is if not outputting to the console
-	if (!is_stdout) {
-		return str;
-	}
-
 	// mimic the WinCheckUTF8 behavior in base R main/connections.c
-	if (CharacterMode == RGui) {
+	if (CharacterMode == RGui && is_stdout) {
+		if (n > INT_MAX - 7) {
+			error("string length exceeds maximum (%d)", INT_MAX);
+		}
 		str = R_alloc(n + 7, 1);
 
 		// mimic the EncodeString behavior in main/printutils.c
@@ -64,23 +62,23 @@ static const char *translate(SEXP charsxp, int is_stdout)
 		memcpy(str, "\x02\xFF\xFE", 3);
 		memcpy(str + 3, raw, n);
 		memcpy(str + 3 + n, "\x03\xFF\xFE", 4); // include NUL
-	} else {
-		// convert from UTF-8 to UTF-16
-		// use n + 1 for length to include trailing NUL
-		wlen = MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, NULL, 0);
-		wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
-		MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, wstr, wlen);
-
-		// Use ConsoleCP for terminal output to stdout, ACP otherwise
-		// (see https://go-review.googlesource.com/c/27575/ )
-		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
-
-		// convert from UTF-16 to native code page
-		len = WideCharToMultiByte(cp, 0, wstr, wlen, NULL, 0, NULL,
-					  NULL);
-		str = R_alloc(len, 1);
-		WideCharToMultiByte(cp, 0, wstr, wlen, str, len, NULL, NULL);
+		return str;
 	}
+
+	// convert from UTF-8 to UTF-16
+	// use n + 1 for length to include trailing NUL
+	wlen = MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, NULL, 0);
+	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
+	MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, wstr, wlen);
+
+	// Use ConsoleCP for terminal output to stdout, ACP otherwise
+	// (see https://go-review.googlesource.com/c/27575/ )
+	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+
+	// convert from UTF-16 to native code page
+	len = WideCharToMultiByte(cp, 0, wstr, wlen, NULL, 0, NULL, NULL);
+	str = R_alloc(len, 1);
+	WideCharToMultiByte(cp, 0, wstr, wlen, str, len, NULL, NULL);
 
 	return str;
 }
