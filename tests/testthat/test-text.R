@@ -62,3 +62,10 @@ test_that("c should work", {
     expect_equal(x, as_text(c(a1 = "hello", a2 = NA, a3 = "world", "!",
                               c = "7")))
 })
+
+
+test_that("rep should work", {
+    x <- as_text(c("a", "b", "c"))
+    y <- rep(x, 7)
+    expect_equal(y, as_text(rep(c("a", "b", "c"), 7)))
+})

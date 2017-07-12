@@ -217,9 +217,8 @@ names.corpus_text <- function(x)
 
 rep.corpus_text <- function(x, ...)
 {
-    stop("'rep' is not implemented for text objects yet;",
-         " to request this feature, please file an issue at",
-         " https://github.com/patperry/r-corpus/issues")
+    x <- structure(as.character(x), names = names(x))
+    as_text(rep(x, ...))
 }
 
 xtfrm.corpus_text <- function(x)
