@@ -94,11 +94,12 @@ names.corpus_json <- function(x)
 
 dimnames.corpus_json <- function(x)
 {
-    cn <- names(x)
-    if (is.null(cn)) {
-        NULL
+    if (is.null(dim(x))) {
+        return(NULL)
     } else {
-        list(NULL, cn)
+        rn <- as.character(seq_len(nrow(x)))
+        cn <- names(x)
+        list(rn, cn)
     }
 }
 
@@ -338,13 +339,10 @@ as.list.corpus_json <- function(x, text = NULL, ...)
 as_text.corpus_json <- function(x, ...)
 {
     if (length(dim(x)) == 2) {
-        if (!("text" %in% names(x))) {
-            stop("no column named 'text'")
+        if (!"text" %in% names(x)) {
+            stop("no column named \"text\"")
         }
-        nm <- row.names(x)
-        x <- as_text(x$text)
-        names(x) <- nm
-        x
+        as_text(x$text)
     } else {
         .Call(C_as_text_json, x)
     }

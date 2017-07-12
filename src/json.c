@@ -451,7 +451,7 @@ SEXP subscript_json(SEXP sdata, SEXP si)
 		r = &t->meta.record;
 
 		if (!(1 <= i && i <= r->nfield)) {
-			error("invalid subscript: %g", i);
+			error("invalid column subscript: \"%g\"", i);
 		}
 		name_id = r->name_ids[(int)(i - 1)];
 		name = &s->names.types[name_id].text;

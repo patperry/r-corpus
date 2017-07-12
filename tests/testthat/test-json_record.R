@@ -57,7 +57,7 @@ test_that("dimnames works", {
     writeLines(paste0('{"x":', x, ',"y":"', y, '"}'), file)
 
     ds <- read_ndjson(file, simplify = FALSE)
-    expect_equal(dimnames(ds), list(NULL, c("x", "y")))
+    expect_equal(dimnames(ds), list(as.character(1:5), c("x", "y")))
 })
 
 
@@ -122,6 +122,22 @@ test_that("decoding nested records works", {
 })
 
 
+test_that("converting to text works", {
+    file <- tempfile()
+    writeLines('{ "a": "foo", "text": "hello" }', file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_equal(as_text(ds), as_text("hello"))
+})
+
+
+test_that("converting to text throws error if no column named 'text'", {
+    file <- tempfile()
+    writeLines('{ "a": "foo", "b": "hello" }', file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_error(as_text(ds), 'no column named "text"')
+})
+
+
 test_that("invalid operations don't work", {
     lines <- c('{ "a": 1, "b": true }',
                '{ "b": false, "nested": { "c": 100, "d": false }}',
@@ -136,9 +152,14 @@ test_that("invalid operations don't work", {
                  "$<- operator is invalid for JSON objects", fixed = TRUE)
     expect_error(ds[[1]] <- c(1, 2, 3),
                  "[[<- operator is invalid for JSON objects", fixed = TRUE)
+    expect_error(ds[1,1] <- 1,
+                 "[<- operator is invalid for JSON objects", fixed = TRUE)
 
     expect_error(ds[[c()]], "subscript of length 0 is not allowed")
     expect_error(ds[[c(1,2)]], "subscript of length >1 is not allowed")
     expect_error(ds[["foo"]], "invalid column name: \"foo\"")
     expect_error(ds[[NA]], "invalid subscript: \"NA\"")
+    expect_error(ds[1, "foo"], "invalid column name: \"foo\"")
+    expect_error(ds[1, NA], "invalid column subscript: \"NA\"")
+    expect_error(ds[1, 100], "invalid column subscript: \"100\"")
 })
