@@ -196,7 +196,11 @@ print.corpus_json <- function(x, ...)
     })
 
     if (!is.null(i)) {
-        i <- seq_len(NROW(x))[i]
+        ix <- seq_len(NROW(x))
+        if (!is.null(dim(x))) {
+            names(ix) <- row.names(x)
+        }
+        i <- ix[i]
         i <- as.double(i)
     }
 
