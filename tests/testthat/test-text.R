@@ -87,3 +87,8 @@ test_that("anyNA should work", {
     expect_false(anyNA(y))
     expect_false(anyNA(z))
 })
+
+
+test_that("'names' should error for non-text", {
+    expect_error(names.corpus_text("hello"), "invalid text object")
+})

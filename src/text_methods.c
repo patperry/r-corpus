@@ -28,7 +28,7 @@
 SEXP names_text(SEXP stext)
 {
 	if (!is_text(stext)) {
-		error("invalid 'text' object");
+		error("invalid text object");
 	}
 
 	return getListElement(stext, "names");

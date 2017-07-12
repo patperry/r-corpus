@@ -188,10 +188,7 @@ length.corpus_text <- function(x)
 
 names.corpus_text <- function(x)
 {
-    if (!is_text(x)) {
-        stop("invalid text object")
-    }
-    unclass(x)$names
+    .Call(C_names_text, x)
 }
 
 `names<-.corpus_text` <- function(x, value)
