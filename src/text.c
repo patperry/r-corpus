@@ -422,6 +422,33 @@ SEXP coerce_text(SEXP sx)
 }
 
 
+SEXP text_filter_update(SEXP x)
+{
+	SEXP handle;
+	struct rcorpus_text *obj;
+
+	handle = getListElement(x, "handle");
+	obj = R_ExternalPtrAddr(handle);
+
+	if (!obj) {
+		goto out;
+	}
+
+	if (obj->has_filter) {
+		corpus_filter_destroy(&obj->filter);
+		obj->has_filter = 0;
+	}
+
+	if (obj->has_sentfilter) {
+		corpus_sentfilter_destroy(&obj->sentfilter);
+		obj->has_sentfilter = 0;
+	}
+
+out:
+	return R_NilValue;
+}
+
+
 static void load_text(SEXP x)
 {
 	SEXP shandle, srow, ssource, sstart, sstop, ssources, src, str, stable;

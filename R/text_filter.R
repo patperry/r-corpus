@@ -138,8 +138,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     y <- unclass(x)
     y$filter <- value
     class(y) <- class(x)
-    # TODO implement the following
-    # .Call(C_text_filter_update, y)
+    .Call(C_text_filter_update, y)
     y
 }
 
