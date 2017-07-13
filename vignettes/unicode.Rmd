@@ -70,14 +70,15 @@ The file claims to be ASCII, and we read in the text assuming that it was
 encoded as UTF-8. So, we should be in good shape. However, we run into trouble
 as soon as we try to process the text:
 
-
 ```r
 term_counts(lines) # produces an error
 ```
 
 ```
-Error in knitr::knit("src/unicode.Rmd"): argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
+Error in term_counts(lines) :
+  argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
 ```
+
 
 The error message tells us that line 15252 contains an invalid byte.
 
@@ -100,9 +101,11 @@ lines[!utf8_valid(lines)]
 ```
 [1] "the command of her beauty, and her \xa320,000, any one who could satisfy the"
 ```
-The `\xa3` is a code for a byte with the hexadecimal value `0xA3`, decimal
-value 163. To understand why this is invalid, we need to learn more about
-UTF-8 encoding.
+So, there aren't any other invalid lines.
+
+The offending byte in line 15252 is displayed as `\xa3` an escape code
+for hexadecimal value 0xa3, decimal value 163. To understand why this
+is invalid, we need to learn more about UTF-8 encoding.
 
 
 UTF-8
@@ -333,9 +336,13 @@ term_counts(lines)
 ```
 
 ```
-Error in knitr::knit("src/unicode.Rmd"): argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
+Error in term_counts(lines) :
+  argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
 ```
+
+
 We discovered a problem on line 15252:
+
 
 ```r
 lines[15252]
@@ -344,6 +351,7 @@ lines[15252]
 ```
 [1] "the command of her beauty, and her \xa320,000, any one who could satisfy the"
 ```
+
 The text is likely encoded in Latin-1, not UTF-8 (or ASCII) as we had
 originally thought. We can test this by attempting to convert from
 Latin-1 to UTF-8 with the `iconv()` function and inspecting the output:
@@ -393,7 +401,7 @@ term_counts(lines2, f)
 The *readtext* package
 ----------------------
 
-If you need more than reading in a single file, the [readtext][readtext]
+If you need more than reading in a single text file, the [readtext][readtext]
 package supports reading in text in a variety of file formats and encodings.
 Beyond just plain text, that package can read in PDFs, Word documents, RTF,
 and many other formats. (Unfortunately, that package currently fails when

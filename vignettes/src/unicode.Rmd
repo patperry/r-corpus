@@ -59,9 +59,15 @@ The file claims to be ASCII, and we read in the text assuming that it was
 encoded as UTF-8. So, we should be in good shape. However, we run into trouble
 as soon as we try to process the text:
 
-```{r}
+```r
 term_counts(lines) # produces an error
 ```
+
+```
+Error in term_counts(lines) :
+  argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
+```
+
 
 The error message tells us that line 15252 contains an invalid byte.
 
@@ -220,13 +226,23 @@ Translating to UTF-8
 
 Back to our original problem: getting the text of _Mansfield Park_ into R.
 Our first attempt failed:
-```{r}
+
+```r
 term_counts(lines)
 ```
+
+```
+Error in term_counts(lines) :
+  argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
+```
+
+
 We discovered a problem on line 15252:
+
 ```{r}
 lines[15252]
 ```
+
 The text is likely encoded in Latin-1, not UTF-8 (or ASCII) as we had
 originally thought. We can test this by attempting to convert from
 Latin-1 to UTF-8 with the `iconv()` function and inspecting the output:
