@@ -32,7 +32,7 @@ incorrectly, it will wrongly interpret the sequence of ones and zeros.
 We will demonstrate the difficulties with encodings with the text of
 Jane Austen's novel, _Mansfield Park_ provided by
 [Project Gutenberg][gutenberg]. We will download the text, then
-read in the lines of the novel using the *readr* package.
+read in the lines of the novel using the *[readr][readr]* package.
 
 
 ```r
@@ -390,12 +390,39 @@ term_counts(lines2, f)
 (8243 rows total)
 ```
 
+The *readtext* package
+----------------------
+
+If you need more than reading in a single file, the [readtext][readtext]
+package supports reading in text in a variety of file formats and encodings.
+Beyond just plain text, that package can read in PDFs, Word documents, RTF,
+and many other formats. (Unfortunately, that package currently fails when
+trying to read in _Mansfield Park_; the authors are aware of the issue and are
+working on a fix.)
+
+
+Summary
+-------
+
+Text comes in a variety of encodings, and you cannot analyze a text without
+first knowing its encoding. Many functions for reading in text assume that it
+is encoded in UTF-8, but this assumption sometimes fails to hold.  If you get
+an error message reporting that your UTF-8 text is invalid, use `utf8_valid`
+to find the offending texts. Try printing the data to the console before and
+after using `iconv` to convert between character encodings. You can use
+`utf8_print` to print UTF-8 characters that R refuses to display, including
+emoji characters. For reading in exotic file formats like PDF or Word, try
+the [readtext][readtext] package.
 
 
 
 [emoji-data]: http://www.unicode.org/Public/emoji/5.0/emoji-data.txt
 
 [gutenberg]: http://www.gutenberg.org
+
+[readr]: https://github.com/tidyverse/readr#readme
+
+[readtext]: https://github.com/kbenoit/readtext#readtext
 
 [spolsky2003]: https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/
 
