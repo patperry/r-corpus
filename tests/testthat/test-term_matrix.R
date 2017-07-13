@@ -203,6 +203,17 @@ test_that("'term_frame' gives equivalent results to 'term_matrix' no names", {
 })
 
 
+test_that("'term_frame' can return character columns", {
+    text <- c("A rose is a rose is a rose.",
+              "A Rose is red, a violet is blue!",
+              "A rose by any other name would smell as sweet.")
+    tf <- term_frame(text)
+    tf2 <- term_frame(text, factors = FALSE)
+    expect_equal(tf2$text, as.character(tf$text))
+    expect_equal(tf2$term, as.character(tf$term))
+})
+
+
 test_that("'term_frame' with group gives equivalent results to 'term_matrix'", {
     text <- c(a="A rose is a rose is a rose.",
               b="A Rose is red, a violet is blue!",
