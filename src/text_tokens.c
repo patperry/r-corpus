@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "corpus/src/array.h"
 #include "corpus/src/table.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
@@ -41,64 +42,51 @@ struct tokens {
 
 	SEXP *types;
 	int ntype, ntype_max;
-
-	int nprot;
 };
 
 
 static void tokens_init(struct tokens *ctx, struct corpus_filter *filter);
-static void tokens_destroy(struct tokens *ctx);
-static SEXP tokens_add(struct tokens *ctx, int type_id);
+static SEXP tokens_add_type(struct tokens *ctx, int type_id);
 static SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text);
 
 
 void tokens_init(struct tokens *ctx, struct corpus_filter *filter)
 {
-	int i, n;
-
 	ctx->filter = filter;
 
 	ctx->nbuf_max = 256;
 	ctx->buf = (void *)R_alloc(ctx->nbuf_max, sizeof(*ctx->buf));
 
-	ctx->ntype_max = 256;
+	ctx->ntype_max = 0;
 	ctx->ntype = 0;
-	ctx->types = (void *)R_alloc(ctx->ntype_max, sizeof(*ctx->types));
-
-	// add the terms in the filter
-	n = ctx->filter->ntype;
-	for (i = 0; i < n; i++) {
-		PROTECT(tokens_add(ctx, i));
-	}
-
-	ctx->nprot = n;
+	ctx->types = NULL;
 }
 
 
-void tokens_destroy(struct tokens *ctx)
-{
-	UNPROTECT(ctx->nprot);
-}
-
-
-SEXP tokens_add(struct tokens *ctx, int type_id)
+SEXP tokens_add_type(struct tokens *ctx, int type_id)
 {
 	SEXP ans;
 	const struct corpus_text *type;
+	int count = ctx->ntype;
+	int size = ctx->ntype_max;
+	int err = 0;
 
-	if (ctx->ntype == ctx->ntype_max) {
-		ctx->ntype_max = 2 * ctx->ntype_max;
+	if (count == size) {
+		TRY(corpus_array_size_add(&size, sizeof(*ctx->types),
+					  count, 1));
 		ctx->types = (void *)S_realloc((void *)ctx->types,
-					       ctx->ntype_max,
-					       ctx->ntype,
+					       size, count,
 					       sizeof(*ctx->types));
+		ctx->ntype_max = size;
 	}
 
 	type = corpus_filter_type(ctx->filter, type_id);
 	ans = mkCharLenCE((char *)type->ptr, CORPUS_TEXT_SIZE(type), CE_UTF8);
-	ctx->types[ctx->ntype] = ans;
-	ctx->ntype++;
+	ctx->types[count] = ans;
+	ctx->ntype = count + 1;
 
+out:
+	CHECK_ERROR(err);
 	return ans;
 }
 
@@ -128,7 +116,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 
 		// add the new types
 		while (ntype < ctx->filter->ntype) {
-			PROTECT(tokens_add(ctx, ntype)); nprot++;
+			PROTECT(tokens_add_type(ctx, ntype)); nprot++;
 			ntype++;
 		}
 
@@ -168,26 +156,33 @@ SEXP text_tokens(SEXP sx, SEXP sprops)
 	struct corpus_filter *filter;
 	struct tokens ctx;
 	R_xlen_t i, n;
+	int nprot, ntype;
 
-	PROTECT(stext = coerce_text(sx));
-	PROTECT(sfilter = alloc_filter(sprops));
+	nprot = 0;
+
+	PROTECT(stext = coerce_text(sx)); nprot++;
+	PROTECT(sfilter = alloc_filter(sprops)); nprot++;
 
 	text = as_text(stext, &n);
 	filter = as_filter(sfilter);
 
-	PROTECT(ans = allocVector(VECSXP, n));
+	PROTECT(ans = allocVector(VECSXP, n)); nprot++;
 	names = names_text(stext);
 	setAttrib(ans, R_NamesSymbol, names);
 
 	tokens_init(&ctx, filter);
+
+	// add the existing types in the filter
+	ntype = ctx.filter->ntype;
+	for (i = 0; i < ntype; i++) {
+		PROTECT(tokens_add_type(&ctx, i)); nprot++;
+	}
 
 	for (i = 0; i < n; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 		SET_VECTOR_ELT(ans, i, tokens_scan(&ctx, &text[i]));
 	}
 
-	tokens_destroy(&ctx);
-
-	UNPROTECT(3);
+	UNPROTECT(nprot);
 	return ans;
 }
