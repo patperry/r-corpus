@@ -132,9 +132,10 @@ static SEXP context_make(struct context *ctx, SEXP sx)
 	SEXP ans, handle, sources, psource, prow, pstart, ptable, source,
 	     row, start, stop, index, sparent, stext, names,
 	     sclass, row_names;
+	struct rcorpus_text *obj;
 	R_xlen_t src, i, iblock, nblock;
 	double r;
-	int j, off, len, nprot;
+	int err = 0, j, off, len, nprot;
 
 	context_trim(ctx);
 
@@ -190,7 +191,11 @@ static SEXP context_make(struct context *ctx, SEXP sx)
 	PROTECT(stext = alloc_text(sources, source, row, start, stop)); nprot++;
 
 	handle = getListElement(stext, "handle");
-	R_SetExternalPtrAddr(handle, ctx->block);
+	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));
+	R_SetExternalPtrAddr(handle, obj);
+
+	obj->text = ctx->block;
+	obj->length = nblock;
 	ctx->block = NULL;
 
 	PROTECT(ans = allocVector(VECSXP, 3)); nprot++;
@@ -213,6 +218,8 @@ static SEXP context_make(struct context *ctx, SEXP sx)
         SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
         setAttrib(ans, R_ClassSymbol, sclass);
 
+out:
+	CHECK_ERROR(err);
 	UNPROTECT(nprot);
 	return ans;
 }

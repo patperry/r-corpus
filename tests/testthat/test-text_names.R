@@ -67,6 +67,7 @@ test_that("`names<-` should not modify copies", {
 })
 
 
+
 test_that("`names<-` should preserve attributes", {
     x <- as_text(1:3)
     attr(x, "foo") <- "bar"

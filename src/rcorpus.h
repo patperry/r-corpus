@@ -22,6 +22,7 @@
 #include <Rdefines.h>
 
 #include "corpus/src/error.h"
+#include "corpus/src/memory.h"
 #include "corpus/src/table.h"
 #include "corpus/src/tree.h"
 #include "corpus/src/termset.h"
@@ -31,6 +32,10 @@
 #include "corpus/src/symtab.h"
 #include "corpus/src/datatype.h"
 #include "corpus/src/data.h"
+#include "corpus/src/wordscan.h"
+#include "corpus/src/sentscan.h"
+#include "corpus/src/filter.h"
+#include "corpus/src/sentfilter.h"
 
 #define RCORPUS_CHECK_EVERY 1000
 #define RCORPUS_CHECK_INTERRUPT(i) \
@@ -114,6 +119,15 @@ struct json {
 	R_xlen_t nrow;
 	int type_id;
 	int kind;
+};
+
+struct rcorpus_text {
+	struct corpus_text *text;
+	struct corpus_filter filter;
+	struct corpus_sentfilter sentfilter;
+	R_xlen_t length;
+	int has_filter;
+	int has_sentfilter;
 };
 
 struct termset {

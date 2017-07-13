@@ -18,7 +18,6 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "corpus/src/memory.h"
 #include "rcorpus.h"
 
 #define TEXT_TAG install("corpus::text")
@@ -39,9 +38,6 @@ struct source {
 	} data;
 	R_xlen_t nrow;
 };
-
-
-static void load_text(SEXP x);
 
 
 static int is_source(SEXP x)
@@ -72,9 +68,25 @@ static void source_assign(struct source *source, SEXP value)
 
 static void free_text(SEXP stext)
 {
-        struct corpus_text *text = R_ExternalPtrAddr(stext);
-        corpus_free(text);
+        struct rcorpus_text *obj = R_ExternalPtrAddr(stext);
+	R_SetExternalPtrAddr(stext, NULL);
+
+	if (obj) {
+		if (obj->has_sentfilter) {
+			corpus_sentfilter_destroy(&obj->sentfilter);
+		}
+
+		if (obj->has_filter) {
+			corpus_filter_destroy(&obj->filter);
+		}
+
+		corpus_free(obj->text);
+		corpus_free(obj);
+	}
 }
+
+
+static void load_text(SEXP x);
 
 
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
@@ -181,36 +193,26 @@ SEXP text_valid(SEXP x)
 
 struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 {
-	SEXP handle, source, table;
-	struct corpus_text *text;
+	SEXP handle;
+	struct rcorpus_text *obj;
 
 	if (!is_text(stext)) {
 		error("invalid 'text' object");
 	}
 
 	handle = getListElement(stext, "handle");
-	text = R_ExternalPtrAddr(handle);
-	if (!text) {
+	obj = R_ExternalPtrAddr(handle);
+	if (!obj) {
 		load_text(stext);
 		handle = getListElement(stext, "handle");
-		text = R_ExternalPtrAddr(handle);
+		obj = R_ExternalPtrAddr(handle);
 	}
 
 	if (lenptr) {
-		table = getListElement(stext, "table");
-		if (table == R_NilValue) {
-			*lenptr = 0;
-		} else {
-			source = getListElement(table, "source");
-			if (source == R_NilValue) {
-				*lenptr = 0;
-			} else {
-				*lenptr = XLENGTH(source);
-			}
-		}
+		*lenptr = obj->length;
 	}
 
-	return text;
+	return obj->text;
 }
 
 
@@ -218,57 +220,60 @@ SEXP as_text_json(SEXP sdata)
 {
 	SEXP ans, handle, sources, source, row, start, stop;
 	const struct json *d = as_json(sdata);
-	struct corpus_text *text;
+	struct rcorpus_text *obj;
 	R_xlen_t i, nrow = d->nrow;
-	int err;
+	int err = 0, nprot = 0;
 
-	PROTECT(sources = allocVector(VECSXP, 1));
+	PROTECT(sources = allocVector(VECSXP, 1)); nprot++;
 	SET_VECTOR_ELT(sources, 0, sdata);
 
-	PROTECT(source = allocVector(INTSXP, nrow));
+	PROTECT(source = allocVector(INTSXP, nrow)); nprot++;
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 		INTEGER(source)[i] = 1;
 	}
 
-	PROTECT(row = allocVector(REALSXP, nrow));
+	PROTECT(row = allocVector(REALSXP, nrow)); nprot++;
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 		REAL(row)[i] = (double)(i + 1);
 	}
 
-	PROTECT(start = allocVector(INTSXP, nrow));
-	PROTECT(stop = allocVector(INTSXP, nrow));
-	PROTECT(ans = alloc_text(sources, source, row, start, stop));
+	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
+	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
+	PROTECT(ans = alloc_text(sources, source, row, start, stop)); nprot++;
 	handle = getListElement(ans, "handle");
 
-	text = corpus_calloc(nrow, sizeof(*text));
-	if (nrow > 0 && !text) {
-		error("failed allocating memory (%"PRIu64" objects"
-		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
+	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));
+	R_SetExternalPtrAddr(handle, obj);
+
+	if (nrow > 0) {
+		TRY_ALLOC(obj->text = corpus_calloc(nrow, sizeof(*obj->text)));
+		obj->length = nrow;
 	}
-	R_SetExternalPtrAddr(handle, text);
 
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
-		if ((err = corpus_data_text(&d->rows[i], &text[i]))) {
-			text[i].ptr = NULL;
-			text[i].attr = 0;
+		if ((err = corpus_data_text(&d->rows[i], &obj->text[i]))) {
+			obj->text[i].ptr = NULL;
+			obj->text[i].attr = 0;
 			INTEGER(start)[i] = NA_INTEGER;
 			INTEGER(stop)[i] = NA_INTEGER;
 		} else {
-			if (CORPUS_TEXT_SIZE(&text[i]) > INT_MAX) {
+			if (CORPUS_TEXT_SIZE(&obj->text[i]) > INT_MAX) {
 				error("text size (%"PRIu64 "bytes)"
 				      "exceeds maximum (%d bytes)",
-				      (uint64_t)CORPUS_TEXT_SIZE(&text[i]),
+				      (uint64_t)CORPUS_TEXT_SIZE(&obj->text[i]),
 				      INT_MAX);
 			}
 			INTEGER(start)[i] = 1;
-			INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&text[i]);
+			INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&obj->text[i]);
 		}
 	}
 
-	UNPROTECT(6);
+out:
+	UNPROTECT(nprot);
+	CHECK_ERROR(err);
 	return ans;
 }
 
@@ -276,10 +281,11 @@ SEXP as_text_json(SEXP sdata)
 SEXP as_text_character(SEXP x)
 {
 	SEXP ans, handle, sources, source, row, start, stop, str;
-	struct corpus_text *text;
+	struct rcorpus_text *obj;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
-	int err, iname, duped = 0;
+	int iname, duped = 0;
+	int err = 0, nprot = 0;
 
 	if (x == R_NilValue || TYPEOF(x) != STRSXP) {
 	       error("invalid 'character' object");
@@ -292,32 +298,33 @@ SEXP as_text_character(SEXP x)
 		      (uint64_t)nrow, ((uint64_t)1) << DBL_MANT_DIG);
 	}
 
-	PROTECT(sources = allocVector(VECSXP, 1));
+	PROTECT(sources = allocVector(VECSXP, 1)); nprot++;
 	SET_VECTOR_ELT(sources, 0, x);
 
-	PROTECT(source = allocVector(INTSXP, nrow));
+	PROTECT(source = allocVector(INTSXP, nrow)); nprot++;
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 		INTEGER(source)[i] = 1;
 	}
 
-	PROTECT(row = allocVector(REALSXP, nrow));
+	PROTECT(row = allocVector(REALSXP, nrow)); nprot++;
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 		REAL(row)[i] = (double)(i + 1);
 	}
 
-	PROTECT(start = allocVector(INTSXP, nrow));
-	PROTECT(stop = allocVector(INTSXP, nrow));
-	PROTECT(ans = alloc_text(sources, source, row, start, stop));
+	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
+	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
+	PROTECT(ans = alloc_text(sources, source, row, start, stop)); nprot++;
 	handle = getListElement(ans, "handle");
 
-	text = corpus_calloc(nrow, sizeof(*text));
-	if (nrow > 0 && !text) {
-		error("failed allocating memory (%"PRIu64" objects"
-		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
+	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));
+	R_SetExternalPtrAddr(handle, obj);
+
+	if (nrow > 0) {
+		TRY_ALLOC(obj->text = corpus_calloc(nrow, sizeof(*obj->text)));
+		obj->length = nrow;
 	}
-	R_SetExternalPtrAddr(handle, text);
 
 	iname = findListElement(ans, "names");
 	SET_VECTOR_ELT(ans, iname, getAttrib(x, R_NamesSymbol));
@@ -328,8 +335,8 @@ SEXP as_text_character(SEXP x)
 
 		// handle NA
 		if (str == NA_STRING) {
-			text[i].ptr = NULL;
-			text[i].attr = 0;
+			obj->text[i].ptr = NULL;
+			obj->text[i].attr = 0;
 			INTEGER(start)[i] = NA_INTEGER;
 			INTEGER(stop)[i] = NA_INTEGER;
 			continue;
@@ -362,7 +369,7 @@ SEXP as_text_character(SEXP x)
 			      " exceeds maximum (%d bytes)",
 			      (uint64_t)(i + 1), (uint64_t)len, INT_MAX);
 		}
-		if ((err = corpus_text_assign(&text[i], (uint8_t *)ptr,
+		if ((err = corpus_text_assign(&obj->text[i], (uint8_t *)ptr,
 					      (size_t)len,
 					      CORPUS_TEXT_NOESCAPE))) {
 			error("character object at index %"PRIu64
@@ -370,10 +377,12 @@ SEXP as_text_character(SEXP x)
 		}
 
 		INTEGER(start)[i] = 1;
-		INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&text[i]);
+		INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&obj->text[i]);
 	}
 
-	UNPROTECT(6);
+out:
+	UNPROTECT(nprot);
+	CHECK_ERROR(err);
 	return ans;
 }
 
@@ -407,18 +416,18 @@ static void load_text(SEXP x)
 	SEXP shandle, srow, ssource, sstart, sstop, ssources, src, str, stable;
 	const double *row;
 	const int *source, *start, *stop;
-	struct corpus_text *text;
+	struct rcorpus_text *obj;
 	struct corpus_text txt;
 	struct source *sources;
 	const uint8_t *ptr;
 	double r;
 	R_xlen_t i, j, len, nrow;
-	int s, nsrc, err, begin, end, flags;
+	int err = 0, s, nsrc, begin, end, flags;
 
 	shandle = getListElement(x, "handle");
 
-	text = R_ExternalPtrAddr(shandle);
-	if (text) {
+	obj = R_ExternalPtrAddr(shandle);
+	if (obj) {
 		return;
 	}
 
@@ -460,12 +469,14 @@ static void load_text(SEXP x)
 	start = INTEGER(sstart);
 	stop = INTEGER(sstop);
 
-	text = calloc(nrow, sizeof(*text));
-	if (nrow > 0 && !text) {
-		error("failed allocating memory (%"PRIu64" objects"
-		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
+	R_RegisterCFinalizerEx(shandle, free_text, TRUE);
+	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));
+	R_SetExternalPtrAddr(shandle, obj);
+
+	if (nrow > 0) {
+		TRY_ALLOC(obj->text = corpus_calloc(nrow, sizeof(*obj->text)));
+		obj->length = nrow;
 	}
-	R_SetExternalPtrAddr(shandle, text);
 
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
@@ -519,7 +530,7 @@ static void load_text(SEXP x)
 
 		// this could be made more efficient; add a
 		// 'can_break?' function to corpus/text.h
-		err = corpus_text_assign(&text[i], txt.ptr + begin,
+		err = corpus_text_assign(&obj->text[i], txt.ptr + begin,
 					 end - begin, flags);
 
 		if (err) {
@@ -528,36 +539,44 @@ static void load_text(SEXP x)
 			      " of a multi-byte character", i + 1);
 		}
 	}
+out:
+	CHECK_ERROR(err);
 }
 
 
 SEXP subset_text_handle(SEXP handle, SEXP si)
 {
 	SEXP ans;
-	const struct corpus_text *text = R_ExternalPtrAddr(handle);
-	struct corpus_text *sub;
+	const struct rcorpus_text *obj = R_ExternalPtrAddr(handle);
+	struct rcorpus_text *sub;
 	R_xlen_t i, n;
 	double ix;
+	int err = 0;
 
 	PROTECT(ans = R_MakeExternalPtr(NULL, TEXT_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(ans, free_text, TRUE);
 
-	if (text) {
+	if (obj) {
 		n = XLENGTH(si);
-		sub = calloc(n, sizeof(*sub));
-		if (n && !sub) {
-			error("failed allocating %"PRIu64" bytes",
-			      (uint64_t)n * sizeof(*sub));
-		}
+
+		TRY_ALLOC(sub = corpus_calloc(1, sizeof(*sub)));
 		R_SetExternalPtrAddr(ans, sub);
+
+		if (n > 0) {
+			TRY_ALLOC(sub->text
+					= corpus_calloc(n, sizeof(*sub->text)));
+			sub->length = n;
+		}
 
 		for (i = 0; i < n; i++) {
 			RCORPUS_CHECK_INTERRUPT(i);
 			ix = REAL(si)[i] - 1;
-			sub[i] = text[(R_xlen_t)ix];
+			sub->text[i] = obj->text[(R_xlen_t)ix];
 		}
 	}
 
+out:
 	UNPROTECT(1);
+	CHECK_ERROR(err);
 	return ans;
 }
