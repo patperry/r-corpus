@@ -68,6 +68,7 @@ static void context_init(struct context *ctx, SEXP sngrams)
 		ngrams = INTEGER(sngrams);
 		n = XLENGTH(sngrams);
 		ngram_max = 1;
+
 		for (i = 0; i < n; i++) {
 			if (ngrams[i] == NA_INTEGER) {
 				continue;
