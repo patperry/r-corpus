@@ -338,17 +338,3 @@ as_weights <- function(weights, n)
 
     weights
 }
-
-
-as_width <- function(name, value)
-{
-    if (is.null(value)) {
-        return(NULL)
-    }
-
-    value <- as_integer_scalar(name, value)
-    if (is.na(value) || value < 0) {
-        stop(sprintf("'%s' must be NULL or a non-negative integer"))
-    }
-    value
-}
