@@ -185,6 +185,63 @@ utf8_print(intToUtf8(0x1f600 + 0:79)) # truncates to line width
 utf8_print(intToUtf8(0x1f600 + 0:79), chars = 500) # increase character limit
 ```
 
+(Characters with codes above 0xffff, including most emoji, are not
+supported on Windows.)
+
+*Corpus* provides the following utilities for validating, formatting, and
+printing UTF-8 characters:
+
+ + `as_utf8()` attempts to convert character data to UTF-8, throwing an
+   error if the data is invalid;
+
+ + `utf8_valid()` tests whether character data is valid according to its
+   declared encoding;
+
+ + `utf8_encode()` encodes a character string, escaping all control
+   characters, so that it can be safely printed to the screen;
+
+ + `utf8_format()` formats a character vector by truncating to a specified
+   character width limit or by left, right, or center justifying;
+
+ + `utf8_print()` prints UTF-8 character data to the screen;
+
+ + `utf8_width()` measures the display with of UTF-8 character strings
+    (many emoji and East Asian characters are twice as wide as other
+    characters).
+
+*Corpus* does not provide a method to translate from another encoding to
+UTF-8 as the `iconv()` function from base R already serves this purpuse.
+
+
+Translating to UTF-8
+--------------------
+
+Back to our original problem: getting the text of _Mansfield Park_ into R.
+Our first attempt failed:
+```{r}
+term_counts(lines)
+```
+We discovered a problem on line 15252:
+```{r}
+lines[15252]
+```
+The text is likely encoded in Latin-1, not UTF-8 (or ASCII) as we had
+originally thought. We can test this by attempting to convert from
+Latin-1 to UTF-8 with the `iconv()` function and inspecting the output:
+
+```{r}
+lines2 <- iconv(lines, "latin1", "UTF-8")
+lines2[15252]
+```
+
+It worked! Now we can analyze our text.
+
+```{r}
+f <- token_filter(drop_punct = TRUE, drop = stopwords("english"))
+term_counts(lines2, f)
+```
+
+
 
 
 [emoji-data]: http://www.unicode.org/Public/emoji/5.0/emoji-data.txt
