@@ -10,6 +10,7 @@ Unicode: Emoji, accents, and other international text
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(comment = "", fig.path = "unicode-",
                       fig.retina = TRUE)
+options(width = 116)
 ```
 
 Character encoding
@@ -38,6 +39,7 @@ Jane Austen's novel, _Mansfield Park_ provided by
 read in the lines of the novel using the *readr* package.
 
 ```{r}
+tmp <- tempfile()
 url <- "http://www.gutenberg.org/files/141/141.txt"
 download.file(url, tmp)
 lines <- readr::read_lines(tmp)
