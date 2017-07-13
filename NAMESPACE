@@ -29,6 +29,10 @@ export(text_filter)
 export(text_filter.corpus_text)
 export(text_filter.data.frame)
 export(text_filter.default)
+export(`text_filter<-`)
+export(`text_filter<-.corpus_text`)
+export(`text_filter<-.data.frame`)
+export(`text_filter<-.default`)
 export(text_locate)
 export(text_nsentence)
 export(text_ntoken)
@@ -55,6 +59,10 @@ S3method(as_text, data.frame)
 S3method(text_filter, corpus_text)
 S3method(text_filter, default)
 S3method(text_filter, data.frame)
+
+S3method(`text_filter<-`, corpus_text)
+S3method(`text_filter<-`, default)
+S3method(`text_filter<-`, data.frame)
 
 
 

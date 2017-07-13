@@ -32,8 +32,10 @@ text_filter.default <- function(x = NULL, map_case = TRUE, map_compat = TRUE,
     args <- list(...)
     names <- names(args)
 
-    if (is.null(names) || any(names == "")) {
-        stop("unnamed arguments are not allowed")
+    if (length(args) > 0) {
+        if (is.null(names) || any(names == "")) {
+            stop("unnamed arguments are not allowed")
+        }
     }
 
     ans <- structure(list(), class = c("corpus_text_filter"))
@@ -52,6 +54,8 @@ text_filter.default <- function(x = NULL, map_case = TRUE, map_compat = TRUE,
     ans$drop_other <- drop_other
     ans$drop <- drop
     ans$drop_except <- drop_except
+    ans$crlf_break <- crlf_break
+    ans$suppress <- suppress
 
     for (i in seq_along(args)) {
         name <- names[[i]]
@@ -72,7 +76,7 @@ text_filter.data.frame <- function(x = NULL, ...)
 text_filter.corpus_text <- function(x = NULL, ...)
 {
     if (!is_text(x)) {
-        stop("argument is not valid text object")
+        stop("argument is not a valid text object")
     }
 
     ans <- unclass(x)$filter
@@ -82,8 +86,10 @@ text_filter.corpus_text <- function(x = NULL, ...)
 
     args <- list(...)
     names <- names(args)
-    if (is.null(names) || any(names == "")) {
-        stop("unnamed arguments are not allowed")
+    if (length(args) > 0) {
+        if (is.null(names) || any(names == "")) {
+            stop("unnamed arguments are not allowed")
+        }
     }
 
     for (i in seq_along(args)) {
@@ -92,6 +98,49 @@ text_filter.corpus_text <- function(x = NULL, ...)
     }
 
     ans
+}
+
+
+`text_filter<-` <- function(x, value)
+{
+    UseMethod("text_filter<-")
+}
+
+
+`text_filter<-.default` <- function(x, value)
+{
+    stop("setting a text filter for objects of class \"%s\" is not allowed",
+         class(x))
+}
+
+
+`text_filter<-.data.frame` <- function(x, value)
+{
+    if (!"text" %in% names(x)) {
+        stop("no column named \"text\"")
+    }
+    text_filter(x$text) <- value
+    x
+}
+
+
+`text_filter<-.corpus_text` <- function(x, value)
+{
+    if (!is_text(x)) {
+        stop("argument is not a valid text object")
+    }
+
+    with_rethrow({
+        # TODO fix argument name in error message
+        value <- as_text_filter(value)
+    })
+
+    y <- unclass(x)
+    y$filter <- value
+    class(y) <- class(x)
+    # TODO implement the following
+    # .Call(C_text_filter_update, y)
+    y
 }
 
 

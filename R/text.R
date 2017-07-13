@@ -61,6 +61,11 @@ as_text.corpus_text <- function(x, filter = NULL, ...)
         }
     }
     attr(x, "class") <- "corpus_text"
+
+    if (!is.null(filter)) {
+        text_filter(x) <- filter
+    }
+
     x
 }
 
@@ -81,7 +86,7 @@ as_text.data.frame <- function(x, filter = NULL, ...)
         nm <- row.names(x)
     }
 
-    x <- as_text(x[["text"]], ...)
+    x <- as_text(x[["text"]], filter = filter, ...)
     names(x) <- nm
     x
 }
