@@ -10,7 +10,11 @@ importFrom(utils, str)
 ## Exports
 export(abbreviations)
 export(as_text)
+export(as_text.character)
+export(as_text.corpus_json)
+export(as_text.corpus_text)
 export(as_text.default)
+export(as_text.data.frame)
 export(as_utf8)
 export(is_text)
 export(read_ndjson)
@@ -39,8 +43,10 @@ export(utf8_width)
 
 ## New S3 methods
 S3method(as_text, corpus_json)
+S3method(as_text, corpus_text)
 S3method(as_text, character)
 S3method(as_text, default)
+S3method(as_text, data.frame)
 
 
 ## Base S3 methods

@@ -327,16 +327,3 @@ as.list.corpus_json <- function(x, text = NULL, ...)
     })
     .Call(C_as_list_json, x, text)
 }
-
-
-as_text.corpus_json <- function(x, ...)
-{
-    if (length(dim(x)) == 2) {
-        if (!"text" %in% names(x)) {
-            stop("no column named \"text\"")
-        }
-        as_text(x$text)
-    } else {
-        .Call(C_as_text_json, x)
-    }
-}

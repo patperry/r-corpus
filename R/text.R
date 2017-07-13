@@ -12,61 +12,78 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-as_text <- function(x, ...)
+as_text <- function(x, filter = NULL, ...)
 {
     UseMethod("as_text")
 }
 
 
-as_text.character <- function(x, ...)
+as_text.default <- function(x, filter = NULL, ...)
 {
-    with_rethrow({
-        x <- as_utf8(x)
-        .Call(C_as_text_character, x)
-    })
+    as_text(as.character(x), filter = filter, ...)
 }
 
 
-as_text.default <- function(x, ...)
+as_text.character <- function(x, filter = NULL, ...)
 {
-    if (is_text(x)) {
-        attrs <- attributes(x)
-        for (a in names(attrs)) {
-            if (!(a %in% c("class", "names"))) {
-                attr(x, a) <- NULL
-            }
-        }
-        attr(x, "class") <- "corpus_text"
-        x
-    } else if (is.data.frame(x)) {
-        if (.row_names_info(x) <= 0) {
-            nm <- NULL
-        } else {
-            nm <- row.names(x)
-        }
+    with_rethrow({
+        x <- as_utf8(x)
+    })
+    x <- .Call(C_as_text_character, x)
+    as_text(x, filter = filter, ...)
+}
 
-        # find the columns with type 'text'
-        text_cols <- sapply(x, is_text)
-        ntext <- sum(text_cols == TRUE)
 
-        if ("text" %in% names(x)) {
-            x <- as_text(x$text)
-        } else if (ntext == 0) {
-            stop("no column named 'text', and no columns of type 'text'")
-        } else if (ntext > 1) {
-            stop("no column named 'text', and multiple columns of type 'text'")
-        } else {
-            x <- as_text(x[[which(text_cols)]])
+as_text.corpus_json <- function(x, filter = NULL, ...)
+{
+    if (length(dim(x)) == 2) {
+        if (!"text" %in% names(x)) {
+            stop("no column named \"text\"")
         }
-
-        names(x) <- nm
-        x
+        as_text(x$text, filter = filter, ...)
     } else {
-        nm <- names(c(x))
-        x <- as_text(as.character(x, ...))
-        names(x) <- nm
-        x
+        x <- .Call(C_as_text_json, x)
+        as_text(x, filter = filter, ...)
     }
+}
+
+
+as_text.corpus_text <- function(x, filter = NULL, ...)
+{
+    if (!is_text(x)) {
+        stop("argument is not a valid text object")
+    }
+
+    attrs <- attributes(x)
+    for (a in names(attrs)) {
+        if (!(a %in% c("class", "names"))) {
+            attr(x, a) <- NULL
+        }
+    }
+    attr(x, "class") <- "corpus_text"
+    x
+}
+
+
+as_text.data.frame <- function(x, filter = NULL, ...)
+{
+    if (!is.data.frame(x)) {
+        stop("argument is not a valid data frame")
+    }
+
+    if (!"text" %in% names(x)) {
+            stop("no column named \"text\"")
+    }
+    
+    if (.row_names_info(x) <= 0) {
+        nm <- NULL
+    } else {
+        nm <- row.names(x)
+    }
+
+    x <- as_text(x[["text"]], ...)
+    names(x) <- nm
+    x
 }
 
 
