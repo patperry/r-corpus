@@ -25,6 +25,10 @@ export(term_matrix)
 export(term_frame)
 export(text_count)
 export(text_detect)
+export(text_filter)
+export(text_filter.corpus_text)
+export(text_filter.data.frame)
+export(text_filter.default)
 export(text_locate)
 export(text_nsentence)
 export(text_ntoken)
@@ -48,16 +52,25 @@ S3method(as_text, character)
 S3method(as_text, default)
 S3method(as_text, data.frame)
 
+S3method(text_filter, corpus_text)
+S3method(text_filter, default)
+S3method(text_filter, data.frame)
+
+
 
 ## Base S3 methods
 
 ### filter
 S3method(`$<-`, corpus_filter)
 S3method(`$<-`, corpus_sentence_filter)
+S3method(`$<-`, corpus_text_filter)
 S3method(`$<-`, corpus_token_filter)
 S3method(`[<-`, corpus_filter)
+S3method(`[<-`, corpus_text_filter)
 S3method(`[[<-`, corpus_filter)
+S3method(`[[<-`, corpus_text_filter)
 S3method(print, corpus_filter)
+S3method(print, corpus_text_filter)
 
 ## frame
 S3method(format, corpus_frame)
@@ -134,6 +147,7 @@ S3method(summary, corpus_text)
 S3method(rep, corpus_text)
 S3method(t, corpus_text)
 S3method(xtfrm, corpus_text)
+
 
 ### text_locate
 S3method(format, corpus_text_locate)
