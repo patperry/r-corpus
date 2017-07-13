@@ -102,21 +102,19 @@ SEXP alloc_search(SEXP sterms, const char *name, struct corpus_filter *filter)
 	PROTECT(sset = alloc_termset(sterms, name, filter, 1)); nprot++;
 	termset = as_termset(sset);
 	items = items_termset(sset);
+	R_SetExternalPtrProtected(ans, items);
 
 	n = termset->nitem;
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		term = &termset->set.items[i];
 		TRY(corpus_search_add(obj, term->type_ids,
 				      term->length, NULL));
 	}
 
 out:
-	if (err) {
-		error("failed initializing %s term set", name);
-	}
+	CHECK_ERROR(err);
 	UNPROTECT(nprot);
-
-	R_SetExternalPtrProtected(ans, items);
 	return ans;
 }
 

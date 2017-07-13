@@ -227,11 +227,13 @@ SEXP as_text_json(SEXP sdata)
 
 	PROTECT(source = allocVector(INTSXP, nrow));
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		INTEGER(source)[i] = 1;
 	}
 
 	PROTECT(row = allocVector(REALSXP, nrow));
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		REAL(row)[i] = (double)(i + 1);
 	}
 
@@ -248,6 +250,7 @@ SEXP as_text_json(SEXP sdata)
 	R_SetExternalPtrAddr(handle, text);
 
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		if ((err = corpus_data_text(&d->rows[i], &text[i]))) {
 			text[i].ptr = NULL;
 			text[i].attr = 0;
@@ -294,11 +297,13 @@ SEXP as_text_character(SEXP x)
 
 	PROTECT(source = allocVector(INTSXP, nrow));
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		INTEGER(source)[i] = 1;
 	}
 
 	PROTECT(row = allocVector(REALSXP, nrow));
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		REAL(row)[i] = (double)(i + 1);
 	}
 
@@ -318,6 +323,7 @@ SEXP as_text_character(SEXP x)
 	SET_VECTOR_ELT(ans, iname, getAttrib(x, R_NamesSymbol));
 
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		str = STRING_ELT(x, i);
 
 		// handle NA
@@ -462,6 +468,7 @@ static void load_text(SEXP x)
 	R_SetExternalPtrAddr(shandle, text);
 
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		s = source[i];
 		if (!(1 <= s && s <= nsrc)) {
 			error("source[[%"PRIu64"]] (%d) is out of range",
@@ -545,6 +552,7 @@ SEXP subset_text_handle(SEXP handle, SEXP si)
 		R_SetExternalPtrAddr(ans, sub);
 
 		for (i = 0; i < n; i++) {
+			RCORPUS_CHECK_INTERRUPT(i);
 			ix = REAL(si)[i] - 1;
 			sub[i] = text[(R_xlen_t)ix];
 		}

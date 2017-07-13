@@ -180,6 +180,8 @@ static void json_load(SEXP sdata)
 
 		corpus_filebuf_iter_make(&it, buf);
 		while (corpus_filebuf_iter_advance(&it)) {
+			RCORPUS_CHECK_INTERRUPT(nrow);
+
 			if (nrow == nrow_max) {
 				grow_datarows(&parent->rows, &nrow_max);
 			}
@@ -193,9 +195,6 @@ static void json_load(SEXP sdata)
 			TRY(corpus_schema_union(&parent->schema, type_id,
 						parent->rows[nrow].type_id,
 						&type_id));
-
-			RCORPUS_CHECK_INTERRUPT(nrow);
-
 			nrow++;
 		}
 	} else {
@@ -205,6 +204,8 @@ static void json_load(SEXP sdata)
 		ptr = begin;
 
 		while (ptr != end) {
+			RCORPUS_CHECK_INTERRUPT(nrow);
+
 			if (nrow == nrow_max) {
 				grow_datarows(&parent->rows, &nrow_max);
 			}
@@ -222,9 +223,6 @@ static void json_load(SEXP sdata)
 			TRY(corpus_schema_union(&parent->schema, type_id,
 						parent->rows[nrow].type_id,
 						&type_id));
-
-			RCORPUS_CHECK_INTERRUPT(nrow);
-
 			nrow++;
 			ptr = line_end;
 		}
@@ -387,6 +385,8 @@ SEXP names_json(SEXP sdata)
 
 	PROTECT(names = allocVector(STRSXP, r->nfield));
 	for (i = 0; i < r->nfield; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		name = &d->schema.names.types[r->name_ids[i]].text;
 		str = mkCharLenCE((char *)name->ptr, CORPUS_TEXT_SIZE(name),
 				  CE_UTF8);
@@ -501,6 +501,8 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	type_id = CORPUS_DATATYPE_NULL;
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (!(1 <= index[i] && index[i] <= (double)obj->nrow)) {
 			error("invalid index: %g", index[i]);
 		}
@@ -518,8 +520,6 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 
 		TRY(corpus_schema_union(&obj2->schema, type_id,
 					obj2->rows[i].type_id, &type_id));
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	// set the fields
@@ -575,6 +575,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 	PROTECT(sfield2 = allocVector(STRSXP, m + 1));
 	for (j = 0; j < m; j++) {
+		RCORPUS_CHECK_INTERRUPT(j);
 		SET_STRING_ELT(sfield2, j, STRING_ELT(sfield, j));
 	}
 	SET_STRING_ELT(sfield2, m, sname);
@@ -588,6 +589,8 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 	type_id = CORPUS_DATATYPE_NULL;
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		// fails if the field is null
 		corpus_data_field(&obj->rows[i], &obj->schema, name_id,
 				  &field);
@@ -597,8 +600,6 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 		TRY(corpus_schema_union(&obj2->schema, type_id,
 					obj2->rows[i].type_id, &type_id));
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	obj2->nrow = n;
@@ -653,14 +654,14 @@ SEXP as_double_json(SEXP sdata)
 	overflow = 0;
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		err = corpus_data_double(&d->rows[i], &val[i]);
 		if (err == CORPUS_ERROR_INVAL) {
 			val[i] = NA_REAL;
 		} else if (err == CORPUS_ERROR_OVERFLOW) {
 			overflow = 1;
 		}
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	if (overflow) {
@@ -685,6 +686,8 @@ static SEXP as_integer_json_check(SEXP sdata, int *overflowptr)
 	overflow = 0;
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		err = corpus_data_int(&d->rows[i], &val[i]);
 		if (err == CORPUS_ERROR_INVAL) {
 			val[i] = NA_INTEGER;
@@ -695,8 +698,6 @@ static SEXP as_integer_json_check(SEXP sdata, int *overflowptr)
 				val[i] = NA_INTEGER;
 			}
 		}
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	if (overflowptr) {
@@ -735,14 +736,14 @@ SEXP as_logical_json(SEXP sdata)
 	val = LOGICAL(ans);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		err = corpus_data_bool(&d->rows[i], &b);
 		if (err == CORPUS_ERROR_INVAL) {
 			val[i] = NA_LOGICAL;
 		} else {
 			val[i] = b ? TRUE : FALSE;
 		}
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(1);
@@ -764,14 +765,14 @@ SEXP as_character_json(SEXP sdata)
 	mkchar_init(&mkchar);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		err = corpus_data_text(&d->rows[i], &text);
 		if (err == CORPUS_ERROR_INVAL) {
 			SET_STRING_ELT(ans, i, NA_STRING);
 		} else {
 			SET_STRING_ELT(ans, i, mkchar_get(&mkchar, &text));
 		}
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(1);
@@ -843,6 +844,8 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	type_id = (int *)R_alloc(nfield, sizeof(type_id));
 
 	for (j = 0; j < nfield; j++) {
+		RCORPUS_CHECK_INTERRUPT(j);
+
 		cols[r->name_ids[j]] = j;
 
 		sname = STRING_ELT(names, j);
@@ -931,14 +934,14 @@ SEXP as_list_json(SEXP sdata, SEXP stext)
 	decode_init(&decode);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		data = d->rows[i];
 		if (d->type_id != CORPUS_DATATYPE_ANY) {
 			data.type_id = d->type_id; // promote the type
 		}
 		val = decode_sexp(&decode, &data, &d->schema);
 		SET_VECTOR_ELT(ans, i, val);
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	if (decode.overflow) {

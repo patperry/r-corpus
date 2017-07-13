@@ -29,6 +29,8 @@ Changes in version 0.8.0
  * Fixed a bug where read_ndjson() would de-serialize a boolean "null"
    as FALSE instead of NA.
 
+ * Allow user interrupts (control-c) in all long-running C computations.
+
 
 Changes in version 0.7.0 (2017-06-22)
 

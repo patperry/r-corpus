@@ -117,6 +117,8 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 	count = REAL(ans);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (!text[i].ptr) { // missing text
 			count[i] = NA_REAL;
 			continue;
@@ -137,8 +139,6 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 		TRY(filter->error);
 
 		count[i] = (double)nunit;
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 out:

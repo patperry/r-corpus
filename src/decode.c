@@ -247,6 +247,8 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 		overflow = decode_set_overflow(d, 0);
 
 		while (corpus_data_items_advance(&it)) {
+			RCORPUS_CHECK_INTERRUPT(i);
+
 			INTEGER(ans)[i] = decode_integer(d, &it.current);
 			if (d->overflow) {
 				break;
@@ -266,6 +268,8 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 	case CORPUS_DATATYPE_REAL:
 		PROTECT(ans = allocVector(REALSXP, n));
 		while (corpus_data_items_advance(&it)) {
+			RCORPUS_CHECK_INTERRUPT(i);
+
 			REAL(ans)[i] = decode_real(d, &it.current);
 			i++;
 		}
@@ -274,6 +278,8 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 	case CORPUS_DATATYPE_TEXT:
 		PROTECT(ans = allocVector(STRSXP, n));
 		while (corpus_data_items_advance(&it)) {
+			RCORPUS_CHECK_INTERRUPT(i);
+
 			SET_STRING_ELT(ans, i, decode_charsxp(d, &it.current));
 			i++;
 		}
@@ -282,6 +288,8 @@ SEXP decode_array(struct decode *d, const struct corpus_data *val,
 	default:
 		PROTECT(ans = allocVector(VECSXP, n));
 		while (corpus_data_items_advance(&it)) {
+			RCORPUS_CHECK_INTERRUPT(i);
+
 			SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));
 			i++;
 		}
@@ -318,6 +326,8 @@ SEXP decode_record(struct decode *d, const struct corpus_data *val,
 	i = 0;
 	corpus_data_fields(val, s, &it);
 	while (corpus_data_fields_advance(&it)) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		SET_VECTOR_ELT(ans, i, decode_sexp(d, &it.current, s));
 
 		name = &s->names.types[it.name_id].text;

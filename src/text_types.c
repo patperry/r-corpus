@@ -66,6 +66,7 @@ static void types_context_init(struct types_context *ctx, SEXP sx,
 
 	ctx->types = (void *)R_alloc(ngroup, sizeof(*ctx->types));
 	for (g = 0; g < ngroup; g++) {
+		RCORPUS_CHECK_INTERRUPT(g);
 		TRY(corpus_intset_init(&ctx->types[g]));
 		ctx->ngroup = g + 1;
 	}

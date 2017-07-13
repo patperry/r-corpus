@@ -159,6 +159,8 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 
 	PROTECT(ans = allocVector(STRSXP, ctx->ntoken)); nprot++;
 	for (i = 0; i < ctx->ntoken; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		type_id =  ctx->tokens[i];
 		if (type_id >= 0) {
 			SET_STRING_ELT(ans, i, ctx->types[type_id]);
@@ -202,6 +204,7 @@ SEXP text_tokens(SEXP sx, SEXP sprops)
 	// add the existing types in the filter
 	ntype = ctx.filter->ntype;
 	for (type_id = 0; type_id < ntype; type_id++) {
+		RCORPUS_CHECK_INTERRUPT(type_id);
 		PROTECT(tokens_add_type(&ctx, type_id)); nprot++;
 	}
 

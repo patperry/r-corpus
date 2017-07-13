@@ -656,6 +656,8 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	na_width = text_width(&na, INT_MAX, utf8);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (type == TEXT_CORPUS) {
 			text_init_corpus(&elt, &text[i]);
 		} else {
@@ -684,6 +686,8 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 	buf = (void *)R_alloc(nbuf, sizeof(uint8_t));
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (type == TEXT_CORPUS) {
 			text_init_corpus(&elt, &text[i]);
 		} else {
@@ -723,8 +727,6 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		}
 
 		SET_STRING_ELT(ans, i, ans_i);
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(nprot);

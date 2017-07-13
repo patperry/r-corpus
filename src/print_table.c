@@ -179,6 +179,8 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 	}
 
 	for (i = 0; i < nrow; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (nprint == max) {
 			FLUSH();
 			return nprint;
@@ -224,8 +226,6 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 
 		PRINT_CHAR('\n');
 		FLUSH();
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	(void)is_stdout; // unused unless on Windows
@@ -262,6 +262,8 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 		namewidth = 0;
 	} else {
 		for (i = 0; i < nrow; i++) {
+			RCORPUS_CHECK_INTERRUPT(i);
+
 			elt = STRING_ELT(row_names, i);
 			w = (elt == NA_STRING) ? 2 : charsxp_width(elt, utf8);
 			if (w > namewidth) {

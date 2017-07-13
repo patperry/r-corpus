@@ -58,10 +58,11 @@ SEXP as_character_text(SEXP stext)
 	PROTECT(ans = allocVector(STRSXP, n));
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		str = mkchar_get(&mk, &text[i]);
 		SET_STRING_ELT(ans, i, str);
 
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(1);
@@ -81,13 +82,13 @@ SEXP is_na_text(SEXP stext)
 	isna = LOGICAL(ans);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (text[i].ptr) {
 			isna[i] = FALSE;
 		} else {
 			isna[i] = TRUE;
 		}
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	UNPROTECT(1);
@@ -105,12 +106,12 @@ SEXP anyNA_text(SEXP stext)
 
 	anyNA = FALSE;
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (!text[i].ptr) {
 			anyNA = TRUE;
 			break;
 		}
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
 	return ScalarLogical(anyNA);

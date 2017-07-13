@@ -51,6 +51,7 @@ static SEXP wordlist(const uint8_t **(*callback)(const char *, int *),
 
 	PROTECT(ans = allocVector(STRSXP, n));
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		SET_STRING_ELT(ans, i, mkCharCE(strs[i], CE_UTF8));
 	}
 

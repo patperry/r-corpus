@@ -533,6 +533,8 @@ SEXP utf8_coerce(SEXP sx)
 
 	n = XLENGTH(sx);
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		sstr = STRING_ELT(sx, i);
 		if (sstr == NA_STRING) {
 			continue;
@@ -627,6 +629,8 @@ SEXP utf8_valid(SEXP sx)
 
 	n = XLENGTH(sx);
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		sstr = STRING_ELT(sx, i);
 		if (sstr == NA_STRING) {
 			LOGICAL(ans)[i] = NA_LOGICAL;
@@ -674,6 +678,8 @@ SEXP utf8_width(SEXP sx, SEXP sutf8)
 	setAttrib(ans, R_DimNamesSymbol, getAttrib(sx, R_DimNamesSymbol));
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		elt = STRING_ELT(sx, i);
 		if (elt == NA_STRING) {
 			w = NA_INTEGER;
@@ -713,6 +719,8 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 	nbuf = 0;
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		elt = STRING_ELT(ans, i);
 		elt2 = charsxp_encode(elt, display, utf8, &buf, &nbuf);
 		if (elt != elt2) {
