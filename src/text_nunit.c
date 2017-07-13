@@ -44,7 +44,7 @@ SEXP text_nsentence(SEXP sx, SEXP sfilter)
 	const struct corpus_text *text;
 	double *count;
 	R_xlen_t i, n, nunit;
-	int nprot, err;
+	int nprot, err = 0;
 
 	nprot = 0;
 
@@ -62,32 +62,31 @@ SEXP text_nsentence(SEXP sx, SEXP sfilter)
 	count = REAL(ans);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
 		if (!text[i].ptr) { // missing value
 			count[i] = NA_REAL;
 			continue;
 		}
 
 		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
+			count[i] = 0;
 			continue;
 		}
 
-		if ((err = corpus_sentfilter_start(filter, &text[i]))) {
-			Rf_error("memory allocation failure");
-		}
+		TRY(corpus_sentfilter_start(filter, &text[i]));
 
 		nunit = 0;
 		while (corpus_sentfilter_advance(filter)) {
 			nunit++;
 		}
-		if (filter->error) {
-			Rf_error("memory allocation failure");
-		}
+		TRY(filter->error);
 
 		count[i] = (double)nunit;
-
-		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
+out:
+	CHECK_ERROR(err);
 	UNPROTECT(nprot);
 	return ans;
 }
@@ -100,7 +99,7 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 	const struct corpus_text *text;
 	double *count;
 	R_xlen_t i, n, nunit;
-	int nprot, err;
+	int nprot, err = 0;
 
 	nprot = 0;
 
@@ -123,10 +122,8 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 			continue;
 		}
 
-		if ((err = corpus_filter_start(filter, &text[i],
-					       CORPUS_FILTER_SCAN_TOKENS))) {
-			Rf_error("memory allocation failure");
-		}
+		TRY(corpus_filter_start(filter, &text[i],
+					CORPUS_FILTER_SCAN_TOKENS));
 
 		nunit = 0;
 
@@ -137,16 +134,15 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 			}
 			nunit++;
 		}
-
-		if (filter->error) {
-			Rf_error("memory allocation failure");
-		}
+		TRY(filter->error);
 
 		count[i] = (double)nunit;
 
 		RCORPUS_CHECK_INTERRUPT(i);
 	}
 
+out:
 	UNPROTECT(nprot);
+	CHECK_ERROR(err);
 	return ans;
 }

@@ -14,6 +14,11 @@ test_that("text_nsentence can works on sentences", {
 })
 
 
+test_that("text_nsentence handles NA and empty", {
+    expect_equal(text_nsentence(c(NA, "")), c(NA, 0))
+})
+
+
 test_that("text_ntoken can works on tokens", {
     text <- c(a="He said, 'Are you going?' John Shook his head.",
               b="'Are you going?' John asked",
@@ -26,3 +31,7 @@ test_that("text_ntoken can works on tokens", {
     expect_equal(n, n0)
 })
 
+
+test_that("text_ntoken handles NA and empty", {
+    expect_equal(text_ntoken(c(NA, "")), c(NA, 0))
+})
