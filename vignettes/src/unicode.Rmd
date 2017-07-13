@@ -189,7 +189,7 @@ utf8_print(intToUtf8(0x1f600 + 0:79), chars = 500) # increase character limit
 
 [emoji-data]: http://www.unicode.org/Public/emoji/5.0/emoji-data.txt
 
-[gutenberg][http://www.gutenberg.org]
+[gutenberg]: http://www.gutenberg.org
 
 [spolsky2003]: https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/
 
