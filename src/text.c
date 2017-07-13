@@ -18,6 +18,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "corpus/src/memory.h"
 #include "rcorpus.h"
 
 #define TEXT_TAG install("corpus::text")
@@ -72,7 +73,7 @@ static void source_assign(struct source *source, SEXP value)
 static void free_text(SEXP stext)
 {
         struct corpus_text *text = R_ExternalPtrAddr(stext);
-        free(text);
+        corpus_free(text);
 }
 
 
@@ -239,7 +240,7 @@ SEXP as_text_json(SEXP sdata)
 	PROTECT(ans = alloc_text(sources, source, row, start, stop));
 	handle = getListElement(ans, "handle");
 
-	text = calloc(nrow, sizeof(*text));
+	text = corpus_calloc(nrow, sizeof(*text));
 	if (nrow > 0 && !text) {
 		error("failed allocating memory (%"PRIu64" objects"
 		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
@@ -306,7 +307,7 @@ SEXP as_text_character(SEXP x)
 	PROTECT(ans = alloc_text(sources, source, row, start, stop));
 	handle = getListElement(ans, "handle");
 
-	text = calloc(nrow, sizeof(*text));
+	text = corpus_calloc(nrow, sizeof(*text));
 	if (nrow > 0 && !text) {
 		error("failed allocating memory (%"PRIu64" objects"
 		      " of size %u bytes)", (uint64_t)nrow, sizeof(*text));
