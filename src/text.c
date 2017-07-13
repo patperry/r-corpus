@@ -89,7 +89,8 @@ static void free_text(SEXP stext)
 static void load_text(SEXP x);
 
 
-SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
+SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
+		SEXP eltnames)
 {
 	SEXP ans, handle, names, sclass, src, row_names, table;
 	R_xlen_t n;
@@ -112,6 +113,11 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
 		error("invalid 'start' argument");
 	} else if (XLENGTH(stop) != n || TYPEOF(stop) != INTSXP) {
 		error("invalid 'stop' argument");
+	}
+	if (eltnames != R_NilValue) {
+		if (XLENGTH(eltnames) != n || TYPEOF(eltnames) != STRSXP) {
+			error("invalid 'names' argument");
+		}
 	}
 
 	nsrc = (int)XLENGTH(sources);
@@ -149,7 +155,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop)
 	SET_VECTOR_ELT(ans, 0, handle);
 	SET_VECTOR_ELT(ans, 1, sources);
 	SET_VECTOR_ELT(ans, 2, table);
-	SET_VECTOR_ELT(ans, 3, R_NilValue);
+	SET_VECTOR_ELT(ans, 3, eltnames);
 
 	PROTECT(names = allocVector(STRSXP, 4));
         SET_STRING_ELT(names, 0, mkChar("handle"));
@@ -218,7 +224,7 @@ struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 
 SEXP as_text_json(SEXP sdata)
 {
-	SEXP ans, handle, sources, source, row, start, stop;
+	SEXP ans, handle, sources, source, row, start, stop, names;
 	const struct json *d = as_json(sdata);
 	struct rcorpus_text *obj;
 	R_xlen_t i, nrow = d->nrow;
@@ -241,7 +247,11 @@ SEXP as_text_json(SEXP sdata)
 
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
-	PROTECT(ans = alloc_text(sources, source, row, start, stop)); nprot++;
+	names = R_NilValue;
+
+	PROTECT(ans = alloc_text(sources, source, row, start, stop, names));
+	nprot++;
+
 	handle = getListElement(ans, "handle");
 
 	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));
@@ -280,11 +290,11 @@ out:
 
 SEXP as_text_character(SEXP x)
 {
-	SEXP ans, handle, sources, source, row, start, stop, str;
+	SEXP ans, handle, sources, source, row, start, stop, names, str;
 	struct rcorpus_text *obj;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
-	int iname, duped = 0;
+	int duped = 0;
 	int err = 0, nprot = 0;
 
 	if (x == R_NilValue || TYPEOF(x) != STRSXP) {
@@ -315,7 +325,11 @@ SEXP as_text_character(SEXP x)
 
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
-	PROTECT(ans = alloc_text(sources, source, row, start, stop)); nprot++;
+	names = getAttrib(x, R_NamesSymbol);
+
+	PROTECT(ans = alloc_text(sources, source, row, start, stop, names));
+	nprot++;
+
 	handle = getListElement(ans, "handle");
 
 	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));
@@ -325,9 +339,6 @@ SEXP as_text_character(SEXP x)
 		TRY_ALLOC(obj->text = corpus_calloc(nrow, sizeof(*obj->text)));
 		obj->length = nrow;
 	}
-
-	iname = findListElement(ans, "names");
-	SET_VECTOR_ELT(ans, iname, getAttrib(x, R_NamesSymbol));
 
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);

@@ -323,10 +323,12 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 		INTEGER(astop)[i] = stop;
 	}
 
-	PROTECT(before = alloc_text(sources, bsource, brow, bstart, bstop));
+	PROTECT(before = alloc_text(sources, bsource, brow, bstart, bstop,
+				    R_NilValue));
 	nprot++;
 
-	PROTECT(after = alloc_text(sources, asource, arow, astart, astop));
+	PROTECT(after = alloc_text(sources, asource, arow, astart, astop,
+				   R_NilValue));
 	nprot++;
 
 	PROTECT(ans = allocVector(VECSXP, 5)); nprot++;

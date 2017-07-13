@@ -188,7 +188,9 @@ static SEXP context_make(struct context *ctx, SEXP sx)
 	ctx->nblock = 0;
 	ctx->nblock_max = 0;
 
-	PROTECT(stext = alloc_text(sources, source, row, start, stop)); nprot++;
+	PROTECT(stext = alloc_text(sources, source, row, start, stop,
+				   R_NilValue));
+	nprot++;
 
 	handle = getListElement(stext, "handle");
 	TRY_ALLOC(obj = corpus_calloc(1, sizeof(*obj)));

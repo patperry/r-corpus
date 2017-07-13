@@ -197,7 +197,8 @@ SEXP print_table(SEXP x, SEXP print_gap, SEXP right, SEXP max, SEXP width,
 		 SEXP is_stdout);
 
 /* text (core) */
-SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop);
+SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
+		SEXP names);
 int is_text(SEXP text);
 struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
 SEXP as_text_character(SEXP text);
