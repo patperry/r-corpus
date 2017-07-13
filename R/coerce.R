@@ -226,9 +226,16 @@ as_ngrams <- function(ngrams)
         stop("'ngrams' must be NULL or an integer vector")
     }
 
-    ngrams <- ngrams[is.finite(ngrams) & ngrams >= 1]
+    if (anyNA(ngrams) || !all(is.finite(ngrams) & ngrams >= 1)) {
+        stop("'ngrams' vector must contain positive integer values")
+    }
+
+    if (any(ngrams >= 128)) {
+        stop(sprintf("'ngrams' entries must be below 128"))
+    }
+
     if (length(ngrams) == 0) {
-        stop("'ngrams' must contain at least one positive value")
+        stop("'ngrams' vector cannot have length 0")
     }
 
     ngrams <- unique(sort(ngrams))

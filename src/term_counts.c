@@ -70,9 +70,6 @@ static void context_init(struct context *ctx, SEXP sngrams)
 		ngram_max = 1;
 
 		for (i = 0; i < n; i++) {
-			if (ngrams[i] == NA_INTEGER) {
-				continue;
-			}
 			if (ngrams[i] > ngram_max) {
 				ngram_max = ngrams[i];
 			}
@@ -81,9 +78,6 @@ static void context_init(struct context *ctx, SEXP sngrams)
 		ngram_set = (void *)R_alloc(ngram_max + 1, sizeof(*ngram_set));
 		memset(ngram_set, 0, (ngram_max + 1) * sizeof(*ngram_set));
 		for (i = 0; i < n; i++) {
-			if (ngrams[i] == NA_INTEGER) {
-				continue;
-			}
 			ngram_set[ngrams[i]] = 1;
 		}
 	} else {

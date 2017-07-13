@@ -60,6 +60,17 @@ test_that("'term_maxtrix' group works", {
 })
 
 
+test_that("'term_maxtrix' group can handle NA", {
+    text <- c("A rose is a rose is a rose.",
+              "A Rose is red, a violet is blue!",
+              "A rose by any other name would smell as sweet.")
+    g <- c("A", NA, "B")
+    x0 <- term_matrix(c(A=text[1], B=text[3]))
+    x <- term_matrix(text, group = g)
+    expect_equal(x, x0)
+})
+
+
 test_that("'term_matrix' weights and group works", {
     text <- c("A rose is a rose is a rose.",
               "A Rose is red, a violet is blue!",
@@ -85,6 +96,22 @@ test_that("'term_matrix' can transpose", {
     x <- term_matrix(text, weights = w, group = g, transpose = TRUE)
     x0 <- t(as.matrix(term_matrix(text, weights = w, group = g)))
     expect_equal(as.matrix(x), x0)
+})
+
+
+test_that("'term_matrix can select ngrams", {
+    text <- c("A rose is a rose is a rose.",
+              "A Rose is red, a violet is blue!",
+              "A rose by any other name would smell as sweet.")
+    ngrams <- c(1, 3)
+    x <- term_matrix(text, ngrams = ngrams)
+    terms <- colnames(x)
+    for (i in seq_len(nrow(x))) {
+        stats <- term_counts(text[i], ngrams = ngrams)
+        expect_true(all(stats$term %in% terms))
+        expect_equal(as.numeric(x[i,stats$term]), stats$count)
+        expect_true(all(x[i,!terms %in% stats$term] == 0))
+    }
 })
 
 
