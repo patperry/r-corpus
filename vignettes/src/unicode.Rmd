@@ -246,7 +246,7 @@ term_counts(lines2, f)
 The *readtext* package
 ----------------------
 
-If you need more than reading in a single file, the [readtext][readtext]
+If you need more than reading in a single text file, the [readtext][readtext]
 package supports reading in text in a variety of file formats and encodings.
 Beyond just plain text, that package can read in PDFs, Word documents, RTF,
 and many other formats. (Unfortunately, that package currently fails when
