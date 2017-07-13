@@ -106,21 +106,19 @@ SEXP tokens_add(struct tokens *ctx, int type_id)
 SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 {
 	SEXP ans;
-	int nadd, type_id, ntype;
-	int err, i, ntok;
+	int nprot, type_id, ntype;
+	int err = 0, i, ntok;
 
 	if (!text->ptr) {
 		return ScalarString(NA_STRING);
 	}
 
-	if ((err = corpus_filter_start(ctx->filter, text,
-				       CORPUS_FILTER_SCAN_TOKENS))) {
-		Rf_error("error while tokenizing text");
-	}
-
 	ntype = ctx->filter->ntype;
-	nadd = 0;
+	nprot = 0;
 	ntok = 0;
+
+	TRY(corpus_filter_start(ctx->filter, text,
+				CORPUS_FILTER_SCAN_TOKENS));
 
 	while (corpus_filter_advance(ctx->filter)) {
 		type_id = ctx->filter->type_id;
@@ -130,8 +128,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 
 		// add the new types
 		while (ntype < ctx->filter->ntype) {
-			PROTECT(tokens_add(ctx, ntype));
-			nadd++;
+			PROTECT(tokens_add(ctx, ntype)); nprot++;
 			ntype++;
 		}
 
@@ -144,12 +141,9 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		ctx->buf[ntok] = type_id;
 		ntok++;
 	}
+	TRY(ctx->filter->error);
 
-	if ((err = ctx->filter->error)) {
-		Rf_error("error while tokenizing text");
-	}
-
-	PROTECT(ans = allocVector(STRSXP, ntok));
+	PROTECT(ans = allocVector(STRSXP, ntok)); nprot++;
 	for (i = 0; i < ntok; i++) {
 		type_id =  ctx->buf[i];
 		if (type_id >= 0) {
@@ -160,8 +154,9 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 	}
 
 	// no need to protect the new terms any more; ans protects them
-	UNPROTECT(nadd + 1);
-
+out:
+	UNPROTECT(nprot);
+	CHECK_ERROR(err);
 	return ans;
 }
 
@@ -187,6 +182,7 @@ SEXP text_tokens(SEXP sx, SEXP sprops)
 	tokens_init(&ctx, filter);
 
 	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
 		SET_VECTOR_ELT(ans, i, tokens_scan(&ctx, &text[i]));
 	}
 
