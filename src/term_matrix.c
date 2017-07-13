@@ -53,8 +53,6 @@ struct context {
 	R_xlen_t has_ngram;
 };
 
-static void context_destroy(void *obj);
-
 
 static void context_init(struct context *ctx, SEXP sngrams,
 			 const struct termset *select, R_xlen_t ngroup)
@@ -118,11 +116,9 @@ static void context_init(struct context *ctx, SEXP sngrams,
 		ctx->has_termset = 1;
 	}
 out:
-	if (err) {
-		context_destroy(ctx);
-	}
 	CHECK_ERROR(err);
 }
+
 
 static void context_destroy(void *obj)
 {
