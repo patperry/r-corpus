@@ -74,9 +74,11 @@ all such lines using the `utf8_valid` function:
 ```{r}
 lines[!utf8_valid(lines)]
 ```
-The `\xa3` is a code for a byte with the hexadecimal value `0xA3`, decimal
-value 163. To understand why this is invalid, we need to learn more about
-UTF-8 encoding.
+So, there aren't any other invalid lines.
+
+The offending byte in line 15252 is displayed as `\xa3` an escape code
+for hexadecimal value 0xa3, decimal value 163. To understand why this
+is invalid, we need to learn more about UTF-8 encoding.
 
 
 UTF-8
