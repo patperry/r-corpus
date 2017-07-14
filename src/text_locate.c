@@ -96,7 +96,7 @@ void locate_grow(struct locate *loc, int nadd)
 }
 
 
-SEXP text_count(SEXP sx, SEXP sterms, SEXP sfilter)
+SEXP text_count(SEXP sx, SEXP sterms)
 {
 	SEXP ans, ssearch;
 	const struct corpus_text *text;
@@ -110,9 +110,7 @@ SEXP text_count(SEXP sx, SEXP sterms, SEXP sfilter)
 
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
-
-	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
-	filter = as_filter(sfilter);
+	filter = text_filter(sx);
 
 	PROTECT(ssearch = alloc_search(sterms, "count", filter)); nprot++;
 	search = as_search(ssearch);
@@ -150,7 +148,7 @@ out:
 }
 
 
-SEXP text_detect(SEXP sx, SEXP sterms, SEXP sfilter)
+SEXP text_detect(SEXP sx, SEXP sterms)
 {
 	SEXP ans, ssearch;
 	const struct corpus_text *text;
@@ -163,9 +161,7 @@ SEXP text_detect(SEXP sx, SEXP sterms, SEXP sfilter)
 
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
-
-	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
-	filter = as_filter(sfilter);
+	filter = text_filter(sx);
 
 	PROTECT(ssearch = alloc_search(sterms, "detect", filter)); nprot++;
 	search = as_search(ssearch);
@@ -203,7 +199,7 @@ out:
 }
 
 
-SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
+SEXP text_locate(SEXP sx, SEXP sterms)
 {
 	SEXP ans, sitems, ssearch;
 	const struct corpus_text *text, *token;
@@ -217,9 +213,7 @@ SEXP text_locate(SEXP sx, SEXP sterms, SEXP sfilter)
 
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
-	
-	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
-	filter = as_filter(sfilter);
+	filter = text_filter(sx);
 
 	PROTECT(ssearch = alloc_search(sterms, "locate", filter)); nprot++;
 	sitems = items_search(ssearch);

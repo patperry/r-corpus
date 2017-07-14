@@ -13,31 +13,35 @@
 #  limitations under the License.
 
 
-text_count <- function(x, terms, filter = token_filter())
+text_count <- function(x, terms, filter = text_filter(x))
 {
-    x <- as_text(x)
-    terms <- as_character_vector("terms", terms)
-    filter <- as_filter("filter", filter)
-    .Call(C_text_count, x, terms, filter)
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+        terms <- as_character_vector("terms", terms)
+    })
+    .Call(C_text_count, x, terms)
 }
 
 
-text_detect <- function(x, terms, filter = token_filter())
+text_detect <- function(x, terms, filter = text_filter(x))
 {
-    x <- as_text(x)
-    terms <- as_character_vector("terms", terms)
-    filter <- as_filter("filter", filter)
-    .Call(C_text_detect, x, terms, filter)
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+        terms <- as_character_vector("terms", terms)
+    })
+    .Call(C_text_detect, x, terms)
 }
 
 
-text_locate <- function(x, terms, filter = token_filter())
+text_locate <- function(x, terms, filter = text_filter(x))
 {
-    x <- as_text(x)
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+        terms <- as_character_vector("terms", terms)
+    })
+
     nm <- names(x)
-    terms <- as_character_vector("terms", terms)
-    filter <- as_filter("filter", filter)
-    ans <- .Call(C_text_locate, x, terms, filter)
+    ans <- .Call(C_text_locate, x, terms)
     if (!is.null(nm)) {
         ans$text <- nm[ans$text]
     }

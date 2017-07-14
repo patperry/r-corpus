@@ -241,10 +241,10 @@ SEXP items_termset(SEXP termset);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
-SEXP text_count(SEXP x, SEXP terms, SEXP filter);
-SEXP text_detect(SEXP x, SEXP terms, SEXP filter);
+SEXP text_count(SEXP x, SEXP terms);
+SEXP text_detect(SEXP x, SEXP terms);
 SEXP text_filter_update(SEXP x);
-SEXP text_locate(SEXP x, SEXP terms, SEXP filter);
+SEXP text_locate(SEXP x, SEXP terms);
 SEXP text_nsentence(SEXP x, SEXP filter);
 SEXP text_ntoken(SEXP x);
 SEXP text_ntype(SEXP x, SEXP collapse);

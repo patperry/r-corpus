@@ -7,18 +7,18 @@
     Look for instances of one or more terms in a set of texts.
 }
 \usage{
-    text_count(x, terms, filter = token_filter())
+    text_count(x, terms, filter = text_filter(x))
 
-    text_detect(x, terms, filter = token_filter())
+    text_detect(x, terms, filter = text_filter(x))
     
-    text_locate(x, terms, filter = token_filter())
+    text_locate(x, terms, filter = text_filter(x))
 }
 \arguments{
     \item{x}{a text or character vector.}
 
     \item{terms}{a character vector of search terms.}
 
-    \item{filter}{a token filter defining the token boundaries.}
+    \item{filter}{a text filter defining the token boundaries.}
 
 }
 \details{
