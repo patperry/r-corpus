@@ -9,14 +9,9 @@
     Segment text into smaller units.
 }
 \usage{
-    text_split(x, units, size = 1,
-               filter = if (units == "sentences") sentence_filter()
-                        else token_filter())
+    text_split(x, units = "sentences", size = 1, filter = text_filter(x))
 
-    sentence_filter(crlf_break = FALSE,
-                    suppress = abbreviations("english"))
-
-    text_nsentence(x, filter = sentence_filter())
+    text_nsentence(x, filter = text_filter(x))
 }
 \arguments{
     \item{x}{a text or character vector.}
@@ -27,9 +22,8 @@
     \item{size}{the block size, a positive integer giving the number of
         units per block.}
 
-    \item{filter}{when \code{units = "sentences"}, a sentence filter
-        defining the sentence boundaries; otherwise, a token filter
-        defining the token boundaries.}
+    \item{filter}{a text filter defining the token and sentence
+        boundaries.}
 
     \item{crlf_break}{a logical value indicating whether to break
         sentences on carriage returns or line feeds.}
@@ -55,23 +49,23 @@
     handle abbreviations correctly and by default they treat carriage
     returns and line feeds as paragraph separators, often leading to
     incorrect breaks. To get around these shortcomings, the
-    \code{filter} argument, specified using the \code{sentence_filter}
+    \code{filter} argument, specified using the \code{text_filter}
     function, allows tailoring the UAX 29 rules using the
-    \code{crlf_break} and the \code{suppress} properties.
+    \code{sent_crlf} and the \code{sent_suppress} properties.
 
     The UAX 29 rules break after full stops (periods) whenever they are
     followed by uppercase letters. Under these rules, the text
     \code{"I saw Mr. Jones today."} gets split into two sentences. To get
-    around this, we allow a \code{suppress} property, a list of sentence
+    around this, we allow a \code{sent_suppress} property, a list of sentence
     break suppressions which, when followed by uppercase characters, do
     not signal the end of a sentence.
 
     The UAX 29 rules also specify that a carriage return (CR) or line
     feed (LF) indicates the end of of a sentence, so that
     \code{"A split\nsentence."} gets split into two sentences. This often
-    leads to incorrect breaks, so by default, with \code{crlf_break = FALSE},
+    leads to incorrect breaks, so by default, with \code{sent_crlf = FALSE},
     we deviate from the UAX 29 rules and we treat CR and LF like spaces.
-    To break sentences on CRLF, CR, and LF, specify \code{crlf_break = TRUE}.
+    To break sentences on CRLF, CR, and LF, specify \code{sent_crlf = TRUE}.
 }
 \value{
     \code{text_split} returns a data frame with three columns named
@@ -97,7 +91,8 @@
     corresponding text.
 }
 \seealso{
-    \code{\link{abbreviations}}, \code{\link{text_tokens}}.
+    \code{\link{abbreviations}}, \code{\link{text_tokens}},
+        \code{\link{text_filter}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.", 
@@ -116,7 +111,7 @@
 
     # break on CR and LF
     text_split("Split across\na line.", units = "sentences",
-               filter = sentence_filter(crlf_break = TRUE))
+               filter = text_filter(sent_crlf = TRUE))
 
     # 2-sentence blocks
     text_split(c("What. Are. You. Doing????",

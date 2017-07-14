@@ -227,7 +227,7 @@ out:
 }
 
 
-SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP sfilter)
+SEXP text_split_sentences(SEXP sx, SEXP ssize)
 {
 	SEXP ans, sctx;
 	struct context *ctx;
@@ -244,6 +244,7 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP sfilter)
 	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
+	filter = text_sentfilter(sx);
 
 	// size
         PROTECT(ssize = coerceVector(ssize, REALSXP)); nprot++;
@@ -251,10 +252,6 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize, SEXP sfilter)
 	if (!(block_size >= 1)) {
 		block_size = 1;
 	}
-
-	// filter
-	PROTECT(sfilter = alloc_sentfilter(sfilter)); nprot++;
-	filter = as_sentfilter(sfilter);
 
 	PROTECT(sctx = alloc_context(sizeof(*ctx), context_destroy)); nprot++;
         ctx = as_context(sctx);
@@ -313,7 +310,7 @@ out:
 }
 
 
-SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
+SEXP text_split_tokens(SEXP sx, SEXP ssize)
 {
 	SEXP ans, sctx;
 	struct context *ctx;
@@ -330,6 +327,7 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
+	filter = text_filter(sx);
 
 	// size
         PROTECT(ssize = coerceVector(ssize, REALSXP)); nprot++;
@@ -337,10 +335,6 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize, SEXP sfilter)
 	if (!(block_size >= 1)) {
 		block_size = 1;
 	}
-
-	// filter
-	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
-	filter = as_filter(sfilter);
 
 	PROTECT(sctx = alloc_context(sizeof(*ctx), context_destroy)); nprot++;
         ctx = as_context(sctx);
