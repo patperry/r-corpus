@@ -70,22 +70,25 @@ functions.  Here we set `combine = dict` so that multi-word
 tokens get treated as single entities
 ```{r}
 f <- token_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
-f
+(text_filter(data) <- f) # set the text column's filter
 ```
 
 ## Document statistics
 
-Using the token filter we compute type, token, and sentence counts
+We can now compute type, token, and sentence counts
 ```{r}
 head(data.frame(text = data$name,
-                 types = text_ntype(data, f),
-                 tokens = text_ntoken(data, f),
-                 sentences = text_nsentence(data)))
+                types = text_ntype(data),
+                tokens = text_ntoken(data),
+                sentences = text_nsentence(data)))
 ```
-and use it to examine term frequencies
+and examine term frequencies
 ```{r}
-(stats <- term_counts(data, f))
+(stats <- term_counts(data))
 ```
+These operations all use `text_filter(data)` value we set above to determine
+the token and sentence boundaries.
+
 
 ## Visualization
 
@@ -107,7 +110,7 @@ par(family = font_family) # switch the font back
 
 Finally, here's how we might show terms in their local context
 ```{r}
-text_locate(data, "\u6027", f)
+text_locate(data, "\u6027")
 ```
 *Note: the alignment looks bad here because the Chinese characters have
 widths between 1 and 2 spaces each. The spacing in the table is set assuming

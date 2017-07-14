@@ -35,7 +35,7 @@
     if \code{kind = NULL} or \code{kind = NA}.
 }
 \seealso{
-    \code{\link{text_split}}.
+    \code{\link{text_filter}}.
 }
 \examples{
     head(abbreviations("english"))

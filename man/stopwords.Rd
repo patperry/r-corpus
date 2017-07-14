@@ -30,7 +30,7 @@
     if \code{kind} is a vector), or \code{NULL} if \code{kind = NULL}.
 }
 \seealso{
-    \code{\link{token_filter}}
+    \code{\link{text_filter}}
 }
 \examples{
     head(stopwords("english"))

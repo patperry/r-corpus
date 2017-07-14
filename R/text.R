@@ -12,19 +12,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-as_text <- function(x, filter = NULL, ...)
+as_text <- function(x, filter = text_filter(x), ...)
 {
     UseMethod("as_text")
 }
 
 
-as_text.default <- function(x, filter = NULL, ...)
+as_text.default <- function(x, filter = text_filter(x), ...)
 {
     as_text(as.character(x), filter = filter, ...)
 }
 
 
-as_text.character <- function(x, filter = NULL, ...)
+as_text.character <- function(x, filter = text_filter(x), ...)
 {
     with_rethrow({
         x <- as_utf8(x)
@@ -34,7 +34,7 @@ as_text.character <- function(x, filter = NULL, ...)
 }
 
 
-as_text.corpus_json <- function(x, filter = NULL, ...)
+as_text.corpus_json <- function(x, filter = text_filter(x), ...)
 {
     if (length(dim(x)) == 2) {
         if (!"text" %in% names(x)) {
@@ -48,7 +48,7 @@ as_text.corpus_json <- function(x, filter = NULL, ...)
 }
 
 
-as_text.corpus_text <- function(x, filter = NULL, ...)
+as_text.corpus_text <- function(x, filter = text_filter(x), ...)
 {
     if (!is_text(x)) {
         stop("argument is not a valid text object")
@@ -70,7 +70,7 @@ as_text.corpus_text <- function(x, filter = NULL, ...)
 }
 
 
-as_text.data.frame <- function(x, filter = NULL, ...)
+as_text.data.frame <- function(x, filter = text_filter(x), ...)
 {
     if (!is.data.frame(x)) {
         stop("argument is not a valid data frame")

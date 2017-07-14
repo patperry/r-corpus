@@ -117,7 +117,7 @@ test_that("'term_matrix can select ngrams", {
 
 test_that("'term_matrix' can select stemmed bigrams", {
     text <- "A sentence. Another sentence. Others..."
-    f <- token_filter(stemmer = "english", drop_punct = TRUE,
+    f <- text_filter(stemmer = "english", drop_punct = TRUE,
                       drop = stopwords("english"))
     select <- c("sentenc", "anoth", "anoth sentenc")
     x0 <- term_matrix(text, f, select = select)
@@ -137,7 +137,7 @@ test_that("'term_matrix' errors for empty terms", {
 
 
 test_that("'term_matrix' errors for dropped select terms", {
-    f <- token_filter(drop = "a")
+    f <- text_filter(drop = "a")
     expect_error(term_matrix("", f, select = c("b b", "b a", "c")),
                  paste0("select term in position 2 ('b a')",
                         " contains a dropped type ('a')"),
@@ -165,7 +165,7 @@ test_that("'term_matrix' can select really long terms", {
 
 
 test_that("'term_matrix' can select types ending in '.s", {
-    f <- token_filter(stemmer = "english", drop_punct = TRUE, combine = NULL)
+    f <- text_filter(stemmer = "english", drop_punct = TRUE, combine = NULL)
     expect_equal(term_matrix("u.s.", f, select = "u.s"),
                  Matrix::sparseMatrix(i = 1, j = 1, x = 1,
                                       dimnames = list(NULL, "u.s")))

@@ -11,7 +11,7 @@ test_that("'term_counts' works", {
 
 
 test_that("'term_counts' can use a filter", {
-    f <- token_filter(drop_punct = TRUE, drop = stopwords("english"))
+    f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
     expect_equal(term_counts("A rose is a rose is a rose.", f),
                  structure(data.frame(term = c("rose"),
                                       count = c(3),
@@ -42,7 +42,7 @@ test_that("'term_counts' can use weights", {
 test_that("'term_counts' can use a filter and weights", {
     x <- c("A rose is a rose is a rose.",
            "A Rose is red, a violet is blue!")
-    f <- token_filter(drop_punct = TRUE, drop = stopwords("english"))
+    f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
     weights <- c(100, 1)
 
     expect_equal(term_counts(x, f, weights = weights),

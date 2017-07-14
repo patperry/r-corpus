@@ -1,7 +1,5 @@
 \name{text_split}
-\alias{corpus_sentence_filter}
 \alias{sentences}
-\alias{sentence_filter}
 \alias{text_nsentence}
 \alias{text_split}
 \title{Segmenting Text}
@@ -24,19 +22,17 @@
 
     \item{filter}{a text filter defining the token and sentence
         boundaries.}
-
-    \item{crlf_break}{a logical value indicating whether to break
-        sentences on carriage returns or line feeds.}
-
-    \item{suppress}{a character vector of sentence break suppressions.}
 }
 \details{
     \code{text_split} splits text into blocks of the given size, measured
-    in the specified units.
+    in the specified units.  When \code{units = "sentences"}, units are
+    sentences; when \code{units = "tokens"}, units are non-\code{NA}
+    tokens.
 
-    When \code{units = "sentences"}, units are sentences as defined in
-    the \sQuote{Sentences} section below.  When \code{units = "tokens"},
-    units are non-\code{NA} tokens.
+    Sentences and tokens are defined by the \code{filter} argument.
+    The documentation for \code{\link{text_tokens}} describes the
+    tokenization rules. For sentence boundaries, see the
+    \sQuote{Sentences} section below.
 }
 \section{Sentences}{
     Sentences are defined according to a tailored version of the
@@ -49,8 +45,7 @@
     handle abbreviations correctly and by default they treat carriage
     returns and line feeds as paragraph separators, often leading to
     incorrect breaks. To get around these shortcomings, the
-    \code{filter} argument, specified using the \code{text_filter}
-    function, allows tailoring the UAX 29 rules using the
+    text filter allows tailoring the UAX 29 rules using the
     \code{sent_crlf} and the \code{sent_suppress} properties.
 
     The UAX 29 rules break after full stops (periods) whenever they are
@@ -91,8 +86,7 @@
     corresponding text.
 }
 \seealso{
-    \code{\link{abbreviations}}, \code{\link{text_tokens}},
-        \code{\link{text_filter}}.
+    \code{\link{text_tokens}}, \code{\link{text_filter}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.", 

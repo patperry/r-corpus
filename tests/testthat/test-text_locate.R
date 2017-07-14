@@ -17,7 +17,7 @@ test_that("'text_count' can use a custom filter", {
     text <- c("Rose is a rose is a rose is a rose.",
               "A rose by any other name would smell as sweet.",
               "Snow White and Rose Red")
-    f <- token_filter(map_case = FALSE)
+    f <- text_filter(map_case = FALSE)
 
     expect_equal(text_count(text, "rose", f), c(3, 1, 0))
 })
@@ -39,7 +39,7 @@ test_that("'text_detect' can use a custom filter", {
     text <- c("Rose is a rose is a rose is a rose.",
               "A rose by any other name would smell as sweet.",
               "Snow White and Rose Red")
-    f <- token_filter(map_case = FALSE)
+    f <- text_filter(map_case = FALSE)
 
     expect_equal(text_detect(text, "rose", f), c(TRUE, TRUE, FALSE))
 })
@@ -74,7 +74,7 @@ test_that("'text_locate' can use a custom filter", {
     text <- c("Rose is a rose is a rose is a rose.",
               "A rose by any other name would smell as sweet.",
               "Snow White and Rose Red")
-    f <- token_filter(map_case = FALSE)
+    f <- text_filter(map_case = FALSE)
     actual <- text_locate(text, "Rose", f)
 
     expected <- data.frame(
@@ -94,7 +94,7 @@ test_that("'text_locate' prints results correctly", {
     text <- c("Rose is a rose is a rose is a rose.",
               "A rose by any other name would smell as sweet.",
               "Snow White and Rose Red")
-    f <- token_filter(map_case = FALSE)
+    f <- text_filter(map_case = FALSE)
     loc <- text_locate(text, "Rose", f)
 
     oldwidth <- getOption("width")

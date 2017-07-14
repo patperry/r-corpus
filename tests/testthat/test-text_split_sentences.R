@@ -4,7 +4,7 @@ context("text_split_sentences")
 test_that("'sentences' splits according to UAX #29 (Examples)", {
     text <- c("He said, 'Are you going?' John Shook his head.",
               "'Are you going?' John asked")
-    f <- sentence_filter(suppress = NULL)
+    f <- text_filter(sent_suppress = NULL)
 
     expect_equal(text_split(text, "sentences", filter = f),
         data.frame(parent = c(1L, 1L, 2L, 2L),
@@ -19,7 +19,7 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
 test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
     text <- c("c.d", "3.4", "U.S.", "the resp. leaders are",
               "etc.)' '(the")
-    f <- sentence_filter(suppress = NULL)
+    f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split(text, "sentences", filter = f),
         data.frame(parent = c(1L, 2L, 3L, 4L, 5L),
                    index  = c(1L, 1L, 1L, 1L, 1L),
@@ -33,7 +33,7 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
     text <- c("She said 'See spot run.'  John shook his head.",
               "etc.\u5b83\u4eec\u6307",
               "\u7406\u6570\u5b57.\u5b83\u4eec\u6307")
-    f <- sentence_filter(suppress = NULL)
+    f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split(text, "sentences", filter = f),
         data.frame(parent = c(1L, 1L, 2L, 2L, 3L, 3L),
                    index  = c(1L, 2L, 1L, 2L, 1L, 2L),
@@ -47,7 +47,7 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
 
 
 test_that("'sentences' cannot handle abbreviations without suppressions", {
-    f <- sentence_filter(suppress = NULL)
+    f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split("Mr. Jones", "sentences", filter = f),
         data.frame(parent = c(1L, 1L), index = c(1L, 2L),
                    text = as_text(c("Mr. ", "Jones"))))

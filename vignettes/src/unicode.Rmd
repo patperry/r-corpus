@@ -255,7 +255,7 @@ lines2[15252]
 It worked! Now we can analyze our text.
 
 ```{r}
-f <- token_filter(drop_punct = TRUE, drop = stopwords("english"))
+f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
 term_counts(lines2, f)
 ```
 

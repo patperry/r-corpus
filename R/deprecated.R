@@ -16,6 +16,7 @@
 sentence_filter <- function(crlf_break = FALSE,
                             suppress = abbreviations("english"))
 {
+    .Deprecated("text_filter")
     text_filter(sent_crlf = crlf_break, sent_suppress = suppress)
 }
 
@@ -29,6 +30,7 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE,
                          drop_symbol = FALSE, drop_other = FALSE,
                          drop = NULL, drop_except = NULL)
 {
+    .Deprecated("text_filter")
     text_filter(map_case = map_case, map_compat = map_compat,
                 map_quote = map_quote, remove_ignorable = remove_ignorable,
                 stemmer = stemmer, stem_dropped = TRUE,

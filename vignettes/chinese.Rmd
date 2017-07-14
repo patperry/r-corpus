@@ -74,17 +74,27 @@ tokens get treated as single entities
 
 ```r
 f <- token_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
-f
 ```
 
 ```
-Token filter with the following options:
+Warning: 'token_filter' is deprecated.
+Use 'text_filter' instead.
+See help("Deprecated")
+```
+
+```r
+(text_filter(data) <- f) # set the text column's filter
+```
+
+```
+Text filter with the following options:
 
 	map_case: TRUE
 	map_compat: TRUE
 	map_quote: TRUE
 	remove_ignorable: TRUE
-	stemmer: NA
+	stemmer: NULL
+	stem_dropped: TRUE
 	stem_except:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" ...
 	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
 	drop_letter: FALSE
@@ -95,17 +105,19 @@ Token filter with the following options:
 	drop_other: FALSE
 	drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
 	drop_except: NULL
+	sent_crlf: FALSE
+	sent_suppress:  chr [1:164] "A." "A.D." "a.m." "A.M." "A.S." ...
 ```
 
 ## Document statistics
 
-Using the token filter we compute type, token, and sentence counts
+We can now compute type, token, and sentence counts
 
 ```r
 head(data.frame(text = data$name,
-                 types = text_ntype(data, f),
-                 tokens = text_ntoken(data, f),
-                 sentences = text_nsentence(data)))
+                types = text_ntype(data),
+                tokens = text_ntoken(data),
+                sentences = text_nsentence(data)))
 ```
 
 ```
@@ -117,10 +129,10 @@ head(data.frame(text = data$name,
 5 1958政府工作报告_薄一波  1969   9346       412
 6 1959政府工作报告_周恩来  2261  11638       577
 ```
-and use it to examine term frequencies
+and examine term frequencies
 
 ```r
-(stats <- term_counts(data, f))
+(stats <- term_counts(data))
 ```
 
 ```
@@ -146,6 +158,9 @@ and use it to examine term frequencies
 ⋮
 (11572 rows total)
 ```
+These operations all use `text_filter(data)` value we set above to determine
+the token and sentence boundaries.
+
 
 ## Visualization
 
@@ -174,7 +189,7 @@ par(family = font_family) # switch the font back
 Finally, here's how we might show terms in their local context
 
 ```r
-text_locate(data, "\u6027", f)
+text_locate(data, "\u6027")
 ```
 
 ```

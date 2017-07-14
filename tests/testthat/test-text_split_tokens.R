@@ -20,7 +20,7 @@ test_that("'split_tokens' can split into threes", {
 test_that("'split_tokens' doesn't count dropped tokens", {
     text <- c(paste(LETTERS, collapse = " "),
               paste(letters, collapse = " "))
-    f <- token_filter(drop = c("a", "e", "i", "o", "u"))
+    f <- text_filter(drop = c("a", "e", "i", "o", "u"))
 
     expect_equal(text_split(text, "tokens", 5, filter = f),
         data.frame(parent = c(rep(1, 5), rep(2, 5)),

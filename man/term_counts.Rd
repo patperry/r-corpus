@@ -5,7 +5,7 @@
     Tokenize a set of texts and tabulate the term occurrence frequencies.
 }
 \usage{
-    term_counts(x, filter = token_filter(), weights = NULL,
+    term_counts(x, filter = text_filter(x), weights = NULL,
                 ngrams = NULL, min_count = NULL, max_count = NULL,
                 min_support = NULL, max_support = NULL, types = FALSE)
 }
