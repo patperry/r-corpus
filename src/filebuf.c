@@ -16,6 +16,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include "corpus/src/memory.h"
 #include "corpus/src/filebuf.h"
 #include <Rdefines.h>
 #include "rcorpus.h"
