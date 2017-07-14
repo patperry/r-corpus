@@ -72,13 +72,9 @@ S3method(`text_filter<-`, data.frame)
 ## Base S3 methods
 
 ### filter
-S3method(`$<-`, corpus_filter)
 S3method(`$<-`, corpus_text_filter)
-S3method(`[<-`, corpus_filter)
 S3method(`[<-`, corpus_text_filter)
-S3method(`[[<-`, corpus_filter)
 S3method(`[[<-`, corpus_text_filter)
-S3method(print, corpus_filter)
 S3method(print, corpus_text_filter)
 
 ## frame
