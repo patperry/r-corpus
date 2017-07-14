@@ -38,7 +38,7 @@ as_text.corpus_json <- function(x, filter = NULL, ...)
 {
     if (length(dim(x)) == 2) {
         if (!"text" %in% names(x)) {
-            stop("no column named \"text\"")
+            stop("no column named \"text\" in JSON object")
         }
         as_text(x$text, filter = filter, ...)
     } else {
@@ -77,7 +77,7 @@ as_text.data.frame <- function(x, filter = NULL, ...)
     }
 
     if (!"text" %in% names(x)) {
-            stop("no column named \"text\"")
+            stop("no column named \"text\" in data frame")
     }
     
     if (.row_names_info(x) <= 0) {

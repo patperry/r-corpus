@@ -118,7 +118,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
 `text_filter<-.data.frame` <- function(x, value)
 {
     if (!"text" %in% names(x)) {
-        stop("no column named \"text\"")
+        stop("no column named \"text\" in data frame")
     }
     text_filter(x$text) <- value
     x

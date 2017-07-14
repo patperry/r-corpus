@@ -46,7 +46,7 @@ test_that("'text_filter' can be assigned to text", {
 })
 
 
-test_that("'text_filter' can be assigned to data frame", {
+test_that("'text_filter' can be assigned to data frame with \"text\" column", {
     x <- as_text("hello")
     f0 <- text_filter(x)
     d <- data.frame(text = x)
@@ -54,6 +54,15 @@ test_that("'text_filter' can be assigned to data frame", {
     text_filter(d) <- f
     expect_equal(text_filter(x), f0)
     expect_equal(text_filter(d), f)
+})
+
+
+test_that("'text_filter' fails without data frame with \"text\" column", {
+    x <- as_text("hello")
+    d <- data.frame(not_text = x)
+    f <- text_filter(map_case = FALSE)
+    expect_error(text_filter(d), "no column named \"text\" in data frame")
+    expect_error(text_filter(d) <- f, "no column named \"text\" in data frame")
 })
 
 
@@ -75,4 +84,24 @@ test_that("setting an unrecognized property gives an error", {
     expect_error(f$foo <- "bar",
                  "unrecognized text filter property: \"foo\"",
                  fixed = TRUE)
+
+    expect_error(text_filter(foo = "bar"),
+                 "unrecognized text filter property: \"foo\"",
+                 fixed = TRUE)
+})
+
+
+test_that("passing unnamed arguments is not allowed", {
+    expect_error(text_filter(NULL, TRUE),
+                 "unnamed arguments are not allowed")
+
+    x <- as_text("hello")
+    expect_error(text_filter(x, TRUE),
+                 "unnamed arguments are not allowed")
+})
+
+
+test_that("giving invalid text to text_filter.corpus_text is not allowed", {
+    expect_error(text_filter.corpus_text("hello"),
+                 "argument is not a valid text object")
 })

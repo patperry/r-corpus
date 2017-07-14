@@ -130,6 +130,15 @@ test_that("converting to text works", {
 })
 
 
+test_that("converting to text fails if no column named text", {
+    file <- tempfile()
+    writeLines('{ "a": "foo", "b": "hello" }', file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_error(as_text(ds), "no column named \"text\" in JSON object",
+                 fixed = TRUE)
+})
+
+
 test_that("converting to text throws error if no column named 'text'", {
     file <- tempfile()
     writeLines('{ "a": "foo", "b": "hello" }', file)
