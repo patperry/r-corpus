@@ -13,13 +13,12 @@
 #  limitations under the License.
 
 
-term_counts <- function(x, filter = token_filter(), weights = NULL,
+term_counts <- function(x, filter = text_filter(x), weights = NULL,
                         ngrams = NULL, min_count = NULL, max_count = NULL,
                         min_support = NULL, max_support = NULL, types = FALSE)
 {
     with_rethrow({
-        x <- as_text(x)
-        filter <- as_filter("filter", filter)
+        x <- as_text(x, filter = filter)
         weights <- as_weights(weights, length(x))
         ngrams <- as_ngrams(ngrams)
         min_count <- as_double_scalar("min_count", min_count, TRUE)
@@ -29,7 +28,7 @@ term_counts <- function(x, filter = token_filter(), weights = NULL,
         types <- as_option("types", types)
     })
 
-    ans <- .Call(C_term_counts_text, x, filter, weights, ngrams,
+    ans <- .Call(C_term_counts_text, x, weights, ngrams,
                  min_count, max_count, min_support, max_support, types)
 
     # order by descending support, then descending count, then ascending term

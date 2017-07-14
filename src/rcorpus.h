@@ -255,7 +255,7 @@ SEXP text_split_sentences(SEXP x, SEXP size);
 SEXP text_split_tokens(SEXP x, SEXP size);
 SEXP text_tokens(SEXP x);
 SEXP text_types(SEXP x, SEXP collapse);
-SEXP term_counts_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
+SEXP term_counts_text(SEXP x, SEXP weights, SEXP ngrams,
 		      SEXP min_count, SEXP max_count, SEXP min_support,
 		      SEXP max_support, SEXP output_types);
 SEXP term_matrix_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,

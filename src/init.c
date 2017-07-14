@@ -51,7 +51,7 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(subscript_json, 2),
 	CALLDEF(subset_json, 3),
 	CALLDEF(subset_text_handle, 2),
-	CALLDEF(term_counts_text, 9),
+	CALLDEF(term_counts_text, 8),
 	CALLDEF(term_matrix_text, 6),
 	CALLDEF(text_count, 2),
 	CALLDEF(text_detect, 2),
