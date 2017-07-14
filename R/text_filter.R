@@ -21,7 +21,7 @@ text_filter <- function(x = NULL, ...)
 text_filter.default <- function(x = NULL, ...,
                                 map_case = TRUE, map_compat = TRUE,
                                 map_quote = TRUE, remove_ignorable = TRUE,
-                                stemmer = NA, stem_dropped = FALSE,
+                                stemmer = NULL, stem_dropped = FALSE,
                                 stem_except = NULL,
                                 combine = abbreviations("english"),
                                 drop_letter = FALSE, drop_mark = FALSE,

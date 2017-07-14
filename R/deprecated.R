@@ -22,7 +22,7 @@ sentence_filter <- function(crlf_break = FALSE,
 
 token_filter <- function(map_case = TRUE, map_compat = TRUE,
                          map_quote = TRUE, remove_ignorable = TRUE,
-                         stemmer = NA, stem_except = drop,
+                         stemmer = NULL, stem_except = drop,
                          combine = abbreviations("english"),
                          drop_letter = FALSE, drop_mark = FALSE,
                          drop_number = FALSE, drop_punct = FALSE,

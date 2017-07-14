@@ -7,7 +7,7 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$map_compat, TRUE)
     expect_equal(f$map_quote, TRUE)
     expect_equal(f$remove_ignorable, TRUE)
-    expect_equal(f$stemmer, NA_character_)
+    expect_equal(f$stemmer, NULL)
     expect_equal(f$stem_dropped, FALSE)
     expect_equal(f$stem_except, NULL)
     expect_equal(f$combine, abbreviations("english"))

@@ -100,10 +100,6 @@ static const char *filter_stemmer(SEXP filter)
 	}
 
 	val = STRING_ELT(alg, 0);
-	if (val == NA_STRING || XLENGTH(val) == 0) {
-		return NULL;
-	}
-
 	return CHAR(val);
 }
 

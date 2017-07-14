@@ -132,11 +132,7 @@ static const char *token_filter_stemmer(SEXP filter)
 	if (TYPEOF(alg) != STRSXP || XLENGTH(alg) != 1) {
 		error("invalid token filter 'stemmer' value");
 	}
-
 	val = STRING_ELT(alg, 0);
-	if (val == NA_STRING || XLENGTH(val) == 0) {
-		return NULL;
-	}
 
 	return CHAR(val);
 }

@@ -305,14 +305,14 @@ as_stemmer <- function(stemmer)
                   "porter", "portuguese", "romanian", "russian", "spanish",
                   "swedish", "tamil", "turkish")
 
-    if (is.null(stemmer) || length(stemmer) == 1 && is.na(stemmer)) {
-        return(NA_character_)
+    if (is.null(stemmer)) {
+        return(NULL)
     }
 
-    if (!(length(stemmer) == 1 && is.character(stemmer))) {
-        stop(paste0("'stemmer' argument must be a character string,",
-                    "NA, or NULL"))
+    if (anyNA(stemmer) || length(stemmer) != 1 || !is.character(stemmer)) {
+        stop("'stemmer' argument must be a character string or NULL")
     }
+
     stemmer <- as.character(stemmer)
 
     if (!stemmer %in% stemmers) {
