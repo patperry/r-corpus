@@ -63,15 +63,24 @@ frames. When the input argument is a data frame, *corpus* looks for a column
 of type `corpus_text` or, if none exists, a column named `"text"`.
 
 
+### Preprocessing
+
+Specify preprocessing decisions using the following function:
+
+ + `text_filter()` gets or sets a text filter specifying token
+   preprocessing and sentence boundaries.
+
+When you use the *corpus* library, you specify all text preprocessing
+decisions (normalization, stemming, stop word removal, etc.) as part of
+a `corpus_text_filter` object. Every `corpus_text` object has a
+corresponding text filter.
+
+
 ### Tokenizing text
 
 *Corpus* conceives of texts as sequences of tokens, each of which is an
 instance of a particular type.  To tokenize text or to compute its types,
 use the following functions: 
-
- + `token_filter()` constructs a `corpus_token_filter` object specifying
-   the process by which a text gets transformed into a token sequence
-   (normalization, stemming, stop word removal, etc.).
 
  + `text_tokens()` transforms raw text into token sequences.
 
@@ -99,9 +108,6 @@ uses the word boundaries defined by
 
  + `text_split()` segments text into sentences or blocks of tokens.
 
- + `sentence_filter()` constructs a `corpus_sentence_filter` controlling
-   the sentence break behavior.
-
  + `text_nsentence()` counts the number of sentences in a set of texts.
 
 For sentence boundaries, *corpus* uses a tailored version of the boundaries
@@ -109,7 +115,8 @@ defined in [Unicode Standard Annex #29, Section 5][sentbreak]. Specifically,
 when finding sentence boundaries, by default *corpus* treats carriage return
 and new line like spaces, and *corpus* suppresses sentence breaks after
 English abbreviations. You can override this behavior by using a different
-`corpus_sentence_filter` constructed using the `sentence_filter()` function.
+`corpus_text_filter` constructed using the `text_filter()` function
+mentioned above.
 
 
 ### Searching for terms
