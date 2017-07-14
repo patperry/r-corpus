@@ -12,7 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-
 sentence_filter <- function(crlf_break = FALSE,
                             suppress = abbreviations("english"))
 {

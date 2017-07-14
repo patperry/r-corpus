@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
 text_filter <- function(x = NULL, ...)
 {
     UseMethod("text_filter")

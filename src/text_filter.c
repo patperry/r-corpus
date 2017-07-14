@@ -40,7 +40,6 @@ SEXP text_filter_update(SEXP x)
 		obj->has_sentfilter = 0;
 		obj->valid_sentfilter = 0;
 	}
-
 out:
 	return R_NilValue;
 }

@@ -27,7 +27,6 @@
 
 #define SEARCH_TAG install("corpus::search")
 
-
 static struct corpus_search *search_new(void);
 
 struct corpus_search *search_new(void)

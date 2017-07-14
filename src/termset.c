@@ -33,7 +33,6 @@
 #  undef error
 #endif
 
-
 #define TERMSET_TAG install("corpus::termset")
 
 

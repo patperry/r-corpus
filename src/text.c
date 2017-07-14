@@ -22,7 +22,6 @@
 
 #define TEXT_TAG install("corpus::text")
 
-
 enum source_type {
 	SOURCE_NONE = 0,
 	SOURCE_CHAR,
