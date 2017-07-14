@@ -201,6 +201,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
 		SEXP names);
 int is_text(SEXP text);
 struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
+struct corpus_filter *text_filter(SEXP x);
 SEXP as_text_character(SEXP text);
 
 SEXP alloc_na_text(void);
@@ -245,7 +246,7 @@ SEXP text_detect(SEXP x, SEXP terms, SEXP filter);
 SEXP text_filter_update(SEXP x);
 SEXP text_locate(SEXP x, SEXP terms, SEXP filter);
 SEXP text_nsentence(SEXP x, SEXP filter);
-SEXP text_ntoken(SEXP x, SEXP filter);
+SEXP text_ntoken(SEXP x);
 SEXP text_ntype(SEXP x, SEXP filter, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);

@@ -173,11 +173,11 @@ out:
 
 struct corpus_filter *text_filter(SEXP x)
 {
-	SEXP handle, filter;
+	SEXP handle, filter, abbrev_kind, combine;
 	struct rcorpus_text *obj;
 	struct corpus_typemap map;
 	const char *stemmer;
-	int err = 0, has_map = 0, type_kind, flags, stem_dropped;
+	int err = 0, has_map = 0, nprot = 0, type_kind, flags, stem_dropped;
 
 	handle = getListElement(x, "handle");
 	obj = R_ExternalPtrAddr(handle);
@@ -192,11 +192,17 @@ struct corpus_filter *text_filter(SEXP x)
 	}
 
 	filter = getListElement(x, "filter");
-
 	type_kind = filter_type_kind(filter);
 	stemmer = filter_stemmer(filter);
 	flags = filter_flags(filter);
 	stem_dropped = filter_logical(filter, "stem_dropped", 0);
+
+	if (filter == R_NilValue) {
+		PROTECT(abbrev_kind = mkString("english")); nprot++;
+		PROTECT(combine = abbreviations(abbrev_kind)); nprot++;
+	} else {
+		combine = getListElement(filter, "combine");
+	}
 
 	TRY(corpus_typemap_init(&map, type_kind, NULL));
 	has_map = 1;
@@ -214,12 +220,12 @@ struct corpus_filter *text_filter(SEXP x)
 		  getListElement(filter, "drop"));
 	add_terms(corpus_filter_drop_except, &obj->filter, &map,
 		  getListElement(filter, "drop_except"));
-	add_terms(corpus_filter_combine, &obj->filter, &map,
-		  getListElement(filter, "combine"));
+	add_terms(corpus_filter_combine, &obj->filter, &map, combine);
 out:
 	if (has_map) {
 		corpus_typemap_destroy(&map);
 	}
+	UNPROTECT(nprot);
 	CHECK_ERROR(err);
 	return &obj->filter;
 }

@@ -21,9 +21,10 @@ text_tokens <- function(x, filter = token_filter())
 }
 
 
-text_ntoken <- function(x, filter = token_filter())
+text_ntoken <- function(x, filter = NULL)
 {
-    x <- as_text(x)
-    filter <- as_filter("filter", filter)
-    .Call(C_text_ntoken, x, filter)
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+    })
+    .Call(C_text_ntoken, x)
 }

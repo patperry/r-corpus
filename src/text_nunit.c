@@ -92,7 +92,7 @@ out:
 }
 
 
-SEXP text_ntoken(SEXP sx, SEXP sfilter)
+SEXP text_ntoken(SEXP sx)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
@@ -103,14 +103,10 @@ SEXP text_ntoken(SEXP sx, SEXP sfilter)
 
 	nprot = 0;
 
-	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
 	names = names_text(sx);
-
-	// filter
-	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
-	filter = as_filter(sfilter);
+	filter = text_filter(sx);
 
 	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names);
