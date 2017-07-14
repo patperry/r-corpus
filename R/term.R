@@ -40,11 +40,10 @@ term_counts <- function(x, filter = text_filter(x), weights = NULL,
 }
 
 
-term_matrix_raw <- function(x, filter = token_filter(), weights = NULL,
+term_matrix_raw <- function(x, filter = text_filter(x), weights = NULL,
                             ngrams = NULL, select = NULL, group = NULL)
 {
-    x <- as_text(x)
-    filter <- as_filter("filter", filter)
+    x <- as_text(x, filter = filter)
     weights <- as_weights(weights, length(x))
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)
@@ -56,7 +55,7 @@ term_matrix_raw <- function(x, filter = token_filter(), weights = NULL,
         n <- nlevels(group)
     }
 
-    mat <- .Call(C_term_matrix_text, x, filter, weights, ngrams, select, group)
+    mat <- .Call(C_term_matrix_text, x, weights, ngrams, select, group)
 
     if (is.null(select)) {
         # put the terms in lexicographic order
@@ -73,7 +72,7 @@ term_matrix_raw <- function(x, filter = token_filter(), weights = NULL,
 }
 
 
-term_matrix <- function(x, filter = token_filter(), weights = NULL,
+term_matrix <- function(x, filter = text_filter(x), weights = NULL,
                         ngrams = NULL, select = NULL, group = NULL,
                         transpose = FALSE)
 {
@@ -99,7 +98,7 @@ term_matrix <- function(x, filter = token_filter(), weights = NULL,
 }
 
 
-term_frame <- function(x, filter = token_filter(), weights = NULL,
+term_frame <- function(x, filter = text_filter(x), weights = NULL,
                        ngrams = NULL, select = NULL, group = NULL,
                        factors = TRUE)
 {

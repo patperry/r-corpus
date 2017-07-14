@@ -134,10 +134,10 @@ static void context_destroy(void *obj)
 }
 
 
-SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
-		      SEXP sselect, SEXP sgroup)
+SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
+		      SEXP sgroup)
 {
-	SEXP ans = R_NilValue, sctx, snames, si, sj, scount, stext, sfilter,
+	SEXP ans = R_NilValue, sctx, snames, si, sj, scount, stext,
 	     scol_names, srow_names, sterm;
 	struct context *ctx;
 	const struct corpus_text *text, *type;
@@ -154,9 +154,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sprops, SEXP sweights, SEXP sngrams,
 
 	PROTECT(stext = coerce_text(sx)); nprot++;
 	text = as_text(stext, &n);
-
-	PROTECT(sfilter = alloc_filter(sprops)); nprot++;
-	filter = as_filter(sfilter);
+	filter = text_filter(stext);
 
 	if (sngrams != R_NilValue) {
 		PROTECT(sngrams = coerceVector(sngrams, INTSXP)); nprot++;
