@@ -20,7 +20,6 @@
 #include <Rdefines.h>
 #include "rcorpus.h"
 
-
 #define FILEBUF_TAG install("corpus::filebuf")
 
 
