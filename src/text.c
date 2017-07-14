@@ -151,17 +151,19 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
         SET_STRING_ELT(sclass, 0, mkChar("data.frame"));
         setAttrib(table, R_ClassSymbol, sclass);
 
-	PROTECT(ans = allocVector(VECSXP, 4));
+	PROTECT(ans = allocVector(VECSXP, 5));
 	SET_VECTOR_ELT(ans, 0, handle);
 	SET_VECTOR_ELT(ans, 1, sources);
 	SET_VECTOR_ELT(ans, 2, table);
 	SET_VECTOR_ELT(ans, 3, eltnames);
+	SET_VECTOR_ELT(ans, 4, R_NilValue);
 
-	PROTECT(names = allocVector(STRSXP, 4));
+	PROTECT(names = allocVector(STRSXP, 5));
         SET_STRING_ELT(names, 0, mkChar("handle"));
         SET_STRING_ELT(names, 1, mkChar("sources"));
         SET_STRING_ELT(names, 2, mkChar("table"));
         SET_STRING_ELT(names, 3, mkChar("names"));
+        SET_STRING_ELT(names, 4, mkChar("filter"));
         setAttrib(ans, R_NamesSymbol, names);
 
 	PROTECT(sclass = allocVector(STRSXP, 1));
@@ -419,33 +421,6 @@ SEXP coerce_text(SEXP sx)
 	UNPROTECT(1);
 
 	return ans;
-}
-
-
-SEXP text_filter_update(SEXP x)
-{
-	SEXP handle;
-	struct rcorpus_text *obj;
-
-	handle = getListElement(x, "handle");
-	obj = R_ExternalPtrAddr(handle);
-
-	if (!obj) {
-		goto out;
-	}
-
-	if (obj->has_filter) {
-		corpus_filter_destroy(&obj->filter);
-		obj->has_filter = 0;
-	}
-
-	if (obj->has_sentfilter) {
-		corpus_sentfilter_destroy(&obj->sentfilter);
-		obj->has_sentfilter = 0;
-	}
-
-out:
-	return R_NilValue;
 }
 
 
