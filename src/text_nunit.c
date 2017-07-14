@@ -37,7 +37,7 @@
 #endif
 
 
-SEXP text_nsentence(SEXP sx, SEXP sfilter)
+SEXP text_nsentence(SEXP sx)
 {
 	SEXP ans, names;
 	struct corpus_sentfilter *filter;
@@ -51,11 +51,8 @@ SEXP text_nsentence(SEXP sx, SEXP sfilter)
 	// x
 	PROTECT(sx = coerce_text(sx)); nprot++;
 	text = as_text(sx, &n);
+	filter = text_sentfilter(sx);
 	names = names_text(sx);
-
-	// filter
-	PROTECT(sfilter = alloc_sentfilter(sfilter)); nprot++;
-	filter = as_sentfilter(sfilter);
 
 	PROTECT(ans = allocVector(REALSXP, n)); nprot++;
 	setAttrib(ans, R_NamesSymbol, names);

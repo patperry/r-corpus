@@ -248,7 +248,7 @@ SEXP text_count(SEXP x, SEXP terms);
 SEXP text_detect(SEXP x, SEXP terms);
 SEXP text_filter_update(SEXP x);
 SEXP text_locate(SEXP x, SEXP terms);
-SEXP text_nsentence(SEXP x, SEXP filter);
+SEXP text_nsentence(SEXP x);
 SEXP text_ntoken(SEXP x);
 SEXP text_ntype(SEXP x, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
