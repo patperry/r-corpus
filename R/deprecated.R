@@ -16,7 +16,7 @@
 sentence_filter <- function(crlf_break = FALSE,
                             suppress = abbreviations("english"))
 {
-    text_filter(crlf_break = crlf_break, suppress = suppress)
+    text_filter(sent_crlf = crlf_break, sent_suppress = suppress)
 }
 
 

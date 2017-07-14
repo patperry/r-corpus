@@ -19,8 +19,8 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$drop_other, FALSE)
     expect_equal(f$drop, NULL)
     expect_equal(f$drop_except, NULL)
-    expect_equal(f$crlf_break, FALSE)
-    expect_equal(f$suppress, abbreviations("english"))
+    expect_equal(f$sent_crlf, FALSE)
+    expect_equal(f$sent_suppress, abbreviations("english"))
 })
 
 

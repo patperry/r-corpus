@@ -97,7 +97,7 @@ static int sentence_filter_flags(SEXP filter)
 		return flags;
 	}
 
-	if (sentence_filter_logical(filter, "crlf_break", 0)) {
+	if (sentence_filter_logical(filter, "sent_crlf", 0)) {
 		flags &= ~CORPUS_SENTSCAN_SPCRLF;
 	}
 
@@ -146,7 +146,7 @@ SEXP alloc_sentfilter(SEXP props)
 	PROTECT(sfilter = R_MakeExternalPtr(f, SENTFILTER_TAG, R_NilValue));
 	R_RegisterCFinalizerEx(sfilter, free_sentfilter, TRUE);
 
-	suppress_terms(f, getListElement(props, "suppress"));
+	suppress_terms(f, getListElement(props, "sent_suppress"));
 
 	UNPROTECT(1);
 	return sfilter;

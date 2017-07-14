@@ -28,8 +28,8 @@ text_filter.default <- function(x = NULL, ...,
                                 drop_number = FALSE, drop_punct = FALSE,
                                 drop_symbol = FALSE, drop_other = FALSE,
                                 drop = NULL, drop_except = NULL,
-                                crlf_break = FALSE,
-                                suppress = abbreviations("english"))
+                                sent_crlf = FALSE,
+                                sent_suppress = abbreviations("english"))
 {
     args <- list(...)
     names <- names(args)
@@ -57,8 +57,8 @@ text_filter.default <- function(x = NULL, ...,
     ans$drop_other <- drop_other
     ans$drop <- drop
     ans$drop_except <- drop_except
-    ans$crlf_break <- crlf_break
-    ans$suppress <- suppress
+    ans$sent_crlf <- sent_crlf
+    ans$sent_suppress <- sent_suppress
 
     for (i in seq_along(args)) {
         name <- names[[i]]
@@ -150,10 +150,10 @@ text_filter.corpus_text <- function(x = NULL, ...)
     if (name %in% c("map_case", "map_compat", "map_quote",
                     "remove_ignorable", "drop_letter", "drop_mark",
                     "drop_number", "drop_symbol", "drop_punct",
-                    "drop_other", "stem_dropped", "crlf_break")) {
+                    "drop_other", "stem_dropped", "sent_crlf")) {
         value <- as_option(name, value)
     } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
-                           "suppress")) {
+                           "sent_suppress")) {
         value <- as_character_vector(name, value)
     } else if (name == "stemmer") {
         value <- as_stemmer(value)
