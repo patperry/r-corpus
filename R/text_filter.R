@@ -137,11 +137,19 @@ text_filter.corpus_text <- function(x = NULL, ...)
         value <- as_filter("value", value)
     })
 
-    y <- unclass(x)
-    y$filter <- value
-    class(y) <- class(x)
-    .Call(C_text_filter_update, y)
-    y
+    if (is.null(value) && is.null(unclass(x)$filter)) {
+        return(x)
+    }
+
+    value0 <- text_filter(x)
+    if (!identical(value, value0)) {
+        y <- unclass(x)
+        y$filter <- value
+        class(y) <- class(x)
+        .Call(C_text_filter_update, y)
+        x <- y
+    }
+    x
 }
 
 

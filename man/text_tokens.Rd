@@ -9,9 +9,9 @@
    a particular \sQuote{type}.
 }
 \usage{
-    text_tokens(x, filter = token_filter())
+    text_tokens(x, filter = text_filter(x))
 
-    text_ntoken(x, filter = token_filter())
+    text_ntoken(x, filter = text_filter(x))
 
     token_filter(map_case = TRUE, map_compat = TRUE,
                  map_quote = TRUE, remove_ignorable = TRUE,
@@ -26,7 +26,7 @@
     \item{x}{object to be tokenized.}
 
     \item{filter}{filter specifying the transformation from text to
-        token sequence, a list or token filter object.}
+        token sequence.}
 
     \item{map_case}{a logical value indicating whether to apply Unicode
         case mapping to the text. For most languages, this transformation
@@ -210,32 +210,34 @@
     text_ntoken("The quick ('brown') fox can't jump 32.3 feet, right?")
 
     # don't normalize:
-    text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?", NULL)
+    f <- text_filter(map_case = FALSE, map_compat = FALSE,
+                     map_quote = FALSE, remove_ignorable = FALSE)
+    text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?", f)
 
     # drop common function words ('stop' words):
     text_tokens("Able was I ere I saw Elba.",
-                token_filter(drop = stopwords("english")))
+                text_filter(drop = stopwords("english")))
 
     # drop numbers, with some exceptions:"
     text_tokens("0, 1, 2, 3, 4, 5",
-                token_filter(drop_number = TRUE,
-                             drop_except = c("0", "2", "4")))
+                text_filter(drop_number = TRUE,
+                            drop_except = c("0", "2", "4")))
 
     # apply stemming...
-    text_tokens("Mary is running", token_filter(stemmer = "english"))
+    text_tokens("Mary is running", text_filter(stemmer = "english"))
 
     # ...except for certain words
     text_tokens("Mary is running",
-                token_filter(stemmer = "english", stem_except = "mary"))
+                text_filter(stemmer = "english", stem_except = "mary"))
 
     # combine abbreviations by default
     text_tokens("Ms. Jones")
 
     # disable default combinations
-    text_tokens("Ms. Jones", token_filter(combine = NULL))
+    text_tokens("Ms. Jones", text_filter(combine = NULL))
 
     # add new combinations
     text_tokens("Ms. Jones is from New York City, New York.",
-                token_filter(combine = c(abbreviations("english"),
-                                         "new york", "new york city")))
+                text_filter(combine = c(abbreviations("english"),
+                                        "new york", "new york city")))
 }

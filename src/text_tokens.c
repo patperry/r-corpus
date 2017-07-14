@@ -178,9 +178,9 @@ out:
 }
 
 
-SEXP text_tokens(SEXP sx, SEXP sprops)
+SEXP text_tokens(SEXP sx)
 {
-	SEXP ans, names, stext, sfilter;
+	SEXP ans, names;
 	const struct corpus_text *text;
 	struct corpus_filter *filter;
 	struct tokens ctx;
@@ -189,14 +189,12 @@ SEXP text_tokens(SEXP sx, SEXP sprops)
 
 	nprot = 0;
 
-	PROTECT(stext = coerce_text(sx)); nprot++;
-	PROTECT(sfilter = alloc_filter(sprops)); nprot++;
-
-	text = as_text(stext, &n);
-	filter = as_filter(sfilter);
+	PROTECT(sx = coerce_text(sx)); nprot++;
+	text = as_text(sx, &n);
+	filter = text_filter(sx);
 
 	PROTECT(ans = allocVector(VECSXP, n)); nprot++;
-	names = names_text(stext);
+	names = names_text(sx);
 	setAttrib(ans, R_NamesSymbol, names);
 
 	tokens_init(&ctx, filter);

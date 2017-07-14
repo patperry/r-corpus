@@ -13,15 +13,16 @@
 #  limitations under the License.
 
 
-text_tokens <- function(x, filter = token_filter())
+text_tokens <- function(x, filter = text_filter(x))
 {
-    x <- as_text(x)
-    filter <- as_filter("filter", filter)
-    .Call(C_text_tokens, x, filter)
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+    })
+    .Call(C_text_tokens, x)
 }
 
 
-text_ntoken <- function(x, filter = NULL)
+text_ntoken <- function(x, filter = text_filter(x))
 {
     with_rethrow({
         x <- as_text(x, filter = filter)
