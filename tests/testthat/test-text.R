@@ -15,6 +15,15 @@ test_that("subsetting should work", {
 })
 
 
+test_that("subsetting should retain filter", {
+    f <- text_filter(map_case = FALSE)
+    x <- as_text(LETTERS, filter = f)
+    i <- c(7, 2, 3, 21, 15)
+    y <- x[i]
+    expect_equal(text_filter(y), f)
+})
+
+
 test_that("`format` should handle NAs", {
     x <- c(NA, "Friday, November 23, 1787", NA)
     expect_equal(format(as_text(x), na.print = "NA"),

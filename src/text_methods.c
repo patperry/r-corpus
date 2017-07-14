@@ -25,13 +25,21 @@
 #include "rcorpus.h"
 
 
-SEXP names_text(SEXP stext)
+SEXP names_text(SEXP text)
 {
-	if (!is_text(stext)) {
+	if (!is_text(text)) {
 		error("invalid text object");
 	}
+	return getListElement(text, "names");
+}
 
-	return getListElement(stext, "names");
+
+SEXP filter_text(SEXP text)
+{
+	if (!is_text(text)) {
+		error("invalid text object");
+	}
+	return getListElement(text, "filter");
 }
 
 

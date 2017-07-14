@@ -89,7 +89,7 @@ static void load_text(SEXP x);
 
 
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
-		SEXP eltnames)
+		SEXP eltnames, SEXP filter)
 {
 	SEXP ans, handle, names, sclass, src, row_names, table;
 	R_xlen_t n;
@@ -155,7 +155,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
 	SET_VECTOR_ELT(ans, 1, sources);
 	SET_VECTOR_ELT(ans, 2, table);
 	SET_VECTOR_ELT(ans, 3, eltnames);
-	SET_VECTOR_ELT(ans, 4, R_NilValue);
+	SET_VECTOR_ELT(ans, 4, filter);
 
 	PROTECT(names = allocVector(STRSXP, 5));
         SET_STRING_ELT(names, 0, mkChar("handle"));
@@ -225,7 +225,7 @@ struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 
 SEXP as_text_json(SEXP sdata)
 {
-	SEXP ans, handle, sources, source, row, start, stop, names;
+	SEXP ans, handle, sources, source, row, start, stop, names, filter;
 	const struct json *d = as_json(sdata);
 	struct rcorpus_text *obj;
 	R_xlen_t i, nrow = d->nrow;
@@ -249,8 +249,10 @@ SEXP as_text_json(SEXP sdata)
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
 	names = R_NilValue;
+	filter = R_NilValue;
 
-	PROTECT(ans = alloc_text(sources, source, row, start, stop, names));
+	PROTECT(ans = alloc_text(sources, source, row, start, stop, names,
+				 filter));
 	nprot++;
 
 	handle = getListElement(ans, "handle");
@@ -291,7 +293,7 @@ out:
 
 SEXP as_text_character(SEXP x)
 {
-	SEXP ans, handle, sources, source, row, start, stop, names, str;
+	SEXP ans, handle, sources, source, row, start, stop, names, filter, str;
 	struct rcorpus_text *obj;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
@@ -327,8 +329,10 @@ SEXP as_text_character(SEXP x)
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
 	names = getAttrib(x, R_NamesSymbol);
+	filter = R_NilValue;
 
-	PROTECT(ans = alloc_text(sources, source, row, start, stop, names));
+	PROTECT(ans = alloc_text(sources, source, row, start, stop, names,
+				filter));
 	nprot++;
 
 	handle = getListElement(ans, "handle");

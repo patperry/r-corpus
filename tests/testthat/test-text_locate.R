@@ -80,9 +80,10 @@ test_that("'text_locate' can use a custom filter", {
     expected <- data.frame(
         text = c(1, 3),
         term = rep("Rose", 2),
-        before = as_text(c("", "Snow White and ")),
+        before = as_text(c("", "Snow White and "), filter = f),
         instance = c("Rose", "Rose"),
-        after = as_text(c(" is a rose is a rose is a rose.", " Red")),
+        after = as_text(c(" is a rose is a rose is a rose.", " Red"),
+                        filter = f),
         stringsAsFactors = FALSE)
     class(expected) <- c("corpus_text_locate", "corpus_frame", "data.frame")
 

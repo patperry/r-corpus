@@ -130,14 +130,18 @@ as.raw.corpus_text <- function(x, ...)
 c.corpus_text <- function(..., use.names = TRUE)
 {
     args <- list(...)
+    filter <- NULL
     for (i in seq_along(args)) {
         elt <- args[[i]]
+        if (i == 1) {
+            filter <- text_filter(elt)
+        }
         if (!is.character(elt)) {
             args[[i]] <- structure(as.character(elt), names = names(elt))
         }
     }
     ans <- c(args, recursive = TRUE, use.names = TRUE)
-    as_text(ans)
+    as_text(ans, filter = filter)
 }
 
 dim.corpus_text <-

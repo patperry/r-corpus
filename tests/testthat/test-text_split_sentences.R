@@ -12,7 +12,8 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
                    text   = as_text(c("He said, 'Are you going?' ",
                                       "John Shook his head.",
                                       "'Are you going?' ",
-                                      "John asked"))))
+                                      "John asked"),
+                                    filter = f)))
 })
 
 
@@ -25,7 +26,8 @@ test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
                    index  = c(1L, 1L, 1L, 1L, 1L),
                    text   = as_text(c("c.d", "3.4", "U.S.",
                                       "the resp. leaders are",
-                                      "etc.)' '(the"))))
+                                      "etc.)' '(the"),
+                                    filter = f)))
 })
 
 
@@ -42,7 +44,8 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
                                       "etc.",
                                       "\u5b83\u4eec\u6307",
                                       "\u7406\u6570\u5b57.",
-                                      "\u5b83\u4eec\u6307"))))
+                                      "\u5b83\u4eec\u6307"),
+                                    filter = f)))
 })
 
 
@@ -50,7 +53,7 @@ test_that("'sentences' cannot handle abbreviations without suppressions", {
     f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split("Mr. Jones", "sentences", filter = f),
         data.frame(parent = c(1L, 1L), index = c(1L, 2L),
-                   text = as_text(c("Mr. ", "Jones"))))
+                   text = as_text(c("Mr. ", "Jones"), filter = f)))
 })
 
 

@@ -200,7 +200,7 @@ SEXP print_table(SEXP x, SEXP print_gap, SEXP right, SEXP max, SEXP width,
 
 /* text (core) */
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
-		SEXP names);
+		SEXP names, SEXP filter);
 int is_text(SEXP text);
 struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
 struct corpus_filter *text_filter(SEXP x);
@@ -213,6 +213,7 @@ SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
 		 SEXP na_encode, SEXP quote, SEXP na_print, SEXP utf8);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
+SEXP filter_text(SEXP text);
 SEXP subset_text_handle(SEXP handle, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);

@@ -130,7 +130,7 @@ static void context_trim(struct context *ctx)
 static SEXP context_make(struct context *ctx, SEXP sx)
 {
 	SEXP ans, handle, sources, psource, prow, pstart, ptable, source,
-	     row, start, stop, index, sparent, stext, names,
+	     row, start, stop, index, sparent, stext, names, filter,
 	     sclass, row_names;
 	struct rcorpus_text *obj;
 	R_xlen_t src, i, iblock, nblock;
@@ -142,6 +142,7 @@ static SEXP context_make(struct context *ctx, SEXP sx)
 	nprot = 0;
 	nblock = ctx->nblock;
 
+	filter = filter_text(sx);
 	sources = getListElement(sx, "sources");
 	ptable = getListElement(sx, "table");
 	psource = getListElement(ptable, "source");
@@ -189,7 +190,7 @@ static SEXP context_make(struct context *ctx, SEXP sx)
 	ctx->nblock_max = 0;
 
 	PROTECT(stext = alloc_text(sources, source, row, start, stop,
-				   R_NilValue));
+				   R_NilValue, filter));
 	nprot++;
 
 	handle = getListElement(stext, "handle");

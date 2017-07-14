@@ -254,7 +254,7 @@ out:
 SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 		    const struct corpus_text *text)
 {
-	SEXP ans, names, row_names, sclass, sources,
+	SEXP ans, names, filter, row_names, sclass, sources,
 	     ptable, psource, prow, pstart, pstop,
 	     before, bsource, brow, bstart, bstop,
 	     after, asource, arow, astart, astop,
@@ -266,6 +266,7 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 	n = loc->nitem;
 	nprot = 0;
 	
+	filter = filter_text(sx);
 	sources = getListElement(sx, "sources");
 	ptable = getListElement(sx, "table");
 	psource = getListElement(ptable, "source");
@@ -318,11 +319,11 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 	}
 
 	PROTECT(before = alloc_text(sources, bsource, brow, bstart, bstop,
-				    R_NilValue));
+				    R_NilValue, filter));
 	nprot++;
 
 	PROTECT(after = alloc_text(sources, asource, arow, astart, astop,
-				   R_NilValue));
+				   R_NilValue, filter));
 	nprot++;
 
 	PROTECT(ans = allocVector(VECSXP, 5)); nprot++;
