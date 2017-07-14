@@ -18,7 +18,8 @@ text_filter <- function(x = NULL, ...)
 }
 
 
-text_filter.default <- function(x = NULL, map_case = TRUE, map_compat = TRUE,
+text_filter.default <- function(x = NULL, ...,
+                                map_case = TRUE, map_compat = TRUE,
                                 map_quote = TRUE, remove_ignorable = TRUE,
                                 stemmer = NA, stem_except = drop,
                                 combine = abbreviations("english"),
@@ -27,7 +28,7 @@ text_filter.default <- function(x = NULL, map_case = TRUE, map_compat = TRUE,
                                 drop_symbol = FALSE, drop_other = FALSE,
                                 drop = NULL, drop_except = NULL,
                                 crlf_break = FALSE,
-                                suppress = abbreviations("english"), ...)
+                                suppress = abbreviations("english"))
 {
     args <- list(...)
     names <- names(args)
@@ -109,8 +110,8 @@ text_filter.corpus_text <- function(x = NULL, ...)
 
 `text_filter<-.default` <- function(x, value)
 {
-    stop("setting a text filter for objects of class \"%s\" is not allowed",
-         class(x))
+    stop(sprintf("setting a text filter for objects of class \"%s\" is not allowed",
+                 class(x)))
 }
 
 
@@ -131,7 +132,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     }
 
     with_rethrow({
-        value <- as_text_filter("value", value)
+        value <- as_filter("value", value)
     })
 
     y <- unclass(x)
@@ -155,7 +156,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     } else if (name == "stemmer") {
         value <- as_stemmer(value)
     } else {
-        stop(paste0("unrecognized text filter property: '", name, "'"))
+        stop(sprintf("unrecognized text filter property: \"%s\"", name))
     }
 
     y <- unclass(x)
