@@ -115,6 +115,12 @@ sents <- text_split(data) # split text into sentences
 subset <- text_subset(sents, '\u6539\u9769') # select those with the term
 term_counts(subset) # count the word occurrences
 ```
+The first term is the search query. It appears 2931 times in the corpus,
+in 2457 different sentences. The second term in the list appears in
+652 of 2457 sentences containing the search term. (I don't speak Chinese,
+but Google translate tells me that the search term is "reform", and the
+second and third items in the list are "development" and "system".)
+
 
 ## Keyword in context
 
