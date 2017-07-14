@@ -73,16 +73,7 @@ functions.  Here we set `combine = dict` so that multi-word
 tokens get treated as single entities
 
 ```r
-f <- token_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
-```
-
-```
-Warning: 'token_filter' is deprecated.
-Use 'text_filter' instead.
-See help("Deprecated")
-```
-
-```r
+f <- text_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
 (text_filter(data) <- f) # set the text column's filter
 ```
 
@@ -94,8 +85,8 @@ Text filter with the following options:
 	map_quote: TRUE
 	remove_ignorable: TRUE
 	stemmer: NULL
-	stem_dropped: TRUE
-	stem_except:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" ...
+	stem_dropped: FALSE
+	stem_except: NULL
 	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
 	drop_letter: FALSE
 	drop_mark: FALSE
@@ -182,6 +173,41 @@ with(stats, {
 
 ```r
 par(family = font_family) # switch the font back
+```
+
+## Co-occurrences 
+
+Here are the terms that show up in sentences containing a particular
+term
+
+```r
+sents <- text_split(data) # split text into sentences
+subset <- text_subset(data, '\u6539\u9769') # select those with the term
+term_counts(subset) # count the word occurrences
+```
+
+```
+   term count support
+1  发展  5574      47
+2  经济  4977      47
+3  社会  4211      47
+4  建设  4149      47
+5  改革  2931      47
+6  人民  2841      47
+7  主义  2746      47
+8  工作  2612      47
+9  企业  2591      47
+10 国家  2491      47
+11 加强  2422      47
+12 生产  2332      47
+13 我国  1961      47
+14 提高  1930      47
+15 中    1787      47
+16 化    1727      47
+17 年    1705      47
+18 增长  1659      47
+⋮
+(11475 rows total)
 ```
 
 ## Keyword in context

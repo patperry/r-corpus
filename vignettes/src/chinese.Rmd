@@ -69,7 +69,7 @@ We then specify a token filter to determine what is counted by other corpus
 functions.  Here we set `combine = dict` so that multi-word
 tokens get treated as single entities
 ```{r}
-f <- token_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
+f <- text_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
 (text_filter(data) <- f) # set the text column's filter
 ```
 
@@ -104,6 +104,16 @@ with(stats, {
                          colors = RColorBrewer::brewer.pal(8, "Dark2"))
 })
 par(family = font_family) # switch the font back
+```
+
+## Co-occurrences 
+
+Here are the terms that show up in sentences containing a particular
+term
+```{r}
+sents <- text_split(data) # split text into sentences
+subset <- text_subset(data, '\u6539\u9769') # select those with the term
+term_counts(subset) # count the word occurrences
 ```
 
 ## Keyword in context

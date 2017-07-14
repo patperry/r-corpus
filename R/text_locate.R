@@ -33,6 +33,16 @@ text_detect <- function(x, terms, filter = text_filter(x))
 }
 
 
+text_subset <- function(x, terms, filter = text_filter(x))
+{
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+    })
+    i <- text_detect(x, terms)
+    x[i]
+}
+
+
 text_locate <- function(x, terms, filter = text_filter(x))
 {
     with_rethrow({
