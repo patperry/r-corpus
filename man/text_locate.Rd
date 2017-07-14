@@ -2,6 +2,7 @@
 \alias{text_count}
 \alias{text_detect}
 \alias{text_locate}
+\alias{text_subset}
 \title{Searching for terms in text.}
 \description{
     Look for instances of one or more terms in a set of texts.
