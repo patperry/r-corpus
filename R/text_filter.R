@@ -21,7 +21,8 @@ text_filter <- function(x = NULL, ...)
 text_filter.default <- function(x = NULL, ...,
                                 map_case = TRUE, map_compat = TRUE,
                                 map_quote = TRUE, remove_ignorable = TRUE,
-                                stemmer = NA, stem_except = drop,
+                                stemmer = NA, stem_dropped = FALSE,
+                                stem_except = NULL,
                                 combine = abbreviations("english"),
                                 drop_letter = FALSE, drop_mark = FALSE,
                                 drop_number = FALSE, drop_punct = FALSE,
@@ -45,6 +46,7 @@ text_filter.default <- function(x = NULL, ...,
     ans$map_quote <- map_quote
     ans$remove_ignorable <- remove_ignorable
     ans$stemmer <- stemmer
+    ans$stem_dropped <- stem_dropped
     ans$stem_except <- stem_except
     ans$combine <- combine
     ans$drop_letter <- drop_letter
@@ -148,7 +150,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     if (name %in% c("map_case", "map_compat", "map_quote",
                     "remove_ignorable", "drop_letter", "drop_mark",
                     "drop_number", "drop_symbol", "drop_punct",
-                    "drop_other", "crlf_break")) {
+                    "drop_other", "stem_dropped", "crlf_break")) {
         value <- as_option(name, value)
     } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
                            "suppress")) {

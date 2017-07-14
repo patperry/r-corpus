@@ -222,11 +222,12 @@ SEXP alloc_filter(SEXP props)
 	struct corpus_filter *f;
 	struct corpus_typemap map;
 	const char *stemmer;
-	int err, type_kind, flags;
+	int err, type_kind, flags, stem_dropped;
 
 	type_kind = token_filter_type_kind(props);
 	stemmer = token_filter_stemmer(props);
 	flags = token_filter_flags(props);
+	stem_dropped = token_filter_logical(props, "stem_dropped", 0);
 
 	f = filter_new(type_kind, stemmer, flags);
 	PROTECT(sfilter = R_MakeExternalPtr(f, FILTER_TAG, R_NilValue));
@@ -234,6 +235,11 @@ SEXP alloc_filter(SEXP props)
 
 	if ((err = corpus_typemap_init(&map, type_kind, NULL))) {
 		error("memory allocation failure");
+	}
+
+	if (!stem_dropped) {
+		add_terms("stem exception", corpus_filter_stem_except, f,
+			  &map, getListElement(props, "drop"));
 	}
 
 	add_terms("stem exception", corpus_filter_stem_except, f, &map,

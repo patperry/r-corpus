@@ -181,7 +181,7 @@ struct corpus_filter *text_filter(SEXP x)
 	struct rcorpus_text *obj;
 	struct corpus_typemap map;
 	const char *stemmer;
-	int err = 0, has_map = 0, type_kind, flags;
+	int err = 0, has_map = 0, type_kind, flags, stem_dropped;
 
 	handle = getListElement(x, "handle");
 	obj = R_ExternalPtrAddr(handle);
@@ -200,6 +200,7 @@ struct corpus_filter *text_filter(SEXP x)
 	type_kind = filter_type_kind(filter);
 	stemmer = filter_stemmer(filter);
 	flags = filter_flags(filter);
+	stem_dropped = filter_logical(filter, "stem_dropped", 0);
 
 	TRY(corpus_typemap_init(&map, type_kind, NULL));
 	has_map = 1;
@@ -207,6 +208,10 @@ struct corpus_filter *text_filter(SEXP x)
 	TRY(corpus_filter_init(&obj->filter, type_kind, stemmer, flags));
 	obj->has_filter = 1;
 
+	if (!stem_dropped) {
+		add_terms(corpus_filter_stem_except, &obj->filter, &map,
+			  getListElement(filter, "drop"));
+	}
 	add_terms(corpus_filter_stem_except, &obj->filter, &map,
 		  getListElement(filter, "stem_except"));
 	add_terms(corpus_filter_drop, &obj->filter, &map,

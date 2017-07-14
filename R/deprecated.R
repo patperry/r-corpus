@@ -31,10 +31,10 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE,
 {
     text_filter(map_case = map_case, map_compat = map_compat,
                 map_quote = map_quote, remove_ignorable = remove_ignorable,
-                stemmer = stemmer, stem_except = stem_except,
-                combine = combine, drop_letter = drop_letter,
-                drop_mark = drop_mark, drop_number = drop_number,
-                drop_punct = drop_punct, drop_symbol = drop_symbol,
-                drop_other = drop_other, drop = drop,
-                drop_except = drop_except)
+                stemmer = stemmer, stem_dropped = TRUE,
+                stem_except = stem_except, combine = combine,
+                drop_letter = drop_letter, drop_mark = drop_mark,
+                drop_number = drop_number, drop_punct = drop_punct,
+                drop_symbol = drop_symbol, drop_other = drop_other,
+                drop = drop, drop_except = drop_except)
 }
