@@ -225,16 +225,6 @@ int is_search(SEXP search);
 struct corpus_search *as_search(SEXP search);
 SEXP items_search(SEXP search);
 
-/* sentence filter */
-SEXP alloc_sentfilter(SEXP props);
-int is_sentfilter(SEXP filter);
-struct corpus_sentfilter *as_sentfilter(SEXP filter);
-
-/* token filter */
-SEXP alloc_filter(SEXP props);
-int is_filter(SEXP filter);
-struct corpus_filter *as_filter(SEXP filter);
-
 /* term set */
 SEXP alloc_termset(SEXP sterms, const char *name,
 		   struct corpus_filter *filter, int allow_dup);
