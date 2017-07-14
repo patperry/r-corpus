@@ -112,7 +112,7 @@ Here are the terms that show up in sentences containing a particular
 term
 ```{r}
 sents <- text_split(data) # split text into sentences
-subset <- text_subset(data, '\u6539\u9769') # select those with the term
+subset <- text_subset(sents, '\u6539\u9769') # select those with the term
 term_counts(subset) # count the word occurrences
 ```
 

@@ -182,32 +182,32 @@ term
 
 ```r
 sents <- text_split(data) # split text into sentences
-subset <- text_subset(data, '\u6539\u9769') # select those with the term
+subset <- text_subset(sents, '\u6539\u9769') # select those with the term
 term_counts(subset) # count the word occurrences
 ```
 
 ```
    term count support
-1  发展  5574      47
-2  经济  4977      47
-3  社会  4211      47
-4  建设  4149      47
-5  改革  2931      47
-6  人民  2841      47
-7  主义  2746      47
-8  工作  2612      47
-9  企业  2591      47
-10 国家  2491      47
-11 加强  2422      47
-12 生产  2332      47
-13 我国  1961      47
-14 提高  1930      47
-15 中    1787      47
-16 化    1727      47
-17 年    1705      47
-18 增长  1659      47
+1  改革  2931    2457
+2  发展   866     652
+3  体制   768     649
+4  经济  1016     639
+5  推进   522     491
+6  深化   473     469
+7  社会   664     464
+8  建设   513     391
+9  制度   452     364
+10 开放   389     353
+11 企业   489     339
+12 工作   301     268
+13 积极   262     252
+14 继续   260     251
+15 管理   281     249
+16 进行   239     232
+17 加快   230     225
+18 化     261     224
 ⋮
-(11475 rows total)
+(3879 rows total)
 ```
 
 ## Keyword in context
