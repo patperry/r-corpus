@@ -51,6 +51,7 @@ all.equal.corpus_text <- function(target, current, ...)
     }
 
     nt <- names(target)
+    ft <- text_filter(target)
     at <- attributes(target)
     target <- as.character(target)
     names(target) <- nt
@@ -62,6 +63,7 @@ all.equal.corpus_text <- function(target, current, ...)
     }
 
     nc <- names(current)
+    fc <- text_filter(current)
     ac <- attributes(current)
     current <- as.character(current)
     names(current) <- nc
@@ -72,7 +74,17 @@ all.equal.corpus_text <- function(target, current, ...)
         }
     }
 
-    all.equal(target, current, ...)
+    ans <- all.equal(target, current, ...)
+
+    f <- all.equal(ft, fc)
+    if (!isTRUE(f)) {
+        if (isTRUE(ans)) {
+            ans <- character()
+        }
+        ans <- c(ans, paste("Filter:", f))
+    }
+
+    ans
 }
 
 

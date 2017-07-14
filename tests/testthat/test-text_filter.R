@@ -106,3 +106,59 @@ test_that("giving invalid text to text_filter.corpus_text is not allowed", {
     expect_error(text_filter.corpus_text("hello"),
                  "argument is not a valid text object")
 })
+
+
+test_that("'as_text' propagates a non-NULL filter argument to character", {
+    x <- "hello"
+    f <- text_filter(map_case = FALSE)
+    x1 <- as_text("hello", filter = f)
+    x2 <- as_text("hello")
+    x3 <- as_text("world", filter = f)
+    expect_false(isTRUE(all.equal(x1, x2)))
+    expect_false(isTRUE(all.equal(x1, x3)))
+    expect_equal(text_filter(x1), f)
+})
+
+
+test_that("'as_text' propagates a non-NULL to text filter to text", {
+    x <- as_text("hello")
+    f0 <- text_filter(map_case = FALSE, map_quote = FALSE)
+    text_filter(x) <- f0
+    expect_equal(text_filter(x), f0)
+
+    f1 <- text_filter(map_case = TRUE, map_quote = FALSE)
+    y <- as_text(x, filter = f1)
+    expect_equal(text_filter(y), f1)
+})
+
+
+test_that("'as_text' propagates a non-NULL to text filter to data frame", {
+    d <- data.frame(text = "hello")
+    f0 <- text_filter(d)
+
+    f <- text_filter(map_case = FALSE)
+    x <- as_text(d, filter = f)
+    expect_equal(text_filter(d), f0)
+    expect_equal(text_filter(x), f)
+})
+
+
+test_that("'as_text' propagates a non-NULL to filter to text data frame", {
+    d <- data.frame(text = as_text("hello"))
+    f0 <- text_filter(d)
+
+    f <- text_filter(map_case = FALSE)
+    x <- as_text(d, filter = f)
+    expect_equal(text_filter(d), f0)
+    expect_equal(text_filter(x), f)
+})
+
+
+test_that("'as_text' with NULL filter leaves existing in place", {
+    x <- as_text("hello")
+    f0 <- text_filter(map_case = FALSE, map_quote = FALSE)
+    text_filter(x) <- f0
+
+    y <- as_text(x, filter = NULL)
+    expect_equal(text_filter(y), f0)
+})
