@@ -10,6 +10,4 @@ Features
 
  * `summary.text` could be better
 
- * `text_subset(,terms)`
-
- * `as_corpus`
+ * `as_corpus` ?
