@@ -1,0 +1,40 @@
+#  Copyright 2017 Patrick O. Perry.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+
+sentence_filter <- function(crlf_break = FALSE,
+                            suppress = abbreviations("english"))
+{
+    text_filter(crlf_break = crlf_break, suppress = suppress)
+}
+
+
+token_filter <- function(map_case = TRUE, map_compat = TRUE,
+                         map_quote = TRUE, remove_ignorable = TRUE,
+                         stemmer = NA, stem_except = drop,
+                         combine = abbreviations("english"),
+                         drop_letter = FALSE, drop_mark = FALSE,
+                         drop_number = FALSE, drop_punct = FALSE,
+                         drop_symbol = FALSE, drop_other = FALSE,
+                         drop = NULL, drop_except = NULL)
+{
+    text_filter(map_case = map_case, map_compat = map_compat,
+                map_quote = map_quote, remove_ignorable = remove_ignorable,
+                stemmer = stemmer, stem_except = stem_except,
+                combine = combine, drop_letter = drop_letter,
+                drop_mark = drop_mark, drop_number = drop_number,
+                drop_punct = drop_punct, drop_symbol = drop_symbol,
+                drop_other = drop_other, drop = drop,
+                drop_except = drop_except)
+}
