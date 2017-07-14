@@ -127,7 +127,9 @@ struct rcorpus_text {
 	struct corpus_sentfilter sentfilter;
 	R_xlen_t length;
 	int has_filter;
+	int valid_filter;
 	int has_sentfilter;
+	int valid_sentfilter;
 };
 
 struct termset {
@@ -202,6 +204,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
 int is_text(SEXP text);
 struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
 struct corpus_filter *text_filter(SEXP x);
+struct corpus_sentfilter *text_sentfilter(SEXP x);
 SEXP as_text_character(SEXP text);
 
 SEXP alloc_na_text(void);

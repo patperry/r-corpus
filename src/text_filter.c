@@ -32,11 +32,13 @@ SEXP text_filter_update(SEXP x)
 	if (obj->has_filter) {
 		corpus_filter_destroy(&obj->filter);
 		obj->has_filter = 0;
+		obj->valid_filter = 0;
 	}
 
 	if (obj->has_sentfilter) {
 		corpus_sentfilter_destroy(&obj->sentfilter);
 		obj->has_sentfilter = 0;
+		obj->valid_sentfilter = 0;
 	}
 
 out:
@@ -136,11 +138,8 @@ static int filter_flags(SEXP filter)
 }
 
 
-static void add_terms(int (*add_term)(struct corpus_filter *,
-			              const struct corpus_text *),
-		      struct corpus_filter *f,
-		      struct corpus_typemap *map,
-		      SEXP sterms)
+static void add_terms(int (*add_term)(void *, const struct corpus_text *),
+		      void *f, struct corpus_typemap *map, SEXP sterms)
 {
 	const struct corpus_text *terms;
 	R_xlen_t i, n;
@@ -158,16 +157,47 @@ static void add_terms(int (*add_term)(struct corpus_filter *,
 			continue;
 		}
 
-		TRY(corpus_typemap_set(map, &terms[i]));
-		TRY(add_term(f, &map->type));
+		if (map) {
+			TRY(corpus_typemap_set(map, &terms[i]));
+			TRY(add_term(f, &map->type));
+		} else {
+			TRY(add_term(f, &terms[i]));
+		}
 	}
 out:
 	UNPROTECT(1);
-	if (err) {
-		f->error = CORPUS_ERROR_INVAL;
+	if (err && map) {
 		corpus_typemap_destroy(map);
 	}
 	CHECK_ERROR(err);
+}
+
+
+static int add_stem_except(void *obj, const struct corpus_text *x)
+{
+	struct corpus_filter *f = obj;
+	return corpus_filter_stem_except(f, x);
+}
+
+
+static int add_drop(void *obj, const struct corpus_text *x)
+{
+	struct corpus_filter *f = obj;
+	return corpus_filter_drop(f, x);
+}
+
+
+static int add_drop_except(void *obj, const struct corpus_text *x)
+{
+	struct corpus_filter *f = obj;
+	return corpus_filter_drop_except(f, x);
+}
+
+
+static int add_combine(void *obj, const struct corpus_text *x)
+{
+	struct corpus_filter *f = obj;
+	return corpus_filter_combine(f, x);
 }
 
 
@@ -183,13 +213,14 @@ struct corpus_filter *text_filter(SEXP x)
 	obj = R_ExternalPtrAddr(handle);
 
 	if (obj->has_filter) {
-		if (!obj->filter.error) {
+		if (obj->valid_filter && !obj->filter.error) {
 			return &obj->filter;
 		} else {
 			corpus_filter_destroy(&obj->filter);
 			obj->has_filter = 0;
 		}
 	}
+	obj->valid_filter = 0;
 
 	filter = getListElement(x, "filter");
 	type_kind = filter_type_kind(filter);
@@ -211,21 +242,87 @@ struct corpus_filter *text_filter(SEXP x)
 	obj->has_filter = 1;
 
 	if (!stem_dropped) {
-		add_terms(corpus_filter_stem_except, &obj->filter, &map,
+		add_terms(add_stem_except, &obj->filter, &map,
 			  getListElement(filter, "drop"));
 	}
-	add_terms(corpus_filter_stem_except, &obj->filter, &map,
+	add_terms(add_stem_except, &obj->filter, &map,
 		  getListElement(filter, "stem_except"));
-	add_terms(corpus_filter_drop, &obj->filter, &map,
+	add_terms(add_drop, &obj->filter, &map,
 		  getListElement(filter, "drop"));
-	add_terms(corpus_filter_drop_except, &obj->filter, &map,
+	add_terms(add_drop_except, &obj->filter, &map,
 		  getListElement(filter, "drop_except"));
-	add_terms(corpus_filter_combine, &obj->filter, &map, combine);
+	add_terms(add_combine, &obj->filter, &map, combine);
 out:
 	if (has_map) {
 		corpus_typemap_destroy(&map);
 	}
 	UNPROTECT(nprot);
 	CHECK_ERROR(err);
+	obj->valid_filter = 1;
 	return &obj->filter;
+}
+
+
+static int sentfilter_flags(SEXP filter)
+{
+	int flags = CORPUS_SENTSCAN_SPCRLF;
+
+	if (filter == R_NilValue) {
+		return flags;
+	}
+
+	if (filter_logical(filter, "sent_crlf", 0)) {
+		flags &= ~CORPUS_SENTSCAN_SPCRLF;
+	}
+
+	return flags;
+}
+
+
+static int add_suppress(void *obj, const struct corpus_text *x)
+{
+	struct corpus_sentfilter *f = obj;
+	return corpus_sentfilter_suppress(f, x);
+}
+
+
+struct corpus_sentfilter *text_sentfilter(SEXP x)
+{
+	SEXP handle, filter, abbrev_kind, suppress;
+	struct rcorpus_text *obj;
+	int err = 0, nprot = 0, flags;
+
+	handle = getListElement(x, "handle");
+	obj = R_ExternalPtrAddr(handle);
+
+	if (obj->has_sentfilter) {
+		if (obj->valid_sentfilter && !obj->sentfilter.error) {
+			return &obj->sentfilter;
+		} else {
+			corpus_sentfilter_destroy(&obj->sentfilter);
+			obj->has_sentfilter = 0;
+		}
+	}
+	obj->valid_sentfilter = 0;
+
+	filter = getListElement(x, "filter");
+	flags = sentfilter_flags(filter);
+
+	if (filter == R_NilValue) {
+		PROTECT(abbrev_kind = mkString("english")); nprot++;
+		PROTECT(suppress = abbreviations(abbrev_kind)); nprot++;
+	} else {
+		suppress = getListElement(filter, "sent_suppress");
+	}
+
+	TRY(corpus_sentfilter_init(&obj->sentfilter, flags));
+	obj->has_sentfilter = 1;
+
+	add_terms(add_suppress, &obj->sentfilter, NULL, suppress);
+
+out:
+	UNPROTECT(nprot);
+	CHECK_ERROR(err);
+	obj->valid_sentfilter = 1;
+	return &obj->sentfilter;
 }
