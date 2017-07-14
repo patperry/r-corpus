@@ -20,7 +20,7 @@ text_split <- function(x, units, size = 1,
     x <- as_text(x)
     units <- as_enum("units", units, choices = c("sentences", "tokens"))
     size <- as_size(size)
-    filter <- as_filter(units, filter)
+    filter <- as_filter("filter", filter)
 
     if (units == "sentences") {
         ans <- .Call(C_text_split_sentences, x, size, filter)

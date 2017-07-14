@@ -131,8 +131,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     }
 
     with_rethrow({
-        # TODO fix argument name in error message
-        value <- as_text_filter(value)
+        value <- as_text_filter("value", value)
     })
 
     y <- unclass(x)
@@ -140,25 +139,6 @@ text_filter.corpus_text <- function(x = NULL, ...)
     class(y) <- class(x)
     .Call(C_text_filter_update, y)
     y
-}
-
-
-as_text_filter <- function(filter)
-{
-    if (is.null(filter)) {
-        return(NULL)
-    }
-
-    if (!is.list(filter)) {
-        stop("'filter' argument should be a text filter, list, or NULL")
-    }
-
-    ans <- structure(list(), class = "corpus_text_filter")
-    keys <- names(text_filter())
-    for (key in keys) {
-        ans[[key]] <- filter[[key]]
-    }
-    ans
 }
 
 

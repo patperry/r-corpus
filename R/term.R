@@ -19,7 +19,7 @@ term_counts <- function(x, filter = token_filter(), weights = NULL,
 {
     with_rethrow({
         x <- as_text(x)
-        filter <- as_token_filter(filter)
+        filter <- as_filter("filter", filter)
         weights <- as_weights(weights, length(x))
         ngrams <- as_ngrams(ngrams)
         min_count <- as_double_scalar("min_count", min_count, TRUE)
@@ -45,7 +45,7 @@ term_matrix_raw <- function(x, filter = token_filter(), weights = NULL,
                             ngrams = NULL, select = NULL, group = NULL)
 {
     x <- as_text(x)
-    filter <- as_token_filter(filter)
+    filter <- as_filter("filter", filter)
     weights <- as_weights(weights, length(x))
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)

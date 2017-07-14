@@ -18,7 +18,6 @@ export(as_text.data.frame)
 export(as_utf8)
 export(is_text)
 export(read_ndjson)
-export(sentence_filter)
 export(stopwords)
 export(term_counts)
 export(term_matrix)
@@ -40,13 +39,17 @@ export(text_ntype)
 export(text_split)
 export(text_tokens)
 export(text_types)
-export(token_filter)
 export(text_types)
 export(utf8_encode)
 export(utf8_format)
 export(utf8_print)
 export(utf8_valid)
 export(utf8_width)
+
+
+## Deprecated
+export(sentence_filter)
+export(token_filter)
 
 
 ## New S3 methods
@@ -70,9 +73,7 @@ S3method(`text_filter<-`, data.frame)
 
 ### filter
 S3method(`$<-`, corpus_filter)
-S3method(`$<-`, corpus_sentence_filter)
 S3method(`$<-`, corpus_text_filter)
-S3method(`$<-`, corpus_token_filter)
 S3method(`[<-`, corpus_filter)
 S3method(`[<-`, corpus_text_filter)
 S3method(`[[<-`, corpus_filter)

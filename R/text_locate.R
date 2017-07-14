@@ -17,7 +17,7 @@ text_count <- function(x, terms, filter = token_filter())
 {
     x <- as_text(x)
     terms <- as_character_vector("terms", terms)
-    filter <- as_token_filter(filter)
+    filter <- as_filter("filter", filter)
     .Call(C_text_count, x, terms, filter)
 }
 
@@ -26,7 +26,7 @@ text_detect <- function(x, terms, filter = token_filter())
 {
     x <- as_text(x)
     terms <- as_character_vector("terms", terms)
-    filter <- as_token_filter(filter)
+    filter <- as_filter("filter", filter)
     .Call(C_text_detect, x, terms, filter)
 }
 
@@ -36,7 +36,7 @@ text_locate <- function(x, terms, filter = token_filter())
     x <- as_text(x)
     nm <- names(x)
     terms <- as_character_vector("terms", terms)
-    filter <- as_token_filter(filter)
+    filter <- as_filter("filter", filter)
     ans <- .Call(C_text_locate, x, terms, filter)
     if (!is.null(nm)) {
         ans$text <- nm[ans$text]

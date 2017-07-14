@@ -115,13 +115,22 @@ as_enum <- function(name, value, choices)
 }
 
 
-as_filter <- function(units, filter)
+as_filter <- function(name, filter)
 {
-    if (units == "sentences") {
-        as_sentence_filter(filter)
-    } else {
-        as_token_filter(filter)
+    if (is.null(filter)) {
+        return(NULL)
     }
+
+    if (!is.list(filter)) {
+        stop(sprintf("'%s' must be a text filter, list, or NULL", name))
+    }
+
+    ans <- structure(list(), class = "corpus_text_filter")
+    keys <- names(text_filter())
+    for (key in keys) {
+        ans[[key]] <- filter[[key]]
+    }
+    ans
 }
 
 
