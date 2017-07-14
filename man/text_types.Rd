@@ -6,14 +6,14 @@
     Get or measure the set of types (unique token values).
 }
 \usage{
-    text_types(x, filter = token_filter(), collapse = FALSE)
+    text_types(x, filter = text_filter(x), collapse = FALSE)
 
-    text_ntype(x, filter = token_filter(), collapse = FALSE)
+    text_ntype(x, filter = text_filter(x), collapse = FALSE)
 }
 \arguments{
     \item{x}{a text or character vector.}
 
-    \item{filter}{a token filter defining the token boundaries and
+    \item{filter}{a text filter defining the token boundaries and
         normalization.}
 
     \item{collapse}{a logical value indicating whether to collapse the
@@ -38,7 +38,7 @@
     vector with the unique types.
 }
 \seealso{
-    \code{\link{token_filter}}, \code{\link{text_tokens}}.
+    \code{\link{text_filter}}, \code{\link{text_tokens}}.
 }
 \examples{
     text <- c("I saw Mr. Jones today.",

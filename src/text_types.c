@@ -48,14 +48,14 @@ struct types_context {
 
 
 static void types_context_init(struct types_context *ctx, SEXP sx,
-			       SEXP sfilter, SEXP scollapse)
+			       SEXP scollapse)
 {
 	const struct corpus_text *text;
 	R_xlen_t i, n, g, ngroup;
 	int err = 0;
 
 	text = as_text(sx, &n);
-	ctx->filter = as_filter(sfilter);
+	ctx->filter = text_filter(sx);
 
 	ctx->collapse = LOGICAL(scollapse)[0] == TRUE;
 	ngroup = ctx->collapse ? 1 : n;
@@ -114,21 +114,23 @@ static void types_context_destroy(void *obj)
 }
 
 
-SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP scollapse)
+SEXP text_ntype(SEXP sx, SEXP scollapse)
 {
 	SEXP ans, sctx;
 	struct types_context *ctx;
 	double *count;
 	R_xlen_t g;
+	int nprot = 0;
 
-	PROTECT(sx = coerce_text(sx));
-	PROTECT(sfilter = alloc_filter(sfilter));
+	PROTECT(sx = coerce_text(sx)); nprot++;
 
 	PROTECT(sctx = alloc_context(sizeof(*ctx), types_context_destroy));
-	ctx = as_context(sctx);
-	types_context_init(ctx, sx, sfilter, scollapse);
+	nprot++;
 
-	PROTECT(ans = allocVector(REALSXP, ctx->ngroup));
+	ctx = as_context(sctx);
+	types_context_init(ctx, sx, scollapse);
+
+	PROTECT(ans = allocVector(REALSXP, ctx->ngroup)); nprot++;
 	setAttrib(ans, R_NamesSymbol, ctx->names);
 	count = REAL(ans);
 
@@ -143,12 +145,12 @@ SEXP text_ntype(SEXP sx, SEXP sfilter, SEXP scollapse)
 	}
 
 	free_context(sctx);
-	UNPROTECT(4);
+	UNPROTECT(nprot);
 	return ans;
 }
 
 
-SEXP text_types(SEXP sx, SEXP sfilter, SEXP scollapse)
+SEXP text_types(SEXP sx, SEXP scollapse)
 {
 	SEXP ans, sctx, set;
 	const struct corpus_text *type;
@@ -159,12 +161,11 @@ SEXP text_types(SEXP sx, SEXP sfilter, SEXP scollapse)
 	int i, n, type_id, nprot = 0;
 
 	PROTECT(sx = coerce_text(sx)); nprot++;
-	PROTECT(sfilter = alloc_filter(sfilter)); nprot++;
 
 	PROTECT(sctx = alloc_context(sizeof(*ctx), types_context_destroy));
 	nprot++;
 	ctx = as_context(sctx);
-	types_context_init(ctx, sx, sfilter, scollapse);
+	types_context_init(ctx, sx, scollapse);
 
 	mkchar_init(&mkchar);
 

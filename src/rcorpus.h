@@ -247,11 +247,11 @@ SEXP text_filter_update(SEXP x);
 SEXP text_locate(SEXP x, SEXP terms, SEXP filter);
 SEXP text_nsentence(SEXP x, SEXP filter);
 SEXP text_ntoken(SEXP x);
-SEXP text_ntype(SEXP x, SEXP filter, SEXP collapse);
+SEXP text_ntype(SEXP x, SEXP collapse);
 SEXP text_split_sentences(SEXP x, SEXP size, SEXP filter);
 SEXP text_split_tokens(SEXP x, SEXP size, SEXP filter);
 SEXP text_tokens(SEXP x);
-SEXP text_types(SEXP x, SEXP filter, SEXP collapse);
+SEXP text_types(SEXP x, SEXP collapse);
 SEXP term_counts_text(SEXP x, SEXP props, SEXP weights, SEXP ngrams,
 		      SEXP min_count, SEXP max_count, SEXP min_support,
 		      SEXP max_support, SEXP output_types);
