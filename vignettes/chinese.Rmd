@@ -149,7 +149,7 @@ and examine term frequencies
 ⋮
 (11572 rows total)
 ```
-These operations all use `text_filter(data)` value we set above to determine
+These operations all use the `text_filter(data)` value we set above to determine
 the token and sentence boundaries.
 
 

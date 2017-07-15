@@ -86,7 +86,7 @@ and examine term frequencies
 ```{r}
 (stats <- term_counts(data))
 ```
-These operations all use `text_filter(data)` value we set above to determine
+These operations all use the `text_filter(data)` value we set above to determine
 the token and sentence boundaries.
 
 
