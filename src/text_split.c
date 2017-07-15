@@ -238,7 +238,7 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 	R_xlen_t i, n;
 	size_t attr, size;
 	double s, block_size;
-	int nprot, err;
+	int nprot, err = 0;
 
 	nprot = 0;
 

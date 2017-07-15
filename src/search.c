@@ -91,7 +91,7 @@ SEXP alloc_search(SEXP sterms, const char *name, struct corpus_filter *filter)
 	struct corpus_search *obj;
 	struct termset *termset;
 	int i, n;
-	int err, nprot;
+	int err = 0, nprot;
 
 	nprot = 0;
 
