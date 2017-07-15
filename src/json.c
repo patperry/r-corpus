@@ -908,6 +908,8 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
 
+	err = 0;
+
 	UNPROTECT(2);
 out:
 	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64
