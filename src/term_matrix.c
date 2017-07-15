@@ -66,9 +66,9 @@ static void context_init(struct context *ctx, SEXP sngrams,
 	ctx->has_render = 1;
 
 	if (sngrams != R_NilValue) {
+		n = XLENGTH(sngrams);
 		ngrams = INTEGER(sngrams);
 		ngram_max = 1;
-		n = XLENGTH(sngrams);
 
 		for (i = 0; i < n; i++) {
 			if (ngrams[i] > ngram_max) {
@@ -76,6 +76,7 @@ static void context_init(struct context *ctx, SEXP sngrams,
 			}
 		}
 	} else {
+		n = 0;
 		ngrams = NULL;
 		ngram_max = select ? select->max_length : 1;
 	}
