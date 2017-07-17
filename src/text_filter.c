@@ -133,6 +133,10 @@ static int filter_flags(SEXP filter)
 		flags |= CORPUS_FILTER_DROP_OTHER;
 	}
 
+	if (filter_logical(filter, "drop_url", 0)) {
+		flags |= CORPUS_FILTER_DROP_URL;
+	}
+
 	return flags;
 }
 

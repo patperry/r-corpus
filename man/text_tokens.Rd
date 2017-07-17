@@ -28,11 +28,11 @@
             \href{http://unicode.org/reports/tr29/#Word_Boundaries}{Unicode
                 Standard Annex #29, Section 4}. We categorize each word as
             \code{"letter"}, \code{"mark"}, \code{"number"},
-            \code{"punct"}, \code{"symbol"}, or \code{"other"} according
-            to the first character in the word.  For words with two or
-            more characters that start with extenders like underscore
-            (\code{_}), we use the second character in the word to
-            categorize it, treating a second extender as a letter.
+            \code{"punct"}, \code{"symbol"}, \code{"other"} or
+            \code{"url"} according to the first character in the word.
+            For words with two or more characters that start with extenders
+            like underscore (\code{_}), we use the second character in
+            the word to categorize it, treating a second extender as a letter.
 
         \item Next, we normalize the remaining words by applying the
             character mappings indicated by the \code{map_case},
@@ -59,8 +59,8 @@
 
         \item If any of \code{drop_letter}, \code{drop_mark},
             \code{drop_number}, \code{drop_punct}, \code{drop_symbol},
-            or \code{drop_other} are \code{TRUE}, we replace the tokens
-            with values in the corresponding categories by \code{NA}.
+            \code{drop_other}, or \code{drop_url} are \code{TRUE}, we replace
+            the tokens with values in the corresponding categories by \code{NA}.
             (For multi-word types created by the \code{combine} step,
             we take the category of the first word in the phrase.)
             Then, if the \code{drop} property is non-\code{NULL}, we replace
@@ -100,7 +100,7 @@
     For English, this likely only affects words ending in \code{".s"}.
 }
 \section{Combining words}{
-    The \code{combine} property of a \code{token_filter} enables
+    The \code{combine} property of a \code{text_filter} enables
     transformations that combine two or more words into a single token. For
     example, specifying \code{combine = "new york"} will
     cause consecutive instances of the words \code{new} and \code{york}
