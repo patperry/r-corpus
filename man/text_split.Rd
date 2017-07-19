@@ -68,11 +68,10 @@
     text block. The columns are as follows:
 
     \enumerate{
-        \item If \code{as_text(x)} has names, then the
-            \code{parent} column is a character vector giving the name of
-            the parent text for each sentences. Otherwise, if
-            \code{as_text(x)} does not have names, then the \code{parent}
-            value is the integer index of the parent text.
+        \item The \code{parent} column is a factor. The levels of this
+          factor are the names of \code{as_text(x)}. Calling
+          \code{as.integer} on the parent column gives the indices of
+          the parent texts for the parent text for each sentence.
 
         \item The \code{index} column gives the integer index of the
             sentence in its parent.
