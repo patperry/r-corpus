@@ -7,7 +7,7 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
     f <- text_filter(sent_suppress = NULL)
 
     expect_equal(text_split(text, "sentences", filter = f),
-        data.frame(parent = c(1L, 1L, 2L, 2L),
+        data.frame(parent = factor(c("1", "1", "2", "2")),
                    index  = c(1L, 2L, 1L, 2L),
                    text   = as_text(c("He said, 'Are you going?' ",
                                       "John Shook his head.",
@@ -22,7 +22,7 @@ test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
               "etc.)' '(the")
     f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split(text, "sentences", filter = f),
-        data.frame(parent = c(1L, 2L, 3L, 4L, 5L),
+        data.frame(parent = factor(c("1", "2", "3", "4", "5")),
                    index  = c(1L, 1L, 1L, 1L, 1L),
                    text   = as_text(c("c.d", "3.4", "U.S.",
                                       "the resp. leaders are",
@@ -37,7 +37,7 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
               "\u7406\u6570\u5b57.\u5b83\u4eec\u6307")
     f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split(text, "sentences", filter = f),
-        data.frame(parent = c(1L, 1L, 2L, 2L, 3L, 3L),
+        data.frame(parent = factor(c("1", "1", "2", "2", "3", "3")),
                    index  = c(1L, 2L, 1L, 2L, 1L, 2L),
                    text   = as_text(c("She said 'See spot run.'  ",
                                       "John shook his head.",
@@ -52,21 +52,22 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
 test_that("'sentences' cannot handle abbreviations without suppressions", {
     f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split("Mr. Jones", "sentences", filter = f),
-        data.frame(parent = c(1L, 1L), index = c(1L, 2L),
+        data.frame(parent = factor(c("1", "1")), index = c(1L, 2L),
                    text = as_text(c("Mr. ", "Jones"), filter = f)))
 })
 
 
 test_that("'sentences' works on length-0 arguments values", {
     expect_equal(text_split(c(), "sentences"),
-        data.frame(parent = numeric(), index = integer(),
+        data.frame(parent = factor(c()), index = integer(),
                    text = as_text(c())))
 })
 
 
 test_that("'sentences' works on empty and missing values", {
     expect_equal(text_split(c("1", "2", NA, "", "5"), "sentences"),
-        data.frame(parent = c(1L, 2L, 4L, 5L),
+        data.frame(parent = factor(c("1", "2", "4", "5"),
+                                   levels = as.character(1:5)),
                    index  = c(1L, 1L, 1L, 1L),
                    text   = as_text(c("1", "2", "", "5"))))
 })
@@ -76,7 +77,9 @@ test_that("'sentences' uses names if its argument has them", {
     text <- as_text(c(a="First sentence. Second.", b="Third sentence!"))
     sents <- text_split(text, "sentences")
     expect_equal(sents,
-        data.frame(parent = c("a", "a", "b"), index = c(1L, 2L, 1L),
+        data.frame(parent = factor(c("a", "a", "b"),
+                                   levels = c("a", "b")),
+                   index = c(1L, 2L, 1L),
                    text = as_text(c("First sentence. ", "Second.",
                                     "Third sentence!")),
                    stringsAsFactors = FALSE))

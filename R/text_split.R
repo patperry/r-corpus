@@ -29,9 +29,12 @@ text_split <- function(x, units = "sentences", size = 1,
         ans <- .Call(C_text_split_tokens, x, size)
     }
 
-    nm <- names(x)
-    if (!is.null(nm)) {
-        ans$parent <- nm[ans$parent]
+    parent_names <- names(x)
+    if (is.null(parent_names)) {
+        parent_names <-  as.character(seq_along(x))
     }
+
+    ans$parent <- structure(as.integer(ans$parent), class = "factor",
+                            levels = parent_names)
     ans
 }
