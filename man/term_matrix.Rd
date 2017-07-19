@@ -11,8 +11,7 @@
                 transpose = FALSE)
 
     term_frame(x, filter = text_filter(x), weights = NULL,
-               ngrams = NULL, select = NULL, group = NULL,
-               factors = TRUE)
+               ngrams = NULL, select = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
@@ -35,10 +34,6 @@
 
     \item{transpose}{a logical value indicating whether to transpose the
         result, putting terms as rows instead of columns.}
-
-    \item{factors}{a logical value indicating whether to return the
-        \code{"text"}, \code{"group"}, and \code{"term"} columns as
-        factors instead of character strings.}
 }
 \details{
     \code{term_matrix} tokenizes a set of texts and computes the occurrence
@@ -72,21 +67,16 @@
 
     \code{term_frame} with \code{group = NULL} returns a data frame with one
     row for each entry of the term matrix, and columns \code{"text"},
-    \code{"term"}, and \code{"count"} giving the text ID, term, and count. If
-    \code{names(as_text(x))} is non-\code{NULL}, then the text ID is taken
-    as its name; otherwise, the text ID is an integer giving its row index
-    in \code{x}.
+    \code{"term"}, and \code{"count"} giving the text ID, term, and count.
+    The \code{"term"} column is a character vector.  The \code{"text"}
+    column is a factor with levels equal to \code{names(as_text(x))};
+    calling \code{as.integer} on the \code{"text"} column converts from
+    the factor values to the integer row index in the term matrix.
 
     \code{term_frame} with \code{group} non-\code{NULL} behaves similarly,
     but the result instead has columns named \code{"group"}, \code{"term"},
     and \code{"count"}, with \code{"group"} giving the grouping level, as
-    a character string.
-
-    With \code{factors = TRUE} (the default), \code{term_frame} returns
-    the \code{"text"}, \code{"group"}, and \code{"term"} columns as factors
-    with levels equal to the row or column names of the corresponding
-    term matrix; calling \code{as.integer} on these columns converts from
-    the factor values to the integer indices into the term matrix.
+    a factor.
 }
 \seealso{
     \code{\link{text_tokens}}, \code{\link{term_counts}}.

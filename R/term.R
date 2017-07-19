@@ -99,12 +99,10 @@ term_matrix <- function(x, filter = text_filter(x), weights = NULL,
 
 
 term_frame <- function(x, filter = text_filter(x), weights = NULL,
-                       ngrams = NULL, select = NULL, group = NULL,
-                       factors = TRUE)
+                       ngrams = NULL, select = NULL, group = NULL)
 {
     with_rethrow({
         mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
-        factors <- as_option("factors", factors)
     })
 
     row_names <- mat$row_names
@@ -116,12 +114,8 @@ term_frame <- function(x, filter = text_filter(x), weights = NULL,
                      levels = row_names)
     term <- structure(as.integer(mat$j + 1L), class = "factor",
                       levels = mat$col_names)
+    term <- as.character(term)
     count <- mat$count
-
-    if (!factors) {
-        row <- as.character(row)
-        term <- as.character(term)
-    }
 
     if (is.null(group)) {
         ans <- data.frame(text = row, term, count, stringsAsFactors = FALSE)

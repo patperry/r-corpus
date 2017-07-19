@@ -179,10 +179,10 @@ test_that("'term_frame' gives equivalent results to 'term_matrix'", {
     x <- term_matrix(text)
     tf <- term_frame(text)
     xtf <- Matrix::sparseMatrix(i = as.integer(tf$text),
-                                j = as.integer(tf$term),
+                                j = as.integer(factor(tf$term, levels = colnames(x))),
                                 x = tf$count,
                                 dimnames = list(levels(tf$text),
-                                                levels(tf$term)))
+                                                colnames(x)))
     expect_equal(x, xtf)
 })
 
@@ -195,22 +195,11 @@ test_that("'term_frame' gives equivalent results to 'term_matrix' no names", {
     rownames(x) <- as.character(seq_along(text))
     tf <- term_frame(text)
     xtf <- Matrix::sparseMatrix(i = as.integer(tf$text),
-                                j = as.integer(tf$term),
+                                j = as.integer(factor(tf$term, levels = colnames(x))),
                                 x = tf$count,
                                 dimnames = list(levels(tf$text),
-                                                levels(tf$term)))
+                                                colnames(x)))
     expect_equal(x, xtf)
-})
-
-
-test_that("'term_frame' can return character columns", {
-    text <- c("A rose is a rose is a rose.",
-              "A Rose is red, a violet is blue!",
-              "A rose by any other name would smell as sweet.")
-    tf <- term_frame(text)
-    tf2 <- term_frame(text, factors = FALSE)
-    expect_equal(tf2$text, as.character(tf$text))
-    expect_equal(tf2$term, as.character(tf$term))
 })
 
 
@@ -222,9 +211,9 @@ test_that("'term_frame' with group gives equivalent results to 'term_matrix'", {
     x <- term_matrix(text, group = g)
     tf <- term_frame(text, group = g)
     xtf <- Matrix::sparseMatrix(i = as.integer(tf$group),
-                                j = as.integer(tf$term),
+                                j = as.integer(factor(tf$term, levels = colnames(x))),
                                 x = tf$count,
                                 dimnames = list(levels(tf$group),
-                                                levels(tf$term)))
+                                                colnames(x)))
     expect_equal(x, xtf)
 })
