@@ -125,7 +125,7 @@
 \details{
     The set of properties in a text filter determine the tokenization
     and sentence breaking rules. See the documentation for
-    \code{\link{text_tokens}} and \code{\link{text_split}} for detailsx
+    \code{\link{text_tokens}} and \code{\link{text_split}} for details
     on the tokenization process.
 }
 \value{
