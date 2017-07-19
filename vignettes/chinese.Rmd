@@ -94,6 +94,7 @@ Text filter with the following options:
 	drop_symbol: FALSE
 	drop_punct: TRUE
 	drop_other: FALSE
+	drop_url: FALSE
 	drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
 	drop_except: NULL
 	sent_crlf: FALSE
@@ -115,9 +116,9 @@ head(data.frame(text = data$name,
                      text types tokens sentences
 1 1954政府工作报告_周恩来  2023   8694       453
 2 1955政府工作报告_李富春  2780  21079       981
-3 1956政府工作报告_李先念  1336   8821       495
+3 1956政府工作报告_李先念  1338   9077       495
 4 1957政府工作报告_周恩来  2331  13007       704
-5 1958政府工作报告_薄一波  1969   9346       412
+5 1958政府工作报告_薄一波  1970   9347       412
 6 1959政府工作报告_周恩来  2261  11638       577
 ```
 and examine term frequencies
@@ -147,7 +148,7 @@ and examine term frequencies
 17 化    1740      49
 18 继续  1670      49
 ⋮
-(11572 rows total)
+(11574 rows total)
 ```
 These operations all use the `text_filter(data)` value we set above to determine
 the token and sentence boundaries.
@@ -207,7 +208,7 @@ term_counts(subset) # count the word occurrences
 17 加快   230     225
 18 化     261     224
 ⋮
-(3879 rows total)
+(3880 rows total)
 ```
 The first term is the search query. It appears 2931 times in the corpus,
 in 2457 different sentences. The second term in the list appears in
