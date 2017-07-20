@@ -26,7 +26,7 @@ clean:
 	rm -rf $(BUILT_VIGNETTES)
 
 check: $(CORPUS_LIB)
-	$(RSCRIPT) -e 'Sys.setlocale(locale = "C"); devtools::test(".")'
+	$(RSCRIPT) -e 'devtools::test(".")'
 
 dist: $(BUILT_VIGNETTES) README
 	mkdir -p dist && cd dist && R CMD build ..

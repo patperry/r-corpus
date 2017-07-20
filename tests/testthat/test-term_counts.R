@@ -26,14 +26,14 @@ test_that("'term_counts' can use weights", {
            "A Rose is red, a violet is blue!")
     weights <- c(100, 1)
 
+    term <- c("a", "rose", "is", ".", "!", ",", "blue", "red", "violet")
+    count <- c(302, 301, 202, 100, 1, 1, 1, 1, 1)
+    support <- c(101, 101, 101, 100, 1, 1, 1, 1, 1)
+    o <- order(-support, -count, term)
+
     expect_equal(term_counts(x, weights = weights),
-                 structure(data.frame(term = c("a", "rose", "is", ".",
-                                               "!", ",", "blue", "red",
-                                               "violet"),
-                                      count = c(302, 301, 202, 100, 1,
-                                                1, 1, 1, 1),
-                                      support = c(101, 101, 101, 100, 1,
-                                                  1, 1, 1, 1),
+                 structure(data.frame(term = term[o], count = count[o],
+                                      support = support[o],
                                       stringsAsFactors = FALSE),
                            class = c("corpus_frame", "data.frame")))
 })
