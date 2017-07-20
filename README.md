@@ -98,7 +98,7 @@ use the following functions:
 All *corpus* functions that need to tokenize text accept an argument named
 `"filter"`, expecting a `corpus_token_filter` value that allows you to specify
 the process by which raw a text gets transformed into a token sequence. The
-default token filter case folds the text, removes Unicode default ignorable
+default text filter case folds the text, removes Unicode default ignorable
 characters like zero-width spaces, applies character compatibility maps
 and converts to Unicode normalized composed form ([NFKC][nfkc]), and combines
 English abbreviations like `"Ms."` into single tokens (for other words,
