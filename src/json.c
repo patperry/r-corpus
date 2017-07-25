@@ -647,11 +647,12 @@ SEXP as_double_json(SEXP sdata)
 	const struct json *d = as_json(sdata);
 	double *val;
 	R_xlen_t i, n = d->nrow;
-	int err, overflow;
+	int err, overflow, underflow;
 
 	PROTECT(ans = allocVector(REALSXP, n));
 	val = REAL(ans);
 	overflow = 0;
+	underflow = 0;
 
 	for (i = 0; i < n; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
@@ -659,13 +660,21 @@ SEXP as_double_json(SEXP sdata)
 		err = corpus_data_double(&d->rows[i], &val[i]);
 		if (err == CORPUS_ERROR_INVAL) {
 			val[i] = NA_REAL;
-		} else if (err == CORPUS_ERROR_OVERFLOW) {
-			overflow = 1;
+		} else if (err == CORPUS_ERROR_RANGE) {
+			if (val[i] == 0) {
+				underflow = 1;
+			} else {
+				overflow = 1;
+			}
 		}
 	}
 
 	if (overflow) {
 		warning("Inf introduced by coercion to double-precision range");
+	}
+
+	if (underflow) {
+		warning("0 introduced by coercion to double-precision range");
 	}
 
 	UNPROTECT(1);
@@ -692,7 +701,7 @@ static SEXP as_integer_json_check(SEXP sdata, int *overflowptr)
 		if (err == CORPUS_ERROR_INVAL) {
 			val[i] = NA_INTEGER;
 		} else {
-			if (err == CORPUS_ERROR_OVERFLOW
+			if (err == CORPUS_ERROR_RANGE
 					|| val[i] == NA_INTEGER) {
 				overflow = 1;
 				val[i] = NA_INTEGER;
@@ -948,6 +957,10 @@ SEXP as_list_json(SEXP sdata, SEXP stext)
 
 	if (decode.overflow) {
 		warning("Inf introduced by coercion to double-precision range");
+	}
+
+	if (decode.underflow) {
+		warning("0 introduced by coercion to double-precision range");
 	}
 
 	UNPROTECT(1);

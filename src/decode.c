@@ -24,7 +24,8 @@
 
 static int logical_data(const struct corpus_data *d);
 static int integer_data(const struct corpus_data *d, int *overflowptr);
-static double real_data(const struct corpus_data *d, int *overflowptr);
+static double real_data(const struct corpus_data *d, int *overflowptr,
+			int *underflowptr);
 static SEXP charsxp_data(const struct corpus_data *d, struct mkchar *mk);
 static SEXP decode_array(struct decode *d, const struct corpus_data *val,
 			 const struct corpus_schema *s);
@@ -36,6 +37,7 @@ void decode_init(struct decode *d)
 {
 	mkchar_init(&d->mkchar);
 	decode_set_overflow(d, 0);
+	decode_set_underflow(d, 0);
 }
 
 
@@ -43,6 +45,14 @@ int decode_set_overflow(struct decode *d, int overflow)
 {
 	int old = d->overflow;
 	d->overflow = overflow;
+	return old;
+}
+
+
+int decode_set_underflow(struct decode *d, int underflow)
+{
+	int old = d->underflow;
+	d->underflow = underflow;
 	return old;
 }
 
@@ -68,9 +78,13 @@ int decode_integer(struct decode *d, const struct corpus_data *val)
 double decode_real(struct decode *d, const struct corpus_data *val)
 {
 	int overflow = 0;
-	double x = real_data(val, &overflow);
+	int underflow = 0;
+	double x = real_data(val, &overflow, &underflow);
 	if (overflow) {
 		d->overflow = overflow;
+	}
+	if (underflow) {
+		d->underflow = underflow;
 	}
 	return x;
 }
@@ -160,7 +174,7 @@ int integer_data(const struct corpus_data *d, int *overflowptr)
 	err = corpus_data_int(d, &i);
 	if (err == CORPUS_ERROR_INVAL) {
 		ans = NA_INTEGER;
-	} else if (err == CORPUS_ERROR_OVERFLOW || i == NA_INTEGER) {
+	} else if (err == CORPUS_ERROR_RANGE || i == NA_INTEGER) {
 		ans = NA_INTEGER;
 		overflow = 1;
 	} else {
@@ -175,25 +189,35 @@ int integer_data(const struct corpus_data *d, int *overflowptr)
 }
 
 
-double real_data(const struct corpus_data *d, int *overflowptr)
+double real_data(const struct corpus_data *d, int *overflowptr,
+		 int *underflowptr)
 {
 	double ans, r;
 	int err;
 	int overflow;
+	int underflow;
 
 	overflow = 0;
+	underflow = 0;
 	err = corpus_data_double(d, &r);
 	if (err == CORPUS_ERROR_INVAL) {
 		ans = NA_REAL;
 	} else {
-		if (err == CORPUS_ERROR_OVERFLOW) {
-			overflow = 1;
+		if (err == CORPUS_ERROR_RANGE) {
+			if (r == 0) {
+				underflow = 1;
+			} else {
+				overflow = 1;
+			}
 		}
 		ans = r;
 	}
 
 	if (overflowptr) {
 		*overflowptr = overflow;
+	}
+	if (underflowptr) {
+		*underflowptr = underflow;
 	}
 
 	return ans;

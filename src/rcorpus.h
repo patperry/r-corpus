@@ -78,6 +78,12 @@
 		case CORPUS_ERROR_OVERFLOW: \
 			Rf_error(fmt sep "overflow error", __VA_ARGS__); \
 			break; \
+		case CORPUS_ERROR_DOMAIN: \
+			Rf_error(fmt sep "domain error", __VA_ARGS__); \
+			break; \
+		case CORPUS_ERROR_RANGE: \
+			Rf_error(fmt sep "range error", __VA_ARGS__); \
+			break; \
 		case CORPUS_ERROR_INTERNAL: \
 			Rf_error(fmt sep "internal error", __VA_ARGS__); \
 			break; \
@@ -111,6 +117,7 @@ struct mkchar {
 struct decode {
 	struct mkchar mkchar;
 	int overflow;
+	int underflow;
 };
 
 struct json {
@@ -153,6 +160,7 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text);
 /* converting data to R values */
 void decode_init(struct decode *d);
 int decode_set_overflow(struct decode *d, int overflow);
+int decode_set_underflow(struct decode *d, int underflow);
 
 int decode_logical(struct decode *d, const struct corpus_data *val);
 int decode_integer(struct decode *d, const struct corpus_data *val);

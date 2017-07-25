@@ -148,6 +148,28 @@ test_that("reading double vector with overflow works", {
 })
 
 
+test_that("reading double array with underflow works", {
+    file <- tempfile()
+    writeLines(c("[1e-999999, -1e-9999999]"), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_warning((y <- as.list(ds)),
+                   "0 introduced by coercion to double-precision range",
+                   fixed = TRUE)
+    expect_equal(y, list(c(0, -0)))
+})
+
+
+test_that("reading double vector with underflow works", {
+    file <- tempfile()
+    writeLines(c("1e-999999", "-1e-9999999", "null", "0"), file)
+    ds <- read_ndjson(file, simplify = FALSE)
+    expect_warning((y <- as.numeric(ds)),
+                   "0 introduced by coercion to double-precision range",
+                   fixed = TRUE)
+    expect_equal(y, c(0, -0, NA, 0))
+})
+
+
 test_that("reading integer array works", {
     x <- list(c(4L,-1L,2L), integer(), integer(), c(1L, 1L, 2L, 3L, 5L))
     file <- tempfile()
