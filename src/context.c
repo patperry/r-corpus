@@ -60,15 +60,13 @@ SEXP alloc_context(size_t size, void (*destroy_func)(void *))
 	ctx->data = obj;
 	ctx->destroy_func = destroy_func;
         R_SetExternalPtrAddr(ans, ctx);
-
 	ctx = NULL;
 	obj = NULL;
-	UNPROTECT(1);
 out:
 	corpus_free(ctx);
 	corpus_free(obj);
 	CHECK_ERROR(err);
-
+	UNPROTECT(1);
 	return ans;
 }
 
