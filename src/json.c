@@ -89,9 +89,10 @@ SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 {
 	SEXP ans = R_NilValue, sclass, shandle, snames;
 	struct json *obj = NULL;
-	int err = 0;
+	int err = 0, nprot = 0;
 
 	PROTECT(shandle = R_MakeExternalPtr(NULL, JSON_TAG, R_NilValue));
+	nprot++;
 	R_RegisterCFinalizerEx(shandle, free_json, TRUE);
 
 	TRY_ALLOC(obj = corpus_malloc(sizeof(*obj)));
@@ -105,27 +106,27 @@ SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 	R_SetExternalPtrAddr(shandle, obj);
 	obj = NULL;
 
-	PROTECT(ans = allocVector(VECSXP, 4));
+	PROTECT(ans = allocVector(VECSXP, 4)); nprot++;
 	SET_VECTOR_ELT(ans, 0, shandle);
 	SET_VECTOR_ELT(ans, 1, sbuffer);
 	SET_VECTOR_ELT(ans, 2, sfield);
 	SET_VECTOR_ELT(ans, 3, srows);
 
-	PROTECT(snames = allocVector(STRSXP, 4));
+	PROTECT(snames = allocVector(STRSXP, 4)); nprot++;
 	SET_STRING_ELT(snames, 0, mkChar("handle"));
 	SET_STRING_ELT(snames, 1, mkChar("buffer"));
 	SET_STRING_ELT(snames, 2, mkChar("field"));
 	SET_STRING_ELT(snames, 3, mkChar("rows"));
 	setAttrib(ans, R_NamesSymbol, snames);
 
-	PROTECT(sclass = allocVector(STRSXP, 1));
+	PROTECT(sclass = allocVector(STRSXP, 1)); nprot++;
 	SET_STRING_ELT(sclass, 0, mkChar("corpus_json"));
 	setAttrib(ans, R_ClassSymbol, sclass);
 
-	UNPROTECT(4);
 out:
 	corpus_free(obj);
 	CHECK_ERROR(err);
+	UNPROTECT(nprot);
 	return ans;
 }
 
@@ -269,11 +270,11 @@ static void json_load(SEXP sdata)
 	R_SetExternalPtrAddr(sparent_handle, NULL);
 	free_json(shandle);
 	R_SetExternalPtrAddr(shandle, obj);
-	UNPROTECT(1);
 
 out:
 	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64" of JSON data",
 			   (uint64_t)(nrow + 1));
+	UNPROTECT(1);
 }
 
 
@@ -527,10 +528,10 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	obj2->type_id = type_id;
 	obj2->kind = (type_id < 0 ? CORPUS_DATATYPE_ANY
 				  : obj2->schema.types[type_id].kind);
-	UNPROTECT(2);
 out:
 	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64" of JSON file",
 			   (uint64_t)(irows[i] + 1));
+	UNPROTECT(2);
 	return ans;
 }
 
@@ -545,7 +546,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	size_t name_len;
 	struct json *obj2;
 	R_xlen_t i, n;
-	int err = 0, j, m, name_id, type_id;
+	int err = 0, nprot = 0, j, m, name_id, type_id;
 
 	if (sname == R_NilValue) {
 		return sdata;
@@ -554,12 +555,12 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 
 	name_ptr = translateCharUTF8(sname);
 	name_len = strlen(name_ptr);
-	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8));
+	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8)); nprot++;
 	TRY(corpus_text_assign(&name, (uint8_t *)name_ptr, name_len,
 			       CORPUS_TEXT_NOESCAPE));
 
 	if (!corpus_symtab_has_type(&obj->schema.names, &name, &name_id)) {
-		UNPROTECT(1);
+		UNPROTECT(nprot);
 		return R_NilValue;
 	}
 
@@ -573,14 +574,14 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 		m = LENGTH(sfield);
 	}
 
-	PROTECT(sfield2 = allocVector(STRSXP, m + 1));
+	PROTECT(sfield2 = allocVector(STRSXP, m + 1)); nprot++;
 	for (j = 0; j < m; j++) {
 		RCORPUS_CHECK_INTERRUPT(j);
 		SET_STRING_ELT(sfield2, j, STRING_ELT(sfield, j));
 	}
 	SET_STRING_ELT(sfield2, m, sname);
 
-	PROTECT(ans = alloc_json(sbuffer, sfield2, srows));
+	PROTECT(ans = alloc_json(sbuffer, sfield2, srows)); nprot++;
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -606,10 +607,10 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	obj2->type_id = type_id;
 	obj2->kind = (type_id < 0 ? CORPUS_DATATYPE_ANY
 				  : obj2->schema.types[type_id].kind);
-
-	UNPROTECT(3);
+	err = 0;
 out:
 	CHECK_ERROR(err);
+	UNPROTECT(nprot);
 	return ans;
 }
 
@@ -918,12 +919,11 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	}
 
 	err = 0;
-
-	UNPROTECT(2);
 out:
 	CHECK_ERROR_FORMAT(err, "failed parsing row %"PRIu64
 			   ", field %d of JSON data", (uint64_t)(i + 1),
 			   j + 1);
+	UNPROTECT(2);
 	return ans;
 }
 
