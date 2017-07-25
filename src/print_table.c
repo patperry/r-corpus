@@ -272,6 +272,12 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 		}
 	}
 
+	if (ncol == 0) {
+		nprint = print_range(sx, 0, 0, print_gap, right, max,
+				     is_stdout, namewidth, NULL);
+		goto out;
+	}
+
 	colwidths = (void *)R_alloc(ncol, sizeof(*colwidths));
 	memset(colwidths, 0, ncol * sizeof(*colwidths));
 	if (col_names != R_NilValue) {
@@ -341,11 +347,6 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 		begin = end;
 	}
 
-	if (ncol == 0) {
-		nprint += print_range(sx, 0, 0, print_gap, right,
-				      max - nprint, is_stdout, namewidth,
-				      colwidths);
-	}
-
+out:
 	return ScalarInteger(nprint);
 }
