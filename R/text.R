@@ -53,6 +53,9 @@ as_text.corpus_text <- function(x, filter = text_filter(x), ...)
     if (!is_text(x)) {
         stop("argument is not a valid text object")
     }
+    with_rethrow({
+        filter <- as_filter("filter", filter)
+    })
 
     attrs <- attributes(x)
     for (a in names(attrs)) {
