@@ -226,6 +226,7 @@ SEXP subset_text_handle(SEXP handle, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
+SEXP text_c(SEXP args);
 SEXP text_valid(SEXP x);
 
 /* search */

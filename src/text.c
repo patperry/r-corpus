@@ -332,7 +332,7 @@ SEXP as_text_character(SEXP x)
 	filter = R_NilValue;
 
 	PROTECT(ans = alloc_text(sources, source, row, start, stop, names,
-				filter));
+				 filter));
 	nprot++;
 
 	handle = getListElement(ans, "handle");
@@ -513,15 +513,20 @@ static void load_text(SEXP x)
 		switch (sources[s].type) {
 		case SOURCE_CHAR:
 			str = STRING_ELT(sources[s].data.chars, j);
-			ptr = (const uint8_t *)CHAR(str);
-			len = XLENGTH(str);
-			flags = CORPUS_TEXT_NOESCAPE;
-			err = corpus_text_assign(&txt, ptr, len, flags);
-			if (err) {
-				error("character object in source %d"
-				      " at index %"PRIu64
-				      " contains invalid UTF-8",
-				      s + 1, (uint64_t)(j + 1));
+			if (str == NA_STRING) {
+				txt.ptr = NULL;
+				txt.attr = 0;
+			} else {
+				ptr = (const uint8_t *)CHAR(str);
+				len = XLENGTH(str);
+				flags = CORPUS_TEXT_NOESCAPE;
+				err = corpus_text_assign(&txt, ptr, len, flags);
+				if (err) {
+					error("character object in source %d"
+					      " at index %"PRIu64
+					      " contains invalid UTF-8",
+					      s + 1, (uint64_t)(j + 1));
+				}
 			}
 			break;
 

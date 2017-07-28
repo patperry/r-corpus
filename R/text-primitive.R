@@ -189,17 +189,8 @@ c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
         }
     }
 
-    # convert each element to character
-    for (i in seq_along(args)) {
-        elt <- args[[i]]
-        args[[i]] <- as.character(elt)
-    }
-
-    # concatenate the text vectors
-    ans <- c(args, recursive = TRUE, use.names = FALSE)
-
-    # convert back to text, and set the names if desired
-    ans <- as_text(ans)
+    # concatenate the text vectors and set names, if desired
+    ans <- .Call(C_text_c, args)
     if (use.names) {
         names(ans) <- names
     }
