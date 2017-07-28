@@ -129,16 +129,12 @@ as.raw.corpus_text <- function(x, ...)
 
 c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
 {
-    # handle recursive part, turn args into list of text vectors
+    # handle recursive part, turning arguments into list of text vectors
     args <- list(...)
     for (i in seq_along(args)) {
         elt <- args[[i]]
-        if (is_text(elt)) {
-            # pass
-        } else if (recursive && (is.list(elt) || is.pairlist(elt))) {
-            if (is.pairlist(elt)) {
-                elt <- structure(as.list(elt), names = names(elt))
-            }
+        if (recursive && (inherits(elt, "list") || is.pairlist(elt))) {
+            elt <- structure(as.list(elt), names = names(elt))
             elt[["recursive"]] <- TRUE
             elt[["use.names"]] <- use.names
             args[[i]] <- do.call(c.corpus_text, elt)
@@ -147,17 +143,66 @@ c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
         }
     }
 
+    # compute the names
+    if (use.names) {
+        argnames <- names(args)
+        ansnames <- vector("list", length(args))
+        for (i in seq_along(args)) {
+            name <- argnames[[i]]
+            elt <- args[[i]]
+            eltnames <- names(elt)
+            if (length(elt) == 0) {
+                argnames[[i]] <- NULL
+            } else if (is.null(name) || nchar(name) == 0) {
+                ansnames[[i]] <- eltnames
+            } else if (is.null(eltnames)) {
+                if (length(elt) == 1) {
+                    ansnames[[i]] <- name
+                } else {
+                    ansnames[[i]] <- paste0(name, seq_along(elt))
+                }
+            } else {
+                # ""   -> index (1, 2, 3, etc.)
+                # str  -> .str
+                # <NA> -> .NA
+                suffix <- ifelse(nchar(eltnames) == 0, seq_along(eltnames),
+                                 paste0(".", eltnames))
+                suffix[is.na(eltnames)] <- ".NA"
+                ansnames[[i]] <- paste0(name, suffix)
+            }
+        }
+
+        # if all names are NULL, don't set the names
+        if (all(sapply(ansnames, is.null))) {
+            names <- NULL
+
+        # otherwise, set missing names to empty (""), and concatenate
+        } else {
+            for (i in seq_along(args)) {
+                if (is.null(ansnames[[i]])) {
+                    ansnames[[i]] <- rep("", length(args[[i]]))
+                }
+            }
+            names <- c(ansnames, recursive = TRUE)
+        }
+    }
+
     # convert each element to character
     for (i in seq_along(args)) {
         elt <- args[[i]]
-        args[[i]] <- structure(as.character(elt), names = names(elt))
+        args[[i]] <- as.character(elt)
     }
 
     # concatenate the text vectors
-    ans <- c(args, recursive = TRUE, use.names = use.names)
+    ans <- c(args, recursive = TRUE, use.names = FALSE)
 
-    # convert back to text
-    as_text(ans)
+    # convert back to text, and set the names if desired
+    ans <- as_text(ans)
+    if (use.names) {
+        names(ans) <- names
+    }
+
+    ans
 }
 
 dim.corpus_text <-
