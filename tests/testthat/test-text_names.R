@@ -67,7 +67,6 @@ test_that("`names<-` should not modify copies", {
 })
 
 
-
 test_that("`names<-` should preserve attributes", {
     x <- as_text(1:3)
     attr(x, "foo") <- "bar"
@@ -88,4 +87,9 @@ test_that("`names<-` should allow duplicates", {
     x <- as_text(1:3)
     names(x) <- c("a", "b", "a")
     expect_equal(names(x), c("a", "b", "a"))
+})
+
+
+test_that("names should error for non-text", {
+    expect_error(names.corpus_text("hello"), "invalid text object")
 })
