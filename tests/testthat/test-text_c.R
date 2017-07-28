@@ -67,3 +67,17 @@ test_that("c should support use.names = FALSE", {
     z <- c(a=as_text("x"), y=c(z="z", "w"), use.names = FALSE)
     expect_equal(z, as_text(c("x", "z", "w")))
 })
+
+
+test_that("c should support lists with recursive = TRUE", {
+    z <- c.corpus_text(list(x = as_text("a"), y = as_text("b")), z = "c",
+                       recursive = TRUE)
+    expect_equal(z, as_text(c(x = "a", y = "b", z = "c")))
+})
+
+
+test_that("c should support pairlists with recursive = TRUE", {
+    z <- c.corpus_text(pairlist(x = as_text("a"), y = as_text("b")), z = "c",
+                       recursive = TRUE)
+    expect_equal(z, as_text(c(x = "a", y = "b", z = "c")))
+})

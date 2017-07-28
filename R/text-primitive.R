@@ -127,16 +127,36 @@ as.raw.corpus_text <- function(x, ...)
     })
 }
 
-c.corpus_text <- function(..., use.names = TRUE)
+c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
 {
+    # handle recursive part, turn args into list of text vectors
     args <- list(...)
     for (i in seq_along(args)) {
         elt <- args[[i]]
-        if (!is.character(elt)) {
-            args[[i]] <- structure(as.character(elt), names = names(elt))
+        if (is_text(elt)) {
+            # pass
+        } else if (recursive && (is.list(elt) || is.pairlist(elt))) {
+            if (is.pairlist(elt)) {
+                elt <- structure(as.list(elt), names = names(elt))
+            }
+            elt[["recursive"]] <- TRUE
+            elt[["use.names"]] <- use.names
+            args[[i]] <- do.call(c.corpus_text, elt)
+        } else {
+            args[[i]] <- as_text(elt)
         }
     }
+
+    # convert each element to character
+    for (i in seq_along(args)) {
+        elt <- args[[i]]
+        args[[i]] <- structure(as.character(elt), names = names(elt))
+    }
+
+    # concatenate the text vectors
     ans <- c(args, recursive = TRUE, use.names = use.names)
+
+    # convert back to text
     as_text(ans)
 }
 
