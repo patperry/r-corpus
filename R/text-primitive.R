@@ -133,7 +133,9 @@ c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
     args <- list(...)
     for (i in seq_along(args)) {
         elt <- args[[i]]
-        if (recursive && (inherits(elt, "list") || is.pairlist(elt))) {
+        if (is_text(elt)) {
+            # pass
+        } else if (recursive && (is.list(elt) || is.pairlist(elt))) {
             elt <- structure(as.list(elt), names = names(elt))
             elt[["recursive"]] <- TRUE
             elt[["use.names"]] <- use.names
