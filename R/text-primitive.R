@@ -40,15 +40,12 @@
         stop("invalid text object")
     }
 
-    with_rethrow({
-        index <- seq_along(x)
-        names(index) <- names(x)
-        i <- index[i]
-    })
-
     # convert to character, then do the assignment
     y <- structure(as.character(x), names = names(x))
-    y[i] <- value
+    with_rethrow({
+        value <- as_character_vector("value", value)
+        y[i] <- value
+    })
 
     # convert back to text
     y <- as_text(y, filter = unclass(x)$filter)

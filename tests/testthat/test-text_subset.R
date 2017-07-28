@@ -72,7 +72,15 @@ test_that("subsetting should retain filter", {
 })
 
 
+test_that("subsetting should allow extending the object", {
+    x <- as_text(letters)
+    y <- as_text(LETTERS)
+    x[27:52] <- y
+    expect_equal(x, as_text(c(letters, LETTERS)))
+})
+
 test_that("text methods should error for non-text", {
+    expect_error(`[<-.corpus_text`("hello", 1, "a"), "invalid text object")
     expect_error(`[.corpus_text`("hello", 1), "invalid text object")
 })
 
