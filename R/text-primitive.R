@@ -136,7 +136,7 @@ c.corpus_text <- function(..., use.names = TRUE)
             args[[i]] <- structure(as.character(elt), names = names(elt))
         }
     }
-    ans <- c(args, recursive = TRUE, use.names = TRUE)
+    ans <- c(args, recursive = TRUE, use.names = use.names)
     as_text(ans)
 }
 

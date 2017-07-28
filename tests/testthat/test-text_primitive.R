@@ -18,7 +18,6 @@ test_that("subsetting should retain filter", {
 })
 
 
-
 test_that("anyNA should work", {
     x <- as_text(c("a", NA, "", "b"))
     y <- as_text(c())
@@ -49,22 +48,6 @@ test_that("conversions should work", {
     expect_warning(x <- as.numeric(as_text("foo")),
                    "NAs introduced by coercion")
     expect_equal(x, NA_real_)
-})
-
-
-test_that("c should work", {
-    x <- c(a=as_text(c("hello", NA, "world")), "!", c=7)
-    expect_equal(x, as_text(c(a1 = "hello", a2 = NA, a3 = "world", "!",
-                              c = "7")))
-})
-
-
-test_that("c should drop text_filter", {
-    x <- as_text("hello")
-    text_filter(x) <- text_filter(map_case = FALSE)
-    y <- as_text("world")
-    z <- c(x, y)
-    expect_equal(text_filter(z), text_filter())
 })
 
 
