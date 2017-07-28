@@ -1,23 +1,6 @@
 context("text_primitive")
 
 
-test_that("subsetting should work", {
-    x <- as_text(LETTERS)
-    i <- c(7, 2, 3, 21, 15)
-    y <- x[i]
-    expect_equal(y, as_text(LETTERS[i]));
-})
-
-
-test_that("subsetting should retain filter", {
-    f <- text_filter(map_case = FALSE)
-    x <- as_text(LETTERS, filter = f)
-    i <- c(7, 2, 3, 21, 15)
-    y <- x[i]
-    expect_equal(text_filter(y), f)
-})
-
-
 test_that("anyNA should work", {
     x <- as_text(c("a", NA, "", "b"))
     y <- as_text(c())
@@ -74,9 +57,4 @@ test_that("invalid operations should error", {
                  fixed = TRUE)
     expect_error(as.environment(x),
                  "'as.environment' is invalid for text objects")
-})
-
-
-test_that("text methods should error for non-text", {
-    expect_error(`[.corpus_text`("hello", 1), "invalid text object")
 })

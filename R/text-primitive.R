@@ -36,14 +36,41 @@
 
 `[<-.corpus_text` <- function(x, i, value)
 {
-    stop("'[<-' is not implemented for text objects yet;",
-         " to request this feature, please file an issue at",
-         " https://github.com/patperry/r-corpus/issues")
+    if (!is_text(x)) {
+        stop("invalid text object")
+    }
+
+    with_rethrow({
+        index <- seq_along(x)
+        names(index) <- names(x)
+        i <- index[i]
+    })
+
+    # convert to character, then do the assignment
+    y <- structure(as.character(x), names = names(x))
+    y[i] <- value
+
+    # convert back to text
+    y <- as_text(y, filter = unclass(x)$filter)
+
+    # copy over old attributes
+    attrs <- attributes(x)
+    for (k in names(attrs)) {
+        if (k != "names") {
+            attr(y, k) <- attrs[[k]]
+        }
+    }
+
+    y
 }
 
 
 `[[.corpus_text` <- function(x, i, exact = TRUE)
 {
+    if (!is_text(x)) {
+        stop("invalid text object")
+    }
+
     with_rethrow({
         index <- seq_along(x)
         names(index) <- names(x)
@@ -55,9 +82,26 @@
 
 `[[<-.corpus_text` <- function(x, i, value)
 {
-    stop("'[[<-' is not implemented for text objects yet;",
-         " to request this feature, please file an issue at",
-         " https://github.com/patperry/r-corpus/issues")
+    if (!is_text(x)) {
+        stop("invalid text object")
+    }
+
+    if (length(i) == 0) {
+        stop("attempt to select less than one element")
+    } else if (length(i) > 1) {
+        stop("attempt to select more than one element")
+    }
+
+    if (length(value) == 0) {
+        stop("replacement has length zero")
+    } else if (length(value) > 1) {
+        stop("more elements supplied than there are to replace")
+    }
+
+    value <- as_text(value)
+
+    x[i] <- value
+    x
 }
 
 
