@@ -142,11 +142,12 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
 }
 
 
-print.corpus_text_locate <- function(x, print.gap = NULL, display = TRUE, ...)
+print.corpus_text_locate <- function(x, rows = 18L, print.gap = NULL,
+                                     display = TRUE, ...)
 {
     fmt <- format.corpus_text_locate(x, print.gap = print.gap,
                                      display = display, ...)
-    print.corpus_frame(fmt, chars = .Machine$integer.max,
+    print.corpus_frame(fmt, rows = rows, chars = .Machine$integer.max,
                        print.gap = print.gap)
     invisible(x)
 }
