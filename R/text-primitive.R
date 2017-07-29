@@ -105,8 +105,6 @@
         stop("more elements supplied than there are to replace")
     }
 
-    value <- as_text(value)
-
     x[i] <- value
     x
 }

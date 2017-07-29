@@ -15,6 +15,9 @@ test_that("invalid subscript operations should error", {
     expect_error(x[[1]] <- c("a", "b"),
                  "more elements supplied than there are to replace")
 
+    expect_error(x[[list(1)]] <- "A",
+                 "invalid subscript type 'list'")
+
     expect_error(`[[.corpus_text`("hello", 1), "invalid text object")
     expect_error(`[[<-.corpus_text`("hello", 1, NA), "invalid text object")
 })
