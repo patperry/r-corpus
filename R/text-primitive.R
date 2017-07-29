@@ -187,6 +187,8 @@ c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
 
 c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
 {
+    filter <- NULL
+
     # handle recursive part, turning arguments into list of text vectors
     for (i in seq_along(args)) {
         elt <- args[[i]]
@@ -197,6 +199,11 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
             args[[i]] <- c_corpus_text_list(elt, recursive, use.names)
         } else {
             args[[i]] <- as_text(elt)
+        }
+
+        # take text filter from first arg
+        if (i == 1) {
+            filter <- unclass(args[[i]])$filter
         }
     }
 
@@ -244,15 +251,12 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
             }
             names <- c(ansnames, recursive = TRUE)
         }
+    } else {
+        names <- NULL
     }
 
     # concatenate the text vectors and set names, if desired
-    ans <- .Call(C_text_c, args)
-    if (use.names) {
-        names(ans) <- names
-    }
-
-    ans
+    .Call(C_text_c, args, names, filter)
 }
 
 dim.corpus_text <-

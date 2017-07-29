@@ -1,12 +1,12 @@
 context("text_c")
 
 
-test_that("c should drop text_filter", {
+test_that("c should not drop text_filter", {
     x <- as_text("hello")
     text_filter(x) <- text_filter(map_case = FALSE)
     y <- as_text("world")
     z <- c(x, y)
-    expect_equal(text_filter(z), text_filter())
+    expect_equal(text_filter(z), text_filter(x))
 })
 
 
@@ -30,7 +30,7 @@ test_that("c should work with a single unnamed argument", {
     x <- x0
     text_filter(x) <- text_filter(map_case = FALSE)
     y <- c(x)
-    expect_equal(y, x0)
+    expect_equal(y, x)
 })
 
 
@@ -86,4 +86,16 @@ test_that("c should support pairlists with recursive = TRUE", {
 test_that("c can handle NA after named", {
     z <- c(as_text(c(x = "a")), NA)
     expect_equal(z, as_text(c(x = "a", NA)))
+})
+
+
+test_that("c should take filter from first value", {
+    f <- text_filter(map_case = FALSE)
+    x <- as_text(letters, filter = f)
+    y <- as_text(LETTERS)
+    z <- c(x, y)
+    expect_equal(z, as_text(c(letters, LETTERS), filter = f))
+
+    z2 <- c(y, x)
+    expect_equal(z2, as_text(c(LETTERS, letters)))
 })

@@ -110,8 +110,20 @@ test_that("subsetting should allow extending the object", {
     expect_equal(x, as_text(c(letters, LETTERS)))
 })
 
+
 test_that("text methods should error for non-text", {
     expect_error(`[<-.corpus_text`("hello", 1, "a"), "invalid text object")
     expect_error(`[.corpus_text`("hello", 1), "invalid text object")
 })
 
+
+test_that("rbind should take filter from first value", {
+    f <- text_filter(map_case = FALSE)
+    x <- data.frame(text = as_text(letters, filter = f))
+    y <- data.frame(text = as_text(LETTERS))
+    z <- rbind(x, y)
+    expect_equal(z, data.frame(text = as_text(c(letters, LETTERS), filter = f)))
+
+    z2 <- rbind(y, x)
+    expect_equal(z2, data.frame(text = as_text(c(LETTERS, letters))))
+})

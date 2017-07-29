@@ -97,7 +97,7 @@ out:
 }
 
 
-SEXP text_c(SEXP args)
+SEXP text_c(SEXP args, SEXP names, SEXP filter)
 {
 	SEXP ans, elt, elt_sources, elt_table, elt_source, elt_row,
 	     elt_start, elt_stop, ssources, ssource, srow, sstart, sstop;
@@ -170,7 +170,7 @@ SEXP text_c(SEXP args)
 	}
 
 	PROTECT(ans = alloc_text(ssources, ssource, srow, sstart, sstop,
-				 R_NilValue, R_NilValue)); nprot++;
+				 names, filter)); nprot++;
 
 	UNPROTECT(nprot);
 	return ans;
