@@ -124,11 +124,19 @@ as_filter <- function(name, filter)
     if (!is.list(filter)) {
         stop(sprintf("'%s' must be a text filter, list, or NULL", name))
     }
+    filter <- unclass(filter)
+    keys <- names(filter)
+
+    props <- names(text_filter())
+    unknown <- !(keys %in% props)
+    if (any(unknown)) {
+        key <- keys[unknown][1]
+        stop(sprintf("unrecognized text filter property: \"%s\"", key))
+    }
 
     ans <- structure(list(), class = "corpus_text_filter")
-    keys <- names(text_filter())
-    for (key in keys) {
-        ans[[key]] <- filter[[key]]
+    for (prop in props) {
+        ans[[prop]] <- filter[[prop]]
     }
     ans
 }
