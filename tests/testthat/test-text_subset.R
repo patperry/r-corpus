@@ -72,6 +72,34 @@ test_that("subsetting should retain filter", {
 })
 
 
+test_that("subset assign can have duplicate integer indices", {
+    x <- as_text(LETTERS)
+    x[c(1, 1, 1)] <- "XXX"
+    expect_equal(x, as_text(c("XXX", LETTERS[-1])))
+})
+
+
+test_that("subset assign can have new indices", {
+    x <- as_text(LETTERS[1:5])
+    x[10] <- "foo"
+    expect_equal(x, as_text(c(LETTERS[1:5], rep(NA, 4), "foo")))
+})
+
+
+test_that("subset assign can have new names", {
+    x <- as_text(LETTERS[1:5])
+    x["foo"] <- "bar"
+    expect_equal(x, as_text(c(LETTERS[1:5], foo = "bar")))
+})
+
+
+test_that("subset assign can have duplicate names", {
+    x <- as_text(LETTERS[1:5])
+    x[c("foo", "foo")] <- c("bar", "baz")
+    expect_equal(x, as_text(c(LETTERS[1:5], foo = "baz")))
+})
+
+
 test_that("subsetting should allow extending the object", {
     x <- as_text(letters)
     y <- as_text(LETTERS)

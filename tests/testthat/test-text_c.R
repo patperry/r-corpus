@@ -81,3 +81,9 @@ test_that("c should support pairlists with recursive = TRUE", {
                        recursive = TRUE)
     expect_equal(z, as_text(c(x = "a", y = "b", z = "c")))
 })
+
+
+test_that("c can handle NA after named", {
+    z <- c(as_text(c(x = "a")), NA)
+    expect_equal(z, as_text(c(x = "a", NA)))
+})
