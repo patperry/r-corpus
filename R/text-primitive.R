@@ -20,8 +20,7 @@
     }
 
     with_rethrow({
-        index <- seq_along(x)
-        names(index) <- names(x)
+        index <- structure(seq_along(x), names = names(x))
         i <- index[i]
     })
 
@@ -40,15 +39,26 @@
         stop("invalid text object")
     }
 
-    # convert to character, then do the assignment
-    y <- structure(as.character(x), names = names(x))
-    with_rethrow({
-        value <- as_character_vector("value", value)
-        y[i] <- value
-    })
+    if (!is_text(value)) {
+        with_rethrow({
+            value <- as_character_vector("value", value)
+        })
+        value <- as_text(value)
+    }
 
-    # convert back to text
-    y <- as_text(y, filter = unclass(x)$filter)
+    n <- length(x)
+    index <- structure(seq_len(n), names = names(x))
+    with_rethrow({
+        index[i] <- n + seq_along(value)
+    })
+    index[is.na(index)] <- n + length(value) + 1
+
+    y <- c(x, value, NA)[index]
+    names(y) <- names(index)
+    filter <- unclass(x)$filter
+    if (!is.null(filter)) {
+        text_filter(y) <- filter
+    }
 
     # copy over old attributes
     attrs <- attributes(x)
@@ -170,17 +180,23 @@ as.raw.corpus_text <- function(x, ...)
 
 c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
 {
-    # handle recursive part, turning arguments into list of text vectors
     args <- list(...)
+    with_rethrow({
+        ans <- c_corpus_text_list(args, recursive, use.names)
+    })
+    ans
+}
+
+c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
+{
+    # handle recursive part, turning arguments into list of text vectors
     for (i in seq_along(args)) {
         elt <- args[[i]]
         if (is_text(elt)) {
             # pass
         } else if (recursive && (is.list(elt) || is.pairlist(elt))) {
             elt <- structure(as.list(elt), names = names(elt))
-            elt[["recursive"]] <- TRUE
-            elt[["use.names"]] <- use.names
-            args[[i]] <- do.call(c.corpus_text, elt)
+            args[[i]] <- c_corpus_text_list(elt, recursive, use.names)
         } else {
             args[[i]] <- as_text(elt)
         }
@@ -195,9 +211,11 @@ c.corpus_text <- function(..., recursive = FALSE, use.names = TRUE)
             elt <- args[[i]]
             eltnames <- names(elt)
             if (length(elt) == 0) {
-                argnames[[i]] <- NULL
+                # pass
             } else if (is.null(name) || nchar(name) == 0) {
-                ansnames[[i]] <- eltnames
+                if (!is.null(eltnames)) {
+                    ansnames[[i]] <- eltnames
+                }
             } else if (is.null(eltnames)) {
                 if (length(elt) == 1) {
                     ansnames[[i]] <- name
