@@ -1,4 +1,4 @@
-context("text_subset")
+context("text_index")
 
 test_that("invalid subscript operations should error", {
     x <- as_text(LETTERS)
