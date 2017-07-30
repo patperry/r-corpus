@@ -24,6 +24,7 @@
 
 static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(abbreviations, 1),
+	CALLDEF(alloc_text_handle, 0),
 	CALLDEF(anyNA_text, 1),
 	CALLDEF(as_character_json, 1),
 	CALLDEF(as_character_text, 1),
@@ -50,7 +51,6 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(stopwords, 1),
 	CALLDEF(subscript_json, 2),
 	CALLDEF(subset_json, 3),
-	CALLDEF(subset_text_handle, 2),
 	CALLDEF(term_counts_text, 8),
 	CALLDEF(term_matrix_text, 5),
 	CALLDEF(text_c, 3),

@@ -127,3 +127,19 @@ test_that("rbind should take filter from first value", {
     z2 <- rbind(y, x)
     expect_equal(z2, data.frame(text = as_text(c(LETTERS, letters))))
 })
+
+
+test_that("subset can drop unused sources", {
+    x <- c(as_text("a"), as_text("b"), as_text("c"))
+
+    expect_equal(x[NULL], as_text(character()))
+    expect_equal(x[1], as_text("a"))
+    expect_equal(x[2], as_text("b"))
+    expect_equal(x[3], as_text("c"))
+    expect_equal(x[c(1,2)], as_text(c("a", "b")))
+    expect_equal(x[c(2,1)], as_text(c("b", "a")))
+    expect_equal(x[c(1,3)], as_text(c("a", "c")))
+    expect_equal(x[c(3,1)], as_text(c("c", "a")))
+    expect_equal(x[c(2,3)], as_text(c("b", "c")))
+    expect_equal(x[c(3,2)], as_text(c("c", "b")))
+})

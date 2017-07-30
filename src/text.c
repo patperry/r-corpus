@@ -88,6 +88,17 @@ static void free_text(SEXP stext)
 static void load_text(SEXP x);
 
 
+SEXP alloc_text_handle(void)
+{
+	SEXP ans;
+
+	PROTECT(ans = R_MakeExternalPtr(NULL, TEXT_TAG, R_NilValue));
+	R_RegisterCFinalizerEx(ans, free_text, TRUE);
+	UNPROTECT(1);
+	return ans;
+}
+
+
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
 		SEXP eltnames, SEXP filter)
 {
@@ -95,8 +106,7 @@ SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
 	R_xlen_t n;
 	int s, nsrc;
 
-	PROTECT(handle = R_MakeExternalPtr(NULL, TEXT_TAG, R_NilValue));
-	R_RegisterCFinalizerEx(handle, free_text, TRUE);
+	PROTECT(handle = alloc_text_handle());
 
 	n = XLENGTH(source);
 
@@ -562,42 +572,4 @@ static void load_text(SEXP x)
 	}
 out:
 	CHECK_ERROR(err);
-}
-
-
-SEXP subset_text_handle(SEXP handle, SEXP si)
-{
-	SEXP ans;
-	const struct rcorpus_text *obj = R_ExternalPtrAddr(handle);
-	struct rcorpus_text *sub;
-	R_xlen_t i, n;
-	double ix;
-	int err = 0;
-
-	PROTECT(ans = R_MakeExternalPtr(NULL, TEXT_TAG, R_NilValue));
-	R_RegisterCFinalizerEx(ans, free_text, TRUE);
-
-	if (obj) {
-		n = XLENGTH(si);
-
-		TRY_ALLOC(sub = corpus_calloc(1, sizeof(*sub)));
-		R_SetExternalPtrAddr(ans, sub);
-
-		if (n > 0) {
-			TRY_ALLOC(sub->text
-					= corpus_calloc(n, sizeof(*sub->text)));
-			sub->length = n;
-		}
-
-		for (i = 0; i < n; i++) {
-			RCORPUS_CHECK_INTERRUPT(i);
-			ix = REAL(si)[i] - 1;
-			sub->text[i] = obj->text[(R_xlen_t)ix];
-		}
-	}
-
-out:
-	UNPROTECT(1);
-	CHECK_ERROR(err);
-	return ans;
 }

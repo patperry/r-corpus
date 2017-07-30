@@ -216,13 +216,13 @@ struct corpus_sentfilter *text_sentfilter(SEXP x);
 SEXP as_text_character(SEXP text);
 
 SEXP alloc_na_text(void);
+SEXP alloc_text_handle(void);
 SEXP coerce_text(SEXP x);
 SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
 		 SEXP na_encode, SEXP quote, SEXP na_print, SEXP utf8);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
 SEXP filter_text(SEXP text);
-SEXP subset_text_handle(SEXP handle, SEXP i);
 SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
