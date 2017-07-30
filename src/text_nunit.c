@@ -89,7 +89,7 @@ out:
 }
 
 
-SEXP text_ntoken(SEXP sx)
+static SEXP text_measure(SEXP sx, int include_na)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
@@ -123,8 +123,12 @@ SEXP text_ntoken(SEXP sx)
 		nunit = 0;
 
 		while (corpus_filter_advance(filter)) {
-			if (filter->type_id < 0) {
-				// skip ignored and dropped tokens
+			if (filter->type_id == CORPUS_FILTER_DROPPED) {
+				if (!include_na) {
+					continue;
+				}
+			} else if (filter->type_id < 0) {
+				// skip ignored tokens
 				continue;
 			}
 			nunit++;
@@ -138,4 +142,16 @@ out:
 	UNPROTECT(nprot);
 	CHECK_ERROR(err);
 	return ans;
+}
+
+
+SEXP text_ntoken(SEXP sx)
+{
+	return text_measure(sx, 0);
+}
+
+
+SEXP text_length(SEXP sx)
+{
+	return text_measure(sx, 1);
 }
