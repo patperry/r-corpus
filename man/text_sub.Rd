@@ -37,7 +37,7 @@
     \code{\link{text_tokens}}, \code{\link{text_length}}.
 }
 \examples{
-    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!")
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!"),
                  filter = text_filter(drop_punct = TRUE))
 
     # entire text
