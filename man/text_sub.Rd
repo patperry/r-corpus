@@ -1,0 +1,51 @@
+\name{text_sub}
+\alias{text_sub}
+\title{Text Subsequences}
+\description{
+    Extract token subsequences from a set of texts.
+}
+\usage{
+    text_sub(x, start = 1L, end = -1L, filter = text_filter(x))
+}
+\arguments{
+    \item{x}{text vector or corpus object.}
+
+    \item{start}{integer vector giving the starting positions of the
+        subsequences, or a two-column integer matrix giving the starting
+        and ending positions.}
+
+    \item{end}{integer vector giving the ending positions of the
+        subsequences; ignored if \code{start} is a two-column matrix.}
+
+    \item{filter}{filter specifying the transformation from text to
+        token sequence.}
+}
+\details{
+    \code{text_sub} extracts token subsequences from a set of texts.
+    The \code{start} and \code{end} arguments specifying the
+    positions of the subsequences within the parent texts, as an inclusive
+    range.  Negative indices are interpreted as counting from the end of
+    the text, with \code{-1L} referring to the last element.
+
+    Text subsequences include both dropped and non-dropped tokens.
+}
+\value{
+    A text vector with the same length and names as \code{x}, with the
+    desired subsequences.
+}
+\seealso{
+    \code{\link{text_tokens}}, \code{\link{text_length}}.
+}
+\examples{
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!")
+                 filter = text_filter(drop_punct = TRUE))
+
+    # entire text
+    text_sub(x, 1, -1)
+
+    # first three elements
+    text_sub(x, 1, 3)
+
+    # last two elements
+    text_sub(x, -2, -1)
+}

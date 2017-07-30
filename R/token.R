@@ -38,3 +38,15 @@ text_length <- function(x, filter = text_filter(x))
     })
     .Call(C_text_length, x)
 }
+
+
+text_sub <- function(x, start = 1L, end = -1L, filter = text_filter(x))
+{
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+    })
+
+    # TODO: handle start, end args
+
+    .Call(C_text_sub, x, start, end)
+}
