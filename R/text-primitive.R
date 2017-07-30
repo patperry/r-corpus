@@ -27,6 +27,17 @@
     y <- unclass(x)
     y$handle <- .Call(C_alloc_text_handle)
     y$table <- y$table[i,]
+
+    # drop unused sources
+    nsrc <- length(y$sources)
+    active <- sort(unique(y$table$source, nmax = nsrc))
+    if (length(active) < nsrc) {
+        map <- rep(NA_integer_, nsrc)
+        map[active] <- seq_along(active)
+        y$sources <- y$sources[active]
+        y$table$source <- map[y$table$source]
+    }
+
     if (!is.null(y$names)) {
         y$names <- y$names[i]
     }
