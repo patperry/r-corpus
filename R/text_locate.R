@@ -63,9 +63,11 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
                                       print.gap = NULL, ...,
                                       display = FALSE, justify = "left")
 {
-    width <- as_integer_scalar("width", width)
-    print.gap <- as_print_gap("print.gap", print.gap)
-    justify <- as_justify("justify", justify)
+    with_rethrow({
+        width <- as_integer_scalar("width", width)
+        print.gap <- as_print_gap("print.gap", print.gap)
+        justify <- as_justify("justify", justify)
+    })
 
     if (is.null(print.gap)) {
         print.gap <- 1
