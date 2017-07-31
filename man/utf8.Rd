@@ -54,7 +54,7 @@
         \code{NA} values as character strings.}
 
     \item{quote}{logical scalar indicating whether to put surrounding
-        double-quotes (\code{"}) around character strings and escape
+        double-quotes (\code{'"'}) around character strings and escape
         internal double-quotes.}
 
     \item{na.print}{character string (or \code{NULL}) indicating
