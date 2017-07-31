@@ -4,6 +4,6 @@ To Do
 Features
 --------
 
- * Make `[.corpus_text` drop unused sources
+ * implement `text_sub`
 
  * `summary.text` could be better
