@@ -1,6 +1,12 @@
 To Do
 =====
 
+Bugs
+----
+
+ * `utf8_print` should escape quotes if `quote = TRUE`
+
+
 Features
 --------
 
