@@ -506,6 +506,7 @@ static void load_text(SEXP x)
 
 	for (i = 0; i < nrow; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
+
 		s = source[i];
 		if (!(1 <= s && s <= nsrc)) {
 			error("source[[%"PRIu64"]] (%d) is out of range",
@@ -519,6 +520,13 @@ static void load_text(SEXP x)
 				(uint64_t)i + 1, r);
 		}
 		j = (R_xlen_t)(r - 1);
+
+		// handle NA range
+		if (start[i] == NA_INTEGER || stop[i] == NA_INTEGER) {
+			obj->text[i].ptr = NULL;
+			obj->text[i].attr = 0;
+			continue;
+		}
 
 		switch (sources[s].type) {
 		case SOURCE_CHAR:
@@ -563,7 +571,6 @@ static void load_text(SEXP x)
 		// 'can_break?' function to corpus/text.h
 		err = corpus_text_assign(&obj->text[i], txt.ptr + begin,
 					 end - begin, flags);
-
 		if (err) {
 			error("text span in row[[%"PRIu64"]]"
 			      " starts or ends in the middle"

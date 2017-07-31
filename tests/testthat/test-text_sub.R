@@ -44,3 +44,72 @@ test_that("'text_sub' errors for invalid 'end' arg", {
     expect_warning(text_sub(x, start = matrix(1, 1, 2), end = 1),
         "'end' argument is ignored when 'start' is a two-column matrix")
 })
+
+
+test_that("'text_sub' can return whole text", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    expect_equal(text_sub(x), x)
+    expect_equal(text_sub(x, 1, text_length(x)), x)
+    expect_equal(text_sub(x, 0, text_length(x) + 1), x)
+})
+
+
+test_that("'text_sub' can get first token", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    y <- as_text(c("A ", "A ", "Panama", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+
+    expect_equal(text_sub(x, 1, 1), y)
+})
+
+
+test_that("'text_sub' can get second token", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    y <- as_text(c("man", "\"", "!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+
+    expect_equal(text_sub(x, 2, 2), y)
+})
+
+
+test_that("'text_sub' can get third token", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    y <- as_text(c(", ", "canal", "", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+
+    expect_equal(text_sub(x, 3, 3), y)
+})
+
+
+test_that("'text_sub' can get last token", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    y <- as_text(c(".", "?", "!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+
+    expect_equal(text_sub(x, -1, -1), y)
+})
+
+
+test_that("'text_sub' can get second-to-last token", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    y <- as_text(c("plan", "\"", "Panama", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+
+    expect_equal(text_sub(x, -2, -2), y)
+})
+
+
+test_that("'text_sub' can get third-to-last token", {
+    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+    y <- as_text(c("a ", "canal", "", "", NA),
+                 filter = text_filter(drop_punct = TRUE))
+
+    expect_equal(text_sub(x, -3, -3), y)
+})

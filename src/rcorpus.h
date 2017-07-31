@@ -19,6 +19,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <Rdefines.h>
 
 #include "corpus/src/error.h"
@@ -36,6 +37,7 @@
 #include "corpus/src/sentscan.h"
 #include "corpus/src/filter.h"
 #include "corpus/src/sentfilter.h"
+
 
 #define RCORPUS_CHECK_EVERY 1000
 #define RCORPUS_CHECK_INTERRUPT(i) \
