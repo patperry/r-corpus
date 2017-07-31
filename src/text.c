@@ -233,9 +233,9 @@ struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
 }
 
 
-SEXP as_text_json(SEXP sdata)
+SEXP as_text_json(SEXP sdata, SEXP filter)
 {
-	SEXP ans, handle, sources, source, row, start, stop, names, filter;
+	SEXP ans, handle, sources, source, row, start, stop, names;
 	const struct json *d = as_json(sdata);
 	struct rcorpus_text *obj;
 	R_xlen_t i, nrow = d->nrow;
@@ -258,8 +258,8 @@ SEXP as_text_json(SEXP sdata)
 
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
+
 	names = R_NilValue;
-	filter = R_NilValue;
 
 	PROTECT(ans = alloc_text(sources, source, row, start, stop, names,
 				 filter));
@@ -301,9 +301,9 @@ out:
 }
 
 
-SEXP as_text_character(SEXP x)
+SEXP as_text_character(SEXP x, SEXP filter, SEXP keep_names)
 {
-	SEXP ans, handle, sources, source, row, start, stop, names, filter, str;
+	SEXP ans, handle, sources, source, row, start, stop, names, str;
 	struct rcorpus_text *obj;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
@@ -338,8 +338,11 @@ SEXP as_text_character(SEXP x)
 
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
-	names = getAttrib(x, R_NamesSymbol);
-	filter = R_NilValue;
+	if (LOGICAL(keep_names)[0] == TRUE) {
+		names = getAttrib(x, R_NamesSymbol);
+	} else {
+		names = R_NilValue;
+	}
 
 	PROTECT(ans = alloc_text(sources, source, row, start, stop, names,
 				 filter));
@@ -413,26 +416,20 @@ out:
 }
 
 
-SEXP alloc_na_text(void)
-{
-	return as_text_character(ScalarString(NA_STRING));
-}
-
-
 SEXP coerce_text(SEXP sx)
 {
-	SEXP ans;
+	SEXP ans, keep_names;
 
 	if (is_text(sx)) {
 		return sx;
 	} else if (is_json(sx)) {
-		return as_text_json(sx);
+		return as_text_json(sx, R_NilValue);
 	}
 
 	PROTECT(sx = coerceVector(sx, STRSXP));
-	ans = as_text_character(sx);
-	UNPROTECT(1);
-
+	PROTECT(keep_names = ScalarLogical(TRUE));
+	ans = as_text_character(sx, R_NilValue, keep_names);
+	UNPROTECT(2);
 	return ans;
 }
 

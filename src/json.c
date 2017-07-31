@@ -911,7 +911,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 
 		if (d_j->kind == CORPUS_DATATYPE_TEXT
 				&& in_string_set(stext, STRING_ELT(names, j))) {
-			ans_j = as_text_json(ans_j);
+			ans_j = as_text_json(ans_j, R_NilValue);
 		} else {
 			ans_j = simplify_json(ans_j, stext);
 		}

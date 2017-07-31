@@ -186,7 +186,7 @@ SEXP as_factor_json(SEXP data);
 SEXP as_list_json(SEXP data, SEXP text);
 SEXP as_logical_json(SEXP data);
 SEXP as_character_json(SEXP data);
-SEXP as_text_json(SEXP data);
+SEXP as_text_json(SEXP data, SEXP filter);
 SEXP dim_json(SEXP data);
 SEXP length_json(SEXP data);
 SEXP names_json(SEXP data);
@@ -215,9 +215,8 @@ int is_text(SEXP text);
 struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
 struct corpus_filter *text_filter(SEXP x);
 struct corpus_sentfilter *text_sentfilter(SEXP x);
-SEXP as_text_character(SEXP text);
+SEXP as_text_character(SEXP text, SEXP filter, SEXP keep_names);
 
-SEXP alloc_na_text(void);
 SEXP alloc_text_handle(void);
 SEXP coerce_text(SEXP x);
 SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,

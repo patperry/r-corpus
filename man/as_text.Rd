@@ -12,13 +12,15 @@
     Create or test for text objects.
 }
 \usage{
-    as_text(x, filter = text_filter(x), ...)
+    as_text(x, filter = text_filter(x), keep_names = TRUE, ...)
     is_text(x)
 }
 \arguments{
     \item{x}{object to be coerced or tested.}
 
     \item{filter}{text filter object for the converted text.}
+
+    \item{keep_names}{logical indicating whether to keep object names.}
 
     \item{\dots}{further arguments passed to or from other methods.}
 }
@@ -36,19 +38,21 @@
     The default behavior for \code{as_text} is to proceed as follows:
     \enumerate{
         \item If \code{x} is a \code{character} vector, then we create
-            a new \code{text} vector from \code{x}, preserving
-            \code{names(x)} if they exist.
+            a new \code{text} vector from \code{x}. When
+            \code{keep_names = TRUE}, we preserve \code{names(x)} if they
+            exist.
 
         \item If \code{x} is a data frame, then we call \code{as_text}
-            on \code{x$text} if a column named \code{"text"}
-            exits in the data frame. We set the names of the result to
-            the data frame's row names, if they exist. If the data frame
-            does not have a column named \code{"text"}, then we fail
-            with an error message.
+            on \code{x$text} if a column named \code{"text"} exists in
+            the data frame.  If the data frame does not have a column
+            named \code{"text"}, then we fail with an error message.
+            When \code{keep_names = TRUE}, we set the names of the
+            result to the data frame's row names, if they exist.
 
         \item If \code{x} is a \code{corpus_text} object,  then we drop all
-            attributes from the object except for its names and
-            filter, and we set the object class to \code{corpus_text}.
+            attributes from the object except for its filter, and,
+            when \code{keep_names = TRUE}, its names. We set the object
+            class to \code{"corpus_text"}.
 
         \item The default behavior for when none of the above conditions
             are true is to call \code{as.character} on the object first,
@@ -79,6 +83,7 @@
 \examples{
     as_text("hello, world!")
     as_text(c(a="goodnight", b="moon")) # keeps names
+    as_text(c(a="goodnight", b="moon"), keep_names = FALSE) # drops names
 
     is_text("hello") # FALSE, "hello" is character, not text
 }
