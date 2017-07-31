@@ -155,3 +155,12 @@ test_that("'utf8_print' can print empty arrays", {
     expect_equal(capture_output(utf8_print(array(character(), c(0,2,3)))),
                  "<0 x 2 x 3 array>")
 })
+
+
+test_that("'utf8_print' can print quotes", {
+    expect_equal(capture_output(utf8_print('"')),
+                 capture_output(print('"')))
+
+    expect_equal(capture_output(utf8_print('"', quote = FALSE)),
+                 capture_output(print('"', quote = FALSE)))
+})

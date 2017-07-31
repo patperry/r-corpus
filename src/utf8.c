@@ -36,7 +36,7 @@
 #define ZWSP "\xE2\x80\x8B" // U+200B
 #define ZWSP_NBYTE 3
 
-int charsxp_width(SEXP charsxp, int utf8)
+int charsxp_width(SEXP charsxp, int quote, int utf8)
 {
 	const uint8_t *ptr = (const uint8_t *)CHAR(charsxp);
 	const uint8_t *start;
@@ -44,7 +44,8 @@ int charsxp_width(SEXP charsxp, int utf8)
 	uint32_t code;
 	int width, cw, err;
 
-	width = 0;
+	width = quote ? 2 : 0;
+
 	while (ptr != end) {
 		start = ptr;
 		if ((err = corpus_scan_utf8(&start, end))) {
@@ -62,6 +63,9 @@ int charsxp_width(SEXP charsxp, int utf8)
 			case '\t':
 			case '\v':
 				return NA_INTEGER;
+			case '"':
+				width += (quote ? 2 : 1);
+				continue;
 			default:
 				if (!isprint((int)code)) {
 					return NA_INTEGER;
@@ -657,11 +661,11 @@ SEXP utf8_valid(SEXP sx)
 }
 
 
-SEXP utf8_width(SEXP sx, SEXP sutf8)
+SEXP utf8_width(SEXP sx, SEXP squote, SEXP sutf8)
 {
 	SEXP ans, elt;
 	R_xlen_t i, n;
-	int utf8, w;
+	int quote, utf8, w;
 
 	if (sx == R_NilValue) {
 		return R_NilValue;
@@ -670,6 +674,7 @@ SEXP utf8_width(SEXP sx, SEXP sutf8)
 		error("argument is not a character object");
 	}
 	n = XLENGTH(sx);
+	quote = LOGICAL(squote)[0] == TRUE;
 	utf8 = LOGICAL(sutf8)[0] == TRUE;
 
 	PROTECT(ans = allocVector(INTSXP, n));
@@ -684,7 +689,7 @@ SEXP utf8_width(SEXP sx, SEXP sutf8)
 		if (elt == NA_STRING) {
 			w = NA_INTEGER;
 		} else {
-			w = charsxp_width(elt, utf8);
+			w = charsxp_width(elt, quote, utf8);
 		}
 		INTEGER(ans)[i] = w;
 	}

@@ -23,7 +23,7 @@
                print.gap = NULL, right = FALSE, max = NULL,
                display = TRUE, ...)
 
-    utf8_width(x, encode = TRUE)
+    utf8_width(x, encode = TRUE, quote = FALSE)
 
     utf8_valid(x)
 }
@@ -54,7 +54,8 @@
         \code{NA} values as character strings.}
 
     \item{quote}{logical scalar indicating whether to put surrounding
-        quotes around character strings.}
+        double-quotes (\code{"}) around character strings and escape
+        internal double-quotes.}
 
     \item{na.print}{character string (or \code{NULL}) indicating
         the encoding for \code{NA} values. Ignored when
@@ -105,7 +106,10 @@
     the result is \code{NA}. If \code{encode = TRUE}, the default,
     then the function returns the widths of the encoded elements
     (via \code{utf8_encode}); otherwise, the function returns the
-    widths of the original elements.
+    widths of the original elements. If \code{quote = TRUE}, then
+    \code{utf8_width} returns the widths of the quoted values
+    (enclosing the argument in double quotes, and replacing internal
+    quotes with \code{\"}).
 }
 \value{
     For \code{as_utf8} or \code{utf8_encode}, a character object with
@@ -147,6 +151,8 @@
     # get widths
     utf8_width(x)
     utf8_width(x, encode = FALSE)
+    utf8_width('"')
+    utf8_width('"', quote = TRUE)
 
     # printing (assumes that output is capable of displaying Unicode 10.0.0)
     print(intToUtf8(0x1F600 + 0:79)) # with default R print function

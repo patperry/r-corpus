@@ -262,7 +262,7 @@ static int text_iter_retreat(struct text_iter *iter)
 }
 
 
-static int char_width(int code, int type, int utf8)
+static int char_width(int code, int type, int quote, int utf8)
 {
 	if (code < 0) {
 		return 4; // \xXX invalid byte
@@ -278,6 +278,8 @@ static int char_width(int code, int type, int utf8)
 		case '\t':
 		case '\v':
 			return 2;
+		case '"':
+			return quote ? 2 : 1;
 		default:
 			return isprint(code) ? 1 : 6; // \uXXXX
 		}
@@ -306,7 +308,7 @@ static int char_width(int code, int type, int utf8)
 }
 
 
-static int text_width(const struct text *text, int limit, int utf8)
+static int text_width(const struct text *text, int limit, int quote, int utf8)
 {
 	struct text_iter it;
 	int32_t code;
@@ -314,11 +316,11 @@ static int text_width(const struct text *text, int limit, int utf8)
 	int ellipsis = utf8 ? 1 : 3;
 
 	text_iter_make(&it, text);
-	width = 0;
+	width = quote ? 2 : 0;
 	while (text_iter_advance(&it)) {
 		code = it.current;
 		type = code < 0 ? 0 : charwidth(code);
-		w = char_width(code, type, utf8);
+		w = char_width(code, type, quote, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
 		}
@@ -329,7 +331,7 @@ static int text_width(const struct text *text, int limit, int utf8)
 }
 
 
-static int text_rwidth(const struct text *text, int limit, int utf8)
+static int text_rwidth(const struct text *text, int limit, int quote, int utf8)
 {
 	struct text_iter it;
 	int code, type, width, w;
@@ -337,11 +339,11 @@ static int text_rwidth(const struct text *text, int limit, int utf8)
 
 	text_iter_make(&it, text);
 	text_iter_skip(&it);
-	width = 0;
+	width = quote ? 2 : 0;
 	while (text_iter_retreat(&it)) {
 		code = it.current;
 		type = code < 0 ? 0 : charwidth(code);
-		w = char_width(code, type, utf8);
+		w = char_width(code, type, quote, utf8);
 		if (width > limit - w) {
 			return width + ellipsis;
 		}
@@ -398,7 +400,7 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 	quotes = quote ? 2 : 0;
 	bfill = 0;
 	if (centre && !trim) {
-		fullwidth = text_width(text, chars, utf8) + quotes;
+		fullwidth = text_width(text, chars, quote, utf8);
 		if ((fill = width_max - fullwidth) > 0) {
 			bfill = fill / 2;
 
@@ -423,7 +425,7 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 	while (!trunc && text_iter_advance(&it)) {
 		code = it.current;
 		type = code < 0 ? 0 : charwidth(code);
-		w = char_width(code, type, utf8);
+		w = char_width(code, type, quote, utf8);
 
 		if (width > chars - w) {
 			code = ELLIPSIS;
@@ -444,6 +446,10 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 			}
 		} else if (code < 0) {
 			*dst++ = (uint8_t)(-code);
+		} else if (code == '"' && quote) {
+			ENSURE(2);
+			*dst++ = '\\';
+			*dst++ = '"';
 		} else {
 			corpus_encode_utf8(code, &dst);
 		}
@@ -509,7 +515,7 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 	while (!trunc && text_iter_retreat(&it)) {
 		code = it.current;
 		type = code < 0 ? 0 : charwidth(code);
-		w = char_width(code, type, utf8);
+		w = char_width(code, type, quote, utf8);
 
 		if (width > chars - w) {
 			code = ELLIPSIS;
@@ -531,6 +537,10 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 			}
 		} else if (code < 0) {
 			*--dst = (uint8_t)(-code);
+		} else if (code == '"' && quote) {
+			ENSURE(2);
+			*--dst = '"';
+			*--dst = '\\';
 		} else {
 			corpus_rencode_utf8(code, &dst);
 		}
@@ -653,7 +663,7 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		na_print = STRING_ELT(sna_print, 0);
 	}
 	text_init_charsxp(&na, na_print);
-	na_width = text_width(&na, INT_MAX, utf8);
+	na_width = text_width(&na, INT_MAX, 0, utf8);
 
 	for (i = 0; i < n; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
@@ -667,9 +677,9 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		if (elt.na) {
 			width = na_encode ? na_width : 0;
 		} else if (justify == JUSTIFY_RIGHT) {
-			width = text_rwidth(&elt, chars, utf8) + quotes;
+			width = text_rwidth(&elt, chars, quote, utf8);
 		} else {
-			width = text_width(&elt, chars, utf8) + quotes;
+			width = text_width(&elt, chars, quote, utf8);
 		}
 
 		if (width > width_max) {

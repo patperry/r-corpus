@@ -50,3 +50,9 @@ test_that("'utf8_width' gives NA for invalid data", {
     Encoding(x) <- "UTF-8"
     expect_equal(utf8_width(x, encode = FALSE), c(1, 1, NA, NA))
 })
+
+
+test_that("'utf8_width' gives width 2 for quotes when quote = TRUE", {
+    expect_equal(utf8_width("\""), 1)
+    expect_equal(utf8_width("\"", quote = TRUE), 4)
+})
