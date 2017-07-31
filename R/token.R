@@ -45,8 +45,38 @@ text_sub <- function(x, start = 1L, end = -1L, filter = text_filter(x))
     with_rethrow({
         x <- as_text(x, filter = filter)
     })
+    n <- length(x)
 
-    # TODO: handle start, end args
+    if (!(is.numeric(start)
+          && (length(dim(start)) <= 1
+              || is.matrix(start) && ncol(start) == 2))) {
+        stop("'start' must be an integer vector or two-column matrix")
+    }
+
+    nstart <- if (is.matrix(start)) nrow(start) else length(start)
+    if ((nstart == 0 && n > 0) || (nstart > 0 && n %% nstart != 0)) {
+        stop("'start' length does not evenly divide argument length")
+    }
+
+    if (is.matrix(start)) {
+        if (!missing(end)) {
+            warning("'end' argument is ignored when 'start' is a two-column matrix")
+        }
+        end <- as.integer(start[,2])
+        start <- as.integer(start[,1])
+    } else {
+        start <- as.integer(start)
+
+        if (!(is.numeric(end) && length(dim(end)) <= 1)) {
+            stop("'end' must be an integer vector")
+        }
+
+        nend <- length(end)
+        if ((nend == 0 && n > 0) || (nend > 0 && n %% nend != 0)) {
+            stop("'end' length does not evenly divide argument length")
+        }
+        end <- as.integer(end)
+    }
 
     .Call(C_text_sub, x, start, end)
 }
