@@ -24,7 +24,7 @@ Features
    could make dictionary methods easier to apply:
 
        loc <- text_locate(x, dict$term)
-       score <- with(loc, c(tapply(dict$score[term], text, mean)))
+       score <- c(tapply(dict$score[loc$term], loc$text, mean))
 
    Note: for this to work, the `text` column must be an integer ID or a
    factor.
