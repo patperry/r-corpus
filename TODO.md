@@ -1,17 +1,6 @@
 To Do
 =====
 
-Bugs
-----
-
- * `text_locate`, `text_split`, `term_frame` return text as a factor. This
-   will throw a warning and give strange behavior if text names are not unique.
-
-   Solution 1: Force text names to be unique.
-
-   Solution 2: Always return text as an integer ID, not a factor.
-
-
 Features
 --------
 
@@ -25,6 +14,3 @@ Features
 
        loc <- text_locate(x, dict$term)
        score <- c(tapply(dict$score[loc$term], loc$text, mean))
-
-   Note: for this to work, the `text` column must be an integer ID or a
-   factor.
