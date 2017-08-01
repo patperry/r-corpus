@@ -39,7 +39,7 @@
     }
 
     if (!is.null(y$names)) {
-        y$names <- y$names[i]
+        y$names <- make.unique(y$names[i])
     }
     class(y) <- class(x)
     y
