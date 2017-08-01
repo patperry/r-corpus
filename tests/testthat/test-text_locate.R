@@ -53,7 +53,8 @@ test_that("'text_locate' can give instance contexts", {
     actual <- text_locate(text, "rose")
 
     expected <- data.frame(
-        text = c(1, 1, 1, 1, 2, 3),
+        text = structure(c(1, 1, 1, 1, 2, 3), levels = as.character(1:3),
+                         class = "factor"),
         term = rep("rose", 6),
         before = as_text(c("", "Rose is a ", "Rose is a rose is a ",
                    "Rose is a rose is a rose is a ", "A ",
@@ -79,7 +80,8 @@ test_that("'text_locate' can use a custom filter", {
     actual <- text_locate(text, "Rose", f)
 
     expected <- data.frame(
-        text = c(1, 3),
+        text = structure(c(1, 3), levels = as.character(1:3),
+                         class = "factor"),
         term = rep("Rose", 2),
         before = as_text(c("", "Snow White and "), filter = f),
         instance = c("Rose", "Rose"),
