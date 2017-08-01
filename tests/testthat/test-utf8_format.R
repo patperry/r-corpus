@@ -4,6 +4,7 @@ context("utf8_format")
 test_that("'format' can handle short text", {
     raw <- c(NA, "", "a", "foo", "short text")
     text <- as_text(raw)
+    names(raw) <- names(text)
 
     expect_equal(format(text, justify = "none", na.print = "NA"),
                  format(raw, justify = "none"))
@@ -41,6 +42,9 @@ test_that("'format' can handle long text in Unicode locale", {
     Encoding(rshort) <- "UTF-8"
 
     text <- as_text(raw)
+    names(raw) <- names(text)
+    names(short) <- names(text)
+    names(rshort) <- names(text)
 
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -76,6 +80,9 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
     rshort <- c(NA, "", "a", "\u2026", "\u2026b", "\u2026o", "\u2026d",
                 "\u2026t", "\u2026", "\u2026", "\u2026?")
     text <- as_text(raw)
+    names(raw) <- names(text)
+    names(short) <- names(text)
+    names(rshort) <- names(text)
 
     ctype <- switch_ctype("Unicode")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -113,6 +120,9 @@ test_that("'format' can handle long text in C locale", {
                  "...\\u6027", "\\u6027?", "\\u6027\\n", "...?\\n",
                   "...\\u0001")
     text <- as_text(raw)
+    names(raw) <- names(text)
+    names(short) <- names(text)
+    names(rshort) <- names(text)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -122,15 +132,15 @@ test_that("'format' can handle long text in C locale", {
 
     left <- utf8_encode(format(text, chars = 8, justify = "left"))
     expect_equal(sub("\\s+$", "", left), short)
-    expect_equal(nchar(left), rep(10, length(text)))
+    expect_equal(as.numeric(nchar(left)), rep(10, length(text)))
 
     centre <- utf8_encode(format(text, chars = 8, justify = "centre"))
     expect_equal(sub("^\\s+", "", sub("\\s+$", "", centre)), short)
-    expect_equal(nchar(centre), rep(10, length(text)))
+    expect_equal(as.numeric(nchar(centre)), rep(10, length(text)))
 
     right <- utf8_encode(format(text, chars = 8, justify = "right"))
     expect_equal(sub("^\\s+", "", right), rshort)
-    expect_equal(nchar(right), rep(11, length(text)))
+    expect_equal(as.numeric(nchar(right)), rep(11, length(text)))
 
     expect_equal(format(text, chars = 8, justify = "none"), utf8_format(raw, chars = 8, justify = "none"))
     expect_equal(format(text, chars = 8, justify = "left"), utf8_format(raw, chars = 8, justify = "left"))
@@ -145,6 +155,7 @@ test_that("'format' can handle high code points in C locale", {
 
     raw <- c(intToUtf8(0x00010000), intToUtf8(0x0010ffff))
     text <- as_text(raw)
+    names(raw) <- names(text)
     fmt <- raw
 
     expect_equal(format(text, justify = "left"), fmt)
@@ -164,6 +175,10 @@ test_that("'format' can handle high code points in Unicode locale", {
     right <- c(paste0("         ", intToUtf8(0x00010000)), intToUtf8(0x010ffff))
 
     text <- as_text(raw)
+    names(raw) <- names(text)
+    names(left) <- names(text)
+    names(right) <- names(text)
+
     expect_equal(format(text, justify = "left"), left)
     expect_equal(utf8_format(raw, justify = "left"), left)
     expect_equal(format(text, justify = "right"), right)
@@ -174,6 +189,7 @@ test_that("'format' can handle high code points in Unicode locale", {
 test_that("'format' can handle ignorable code points", {
     raw <- "\u200B"
     text <- as_text(raw)
+    names(raw) <- names(text)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -201,18 +217,25 @@ test_that("'format' can handle ignorable code points", {
 test_that("'format' can handle marks", {
     raw <- "e\u0300"
     text <- as_text(raw)
+    names(raw) <- names(text)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(format(text, chars = 1, justify = "left"), "e...")
-    expect_equal(utf8_format(raw, chars = 1, justify = "left"), "e...")
+    expect_equal(as.character(format(text, chars = 1, justify = "left")),
+                 "e...")
+    expect_equal(as.character(utf8_format(raw, chars = 1, justify = "left")),
+                 "e...")
 
-    expect_equal(format(text, chars = 1, justify = "centre"), "e...")
-    expect_equal(utf8_format(raw, chars = 1, justify = "centre"), "e...")
+    expect_equal(as.character(format(text, chars = 1, justify = "centre")),
+                 "e...")
+    expect_equal(as.character(utf8_format(raw, chars = 1, justify = "centre")),
+                 "e...")
 
-    expect_equal(format(text, chars = 1, justify = "right"), "...")
-    expect_equal(utf8_format(raw, chars = 1, justify = "right"), "...")
+    expect_equal(as.character(format(text, chars = 1, justify = "right")),
+                 "...")
+    expect_equal(as.character(utf8_format(raw, chars = 1, justify = "right")),
+                 "...")
 
     ctype <- switch_ctype("Unicode")
 
@@ -228,6 +251,7 @@ test_that("'format' can handle marks", {
 test_that("'format' can handle UTF-8 'Other' codes", {
     raw <- "\u2072" # unassigned
     text <- as_text(raw)
+    names(raw) <- names(text)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -256,26 +280,34 @@ test_that("'format' can handle zero, or NULL chars", {
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
     
-    expect_equal(format(text, chars = 0, justify = "left"), "...")
-    expect_equal(format(text, chars = 0, justify = "centre"), "...")
-    expect_equal(format(text, chars = 0, justify = "right"), "...")
+    expect_equal(as.character(format(text, chars = 0, justify = "left")),
+                 "...")
+    expect_equal(as.character(format(text, chars = 0, justify = "centre")),
+                 "...")
+    expect_equal(as.character(format(text, chars = 0, justify = "right")),
+                 "...")
 
-    expect_equal(format(text, chars = NULL, justify = "left"), "foo")
-    expect_equal(format(text, chars = NULL, justify = "centre"), "foo")
-    expect_equal(format(text, chars = NULL, justify = "right"), "foo")
+    expect_equal(as.character(format(text, chars = NULL, justify = "left")),
+                 "foo")
+    expect_equal(as.character(format(text, chars = NULL, justify = "centre")),
+                 "foo")
+    expect_equal(as.character(format(text, chars = NULL, justify = "right")),
+                 "foo")
 })
 
 
 test_that("'format' can skip NA", {
     text <- as_text(NA)
-    expect_equal(format(text, na.encode = FALSE), NA_character_)
-    expect_equal(utf8_format(NA_character_, na.encode = FALSE), NA_character_)
+    expect_equal(as.character(format(text, na.encode = FALSE)), NA_character_)
+    expect_equal(as.character(utf8_format(NA_character_, na.encode = FALSE)),
+                 NA_character_)
 })
 
 
 test_that("'format' can set minimum width", {
     raw <- c("a", "ab", "abc")
     text <- as_text(raw)
+    names(raw) <- names(text)
 
     expect_equal(format(text, justify = "none", width = 5),
                  format(raw, justify = "none", width = 5))

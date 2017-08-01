@@ -13,7 +13,8 @@ test_that("'sentences' splits according to UAX #29 (Examples)", {
                                       "John Shook his head.",
                                       "'Are you going?' ",
                                       "John asked"),
-                                    filter = f)))
+                                    filter = f),
+                   row.names = NULL))
 })
 
 
@@ -27,7 +28,8 @@ test_that("'sentences' splits according to UAX #29 (Fig. 3)", {
                    text   = as_text(c("c.d", "3.4", "U.S.",
                                       "the resp. leaders are",
                                       "etc.)' '(the"),
-                                    filter = f)))
+                                    filter = f),
+                   row.names = NULL))
 })
 
 
@@ -45,7 +47,8 @@ test_that("'sentences' splits according to UAX #29 (Fig. 4)", {
                                       "\u5b83\u4eec\u6307",
                                       "\u7406\u6570\u5b57.",
                                       "\u5b83\u4eec\u6307"),
-                                    filter = f)))
+                                    filter = f),
+                   row.names = NULL))
 })
 
 
@@ -53,14 +56,15 @@ test_that("'sentences' cannot handle abbreviations without suppressions", {
     f <- text_filter(sent_suppress = NULL)
     expect_equal(text_split("Mr. Jones", "sentences", filter = f),
         data.frame(parent = factor(c("1", "1")), index = c(1L, 2L),
-                   text = as_text(c("Mr. ", "Jones"), filter = f)))
+                   text = as_text(c("Mr. ", "Jones"), filter = f),
+                   row.names = NULL))
 })
 
 
 test_that("'sentences' works on length-0 arguments values", {
     expect_equal(text_split(c(), "sentences"),
         data.frame(parent = factor(c()), index = integer(),
-                   text = as_text(c())))
+                   text = as_text(c()), row.names = NULL))
 })
 
 
@@ -69,7 +73,8 @@ test_that("'sentences' works on empty and missing values", {
         data.frame(parent = factor(c("1", "2", "4", "5"),
                                    levels = as.character(1:5)),
                    index  = c(1L, 1L, 1L, 1L),
-                   text   = as_text(c("1", "2", "", "5"))))
+                   text   = as_text(c("1", "2", "", "5")),
+                   row.names = NULL))
 })
 
 
@@ -82,6 +87,7 @@ test_that("'sentences' uses names if its argument has them", {
                    index = c(1L, 2L, 1L),
                    text = as_text(c("First sentence. ", "Second.",
                                     "Third sentence!")),
+                   row.names = NULL,
                    stringsAsFactors = FALSE))
 })
 

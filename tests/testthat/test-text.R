@@ -1,13 +1,6 @@
 context("text")
 
 
-test_that("`format` should handle NAs", {
-    x <- c(NA, "Friday, November 23, 1787", NA)
-    expect_equal(format(as_text(x), na.print = "NA"),
-                 format(as.character(x)))
-})
-
-
 test_that("`as.data.frame` should work", {
     x <- as_text(c(a="1", b="2", c="foo", d="bar"))
     d <- as.data.frame(x)

@@ -53,7 +53,7 @@ text_locate <- function(x, terms, filter = text_filter(x))
     nm <- names(x)
     ans <- .Call(C_text_locate, x, terms)
     if (!is.null(nm)) {
-        ans$text <- nm[ans$text]
+        ans$text <- structure(ans$text, levels = nm, class = "factor")
     }
     ans
 }

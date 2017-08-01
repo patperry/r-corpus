@@ -191,8 +191,10 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         chars <- max(chars, 12)
     }
 
-    .Call(C_format_text, x, trim, chars, justify, width, na.encode,
-          quote, na.print, utf8)
+    fmt <- .Call(C_format_text, x, trim, chars, justify, width, na.encode,
+                 quote, na.print, utf8)
+    names(fmt) <- names(x)
+    fmt
 }
 
 

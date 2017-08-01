@@ -20,8 +20,8 @@ test_that("c should work with named or unnamed args", {
 
 test_that("c should work with complex args", {
     x <- c(a=as_text(c("hello", NA, "world")), "!", c=7)
-    expect_equal(x, as_text(c(a1 = "hello", a2 = NA, a3 = "world", "!",
-                              c = "7")))
+    expect_equal(x, as_text(c(a1 = "hello", a2 = NA, a3 = "world",
+                              "4" = "!", c = "7")))
 })
 
 
@@ -38,14 +38,6 @@ test_that("c should work with a single named argument", {
     x <- as_text(c(a = "hello", b = "goodbye", "!"))
     y <- c(a = x)
     expect_equal(y, as_text(c(a.a = "hello", a.b = "goodbye", a3 = "!")))
-})
-
-
-test_that("c should work with duplicate names", {
-    x <- as_text(c(a = "hello", b = "goodbye", "!"))
-    z <- c(x, x)
-    expect_equal(names(z), c(names(x), names(x)))
-    expect_equal(as.character(z), c(as.character(x), as.character(x)))
 })
 
 
@@ -85,7 +77,7 @@ test_that("c should support pairlists with recursive = TRUE", {
 
 test_that("c can handle NA after named", {
     z <- c(as_text(c(x = "a")), NA)
-    expect_equal(z, as_text(c(x = "a", NA)))
+    expect_equal(z, as_text(c(x = "a", "2" = NA)))
 })
 
 
@@ -98,4 +90,12 @@ test_that("c should take filter from first value", {
 
     z2 <- c(y, x)
     expect_equal(z2, as_text(c(LETTERS, letters)))
+})
+
+
+test_that("c should work with duplicate names", {
+    x <- as_text(c(a = "hello", b = "goodbye", "!"))
+    z <- c(x, x)
+    expect_equal(names(z), c(names(x), paste0(names(x), ".1")))
+    expect_equal(as.character(z), c(as.character(x), as.character(x)))
 })

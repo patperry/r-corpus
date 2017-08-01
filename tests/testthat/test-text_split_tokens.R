@@ -13,7 +13,8 @@ test_that("'split_tokens' can split into threes", {
                                     "Y Z",
                                     "a b c ", "d e f ", "g h i ", "j k l ",
                                     "m n o ", "p q r ", "s t u ", "v w x ",
-                                    "y z"))))
+                                    "y z")),
+                   row.names = NULL))
 })
 
 
@@ -29,21 +30,22 @@ test_that("'split_tokens' doesn't count dropped tokens", {
                                     "N O P Q R S ", "T U V W X Y ", "Z",
                                     "a b c d e f g ", "h i j k l m ",
                                     "n o p q r s ", "t u v w x y ", "z"),
-                                  filter = f)))
+                                  filter = f),
+                   row.names = NULL))
 })
 
 
 test_that("'split_tokens' keeps trailing whitespace", {
     expect_equal(text_split("abc  ", "tokens", 2),
         data.frame(parent = factor("1"), index = 1,
-                   text = as_text("abc  ")))
+                   text = as_text("abc  "), row.names = NULL))
 })
 
 
 test_that("'split_tokens' handles whitespace-only text", {
     expect_equal(text_split("   ", "tokens", 1),
         data.frame(parent = factor("1"),
-                   index = 1, text = as_text("   ")))
+                   index = 1, text = as_text("   "), row.names = NULL))
 })
 
 
@@ -52,5 +54,6 @@ test_that("'split_tokens' handles empty and missing text", {
         data.frame(parent = factor(c("1", "4", "5"),
                                    levels = as.character(1:5)),
                    index = c(1, 1, 1),
-                   text = as_text(c("", "", "a"))))
+                   text = as_text(c("", "", "a")),
+                   row.names = NULL))
 })

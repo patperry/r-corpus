@@ -2,8 +2,10 @@ context("text_names")
 
 
 test_that("`names` should be NULL for new text", {
-    x <- as_text("ABC")
+    x <- as_text(c("A", "B", "C"))
     expect_equal(names(x), NULL)
+
+    expect_equal(names(as_text(character())), NULL)
 })
 
 
@@ -11,6 +13,13 @@ test_that("`names<-` should work on text", {
     x <- as_text(LETTERS)
     names(x) <- rev(LETTERS)
     expect_equal(names(x), rev(LETTERS))
+})
+
+
+test_that("setting `names<-` to NULL should restore defaults", {
+    x <- as_text(c(a="x", b="y"))
+    names(x) <- NULL
+    expect_equal(names(x), NULL)
 })
 
 
@@ -76,17 +85,17 @@ test_that("`names<-` should preserve attributes", {
 })
 
 
-test_that("`names<-` should allow NA", {
+test_that("`names<-` should not allow NA", {
     x <- as_text(1:3)
-    names(x) <- c("a", NA, "b")
-    expect_equal(names(x), c("a", NA, "b"))
+    expect_error(names(x) <- c("a", NA, "b"),
+                 "missing values in 'names' are not allowed")
 })
 
 
-test_that("`names<-` should allow duplicates", {
+test_that("`names<-` should not allow duplicates", {
     x <- as_text(1:3)
-    names(x) <- c("a", "b", "a")
-    expect_equal(names(x), c("a", "b", "a"))
+    expect_error(names(x) <- c("a", "b", "a"),
+                 "duplicate 'names' are not allowed")
 })
 
 

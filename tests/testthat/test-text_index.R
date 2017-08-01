@@ -90,16 +90,16 @@ test_that("subset assign can have new indices", {
 
 
 test_that("subset assign can have new names", {
-    x <- as_text(LETTERS[1:5])
+    x <- as_text(LETTERS[1:3])
     x["foo"] <- "bar"
-    expect_equal(x, as_text(c(LETTERS[1:5], foo = "bar")))
+    expect_equal(x, as_text(c("1" = "A", "2" = "B", "3" = "C", foo = "bar")))
 })
 
 
 test_that("subset assign can have duplicate names", {
-    x <- as_text(LETTERS[1:5])
+    x <- as_text(LETTERS[1:3])
     x[c("foo", "foo")] <- c("bar", "baz")
-    expect_equal(x, as_text(c(LETTERS[1:5], foo = "baz")))
+    expect_equal(x, as_text(c("1" = "A", "2" = "B", "3" = "C", foo = "baz")))
 })
 
 
@@ -111,6 +111,14 @@ test_that("subsetting should allow extending the object", {
 })
 
 
+test_that("subsetting with char should expand names before setting", {
+    x <- as_text(letters[1:5])
+    x["3"] <- "ZZZ"
+    expect_equal(x, as_text(c("1" = "a", "2" = "b", "3" = "ZZZ",
+                              "4" = "d", "5" = "e")))
+})
+
+
 test_that("text methods should error for non-text", {
     expect_error(`[<-.corpus_text`("hello", 1, "a"), "invalid text object")
     expect_error(`[.corpus_text`("hello", 1), "invalid text object")
@@ -119,13 +127,15 @@ test_that("text methods should error for non-text", {
 
 test_that("rbind should take filter from first value", {
     f <- text_filter(map_case = FALSE)
-    x <- data.frame(text = as_text(letters, filter = f))
-    y <- data.frame(text = as_text(LETTERS))
+    x <- data.frame(text = as_text(letters, filter = f), row.names = NULL)
+    y <- data.frame(text = as_text(LETTERS), row.names = NULL)
     z <- rbind(x, y)
-    expect_equal(z, data.frame(text = as_text(c(letters, LETTERS), filter = f)))
+    expect_equal(z, data.frame(text = as_text(c(letters, LETTERS), filter = f),
+                               row.names = NULL))
 
     z2 <- rbind(y, x)
-    expect_equal(z2, data.frame(text = as_text(c(LETTERS, letters))))
+    expect_equal(z2, data.frame(text = as_text(c(LETTERS, letters)),
+                                row.names = NULL))
 })
 
 

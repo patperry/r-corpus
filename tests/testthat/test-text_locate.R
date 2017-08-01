@@ -63,6 +63,7 @@ test_that("'text_locate' can give instance contexts", {
                           " is a rose is a rose.", " is a rose.", ".",
                           " by any other name would smell as sweet.",
                           " Red")),
+        row.names = NULL,
         stringsAsFactors = FALSE)
     class(expected) <- c("corpus_text_locate", "corpus_frame", "data.frame")
 
@@ -84,6 +85,7 @@ test_that("'text_locate' can use a custom filter", {
         instance = c("Rose", "Rose"),
         after = as_text(c(" is a rose is a rose is a rose.", " Red"),
                         filter = f),
+        row.names = NULL,
         stringsAsFactors = FALSE)
     class(expected) <- c("corpus_text_locate", "corpus_frame", "data.frame")
 

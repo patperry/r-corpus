@@ -60,11 +60,19 @@
     }
 
     n <- length(x)
-    index <- structure(seq_len(n), names = names(x))
+    oldnames <- names(x)
+    if (is.null(names(x)) && !missing(i) && is.character(i)) {
+        oldnames <- as.character(seq_len(n))
+    }
+    index <- structure(seq_len(n), names = oldnames)
     with_rethrow({
         index[i] <- n + seq_along(value)
     })
     index[is.na(index)] <- n + length(value) + 1
+    if (!is.null(names(index))) {
+        empty <- nchar(names(index)) == 0
+        names(index)[empty] <- as.character(seq_along(index)[empty])
+    }
 
     y <- c(x, value, NA)[index]
     names(y) <- names(index)
@@ -224,10 +232,14 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
     if (use.names) {
         argnames <- names(args)
         ansnames <- vector("list", length(args))
+        off <- 0
+
         for (i in seq_along(args)) {
             name <- argnames[[i]]
             elt <- args[[i]]
-            eltnames <- names(elt)
+            len <- length(elt)
+
+            eltnames <- unclass(elt)$names
             if (length(elt) == 0) {
                 # pass
             } else if (is.null(name) || nchar(name) == 0) {
@@ -235,7 +247,7 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
                     ansnames[[i]] <- eltnames
                 }
             } else if (is.null(eltnames)) {
-                if (length(elt) == 1) {
+                if (len == 1) {
                     ansnames[[i]] <- name
                 } else {
                     ansnames[[i]] <- paste0(name, seq_along(elt))
@@ -249,20 +261,29 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
                 suffix[is.na(eltnames)] <- ".NA"
                 ansnames[[i]] <- paste0(name, suffix)
             }
+
+            off <- off + len
         }
 
         # if all names are NULL, don't set the names
         if (all(sapply(ansnames, is.null))) {
             names <- NULL
 
-        # otherwise, set missing names to empty (""), and concatenate
+        # otherwise, set missing names to empty index, and concatenate
         } else {
+            off <- 0
             for (i in seq_along(args)) {
+                n <- length(args[[i]])
                 if (is.null(ansnames[[i]])) {
-                    ansnames[[i]] <- rep("", length(args[[i]]))
+                    ansnames[[i]] <- as.character(off + seq_len(n))
                 }
+                off <- off + n
             }
             names <- c(ansnames, recursive = TRUE)
+
+            if (anyDuplicated(names)) {
+                names <- make.unique(names)
+            }
         }
     } else {
         names <- NULL
@@ -329,7 +350,10 @@ length.corpus_text <- function(x)
 
 names.corpus_text <- function(x)
 {
-    .Call(C_names_text, x)
+    if (!is_text(x)) {
+        stop("invalid text object")
+    }
+    unclass(x)$names
 }
 
 `names<-.corpus_text` <- function(x, value)
@@ -345,6 +369,12 @@ names.corpus_text <- function(x)
                         " must be the same length as the text object [",
                         length(x), "]"))
         }
+        if (anyNA(value)) {
+            stop("missing values in 'names' are not allowed")
+        }
+        if (anyDuplicated(value)) {
+            stop("duplicate 'names' are not allowed")
+        }
     }
 
     y <- unclass(x)
@@ -355,7 +385,7 @@ names.corpus_text <- function(x)
 
 rep.corpus_text <- function(x, ...)
 {
-    x <- structure(as.character(x), names = names(x))
+    x <- structure(as.character(x), names = unclass(x)$names)
     as_text(rep(x, ...))
 }
 
