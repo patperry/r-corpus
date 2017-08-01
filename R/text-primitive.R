@@ -385,8 +385,12 @@ names.corpus_text <- function(x)
 
 rep.corpus_text <- function(x, ...)
 {
-    x <- structure(as.character(x), names = unclass(x)$names)
-    as_text(rep(x, ...))
+    x <- structure(as.character(x), names = names(x))
+    y <- rep(x, ...)
+    if (!is.null(names(y))) {
+        names(y) <- make.unique(names(y))
+    }
+    as_text(y, filter = text_filter(x))
 }
 
 xtfrm.corpus_text <- function(x)

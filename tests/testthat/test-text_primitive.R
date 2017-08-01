@@ -48,6 +48,12 @@ test_that("rep should work", {
 })
 
 
+test_that("rep should work with names", {
+    x <- as_text(c(x="a", y="b"))
+    y <- rep(x, 2)
+    expect_equal(y, as_text(c(x="a", y="b", x.1="a", y.1="b")))
+})
+
 
 test_that("invalid operations should error", {
     x <- as_text("hello")
