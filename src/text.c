@@ -301,7 +301,7 @@ out:
 }
 
 
-SEXP as_text_character(SEXP x, SEXP filter, SEXP keep_names)
+SEXP as_text_character(SEXP x, SEXP filter)
 {
 	SEXP ans, handle, sources, source, row, start, stop, names, str;
 	struct rcorpus_text *obj;
@@ -338,11 +338,7 @@ SEXP as_text_character(SEXP x, SEXP filter, SEXP keep_names)
 
 	PROTECT(start = allocVector(INTSXP, nrow)); nprot++;
 	PROTECT(stop = allocVector(INTSXP, nrow)); nprot++;
-	if (LOGICAL(keep_names)[0] == TRUE) {
-		names = getAttrib(x, R_NamesSymbol);
-	} else {
-		names = R_NilValue;
-	}
+	names = R_NilValue;
 
 	PROTECT(ans = alloc_text(sources, source, row, start, stop, names,
 				 filter));
@@ -418,7 +414,7 @@ out:
 
 SEXP coerce_text(SEXP sx)
 {
-	SEXP ans, keep_names;
+	SEXP ans;
 
 	if (is_text(sx)) {
 		return sx;
@@ -427,9 +423,8 @@ SEXP coerce_text(SEXP sx)
 	}
 
 	PROTECT(sx = coerceVector(sx, STRSXP));
-	PROTECT(keep_names = ScalarLogical(TRUE));
-	ans = as_text_character(sx, R_NilValue, keep_names);
-	UNPROTECT(2);
+	ans = as_text_character(sx, R_NilValue);
+	UNPROTECT(1);
 	return ans;
 }
 
