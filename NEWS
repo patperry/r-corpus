@@ -1,3 +1,30 @@
+Changes in version 0.9.0
+
+ * Implemented text subset assignment operators `[<-` and `[[<-`.
+
+ * Switched to more efficient c.corpus_text() function.
+
+ * Added utf8_normalize() function for translating to NFC normal form,
+   applying case and compatibility maps.
+
+ * Make text_locate() return "text" column as a factor.
+
+ * Constrain text names() to be unique, non-missing.
+
+ * Added "names" argument to as_text for overriding default names.
+
+ * Added text_sub() for getting token sub-sequences.
+
+ * Added text_length() for text length, including NA tokens.
+
+ * Added checks for underflow in read_ndjson() double deserialization.
+
+ * Fixed bug in utf8_format, utf8_print, utf8_width where internal
+   double quotes were not escaped.
+
+ * Fixed rchk, UBSAN warnings.
+
+
 Changes in version 0.8.0 (2017-07-18)
 
  * Added text_filter() generic. Deprecate token_filter() and
