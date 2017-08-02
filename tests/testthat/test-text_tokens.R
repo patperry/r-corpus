@@ -5,9 +5,8 @@ test_that("'text_tokens' splits according to UAX #29", {
     text <- paste0("The quick (\u201cbrown\u201d) fox can\u2019t",
                    " jump 32.3 feet, right?")
 
-    f <- text_filter(map_case = FALSE, map_compat = FALSE,
-                     map_quote = FALSE, remove_ignorable = FALSE,
-                     combine = NULL)
+    f <- text_filter(map_case = FALSE, map_quote = FALSE,
+                     remove_ignorable = FALSE, combine = NULL)
     toks <- text_tokens(text, filter = f)
 
     expect_equal(toks, list(

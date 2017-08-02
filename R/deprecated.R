@@ -20,7 +20,7 @@ sentence_filter <- function(crlf_break = FALSE,
 }
 
 
-token_filter <- function(map_case = TRUE, map_compat = TRUE,
+token_filter <- function(map_case = TRUE,
                          map_quote = TRUE, remove_ignorable = TRUE,
                          stemmer = NULL, stem_except = drop,
                          combine = abbreviations("english"),
@@ -30,7 +30,7 @@ token_filter <- function(map_case = TRUE, map_compat = TRUE,
                          drop = NULL, drop_except = NULL)
 {
     .Deprecated("text_filter")
-    text_filter(map_case = map_case, map_compat = map_compat,
+    text_filter(map_case = map_case,
                 map_quote = map_quote, remove_ignorable = remove_ignorable,
                 stemmer = stemmer, stem_dropped = TRUE,
                 stem_except = stem_except, combine = combine,

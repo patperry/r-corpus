@@ -22,8 +22,8 @@
     \method{text_filter}{data.frame}(x = NULL, ...)
 
     \method{text_filter}{default}(x = NULL, ...,
-                        map_case = TRUE, map_compat = TRUE,
-                        map_quote = TRUE, remove_ignorable = TRUE,
+                        map_case = TRUE, map_quote = TRUE,
+                        remove_ignorable = TRUE,
                         stemmer = NULL, stem_dropped = FALSE,
                         stem_except = NULL,
                         combine = abbreviations("english"),
@@ -45,10 +45,6 @@
     \item{map_case}{a logical value indicating whether to apply Unicode
         case mapping to the text. For most languages, this transformation
         changes uppercase characters to their lowercase equivalents.}
-
-    \item{map_compat}{a logical value indicating whether to apply
-        Unicode compatibility mappings to the characters, those required
-        for NFKC and NFKD normal forms.}
 
     \item{map_quote}{a logical value indicating whether to replace Unicode
         quote characters like single quote, double quote, and apostrophe,

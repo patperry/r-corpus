@@ -65,7 +65,6 @@ static int filter_type_kind(SEXP filter)
 
 	if (filter == R_NilValue) {
 		kind |= CORPUS_TYPE_MAPCASE;
-		kind |= CORPUS_TYPE_MAPCOMPAT;
 		kind |= CORPUS_TYPE_MAPQUOTE;
 		kind |= CORPUS_TYPE_RMDI;
 		return kind;
@@ -73,10 +72,6 @@ static int filter_type_kind(SEXP filter)
 
 	if (filter_logical(filter, "map_case", 0)) {
 		kind |= CORPUS_TYPE_MAPCASE;
-	}
-
-	if (filter_logical(filter, "map_compat", 0)) {
-		kind |= CORPUS_TYPE_MAPCOMPAT;
 	}
 
 	if (filter_logical(filter, "map_quote", 0)) {

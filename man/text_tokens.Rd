@@ -39,11 +39,10 @@
 
         \item Next, we normalize the remaining words by applying the
             character mappings indicated by the \code{map_case},
-            \code{map_compat}, \code{map_quote}, and \code{remove_ignorable}.
+            \code{map_quote}, and \code{remove_ignorable}.
             At the end of the second stage, we have segmented
             the text into a sequence of normalized words, in Unicode composed
-            normal form (NFC, or if \code{map_compat} is \code{TRUE},
-            NFKC).
+            normal form (NFC).
 
         \item In the third stage, if the \code{stemmer} property is
             non-\code{NULL}, we apply the indicated stemming algorithm to
@@ -82,10 +81,10 @@
     \code{drop}, and \code{drop_except} need to be stemmed (unless
     \code{stemmer} is not \code{NA}), but they do not need to be
     normalized. We normalize the argument values in the manner specified
-    by \code{map_case}, \code{map_compate}, \code{map_quote}, and
-    \code{remove_ignorable}. Thus, for example, if \code{map_case = TRUE},
-    then a token filter with \code{combine = "Mx."} produces the same
-    results as a token filter with \code{combine = "mx."}.
+    by \code{map_case}, \code{map_quote}, and \code{remove_ignorable}.
+    Thus, for example, if \code{map_case = TRUE}, then a token filter with
+    \code{combine = "Mx."} produces the same results as a token filter
+    with \code{combine = "mx."}.
 }
 \section{Stemming}{
     We use the stemming algorithms provided by the Snowball library. These
@@ -138,9 +137,8 @@
     # count dropped and non-dropped tokens:
     text_length("The quick ('brown') fox can't jump 32.3 feet, right?")
 
-    # don't normalize:
-    f <- text_filter(map_case = FALSE, map_compat = FALSE,
-                     map_quote = FALSE, remove_ignorable = FALSE)
+    # don't change case or quotes:
+    f <- text_filter(map_case = FALSE, map_quote = FALSE)
     text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?", f)
 
     # drop common function words ('stop' words):

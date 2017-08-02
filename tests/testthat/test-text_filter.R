@@ -4,7 +4,6 @@ context("text_filter")
 test_that("'text_filter' has the right defaults", {
     f <- text_filter()
     expect_equal(f$map_case, TRUE)
-    expect_equal(f$map_compat, TRUE)
     expect_equal(f$map_quote, TRUE)
     expect_equal(f$remove_ignorable, TRUE)
     expect_equal(f$stemmer, NULL)
