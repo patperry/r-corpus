@@ -4,14 +4,20 @@
 \alias{as_utf8}
 \alias{utf8_encode}
 \alias{utf8_format}
+\alias{utf8_normalize}
 \alias{utf8_print}
 \alias{utf8_valid}
 \alias{utf8_width}
 \description{
-    UTF-8 text conversion, formatting, and printing.
+    UTF-8 text validation, normalization, formatting, and printing.
 }
 \usage{
     as_utf8(x)
+
+    utf8_valid(x)
+
+    utf8_normalize(x, map_case = FALSE, map_compat = FALSE,
+                   map_quote = FALSE, remove_ignorable = FALSE)
 
     utf8_encode(x, display = FALSE)
 
@@ -24,11 +30,25 @@
                display = TRUE, ...)
 
     utf8_width(x, encode = TRUE, quote = FALSE)
-
-    utf8_valid(x)
 }
 \arguments{
     \item{x}{character object.}
+
+    \item{map_case}{a logical value indicating whether to apply Unicode
+        case mapping to the text. For most languages, this transformation
+        changes uppercase characters to their lowercase equivalents.}
+
+    \item{map_compat}{a logical value indicating whether to apply
+        Unicode compatibility mappings to the characters, those required
+        for NFKC and NFKD normal forms.}
+
+    \item{map_quote}{a logical value indicating whether to replace Unicode
+        quote characters like single quote, double quote, and apostrophe,
+        with an ASCII single quote (').}
+
+    \item{remove_ignorable}{a logical value indicating whether to remove
+        Unicode "default ignorable" characters like zero-width spaces
+        and soft hyphens.}
 
     \item{display}{logical scalar indicating whether to optimize the
         encoding for display, not byte-for-byte data transmission.}
@@ -82,6 +102,14 @@
     to a valid UTF-8 character object, or throws an error if no conversion
     is possible.
 
+    \code{utf8_valid} tests whether the elements of a character object
+    can be translated to valid UTF-8 strings.
+
+    \code{utf8_normalize} converts the elements of a character object to
+    Unicode normalized composed form (NFC) while applying the character
+    maps specified by the \code{map_case}, \code{map_compat},
+    \code{map_quote}, and \code{remove_ignorable} arguments.
+
     \code{utf8_encode} encodes a character object for printing on a UTF-8
     device by escaping controls characters and other non-printable
     characters. When \code{display = TRUE}, the function optimizes the
@@ -96,9 +124,6 @@
     \code{utf8_print} prints a character object after formatting it with
     \code{utf8_format}.
 
-    \code{utf8_valid}{tests whether the elements of a character object
-    can be translated to valid UTF-8 strings.}
-
     \code{utf8_width} returns the printed widths of the elements of
     a character object on a UTF-8 device or, when \code{LC_CTYPE = "C"},
     on an ASCII device. If the string is not printable on the device,
@@ -112,9 +137,9 @@
     quotes with \code{\"}).
 }
 \value{
-    For \code{as_utf8} or \code{utf8_encode}, a character object with
-    the same attributes as \code{x} but with \code{Encoding} set to
-    \code{"UTF-8"}.
+    For \code{as_utf8}, \code{utf8_normalize}, and \code{utf8_encode},
+    the result is a character object with the same attributes as
+    \code{x} but with \code{Encoding} set to \code{"UTF-8"}.
 
     For \code{utf8_print}, the function returns \code{x} invisibly.
 
@@ -139,6 +164,10 @@
 
     # test for valid UTF-8
     utf8_valid(x)
+
+    # normalize text
+    angstrom <- c("\u00c5", "\u0041\u030a", "\u212b")
+    utf8_normalize(angstrom) == "\u00c5"
 
     # encoding
     utf8_encode(x)

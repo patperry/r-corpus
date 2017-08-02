@@ -307,3 +307,19 @@ utf8_width <- function(x, encode = TRUE, quote = FALSE)
     utf8 <- (Sys.getlocale("LC_CTYPE") != "C")
     .Call(C_utf8_width, x, quote, utf8)
 }
+
+
+utf8_normalize <- function(x, map_case = FALSE, map_compat = FALSE,
+                           map_quote = FALSE, remove_ignorable = FALSE)
+{
+    with_rethrow({
+        x <- as_utf8(x)
+        map_case <- as_option("map_case", map_case)
+        map_compat <- as_option("map_compat", map_compat)
+        map_quote <- as_option("map_quote", map_quote)
+        remove_ignorable <- as_option("remove_ignorable", remove_ignorable)
+    })
+
+    .Call(C_utf8_normalize, x, map_case, map_compat, map_quote,
+          remove_ignorable)
+}

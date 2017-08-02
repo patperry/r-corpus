@@ -6,8 +6,7 @@ Bugs
 
  * Unicode compatibility maps (NFKC) can change tokenization properties
    depending on order of application (NFKC -> words vs words -> NFKC). This
-   should not be part of the text filter. Instead add a `utf8_normalize`
-   function?
+   should not be part of the text filter.
 
 
 Features
