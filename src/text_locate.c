@@ -257,11 +257,13 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 	SEXP ans, names, filter, row_names, sclass, sources,
 	     ptable, psource, prow, pstart, pstop,
 	     before, bsource, brow, bstart, bstop,
+	     instance, isource, irow, istart, istop,
 	     after, asource, arow, astart, astop,
-	     stext, sterm, instance;
+	     stext, sterm;
 	struct mkchar mkchar;
 	R_xlen_t i, n, term_id, text_id;
-	int nprot, off, len, start, stop;
+	double row;
+	int nprot, off, len, source, start, stop;
 	
 	n = loc->nitem;
 	nprot = 0;
@@ -276,12 +278,16 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 
 	PROTECT(stext = allocVector(REALSXP, n)); nprot++;
 	PROTECT(sterm = allocVector(STRSXP, n)); nprot++;
-	PROTECT(instance = allocVector(STRSXP, n)); nprot++;
 
 	PROTECT(bsource = allocVector(INTSXP, n)); nprot++;
 	PROTECT(brow = allocVector(REALSXP, n)); nprot++;
 	PROTECT(bstart = allocVector(INTSXP, n)); nprot++;
 	PROTECT(bstop = allocVector(INTSXP, n)); nprot++;
+
+	PROTECT(isource = allocVector(INTSXP, n)); nprot++;
+	PROTECT(irow = allocVector(REALSXP, n)); nprot++;
+	PROTECT(istart = allocVector(INTSXP, n)); nprot++;
+	PROTECT(istop = allocVector(INTSXP, n)); nprot++;
 
 	PROTECT(asource = allocVector(INTSXP, n)); nprot++;
 	PROTECT(arow = allocVector(REALSXP, n)); nprot++;
@@ -296,30 +302,39 @@ SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 		text_id = loc->items[i].text_id;
 		REAL(stext)[i] = (double)(text_id + 1);
 
+		source = INTEGER(psource)[text_id];
+		row = REAL(prow)[text_id];
+		start = INTEGER(pstart)[text_id];
+		stop = INTEGER(pstop)[text_id];
+
 		term_id = loc->items[i].term_id;
 		SET_STRING_ELT(sterm, i, STRING_ELT(terms, term_id));
 
-		SET_STRING_ELT(instance, i,
-			       mkchar_get(&mkchar, &loc->items[i].instance));
-
-		start = INTEGER(pstart)[text_id];
-		stop = INTEGER(pstop)[text_id];
 		off = (int)(loc->items[i].instance.ptr - text[text_id].ptr);
 		len = (int)CORPUS_TEXT_SIZE(&loc->items[i].instance);
 
-		INTEGER(bsource)[i] = INTEGER(psource)[text_id];
-		REAL(brow)[i] = REAL(prow)[text_id];
+		INTEGER(bsource)[i] = source;
+		REAL(brow)[i] = row;
 		INTEGER(bstart)[i] = start;
 		INTEGER(bstop)[i] = start + off - 1;
 
-		INTEGER(asource)[i] = INTEGER(psource)[text_id];
-		REAL(arow)[i] = REAL(prow)[text_id];
+		INTEGER(isource)[i] = source;
+		REAL(irow)[i] = row;
+		INTEGER(istart)[i] = start + off;
+		INTEGER(istop)[i] = start + off + len - 1;
+
+		INTEGER(asource)[i] = source;
+		REAL(arow)[i] = row;
 		INTEGER(astart)[i] = start + off + len;
 		INTEGER(astop)[i] = stop;
 	}
 
 	PROTECT(before = alloc_text(sources, bsource, brow, bstart, bstop,
 				    R_NilValue, filter));
+	nprot++;
+
+	PROTECT(instance = alloc_text(sources, isource, irow, istart, istop,
+				      R_NilValue, filter));
 	nprot++;
 
 	PROTECT(after = alloc_text(sources, asource, arow, astart, astop,
