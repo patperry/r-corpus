@@ -12,7 +12,7 @@
     UTF-8 text validation, normalization, formatting, and printing.
 }
 \usage{
-    as_utf8(x)
+    as_utf8(x, normalize = TRUE)
 
     utf8_valid(x)
 
@@ -33,6 +33,9 @@
 }
 \arguments{
     \item{x}{character object.}
+
+    \item{normalize}{a logical value indicating whether to convert to
+        Unicode composed normal form (NFC).}
 
     \item{map_case}{a logical value indicating whether to apply Unicode
         case mapping to the text. For most languages, this transformation

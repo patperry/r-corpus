@@ -14,9 +14,13 @@
 
 
 # converts a character vector from its declared encoding to UTF-8
-as_utf8 <- function(x)
+as_utf8 <- function(x, normalize = TRUE)
 {
-    .Call(C_utf8_coerce, x)
+    ans <- .Call(C_utf8_coerce, x)
+    if (normalize) {
+        ans <- utf8_normalize(ans)
+    }
+    ans
 }
 
 # encode an R character string in a form suitable for display
@@ -313,7 +317,7 @@ utf8_normalize <- function(x, map_case = FALSE, map_compat = FALSE,
                            map_quote = FALSE, remove_ignorable = FALSE)
 {
     with_rethrow({
-        x <- as_utf8(x)
+        x <- as_utf8(x, normalize = FALSE)
         map_case <- as_option("map_case", map_case)
         map_compat <- as_option("map_compat", map_compat)
         map_quote <- as_option("map_quote", map_quote)
