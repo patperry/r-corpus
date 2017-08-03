@@ -215,27 +215,20 @@ test_that("'format' can handle ignorable code points", {
 
 
 test_that("'format' can handle marks", {
-    raw <- "e\u0300"
+    raw <- "\u1e0d\u0307"
     text <- as_text(raw)
-    names(raw) <- names(text)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(as.character(format(text, chars = 1, justify = "left")),
-                 "e...")
-    expect_equal(as.character(utf8_format(raw, chars = 1, justify = "left")),
-                 "e...")
+    expect_equal(format(text, chars = 6, justify = "left"), "\u1e0d...")
+    expect_equal(utf8_format(raw, chars = 6, justify = "left"), "\u1e0d...")
 
-    expect_equal(as.character(format(text, chars = 1, justify = "centre")),
-                 "e...")
-    expect_equal(as.character(utf8_format(raw, chars = 1, justify = "centre")),
-                 "e...")
+    expect_equal(format(text, chars = 6, justify = "centre"), "\u1e0d...")
+    expect_equal(utf8_format(raw, chars = 6, justify = "centre"), "\u1e0d...")
 
-    expect_equal(as.character(format(text, chars = 1, justify = "right")),
-                 "...")
-    expect_equal(as.character(utf8_format(raw, chars = 1, justify = "right")),
-                 "...")
+    expect_equal(format(text, chars = 5, justify = "right"), "...")
+    expect_equal(utf8_format(raw, chars = 5, justify = "right"), "...")
 
     ctype <- switch_ctype("Unicode")
 
