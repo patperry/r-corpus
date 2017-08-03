@@ -45,9 +45,9 @@
         Unicode compatibility mappings to the characters, those required
         for NFKC and NFKD normal forms.}
 
-    \item{map_quote}{a logical value indicating whether to replace Unicode
-        quote characters like single quote, double quote, and apostrophe,
-        with an ASCII single quote (').}
+    \item{map_quote}{a logical value indicating whether to replace curly
+        single quotes and double quotes with straight single quotes
+        and double quotes.}
 
     \item{remove_ignorable}{a logical value indicating whether to remove
         Unicode "default ignorable" characters like zero-width spaces
