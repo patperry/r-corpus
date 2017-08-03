@@ -12,7 +12,7 @@ Features
 
  * `summary.text` could be better
 
- * Add `ignored_dropped` option to `text_filter`
+ * Add `ignore_dropped` option to `text_filter` (?)
 
  * `text_locate`, allows duplicates in the `term` argument. If the function
    disallowed this, then it could return the `term` column as a factor. This
@@ -40,11 +40,10 @@ Features
            tapply(dict$score[term], text, mean, default = 0))
 
 
-  * rename `text_locate` columns: text, before, target, after
+ * rename `text_locate` columns: text, before, target, after
 
-  * make `target` text, not character; include spaces in target
+ * make `target` text, not character
 
-  * make `term_counts` return a `kind` or `class` column. Problem: kind
-   (word break property) can change after nfkc normalization. Solution 1:
-   only apply the nfkc maps that preserve normalization?
-   Solution 2: report majority kind?
+ * include spaces in `text_locate` target (?)
+
+ * make `term_counts` return a `kind` column.
