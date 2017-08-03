@@ -1,5 +1,8 @@
 Changes in version 0.9.0
 
+ * Change stemmer so that it only modifies tokens of kind "letter",
+   preserving "number", "symbol", "url", etc.
+
  * Removed 'map_compat' option from text_filter(); use utf8_normalize()
    instead if you need to apply compatibility maps.
 
