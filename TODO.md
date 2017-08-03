@@ -4,9 +4,7 @@ To Do
 Bugs
 ----
 
- * Unicode compatibility maps (NFKC) can change tokenization properties
-   depending on order of application (NFKC -> words vs words -> NFKC). This
-   should not be part of the text filter.
+ (no known bugs)
 
 
 Features
