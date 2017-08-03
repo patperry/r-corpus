@@ -45,6 +45,61 @@ test_that("'text_detect' can use a custom filter", {
 })
 
 
+test_that("'text_match' can return matching term as a factor", {
+    text <- c("Rose is a rose is a rose is a rose.",
+              "A rose by any other name would smell as sweet.",
+              "Snow White and Rose Red")
+
+    actual <- text_match(text, c(".", "rose"))
+
+    expected <- data.frame(
+        text = structure(c(1, 1, 1, 1, 1, 2, 2, 3), levels = as.character(1:3),
+                         class = "factor"),
+        term = structure(c(2, 2, 2, 2, 1, 2, 1, 2), levels = c(".", "rose"),
+                         class = "factor"),
+        row.names = NULL,
+        stringsAsFactors = FALSE)
+    class(expected) <- c("corpus_frame", "data.frame")
+
+    expect_equal(actual, expected)
+})
+
+
+test_that("'text_match' works with NULL terms", {
+    text <- c("Rose is a rose is a rose is a rose.",
+              "A rose by any other name would smell as sweet.",
+              "Snow White and Rose Red")
+
+    actual <- text_match(text, NULL)
+    expected <- data.frame(text = structure(integer(), levels = labels(text),
+                                            class = "factor"),
+                           term = structure(integer(), levels = character(),
+                                            class = "factor"))
+    class(expected) <- c("corpus_frame", "data.frame")
+    expect_equal(actual, expected)
+})
+
+
+test_that("'text_match' errors for invalid arguments", {
+    text <- c("Rose is a rose is a rose is a rose.",
+              "A rose by any other name would smell as sweet.",
+              "Snow White and Rose Red")
+
+    expect_error(text_match(text, 1),
+                 "'terms' must be a character vector or NULL")
+
+    expect_error(text_match(text, c("rose", NA)),
+                 "'terms' argument cannot contain missing values")
+
+    invalid <- "fa\xE7ile"; Encoding(invalid) <- "UTF-8"
+    expect_error(text_match(text, invalid),
+                 "'terms' argument cannot contain invalid UTF-8")
+
+    expect_error(text_match(text, c("rose", "Rose")),
+                 "'terms' argument cannot contain duplicate types")
+})
+
+
 test_that("'text_locate' can give instance contexts", {
     text <- c("Rose is a rose is a rose is a rose.",
               "A rose by any other name would smell as sweet.",

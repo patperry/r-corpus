@@ -43,6 +43,40 @@ text_subset <- function(x, terms, filter = text_filter(x))
 }
 
 
+text_match <- function(x, terms, filter = text_filter(x))
+{
+    with_rethrow({
+        x <- as_text(x, filter = filter)
+    })
+
+    if (!(is.null(terms) || is.character(terms))) {
+        stop("'terms' must be a character vector or NULL")
+    }
+
+    if (anyNA(terms)) {
+        stop("'terms' argument cannot contain missing values")
+    }
+
+    if (!all(utf8_valid(terms))) {
+        stop("'terms' argument cannot contain invalid UTF-8")
+    }
+    uterms <- as_utf8(terms)
+
+    ans <- .Call(C_text_match, x, uterms)
+
+    if (nlevels(ans$term) != length(terms)) {
+        stop("'terms' argument cannot contain duplicate types")
+    }
+
+    if (!is.null(terms)) {
+        levels(ans$term) <- terms
+    }
+
+    ans$text <- structure(ans$text, levels = labels(x), class = "factor")
+    ans
+}
+
+
 text_locate <- function(x, terms, filter = text_filter(x))
 {
     with_rethrow({

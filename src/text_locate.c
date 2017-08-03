@@ -47,6 +47,7 @@ static void locate_init(struct locate *loc);
 static void locate_add(struct locate *loc, int text_id, int term_id,
 		       const struct corpus_text *instance);
 static void locate_grow(struct locate *loc, int nadd);
+SEXP make_matches(struct locate *loc, SEXP terms);
 SEXP make_instances(struct locate *loc, SEXP sx, SEXP terms,
 		    const struct corpus_text *text);
 
@@ -87,12 +88,13 @@ void locate_grow(struct locate *loc, int nadd)
 		return;
 	}
 
-        if ((err = corpus_array_size_add(&size, width, loc->nitem, nadd))) {
-                Rf_error("overflow error");
-        }
+        TRY(corpus_array_size_add(&size, width, loc->nitem, nadd));
 
         loc->items = (void *)S_realloc(base, size, loc->nitem_max, width);
         loc->nitem_max = size;
+	err = 0;
+out:
+	CHECK_ERROR(err);
 }
 
 
@@ -138,12 +140,9 @@ SEXP text_count(SEXP sx, SEXP sterms)
 	}
 
 	err = 0;
-
 out:
+	CHECK_ERROR(err);
 	UNPROTECT(nprot);
-	if (err) {
-		Rf_error("memory allocation failure");
-	}
 	return ans;
 }
 
@@ -189,12 +188,58 @@ SEXP text_detect(SEXP sx, SEXP sterms)
 	}
 
 	err = 0;
-
 out:
+	CHECK_ERROR(err);
 	UNPROTECT(nprot);
-	if (err) {
-		Rf_error("memory allocation failure");
+	return ans;
+}
+
+
+SEXP text_match(SEXP sx, SEXP sterms)
+{
+	SEXP ans, sitems, ssearch;
+	const struct corpus_text *text, *token;
+	struct corpus_filter *filter;
+	struct corpus_search *search;
+	struct locate loc;
+	R_xlen_t i, n;
+	int err, nprot, term_id;
+
+	nprot = 0;
+
+	PROTECT(sx = coerce_text(sx)); nprot++;
+	text = as_text(sx, &n);
+	filter = text_filter(sx);
+
+	PROTECT(ssearch = alloc_search(sterms, "locate", filter)); nprot++;
+	sitems = items_search(ssearch);
+	search = as_search(ssearch);
+
+	locate_init(&loc);
+
+	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
+		if (text[i].ptr == NULL) {
+			continue;
+		}
+
+		TRY(corpus_search_start(search, &text[i], filter));
+
+		while (corpus_search_advance(search)) {
+			term_id = search->term_id;
+			token = &search->current;
+			locate_add(&loc, i, term_id, token);
+		}
+
+		TRY(search->error);
 	}
+
+	PROTECT(ans = make_matches(&loc, sitems)); nprot++;
+	err = 0;
+out:
+	CHECK_ERROR(err);
+	UNPROTECT(nprot);
 	return ans;
 }
 
@@ -241,12 +286,58 @@ SEXP text_locate(SEXP sx, SEXP sterms)
 
 	PROTECT(ans = make_instances(&loc, sx, sitems, text)); nprot++;
 	err = 0;
-
 out:
 	UNPROTECT(nprot);
-	if (err) {
-		Rf_error("memory allocation failure");
+	CHECK_ERROR(err);
+	return ans;
+}
+
+
+SEXP make_matches(struct locate *loc, SEXP levels)
+{
+	SEXP ans, names, row_names, sclass, stext, sterm;
+	R_xlen_t i, n, term_id, text_id;
+	int j, nterm;
+	int nprot;
+
+	n = loc->nitem;
+	nprot = 0;
+
+	PROTECT(stext = allocVector(REALSXP, n)); nprot++;
+	PROTECT(sterm = allocVector(INTSXP, n)); nprot++;
+
+	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+
+		text_id = loc->items[i].text_id;
+		REAL(stext)[i] = (double)(text_id + 1);
+
+		term_id = loc->items[i].term_id;
+		INTEGER(sterm)[i] = term_id + 1;
 	}
+	setAttrib(sterm, R_LevelsSymbol, levels);
+	setAttrib(sterm, R_ClassSymbol, mkString("factor"));
+
+	PROTECT(ans = allocVector(VECSXP, 2)); nprot++;
+	SET_VECTOR_ELT(ans, 0, stext);
+	SET_VECTOR_ELT(ans, 1, sterm);
+
+	PROTECT(names = allocVector(STRSXP, 2)); nprot++;
+	SET_STRING_ELT(names, 0, mkChar("text"));
+	SET_STRING_ELT(names, 1, mkChar("term"));
+	setAttrib(ans, R_NamesSymbol, names);
+
+	PROTECT(row_names = allocVector(REALSXP, 2)); nprot++;
+	REAL(row_names)[0] = NA_REAL;
+	REAL(row_names)[1] = -(double)n;
+	setAttrib(ans, R_RowNamesSymbol, row_names);
+
+	PROTECT(sclass = allocVector(STRSXP, 2)); nprot++;
+        SET_STRING_ELT(sclass, 0, mkChar("corpus_frame"));
+        SET_STRING_ELT(sclass, 1, mkChar("data.frame"));
+        setAttrib(ans, R_ClassSymbol, sclass);
+
+	UNPROTECT(nprot);
 	return ans;
 }
 

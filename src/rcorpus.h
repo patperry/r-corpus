@@ -250,6 +250,7 @@ SEXP text_detect(SEXP x, SEXP terms);
 SEXP text_filter_update(SEXP x);
 SEXP text_length(SEXP x);
 SEXP text_locate(SEXP x, SEXP terms);
+SEXP text_match(SEXP x, SEXP terms);
 SEXP text_nsentence(SEXP x);
 SEXP text_ntoken(SEXP x);
 SEXP text_ntype(SEXP x, SEXP collapse);
