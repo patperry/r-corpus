@@ -10,6 +10,10 @@ Bugs
 Features
 --------
 
+ * `map_quote` might be too agressive. just map single and double quotes?
+
+ * `token_kind` and `token_map` functions (?)
+
  * `summary.text` could be better
 
  * Add `ignore_dropped` option to `text_filter` (?)
