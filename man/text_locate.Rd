@@ -48,12 +48,12 @@
     texts and names equal to the text names.
 
     \code{text_locate} returns a data frame with one row for each search
-    result and columns named \sQuote{text}, \sQuote{term}, \sQuote{before},
+    result and columns named \sQuote{text}, \sQuote{before},
     \sQuote{instance}, and \sQuote{after}. The \sQuote{text} column gives
-    the name of the text containing the instance, and \sQuote{term} gives
-    the matching term; \sQuote{before} and \sQuote{after} are text vectors
-    giving the text before and after the instance. The \sQuote{instance}
-    column gives the token or tokens matching the search term.
+    the name of the text containing the instance; \sQuote{before} and
+    \sQuote{after} are text vectors giving the text before and after the
+    instance. The \sQuote{instance} column gives the token or tokens matching
+    the search term.
 
     \code{text_match} returns a data frame for one row for each search result,
     with columns names \sQuote{text} and \sQuote{term}. Both columns are

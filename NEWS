@@ -1,5 +1,9 @@
 Changes in version 0.9.0
 
+ * Removed 'term' column from text_locate() output.
+
+ * Added text_match() function to return matching terms as a factor.
+
  * Change stemmer so that it only modifies tokens of kind "letter",
    preserving "number", "symbol", "url", etc.
 

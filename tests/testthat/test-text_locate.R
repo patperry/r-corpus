@@ -110,7 +110,6 @@ test_that("'text_locate' can give instance contexts", {
     expected <- data.frame(
         text = structure(c(1, 1, 1, 1, 2, 3), levels = as.character(1:3),
                          class = "factor"),
-        term = rep("rose", 6),
         before = as_text(c("", "Rose is a ", "Rose is a rose is a ",
                    "Rose is a rose is a rose is a ", "A ",
                    "Snow White and ")),
@@ -137,7 +136,6 @@ test_that("'text_locate' can use a custom filter", {
     expected <- data.frame(
         text = structure(c(1, 3), levels = as.character(1:3),
                          class = "factor"),
-        term = rep("Rose", 2),
         before = as_text(c("", "Snow White and "), filter = f),
         instance = as_text(c("Rose", "Rose"), filter = f),
         after = as_text(c(" is a rose is a rose is a rose.", " Red"),
@@ -158,16 +156,15 @@ test_that("'text_locate' prints results correctly", {
     loc <- text_locate(text, "Rose", f)
 
     oldwidth <- getOption("width")
-    options(width = 80)
+    options(width = 76)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     lines <- strsplit(capture_output(print(loc)), "\n")[[1]]
-    expect_equal(lines,
-c("  text term before                        instance                         after",
-  "1 1    Rose                                 Rose    is a rose is a rose is a ...",
-  "2 3    Rose               Snow White and    Rose    Red                         "))
-
+    expect_equal(lines, c(
+"  text before                        instance                          after",
+"1 1                                    Rose    is a rose is a rose is a r...",
+"2 3                  Snow White and    Rose    Red                          "))
     options(width = oldwidth)
 })
