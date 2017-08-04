@@ -395,7 +395,7 @@ term_counts(lines2, f)
 17 time       315     312
 18 well       324     311
 ⋮
-(8250 rows total)
+(8239 rows total)
 ```
 
 The *readtext* package

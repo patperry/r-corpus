@@ -1,0 +1,325 @@
+<!--
+%\VignetteIndexEntry{Introduction to corpus}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+-->
+
+Introduction to corpus
+======================
+
+
+
+Overview
+--------
+
+
+Data preparation
+----------------
+
+For a demonstration text we will use L. Frank Baum's *The Wonderful Wizard of
+Oz*, available as [Project Gutenberg EBook #55][gutenberg-oz]. We first
+download the text and strip off the Project Gutenberg header and footer.
+
+
+```r
+url <- "http://www.gutenberg.org/cache/epub/55/pg55.txt"
+raw <- readLines(url, encoding = "UTF-8")
+
+# the text starts after the Project Gutenberg header...
+start <- grep("^\\*\\*\\* START OF THIS PROJECT GUTENBERG EBOOK", raw) + 1
+
+# ...end ends at the Project Gutenberg footer.
+stop <- grep("^End of Project Gutenberg", raw) - 1
+
+lines <- raw[start:stop]
+```
+
+The novel starts with front matter: a title page, table of contents,
+introduction, and half title page. Then, a series of chapters follow.
+We group the lines by section.
+
+```r
+# the front matter ends at the half title page
+half_title <- grep("^THE WONDERFUL WIZARD OF OZ", lines)
+
+# chapters start with "1.", "2.", etc...
+chapter <- grep("^[[:space:]]*[[:digit:]]+\\.", lines)
+
+# ... and appear after the half title page
+chapter <- chapter[chapter > half_title]
+
+start <- c(1, chapter)
+end <- c(chapter - 1, length(lines))
+
+sections <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"),
+                   start, end)
+names(sections) <- c("front", sprintf("ch%02d", seq_along(chapter)))
+```
+
+Finally, we convert the sections from an R character object to a *corpus*
+text object, and we store the text in a data frame. This is not strictly
+necessary, but it makes downstream processing more convenient. We also
+add the `"corpus_frame"` class to the data frame.
+
+
+```r
+data <- data.frame(text = as_text(sections))
+class(data) <- c("corpus_frame", "data.frame")
+```
+Note that we do not need to specify `stringsAsFactors = FALSE` for text
+objects.  The only affect of the `"corpus_frame"` class is to make printing
+nicer:
+
+```r
+print(data) # cuts off after 18 rows
+```
+
+```
+      text                                                                                                              
+front \n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe Wonderful Wizard of Oz\n\n\nby\n\nL. Frank Baum\n\n\n\n Contents\n\n       Intr…
+ch01  1.  The Cyclone\n\n\nDorothy lived in the midst of the great Kansas prairies, with Uncle\nHenry, who was a farmer…
+ch02  2.  The Council with the Munchkins\n\n\nShe was awakened by a shock, so sudden and severe that if Dorothy had\nno…
+ch03  3.  How Dorothy Saved the Scarecrow\n\n\nWhen Dorothy was left alone she began to feel hungry.  So she went to\nt…
+ch04  4.  The Road Through the Forest\n\n\nAfter a few hours the road began to be rough, and the walking grew so\ndiffi…
+ch05  5.  The Rescue of the Tin Woodman\n\n\nWhen Dorothy awoke the sun was shining through the trees and Toto had\nlon…
+ch06  6.  The Cowardly Lion\n\n\nAll this time Dorothy and her companions had been walking through the\nthick woods.  T…
+ch07  7.  The Journey to the Great Oz\n\n\nThey were obliged to camp out that night under a large tree in the\nforest, …
+ch08  8.  The Deadly Poppy Field\n\n\nOur little party of travelers awakened the next morning refreshed and\nfull of ho…
+ch09  9.  The Queen of the Field Mice\n\n\n"We cannot be far from the road of yellow brick, now," remarked the\nScarecr…
+ch10  10.  The Guardian of the Gate\n\n\nIt was some time before the Cowardly Lion awakened, for he had lain\namong the…
+ch11  11.  The Wonderful City of Oz\n\n\nEven with eyes protected by the green spectacles, Dorothy and her\nfriends wer…
+ch12  12.  The Search for the Wicked Witch\n\n\nThe soldier with the green whiskers led them through the streets of the…
+ch13  13.  The Rescue\n\n\nThe Cowardly Lion was much pleased to hear that the Wicked Witch had\nbeen melted by a bucke…
+ch14  14.  The Winged Monkeys\n\n\nYou will remember there was no road--not even a pathway--between the\ncastle of the …
+ch15    15.  The Discovery of Oz, the Terrible\n\n\nThe four travelers walked up to the great gate of Emerald City and …
+ch16    16.  The Magic Art of the Great Humbug\n\n\nNext morning the Scarecrow said to his friends:\n\n"Congratulate me…
+ch17  17.  How the Balloon Was Launched\n\n\nFor three days Dorothy heard nothing from Oz.  These were sad days for\nth…
+⋮
+(25 rows total)
+```
+
+```r
+print(data, 5) # cuts off after 5 rows
+```
+
+```
+      text                                                                                                              
+front \n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe Wonderful Wizard of Oz\n\n\nby\n\nL. Frank Baum\n\n\n\n Contents\n\n       Intr…
+ch01  1.  The Cyclone\n\n\nDorothy lived in the midst of the great Kansas prairies, with Uncle\nHenry, who was a farmer…
+ch02  2.  The Council with the Munchkins\n\n\nShe was awakened by a shock, so sudden and severe that if Dorothy had\nno…
+ch03  3.  How Dorothy Saved the Scarecrow\n\n\nWhen Dorothy was left alone she began to feel hungry.  So she went to\nt…
+ch04  4.  The Road Through the Forest\n\n\nAfter a few hours the road began to be rough, and the walking grew so\ndiffi…
+⋮
+(25 rows total)
+```
+
+
+Tokenization
+------------
+
+Text in *corpus* is represented as a sequence of tokens, each taking a value
+in a set of types. We can see the tokens for one or more elements using
+the `text_tokens` function:
+
+
+```r
+text_tokens(data["ch24",]) # Chapter 24's tokens
+```
+
+```
+[[1]]
+ [1] "24"       "."        "home"     "again"    "aunt"     "em"       "had"      "just"     "come"     "out"     
+[11] "of"       "the"      "house"    "to"       "water"    "the"      "cabbages" "when"     "she"      "looked"  
+[21] "up"       "and"      "saw"      "dorothy"  "running"  "toward"   "her"      "."        "\""       "my"      
+[31] "darling"  "child"    "!"        "\""       "she"      "cried"    ","        "folding"  "the"      "little"  
+[41] "girl"     "in"       "her"      "arms"     "and"      "covering" "her"      "face"     "with"     "kisses"  
+[51] "."        "\""       "where"    "in"       "the"      "world"    "did"      "you"      "come"     "from"    
+[61] "?"        "\""       "\""       "from"     "the"      "land"     "of"       "oz"       ","        "\""      
+[71] "said"     "dorothy"  "gravely"  "."        "\""       "and"      "here"     "is"       "toto"     ","       
+[81] "too"      "."        "and"      "oh"       ","        "aunt"     "em"       "!"        "i'm"      "so"      
+[91] "glad"     "to"       "be"       "at"       "home"     "again"    "!"        "\""      
+```
+
+The default behavior is to normalize tokens by changing the cases of the
+letters to lower case. A `text_filter` object controls the rules for
+segmentation and normalization. We can inspect the text filter:
+
+```r
+text_filter(data)
+```
+
+```
+Text filter with the following options:
+
+	map_case: TRUE
+	map_quote: TRUE
+	remove_ignorable: TRUE
+	stemmer: NULL
+	stem_dropped: FALSE
+	stem_except: NULL
+	combine:  chr [1:146] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." "Adv." "Alt." ...
+	drop_letter: FALSE
+	drop_mark: FALSE
+	drop_number: FALSE
+	drop_symbol: FALSE
+	drop_punct: FALSE
+	drop_other: FALSE
+	drop_url: FALSE
+	drop: NULL
+	drop_except: NULL
+	sent_crlf: FALSE
+	sent_suppress:  chr [1:146] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." "Adv." "Alt." ...
+```
+If the text column is of type `corpus_text` as returned by `as_text`, then
+we can change the text filter properties:
+
+```r
+text_filter(data)$map_case <- FALSE
+text_filter(data)$drop_punct <- TRUE
+text_tokens(data["ch24",])
+```
+
+```
+[[1]]
+ [1] "24"       NA         "Home"     "Again"    "Aunt"     "Em"       "had"      "just"     "come"     "out"     
+[11] "of"       "the"      "house"    "to"       "water"    "the"      "cabbages" "when"     "she"      "looked"  
+[21] "up"       "and"      "saw"      "Dorothy"  "running"  "toward"   "her"      NA         NA         "My"      
+[31] "darling"  "child"    NA         NA         "she"      "cried"    NA         "folding"  "the"      "little"  
+[41] "girl"     "in"       "her"      "arms"     "and"      "covering" "her"      "face"     "with"     "kisses"  
+[51] NA         NA         "Where"    "in"       "the"      "world"    "did"      "you"      "come"     "from"    
+[61] NA         NA         NA         "From"     "the"      "Land"     "of"       "Oz"       NA         NA        
+[71] "said"     "Dorothy"  "gravely"  NA         NA         "And"      "here"     "is"       "Toto"     NA        
+[81] "too"      NA         "And"      "oh"       NA         "Aunt"     "Em"       NA         "I'm"      "so"      
+[91] "glad"     "to"       "be"       "at"       "home"     "again"    NA         NA        
+```
+
+To restore the defaults, set the text filter to `NULL`:
+
+```r
+text_filter(data) <- NULL
+```
+I'm going to drop punctuation and common function words ("stop" words).
+
+```r
+text_filter(data) <- text_filter(drop_punct = TRUE,
+                                 drop = stopwords("english"))
+```
+
+The tokenizer allows for precise controlling over token dropping and token
+stemming. It also allows combining two or more words into a single token as
+in the following example:
+
+```r
+text_tokens("I live in New York City, New York",
+            text_filter(combine = c("new york", "new york city")))
+```
+
+```
+[[1]]
+[1] "i"             "live"          "in"            "new york city" ","             "new york"     
+```
+This example using the optional second argument to `text_tokens` to override
+the first argument's default text filter.  Here, instances of "new york" and
+"new york city" get replaced by single tokens, with the longest match taking
+precedence. See the documentation for `text_tokens` describes the full
+tokenization process.
+
+
+Text statistics
+---------------
+
+The `text_ntoken`, `text_ntype`, and `text_nsentence` functions return the
+numbers of tokens, unique types, and sentences, respectively, in a set of
+texts. We can use these functions to get an overview of the section lengths
+and lexical diversities.
+
+
+```r
+stats <- data.frame(tokens = text_ntoken(data),
+                    types = text_ntype(data),
+                    sentences = text_nsentence(data))
+head(stats, n = 10)
+```
+
+```
+      tokens types sentences
+front    205   175        32
+ch01     578   338        58
+ch02     933   470       132
+ch03     922   472       123
+ch04     621   352        82
+ch05     900   419       109
+ch06     685   358        97
+ch07     838   430        92
+ch08     896   422       103
+ch09     668   375        74
+```
+
+[Heaps' law][heaps-law] says that the logarithm of the number of unique
+types is a linear function of the number of tokens. We can test this law
+formally. 
+
+
+```r
+# I'm exclude the front matter; the writing mode is different than the
+# main chapters. I'm also excluding the last chapter, because it is much
+# shorter than the others and has a disproportionate influence.
+subset <- !row.names(stats) %in% c("front", "ch24")
+model <- lm(log(types) ~ log(tokens), stats, subset)
+summary(model)
+```
+
+```
+
+Call:
+lm(formula = log(types) ~ log(tokens), data = stats, subset = subset)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.15727 -0.02900  0.01201  0.03031  0.08563 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.47563    0.19629   7.518 2.20e-07 ***
+log(tokens)  0.67961    0.02973  22.858 2.55e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.05454 on 21 degrees of freedom
+Multiple R-squared:  0.9614,	Adjusted R-squared:  0.9595 
+F-statistic: 522.5 on 1 and 21 DF,  p-value: 2.555e-16
+```
+
+We can also inspect the relation visually
+
+```r
+par(mfrow = c(1, 2))
+plot(log(types) ~ log(tokens), stats, col = 2, subset = subset)
+abline(model, col = 1, lty = 2)
+
+plot(log(stats$tokens[subset]), rstandard(model), col = 2,
+     xlab = "log(tokens)")
+abline(h = 0, col = 1, lty = 2)
+
+outlier <- abs(rstandard(model)) > 2
+text(log(stats$tokens)[subset][outlier], rstandard(model)[outlier],
+     row.names(stats)[subset][outlier], cex = 0.75, adj = c(-0.25, 0.5),
+     col = 2)
+```
+
+![Heaps' Law](corpus-heapslaw-1.png)
+
+The analysis tells us that Heap's law accurately characterizes the lexical
+diversity (type-to-token ratio) for the main chapters in *The Wizard of Oz*.
+The number of unique types grows roughly as the number of tokens raised to the
+power `0.7`.
+
+
+The one chapter with an unusually low lexical diversity is Chapter 16. This
+chapter contains mostly dialogue between Oz and Dorothy's simple-minded
+companions (the Scarecrow, Tin Woodman, and Lion).
+
+
+
+[gutenberg-oz]: http://www.gutenberg.org/ebooks/55 "The Wonderful Wizard of Oz"
+[heaps-law]: https://en.wikipedia.org/wiki/Heaps%27_law "Heap's law"
