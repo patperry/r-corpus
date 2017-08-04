@@ -142,12 +142,14 @@ head(stats, n = 10)
 
 [Heaps' law][heaps-law] says that the logarithm of the number of unique
 types is a linear function of the number of tokens. We can test this law
-formally. 
+formally with a regression analysis.
+
+In this analysis, we will exclude the front matter since the writing mode is
+different than the main chapters. We will also exclude the last chapter
+(Chapter 24), because it is much shorter than the others and has a
+disproportionate influence on the fit.
 
 ```{r}
-# I'm exclude the front matter; the writing mode is different than the
-# main chapters. I'm also excluding the last chapter, because it is much
-# shorter than the others and has a disproportionate influence.
 subset <- !row.names(stats) %in% c("front", "ch24")
 model <- lm(log(types) ~ log(tokens), stats, subset)
 summary(model)
