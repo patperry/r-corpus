@@ -9,6 +9,7 @@ Introduction to corpus
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(comment = "", fig.path = "corpus-", fig.retina = TRUE)
+options(width = 100)
 palette(RColorBrewer::brewer.pal(6, "Set1"))
 ```
 
