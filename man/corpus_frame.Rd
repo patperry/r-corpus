@@ -59,6 +59,8 @@
 
     \item{na.encode}{logical scalar indicating whether to encode
          \code{NA} values as character strings.}
+
+    \item{...}{further arguments passed to or from other methods.}
 }
 \details{
     The \code{"corpus_frame"} class is a subclass of \code{"data.frame"},
