@@ -1,0 +1,939 @@
+<syn-list>
+
+  <noun-syn-list>
+
+    <noun-syn id="n#05588321" categ="wrath"/>
+    <noun-syn id="n#05576115" categ="worship"/>
+    <noun-syn id="n#05600844" categ="world-weariness"/>
+    <noun-syn id="n#05582577" categ="wonder"/>
+    <noun-syn id="n#05600968" categ="woe"/>
+    <noun-syn id="n#05579569" categ="withdrawal"/>
+    <noun-syn id="n#05604301" categ="weight"/>
+    <noun-syn id="n#05601315" categ="weepiness"/>
+    <noun-syn id="n#05574157" categ="weakness"/>
+    <noun-syn id="n#05611809" categ="warpath"/>
+    <noun-syn id="n#05609617" categ="warmheartedness"/>
+    <noun-syn id="n#05613522" categ="vindictiveness"/>
+    <noun-syn id="n#05585811" categ="unrest"/>
+    <noun-syn id="n#05576931" categ="unfriendliness"/>
+    <noun-syn id="n#05579184" categ="neutral-unconcern"/>
+    <noun-syn id="n#05593296" categ="unassertiveness"/>
+    <noun-syn id="n#05588822" categ="umbrage"/>
+    <noun-syn id="n#05586494" categ="tumult"/>
+    <noun-syn id="n#05596663" categ="triumph"/>
+    <noun-syn id="n#05592071" categ="trepidation"/>
+    <noun-syn id="n#05587339" categ="tranquillity"/>
+    <noun-syn id="n#05598269" categ="togetherness"/>
+    <noun-syn id="n#05597153" categ="titillation"/>
+    <noun-syn id="n#05592739" categ="timidity"/>
+    <noun-syn id="n#05561094" categ="thing"/>
+    <noun-syn id="n#05615833" categ="tenderness"/>
+    <noun-syn id="n#05615127" categ="sympathy"/>
+    <noun-syn id="n#05583536" categ="positive-suspense"/>
+    <noun-syn id="n#05592642" categ="negative-suspense"/>
+    <noun-syn id="n#05582875" categ="surprise"/>
+    <noun-syn id="n#05612278" categ="sulkiness"/>
+    <noun-syn id="n#05583004" categ="stupefaction"/>
+    <noun-syn id="n#05586373" categ="stir"/>
+    <noun-syn id="n#05586217" categ="stewing"/>
+    <noun-syn id="n#05591681" categ="stage-fright"/>
+    <noun-syn id="n#05602279" categ="regret-sorrow"/>
+    <noun-syn id="n#05601413" categ="lost-sorrow"/>
+    <noun-syn id="n#05578925" categ="solicitude"/>
+    <noun-syn id="n#05579029" categ="softheartedness"/>
+    <noun-syn id="n#05609172" categ="soft-spot"/>
+    <noun-syn id="n#05599598" categ="smugness"/>
+    <noun-syn id="n#05594594" categ="sinking"/>
+    <noun-syn id="n#05592914" categ="shyness"/>
+    <noun-syn id="n#05580828" categ="shamefacedness"/>
+    <noun-syn id="n#05579963" categ="shame"/>
+    <noun-syn id="n#05592428" categ="shadow"/>
+    <noun-syn id="n#05586720" categ="sensation"/>
+    <noun-syn id="n#05603809" categ="self-pity"/>
+    <noun-syn id="n#05581613" categ="self-esteem"/>
+    <noun-syn id="n#05580284" categ="self-disgust"/>
+    <noun-syn id="n#05582260" categ="self-depreciation"/>
+    <noun-syn id="n#05580651" categ="self-consciousness"/>
+    <noun-syn id="n#05595349" categ="security"/>
+    <noun-syn id="n#05594782" categ="scruple"/>
+    <noun-syn id="n#05591591" categ="scare"/>
+    <noun-syn id="n#05598965" categ="satisfaction"/>
+    <noun-syn id="n#05606509" categ="sanguinity"/>
+    <noun-syn id="n#05599930" categ="sadness"/>
+    <noun-syn id="n#05591481" categ="reverence"/>
+    <noun-syn id="n#05606995" categ="resignation"/>
+    <noun-syn id="n#05611927" categ="resentment"/>
+    <noun-syn id="n#05577970" categ="repugnance"/>
+    <noun-syn id="n#05602852" categ="repentance"/>
+    <noun-syn id="n#05597617" categ="rejoicing"/>
+    <noun-syn id="n#05609011" categ="regard"/>
+    <noun-syn id="n#05608223" categ="puppy-love"/>
+    <noun-syn id="n#05608917" categ="protectiveness"/>
+    <noun-syn id="n#05599226" categ="satisfaction-pride"/>
+    <noun-syn id="n#05581430" categ="joy-pride"/>
+    <noun-syn id="n#05592546" categ="presage"/>
+    <noun-syn id="n#05573914" categ="preference"/>
+    <noun-syn id="n#05602106" categ="plaintiveness"/>
+    <noun-syn id="n#05587029" categ="placidity"/>
+    <noun-syn id="n#05589637" categ="pique"/>
+    <noun-syn id="n#05607505" categ="pessimism"/>
+    <noun-syn id="n#05600734" categ="pensiveness"/>
+    <noun-syn id="n#05587497" categ="peace"/>
+    <noun-syn id="n#05591377" categ="panic"/>
+    <noun-syn id="n#05606361" categ="optimism"/>
+    <noun-syn id="n#05604181" categ="oppression"/>
+    <noun-syn id="n#05578076" categ="nausea"/>
+    <noun-syn id="n#05610694" categ="murderousness"/>
+    <noun-syn id="n#05601957" categ="mournfulness"/>
+    <noun-syn id="n#05610620" categ="misopedia"/>
+    <noun-syn id="n#05610440" categ="misoneism"/>
+    <noun-syn id="n#05610366" categ="misology"/>
+    <noun-syn id="n#05610283" categ="misogyny"/>
+    <noun-syn id="n#05610210" categ="misogamy"/>
+    <noun-syn id="n#05610544" categ="misocainea"/>
+    <noun-syn id="n#05601051" categ="misery"/>
+    <noun-syn id="n#05610135" categ="misanthropy"/>
+    <noun-syn id="n#05615937" categ="mercifulness"/>
+    <noun-syn id="n#05600345" categ="melancholy"/>
+    <noun-syn id="n#05582161" categ="meekness"/>
+    <noun-syn id="n#05613388" categ="malice"/>
+    <noun-syn id="n#05613127" categ="malevolence"/>
+    <noun-syn id="n#05613291" categ="maleficence"/>
+    <noun-syn id="n#05609709" categ="loyalty"/>
+    <noun-syn id="n#05609517" categ="lovingness"/>
+    <noun-syn id="n#05607724" categ="love"/>
+    <noun-syn id="n#05588618" categ="lividity"/>
+    <noun-syn id="n#05573285" categ="liking"/>
+    <noun-syn id="n#05584043" categ="levity"/>
+    <noun-syn id="n#05563906" categ="neutral-languor"/>
+    <noun-syn id="n#05587782" categ="positive-languor"/>
+    <noun-syn id="n#05615380" categ="kindheartedness"/>
+    <noun-syn id="n#05603196" categ="joylessness"/>
+    <noun-syn id="n#05596218" categ="joy"/>
+    <noun-syn id="n#05614225" categ="jollity"/>
+    <noun-syn id="n#05597701" categ="jocundity"/>
+    <noun-syn id="n#05594897" categ="jitteriness"/>
+    <noun-syn id="n#05612865" categ="jealousy"/>
+    <noun-syn id="n#05577212" categ="isolation"/>
+    <noun-syn id="n#05614716" categ="irascibility"/>
+    <noun-syn id="n#05593389" categ="fear-intimidation"/>
+    <noun-syn id="n#05607353" categ="despair-intimidation"/>
+    <noun-syn id="n#05594325" categ="insecurity"/>
+    <noun-syn id="n#05578483" categ="ingratitude"/>
+    <noun-syn id="n#05588725" categ="infuriation"/>
+    <noun-syn id="n#05588960" categ="indignation"/>
+    <noun-syn id="n#05579322" categ="indifference"/>
+    <noun-syn id="n#05586117" categ="impatience"/>
+    <noun-syn id="n#05616407" categ="identification"/>
+    <noun-syn id="n#05591290" categ="hysteria"/>
+    <noun-syn id="n#05581967" categ="humility"/>
+    <noun-syn id="n#05589074" categ="huffiness"/>
+    <noun-syn id="n#05610898" categ="hostility"/>
+    <noun-syn id="n#05591212" categ="horror"/>
+    <noun-syn id="n#05606847" categ="hopelessness"/>
+    <noun-syn id="n#05606155" categ="hopefulness"/>
+    <noun-syn id="n#05605928" categ="positive-hope"/>
+    <noun-syn id="n#05583906" categ="ambiguous-hope"/>
+    <noun-syn id="n#05597503" categ="hilarity"/>
+    <noun-syn id="n#05593183" categ="hesitance"/>
+    <noun-syn id="n#05576222" categ="hero-worship"/>
+    <noun-syn id="n#05603715" categ="helplessness"/>
+    <noun-syn id="n#05600637" categ="heavyheartedness"/>
+    <noun-syn id="n#05579669" categ="heartlessness"/>
+    <noun-syn id="n#05612142" categ="heartburning"/>
+    <noun-syn id="n#05609785" categ="hate"/>
+    <noun-syn id="n#05590065" categ="harassment"/>
+    <noun-syn id="n#05595732" categ="happiness"/>
+    <noun-syn id="n#05569706" categ="gusto"/>
+    <noun-syn id="n#05602697" categ="guilt"/>
+    <noun-syn id="n#05612377" categ="grudge"/>
+    <noun-syn id="n#05601776" categ="grief"/>
+    <noun-syn id="n#05584266" categ="gravity"/>
+    <noun-syn id="n#05578169" categ="gratitude"/>
+    <noun-syn id="n#05578355" categ="gratefulness"/>
+    <noun-syn id="n#05575210" categ="good-will"/>
+    <noun-syn id="n#05600505" categ="gloom"/>
+    <noun-syn id="n#05599822" categ="gloat"/>
+    <noun-syn id="n#05596105" categ="gladness"/>
+    <noun-syn id="n#05584176" categ="levity-gaiety"/>
+    <noun-syn id="n#05597371" categ="general-gaiety"/>
+    <noun-syn id="n#05588413" categ="fury"/>
+    <noun-syn id="n#05599694" categ="fulfillment"/>
+    <noun-syn id="n#05589778" categ="frustration"/>
+    <noun-syn id="n#05591021" categ="frisson"/>
+    <noun-syn id="n#05574913" categ="friendliness"/>
+    <noun-syn id="n#05601181" categ="forlornness"/>
+    <noun-syn id="n#05616059" categ="forgiveness"/>
+    <noun-syn id="n#05592156" categ="foreboding"/>
+    <noun-syn id="n#05573609" categ="fondness"/>
+    <noun-syn id="n#10337658" categ="fit"/>
+    <noun-syn id="n#05585895" categ="fidget"/>
+    <noun-syn id="n#05583678" categ="fever"/>
+    <noun-syn id="n#05595229" categ="fearlessness"/>
+    <noun-syn id="n#05590260" categ="negative-fear"/>
+    <noun-syn id="n#05575676" categ="favor"/>
+    <noun-syn id="n#05596527" categ="exultation"/>
+    <noun-syn id="n#05617136" categ="exuberance"/>
+    <noun-syn id="n#05583266" categ="ambiguous-expectation"/>
+    <noun-syn id="n#05596742" categ="exhilaration"/>
+    <noun-syn id="n#05597250" categ="euphoria"/>
+    <noun-syn id="n#05612539" categ="envy"/>
+    <noun-syn id="n#05616611" categ="enthusiasm"/>
+    <noun-syn id="n#05606270" categ="encouragement"/>
+    <noun-syn id="n#05616285" categ="empathy"/>
+    <noun-syn id="n#05563705" categ="emotionlessness"/>
+    <noun-syn id="n#05580420" categ="embarrassment"/>
+    <noun-syn id="n#05586574" categ="electricity"/>
+    <noun-syn id="n#05596414" categ="elation"/>
+    <noun-syn id="n#05581714" categ="ego"/>
+    <noun-syn id="n#05594446" categ="edginess"/>
+    <noun-syn id="n#05587663" categ="easiness"/>
+    <noun-syn id="n#05584398" categ="earnestness"/>
+    <noun-syn id="n#05616745" categ="eagerness"/>
+    <noun-syn id="n#05604748" categ="dysphoria"/>
+    <noun-syn id="n#05588172" categ="dudgeon"/>
+    <noun-syn id="n#05603470" categ="downheartedness"/>
+    <noun-syn id="n#05602190" categ="dolor"/>
+    <noun-syn id="n#05600250" categ="dolefulness"/>
+    <noun-syn id="n#05593817" categ="distress"/>
+    <noun-syn id="n#05579445" categ="distance"/>
+    <noun-syn id="n#05605389" categ="displeasure"/>
+    <noun-syn id="n#05576323" categ="dislike"/>
+    <noun-syn id="n#05576628" categ="disinclination"/>
+    <noun-syn id="n#05577676" categ="disgust"/>
+    <noun-syn id="n#05607201" categ="discouragement"/>
+    <noun-syn id="n#05581284" categ="discomfiture"/>
+    <noun-syn id="n#05577411" categ="disapproval"/>
+    <noun-syn id="n#05593002" categ="diffidence"/>
+    <noun-syn id="n#05608345" categ="devotion"/>
+    <noun-syn id="n#05603932" categ="despondency"/>
+    <noun-syn id="n#05610803" categ="despisal"/>
+    <noun-syn id="n#05606636" categ="despair"/>
+    <noun-syn id="n#05603287" categ="depression"/>
+    <noun-syn id="n#05603599" categ="demoralization"/>
+    <noun-syn id="n#05607104" categ="defeatism"/>
+    <noun-syn id="n#05583116" categ="daze"/>
+    <noun-syn id="n#05589169" categ="dander"/>
+    <noun-syn id="n#05607640" categ="cynicism"/>
+    <noun-syn id="n#05579830" categ="cruelty"/>
+    <noun-syn id="n#05590900" categ="creeps"/>
+    <noun-syn id="n#05612765" categ="covetousness"/>
+    <noun-syn id="n#05587152" categ="coolness"/>
+    <noun-syn id="n#05598833" categ="contentment"/>
+    <noun-syn id="n#05577544" categ="contempt"/>
+    <noun-syn id="n#05580137" categ="conscience"/>
+    <noun-syn id="n#05581054" categ="confusion"/>
+    <noun-syn id="n#05595498" categ="confidence"/>
+    <noun-syn id="n#05578595" categ="positive-concern"/>
+    <noun-syn id="n#05594044" categ="negative-concern"/>
+    <noun-syn id="n#05602526" categ="compunction"/>
+    <noun-syn id="n#05599367" categ="complacency"/>
+    <noun-syn id="n#05616177" categ="compatibility"/>
+    <noun-syn id="n#05615476" categ="compassion"/>
+    <noun-syn id="n#05615645" categ="commiseration"/>
+    <noun-syn id="n#05597982" categ="comfortableness"/>
+    <noun-syn id="n#05598089" categ="closeness"/>
+    <noun-syn id="n#05611281" categ="class-feeling"/>
+    <noun-syn id="n#05603115" categ="chill"/>
+    <noun-syn id="n#05602960" categ="cheerlessness"/>
+    <noun-syn id="n#05598350" categ="cheerfulness"/>
+    <noun-syn id="n#05580938" categ="chagrin"/>
+    <noun-syn id="n#05598666" categ="carefreeness"/>
+    <noun-syn id="n#05573752" categ="captivation"/>
+    <noun-syn id="n#05586846" categ="calmness"/>
+    <noun-syn id="n#05598559" categ="buoyancy"/>
+    <noun-syn id="n#05583804" categ="buck-fever"/>
+    <noun-syn id="n#05575322" categ="brotherhood"/>
+    <noun-syn id="n#05596018" categ="bonheur"/>
+    <noun-syn id="n#05604103" categ="blue-devils"/>
+    <noun-syn id="n#05609295" categ="benevolence"/>
+    <noun-syn id="n#05609411" categ="beneficence"/>
+    <noun-syn id="n#05597799" categ="belonging"/>
+    <noun-syn id="n#05611680" categ="belligerence"/>
+    <noun-syn id="n#05596946" categ="bang"/>
+    <noun-syn id="n#05589301" categ="bad-temper"/>
+    <noun-syn id="n#05582729" categ="awe"/>
+    <noun-syn id="n#05601647" categ="attrition"/>
+    <noun-syn id="n#05608793" categ="attachment"/>
+    <noun-syn id="n#05582358" categ="astonishment"/>
+    <noun-syn id="n#05608042" categ="love-ardor"/>
+    <noun-syn id="n#05616909" categ="enthusiasm-ardor"/>
+    <noun-syn id="n#05575439" categ="approval"/>
+    <noun-syn id="n#05591792" categ="apprehension"/>
+    <noun-syn id="n#05563581" categ="apathy"/>
+    <noun-syn id="n#05594203" categ="anxiousness"/>
+    <noun-syn id="n#05593480" categ="anxiety"/>
+    <noun-syn id="n#05577305" categ="antipathy"/>
+    <noun-syn id="n#05583387" categ="anticipation"/>
+    <noun-syn id="n#05611423" categ="antagonism"/>
+    <noun-syn id="n#05589430" categ="annoyance"/>
+    <noun-syn id="n#05611157" categ="animosity"/>
+    <noun-syn id="n#05587878" categ="anger"/>
+    <noun-syn id="n#05581850" categ="amour-propre"/>
+    <noun-syn id="n#05608126" categ="amorousness"/>
+    <noun-syn id="n#05575110" categ="amicability"/>
+    <noun-syn id="n#05577059" categ="alienation"/>
+    <noun-syn id="n#05590744" categ="alarm"/>
+    <noun-syn id="n#05585608" categ="ambiguous-agitation"/>
+    <noun-syn id="n#05611552" categ="aggression"/>
+    <noun-syn id="n#05589957" categ="aggravation"/>
+    <noun-syn id="n#05608483" categ="affection"/>
+    <noun-syn id="n#05575841" categ="admiration"/>
+    <noun-syn id="n#05577810" categ="abhorrence"/>
+    <noun-syn id="n#05581180" categ="abashment"/>
+    <noun-syn id="n#05595049" categ="angst"/>
+
+  </noun-syn-list>
+
+  <adj-syn-list>
+
+    <adj-syn id="a#01674134" noun-id ="n#05586117" caus-stat="stat"/>
+    <adj-syn id="a#00772422" noun-id ="n#05586117" caus-stat="stat"/>
+    <adj-syn id="a#01567385" noun-id ="n#05577970" caus-stat="caus"/>
+    <adj-syn id="a#00448605" noun-id ="n#05580651" caus-stat="stat"/>
+    <adj-syn id="a#01572736" noun-id ="n#05582260" caus-stat="stat"/>
+    <adj-syn id="a#00156728" noun-id ="n#05579963" caus-stat="stat"/>
+    <adj-syn id="a#02290470" noun-id ="n#05592642" caus-stat="caus"/>
+    <adj-syn id="a#02290470" noun-id ="n#05583536" caus-stat="caus"/>
+    <adj-syn id="a#01735655" noun-id ="n#05575841" caus-stat="caus"/>
+    <adj-syn id="a#00859179" noun-id ="n#05575841" caus-stat="caus"/>
+    <adj-syn id="a#00813947" noun-id ="n#05608483" caus-stat="caus"/>
+    <adj-syn id="a#00117684" noun-id ="n#05589957" caus-stat="stat"/>
+    <adj-syn id="a#00087965" noun-id ="n#05585608" caus-stat="stat"/>
+    <adj-syn id="a#00081890" noun-id ="n#05590744" caus-stat="stat"/>
+    <adj-syn id="a#01402839" noun-id ="n#05577059" caus-stat="stat"/>
+    <adj-syn id="a#01624115" noun-id ="n#05577059" caus-stat="stat"/>
+    <adj-syn id="a#01195116" noun-id ="n#05575110" caus-stat="stat"/>
+    <adj-syn id="a#01404786" noun-id ="n#05608126" caus-stat="caus"/>
+    <adj-syn id="a#01404669" noun-id ="n#05608126" caus-stat="stat"/>
+    <adj-syn id="a#00117308" noun-id ="n#05587878" caus-stat="stat"/>
+    <adj-syn id="a#00117872" noun-id ="n#05587878" caus-stat="caus"/>
+    <adj-syn id="a#00092842" noun-id ="n#05589430" caus-stat="caus"/>
+    <adj-syn id="a#02336957" noun-id ="n#05589430" caus-stat="stat"/>
+    <adj-syn id="a#01734180" noun-id ="n#05589430" caus-stat="stat"/>
+    <adj-syn id="a#01240635" noun-id ="n#05577305" caus-stat="stat"/>
+    <adj-syn id="a#02337269" noun-id ="n#05593480" caus-stat="caus"/>
+    <adj-syn id="a#00783553" noun-id ="n#05593480" caus-stat="stat"/>
+    <adj-syn id="a#02337269" noun-id ="n#05594203" caus-stat="caus"/>
+    <adj-syn id="a#00783553" noun-id ="n#05594203" caus-stat="stat"/>
+    <adj-syn id="a#02170580" noun-id ="n#05563581" caus-stat="stat"/>
+    <adj-syn id="a#00082090" noun-id ="n#05591792" caus-stat="stat"/>
+    <adj-syn id="a#00783553" noun-id ="n#05591792" caus-stat="stat"/>
+    <adj-syn id="a#00943914" noun-id ="n#05575439" caus-stat="stat"/>
+    <adj-syn id="a#00019699" noun-id ="n#05575439" caus-stat="caus"/>
+    <adj-syn id="a#01230203" noun-id ="n#05582358" caus-stat="caus"/>
+    <adj-syn id="a#02248624" noun-id ="n#05582358" caus-stat="caus"/>
+    <adj-syn id="a#02246844" noun-id ="n#05582358" caus-stat="stat"/>
+    <adj-syn id="a#01572491" noun-id ="n#05601647" caus-stat="stat"/>
+    <adj-syn id="a#01681118" noun-id ="n#05601647" caus-stat="stat"/>
+    <adj-syn id="a#01943022" noun-id ="n#05582729" caus-stat="stat"/>
+    <adj-syn id="a#01940914" noun-id ="n#05582729" caus-stat="stat"/>
+    <adj-syn id="a#01193636" noun-id ="n#05611680" caus-stat="stat"/>
+    <adj-syn id="a#00220367" noun-id ="n#05609411" caus-stat="caus"/>
+    <adj-syn id="a#00207781" noun-id ="n#05609411" caus-stat="stat"/>
+    <adj-syn id="a#00220542" noun-id ="n#05609411" caus-stat="caus"/>
+    <adj-syn id="a#00221152" noun-id ="n#05609295" caus-stat="stat"/>
+    <adj-syn id="a#00287715" noun-id ="n#05575322" caus-stat="stat"/>
+    <adj-syn id="a#00196824" noun-id ="n#05586846" caus-stat="caus"/>
+    <adj-syn id="a#00196250" noun-id ="n#05586846" caus-stat="caus"/>
+    <adj-syn id="a#01678759" noun-id ="n#05586846" caus-stat="stat"/>
+    <adj-syn id="a#00824085" noun-id ="n#05573752" caus-stat="stat"/>
+    <adj-syn id="a#01405004" noun-id ="n#05573752" caus-stat="stat"/>
+    <adj-syn id="a#00168250" noun-id ="n#05573752" caus-stat="caus"/>
+    <adj-syn id="a#02340900" noun-id ="n#05598666" caus-stat="stat"/>
+    <adj-syn id="a#00497363" noun-id ="n#05580938" caus-stat="stat"/>
+    <adj-syn id="a#00351663" noun-id ="n#05598350" caus-stat="caus"/>
+    <adj-syn id="a#00351663" noun-id ="n#05598350" caus-stat="stat"/>
+    <adj-syn id="a#00353542" noun-id ="n#05602960" caus-stat="caus"/>
+    <adj-syn id="a#00353542" noun-id ="n#05602960" caus-stat="stat"/>
+    <adj-syn id="a#00194690" noun-id ="n#05603115" caus-stat="caus"/>
+    <adj-syn id="a#00420393" noun-id ="n#05598089" caus-stat="stat"/>
+    <adj-syn id="a#00446819" noun-id ="n#05597982" caus-stat="caus"/>
+    <adj-syn id="a#00472490" noun-id ="n#05615476" caus-stat="caus"/>
+    <adj-syn id="a#01445379" noun-id ="n#05615476" caus-stat="caus"/>
+    <adj-syn id="a#00527965" noun-id ="n#05616177" caus-stat="stat"/>
+    <adj-syn id="a#00556568" noun-id ="n#05599367" caus-stat="stat"/>
+    <adj-syn id="a#00509150" noun-id ="n#05594044" caus-stat="caus"/>
+    <adj-syn id="a#00328581" noun-id ="n#05595498" caus-stat="stat"/>
+    <adj-syn id="a#01625843" noun-id ="n#05581054" caus-stat="caus"/>
+    <adj-syn id="a#01610144" noun-id ="n#05581054" caus-stat="stat"/>
+    <adj-syn id="a#00556147" noun-id ="n#05598833" caus-stat="stat"/>
+    <adj-syn id="a#00556743" noun-id ="n#05598833" caus-stat="stat"/>
+    <adj-syn id="a#00843913" noun-id ="n#05587152" caus-stat="stat"/>
+    <adj-syn id="a#01557310" noun-id ="n#05587152" caus-stat="stat"/>
+    <adj-syn id="a#02409574" noun-id ="n#05587152" caus-stat="stat"/>
+    <adj-syn id="a#00873404" noun-id ="n#05587152" caus-stat="stat"/>
+    <adj-syn id="a#00031053" noun-id ="n#05612765" caus-stat="stat"/>
+    <adj-syn id="a#00845237" noun-id ="n#05612765" caus-stat="stat"/>
+    <adj-syn id="a#01111594" noun-id ="n#05579830" caus-stat="stat"/>
+    <adj-syn id="a#02344950" noun-id ="n#05607640" caus-stat="stat"/>
+    <adj-syn id="a#01230799" noun-id ="n#05583116" caus-stat="caus"/>
+    <adj-syn id="a#00405649" noun-id ="n#05583116" caus-stat="stat"/>
+    <adj-syn id="a#02222607" noun-id ="n#05607104" caus-stat="stat"/>
+    <adj-syn id="a#00826026" noun-id ="n#05603599" caus-stat="caus"/>
+    <adj-syn id="a#01605795" noun-id ="n#05603599" caus-stat="stat"/>
+    <adj-syn id="a#00669611" noun-id ="n#05603287" caus-stat="stat"/>
+    <adj-syn id="a#01309194" noun-id ="n#05603287" caus-stat="caus"/>
+    <adj-syn id="a#01178808" noun-id ="n#05606636" caus-stat="stat"/>
+    <adj-syn id="a#01179135" noun-id ="n#05603932" caus-stat="stat"/>
+    <adj-syn id="a#00486658" noun-id ="n#05608345" caus-stat="stat"/>
+    <adj-syn id="a#01916045" noun-id ="n#05593002" caus-stat="stat"/>
+    <adj-syn id="a#01706499" noun-id ="n#05577411" caus-stat="stat"/>
+    <adj-syn id="a#00945257" noun-id ="n#05577411" caus-stat="stat"/>
+    <adj-syn id="a#00448253" noun-id ="n#05581284" caus-stat="stat"/>
+    <adj-syn id="a#00825624" noun-id ="n#05607201" caus-stat="caus"/>
+    <adj-syn id="a#00659470" noun-id ="n#05607201" caus-stat="stat"/>
+    <adj-syn id="a#01605795" noun-id ="n#05607201" caus-stat="stat"/>
+    <adj-syn id="a#01566899" noun-id ="n#05577676" caus-stat="caus"/>
+    <adj-syn id="a#01734691" noun-id ="n#05577676" caus-stat="stat"/>
+    <adj-syn id="a#01240397" noun-id ="n#05576628" caus-stat="stat"/>
+    <adj-syn id="a#01401280" noun-id ="n#05576323" caus-stat="caus"/>
+    <adj-syn id="a#01737080" noun-id ="n#05605389" caus-stat="caus"/>
+    <adj-syn id="a#01733963" noun-id ="n#05605389" caus-stat="stat"/>
+    <adj-syn id="a#00509796" noun-id ="n#05593817" caus-stat="stat"/>
+    <adj-syn id="a#01139868" noun-id ="n#05593817" caus-stat="caus"/>
+    <adj-syn id="a#02338153" noun-id ="n#05593817" caus-stat="stat"/>
+    <adj-syn id="a#00863871" noun-id ="n#05593817" caus-stat="stat"/>
+    <adj-syn id="a#01309360" noun-id ="n#05600250" caus-stat="caus"/>
+    <adj-syn id="a#01309360" noun-id ="n#05600250" caus-stat="stat"/>
+    <adj-syn id="a#00669611" noun-id ="n#05603470" caus-stat="stat"/>
+    <adj-syn id="a#00863871" noun-id ="n#05604748" caus-stat="stat"/>
+    <adj-syn id="a#00843026" noun-id ="n#05616745" caus-stat="stat"/>
+    <adj-syn id="a#02094882" noun-id ="n#05584398" caus-stat="stat"/>
+    <adj-syn id="a#00782769" noun-id ="n#05587663" caus-stat="stat"/>
+    <adj-syn id="a#02290807" noun-id ="n#05594446" caus-stat="stat"/>
+    <adj-syn id="a#01313944" noun-id ="n#05596414" caus-stat="stat"/>
+    <adj-syn id="a#00670286" noun-id ="n#05596414" caus-stat="stat"/>
+    <adj-syn id="a#00874095" noun-id ="n#05596414" caus-stat="caus"/>
+    <adj-syn id="a#00874409" noun-id ="n#05586574" caus-stat="caus"/>
+    <adj-syn id="a#00711482" noun-id ="n#05580420" caus-stat="caus"/>
+    <adj-syn id="a#01731686" noun-id ="n#05580420" caus-stat="caus"/>
+    <adj-syn id="a#00156835" noun-id ="n#05580420" caus-stat="stat"/>
+    <adj-syn id="a#00448253" noun-id ="n#05580420" caus-stat="stat"/>
+    <adj-syn id="a#00497363" noun-id ="n#05580420" caus-stat="stat"/>
+    <adj-syn id="a#01206410" noun-id ="n#05563705" caus-stat="stat"/>
+    <adj-syn id="a#02264046" noun-id ="n#05616285" caus-stat="stat"/>
+    <adj-syn id="a#00824936" noun-id ="n#05606270" caus-stat="caus"/>
+    <adj-syn id="a#01733675" noun-id ="n#05606270" caus-stat="stat"/>
+    <adj-syn id="a#00873571" noun-id ="n#05616611" caus-stat="caus"/>
+    <adj-syn id="a#00842521" noun-id ="n#05616611" caus-stat="stat"/>
+    <adj-syn id="a#00698764" noun-id ="n#05612539" caus-stat="caus"/>
+    <adj-syn id="a#00845237" noun-id ="n#05612539" caus-stat="stat"/>
+    <adj-syn id="a#02023897" noun-id ="n#05612539" caus-stat="stat"/>
+    <adj-syn id="a#00863650" noun-id ="n#05597250" caus-stat="caus"/>
+    <adj-syn id="a#00863471" noun-id ="n#05597250" caus-stat="stat"/>
+    <adj-syn id="a#00670851" noun-id ="n#05596742" caus-stat="stat"/>
+    <adj-syn id="a#01302744" noun-id ="n#05596742" caus-stat="caus"/>
+    <adj-syn id="a#01177731" noun-id ="n#05583266" caus-stat="stat"/>
+    <adj-syn id="a#00670575" noun-id ="n#05596527" caus-stat="stat"/>
+    <adj-syn id="a#00943564" noun-id ="n#05575676" caus-stat="stat"/>
+    <adj-syn id="a#00082515" noun-id ="n#05590260" caus-stat="stat"/>
+    <adj-syn id="a#01079947" noun-id ="n#05590260" caus-stat="caus"/>
+    <adj-syn id="a#00193648" noun-id ="n#05590260" caus-stat="caus"/>
+    <adj-syn id="a#00080744" noun-id ="n#05590260" caus-stat="stat"/>
+    <adj-syn id="a#01415513" noun-id ="n#05595229" caus-stat="stat"/>
+    <adj-syn id="a#00084648" noun-id ="n#05595229" caus-stat="stat"/>
+    <adj-syn id="a#00089010" noun-id ="n#05583678" caus-stat="stat"/>
+    <adj-syn id="a#00872539" noun-id ="n#05583678" caus-stat="stat"/>
+    <adj-syn id="a#01855798" noun-id ="n#05585895" caus-stat="stat"/>
+    <adj-syn id="a#01404342" noun-id ="n#05573609" caus-stat="stat"/>
+    <adj-syn id="a#01658173" noun-id ="n#05616059" caus-stat="caus"/>
+    <adj-syn id="a#01179297" noun-id ="n#05601181" caus-stat="stat"/>
+    <adj-syn id="a#00997111" noun-id ="n#05601181" caus-stat="caus"/>
+    <adj-syn id="a#01195320" noun-id ="n#05574913" caus-stat="stat"/>
+    <adj-syn id="a#00826169" noun-id ="n#05589778" caus-stat="caus"/>
+    <adj-syn id="a#00659470" noun-id ="n#05589778" caus-stat="stat"/>
+    <adj-syn id="a#01737503" noun-id ="n#05588413" caus-stat="caus"/>
+    <adj-syn id="a#00117872" noun-id ="n#05588413" caus-stat="stat"/>
+    <adj-syn id="a#01314056" noun-id ="n#05597371" caus-stat="caus"/>
+    <adj-syn id="a#01314288" noun-id ="n#05597371" caus-stat="stat"/>
+    <adj-syn id="a#00353055" noun-id ="n#05597371" caus-stat="caus"/>
+    <adj-syn id="a#01314056" noun-id ="n#05584176" caus-stat="caus"/>
+    <adj-syn id="a#01314288" noun-id ="n#05584176" caus-stat="stat"/>
+    <adj-syn id="a#00353055" noun-id ="n#05584176" caus-stat="caus"/>
+    <adj-syn id="a#01308350" noun-id ="n#05596105" caus-stat="stat"/>
+    <adj-syn id="a#00352106" noun-id ="n#05596105" caus-stat="caus"/>
+    <adj-syn id="a#00352106" noun-id ="n#05596105" caus-stat="stat"/>
+    <adj-syn id="a#01098277" noun-id ="n#05596105" caus-stat="stat"/>
+    <adj-syn id="a#01308059" noun-id ="n#05596105" caus-stat="caus"/>
+    <adj-syn id="a#01308059" noun-id ="n#05596105" caus-stat="stat"/>
+    <adj-syn id="a#00353838" noun-id ="n#05600505" caus-stat="caus"/>
+    <adj-syn id="a#00669950" noun-id ="n#05600505" caus-stat="stat"/>
+    <adj-syn id="a#01309194" noun-id ="n#05600505" caus-stat="caus"/>
+    <adj-syn id="a#00354187" noun-id ="n#05600505" caus-stat="caus"/>
+    <adj-syn id="a#01179526" noun-id ="n#05600505" caus-stat="stat"/>
+    <adj-syn id="a#00271194" noun-id ="n#05600505" caus-stat="caus"/>
+    <adj-syn id="a#01097922" noun-id ="n#05578355" caus-stat="stat"/>
+    <adj-syn id="a#01097922" noun-id ="n#05578169" caus-stat="stat"/>
+    <adj-syn id="a#01312366" noun-id ="n#05601776" caus-stat="stat"/>
+    <adj-syn id="a#01312366" noun-id ="n#05601776" caus-stat="caus"/>
+    <adj-syn id="a#01311729" noun-id ="n#05601776" caus-stat="stat"/>
+    <adj-syn id="a#00157147" noun-id ="n#05602697" caus-stat="stat"/>
+    <adj-syn id="a#00863471" noun-id ="n#05595732" caus-stat="stat"/>
+    <adj-syn id="a#01308490" noun-id ="n#05595732" caus-stat="stat"/>
+    <adj-syn id="a#01099314" noun-id ="n#05595732" caus-stat="stat"/>
+    <adj-syn id="a#01400194" noun-id ="n#05609785" caus-stat="caus"/>
+    <adj-syn id="a#01110850" noun-id ="n#05579669" caus-stat="stat"/>
+    <adj-syn id="a#01309535" noun-id ="n#05600637" caus-stat="stat"/>
+    <adj-syn id="a#01215015" noun-id ="n#05597503" caus-stat="caus"/>
+    <adj-syn id="a#01215015" noun-id ="n#05597503" caus-stat="stat"/>
+    <adj-syn id="a#01177469" noun-id ="n#05583906" caus-stat="caus"/>
+    <adj-syn id="a#01177469" noun-id ="n#05583906" caus-stat="stat"/>
+    <adj-syn id="a#01177469" noun-id ="n#05605928" caus-stat="caus"/>
+    <adj-syn id="a#01177469" noun-id ="n#05606155" caus-stat="caus"/>
+    <adj-syn id="a#01177991" noun-id ="n#05606847" caus-stat="stat"/>
+    <adj-syn id="a#00193347" noun-id ="n#05591212" caus-stat="caus"/>
+    <adj-syn id="a#00082798" noun-id ="n#05591212" caus-stat="stat"/>
+    <adj-syn id="a#00193648" noun-id ="n#05591212" caus-stat="caus"/>
+    <adj-syn id="a#01567385" noun-id ="n#05591212" caus-stat="caus"/>
+    <adj-syn id="a#00193347" noun-id ="n#05591212" caus-stat="caus"/>
+    <adj-syn id="a#01024648" noun-id ="n#05610898" caus-stat="stat"/>
+    <adj-syn id="a#01193200" noun-id ="n#05610898" caus-stat="stat"/>
+    <adj-syn id="a#01089436" noun-id ="n#05589074" caus-stat="stat"/>
+    <adj-syn id="a#00118531" noun-id ="n#05589074" caus-stat="stat"/>
+    <adj-syn id="a#00717242" noun-id ="n#05581967" caus-stat="caus"/>
+    <adj-syn id="a#00156835" noun-id ="n#05581967" caus-stat="stat"/>
+    <adj-syn id="a#00089407" noun-id ="n#05591290" caus-stat="stat"/>
+    <adj-syn id="a#01660842" noun-id ="n#05579322" caus-stat="stat"/>
+    <adj-syn id="a#01289497" noun-id ="n#05579322" caus-stat="stat"/>
+    <adj-syn id="a#00118752" noun-id ="n#05588960" caus-stat="stat"/>
+    <adj-syn id="a#01737503" noun-id ="n#05588725" caus-stat="caus"/>
+    <adj-syn id="a#00117872" noun-id ="n#05588725" caus-stat="stat"/>
+    <adj-syn id="a#02017003" noun-id ="n#05594325" caus-stat="stat"/>
+    <adj-syn id="a#00082247" noun-id ="n#05593389" caus-stat="stat"/>
+    <adj-syn id="a#00248975" noun-id ="n#05593389" caus-stat="stat"/>
+    <adj-syn id="a#00118303" noun-id ="n#05614716" caus-stat="stat"/>
+    <adj-syn id="a#02036124" noun-id ="n#05577212" caus-stat="stat"/>
+    <adj-syn id="a#02345311" noun-id ="n#05612865" caus-stat="stat"/>
+    <adj-syn id="a#00845237" noun-id ="n#05612865" caus-stat="stat"/>
+    <adj-syn id="a#02290807" noun-id ="n#05594897" caus-stat="stat"/>
+    <adj-syn id="a#01314288" noun-id ="n#05597701" caus-stat="stat"/>
+    <adj-syn id="a#01314288" noun-id ="n#05614225" caus-stat="stat"/>
+    <adj-syn id="a#01100759" noun-id ="n#05596218" caus-stat="stat"/>
+    <adj-syn id="a#01313944" noun-id ="n#05596218" caus-stat="stat"/>
+    <adj-syn id="a#01310561" noun-id ="n#05596218" caus-stat="stat"/>
+    <adj-syn id="a#01310561" noun-id ="n#05596218" caus-stat="caus"/>
+    <adj-syn id="a#01314685" noun-id ="n#05603196" caus-stat="stat"/>
+    <adj-syn id="a#01314685" noun-id ="n#05603196" caus-stat="stat"/>
+    <adj-syn id="a#01319594" noun-id ="n#05615380" caus-stat="stat"/>
+    <adj-syn id="a#00833855" noun-id ="n#05587782" caus-stat="stat"/>
+    <adj-syn id="a#00833855" noun-id ="n#05563906" caus-stat="stat"/>
+    <adj-syn id="a#01401011" noun-id ="n#05573285" caus-stat="caus"/>
+    <adj-syn id="a#00119146" noun-id ="n#05588618" caus-stat="stat"/>
+    <adj-syn id="a#01403478" noun-id ="n#05607724" caus-stat="stat"/>
+    <adj-syn id="a#00220990" noun-id ="n#05613291" caus-stat="caus"/>
+    <adj-syn id="a#00221675" noun-id ="n#05613127" caus-stat="stat"/>
+    <adj-syn id="a#00221675" noun-id ="n#05613388" caus-stat="stat"/>
+    <adj-syn id="a#01309603" noun-id ="n#05600345" caus-stat="caus"/>
+    <adj-syn id="a#01309603" noun-id ="n#05600345" caus-stat="stat"/>
+    <adj-syn id="a#01445129" noun-id ="n#05615937" caus-stat="stat"/>
+    <adj-syn id="a#01089513" noun-id ="n#05610135" caus-stat="stat"/>
+    <adj-syn id="a#01000655" noun-id ="n#05601051" caus-stat="caus"/>
+    <adj-syn id="a#01102092" noun-id ="n#05601051" caus-stat="stat"/>
+    <adj-syn id="a#02345625" noun-id ="n#05610283" caus-stat="stat"/>
+    <adj-syn id="a#01309360" noun-id ="n#05601957" caus-stat="caus"/>
+    <adj-syn id="a#01309360" noun-id ="n#05601957" caus-stat="stat"/>
+    <adj-syn id="a#01313142" noun-id ="n#05601957" caus-stat="stat"/>
+    <adj-syn id="a#02436303" noun-id ="n#05578076" caus-stat="caus"/>
+    <adj-syn id="a#02424563" noun-id ="n#05578076" caus-stat="stat"/>
+    <adj-syn id="a#00751449" noun-id ="n#05604181" caus-stat="caus"/>
+    <adj-syn id="a#00828302" noun-id ="n#05604181" caus-stat="stat"/>
+    <adj-syn id="a#02464962" noun-id ="n#05604181" caus-stat="stat"/>
+    <adj-syn id="a#01604600" noun-id ="n#05606361" caus-stat="stat"/>
+    <adj-syn id="a#00083333" noun-id ="n#05591377" caus-stat="stat"/>
+    <adj-syn id="a#01679945" noun-id ="n#05587497" caus-stat="stat"/>
+    <adj-syn id="a#01309833" noun-id ="n#05600734" caus-stat="stat"/>
+    <adj-syn id="a#02301888" noun-id ="n#05600734" caus-stat="stat"/>
+    <adj-syn id="a#01605516" noun-id ="n#05607505" caus-stat="stat"/>
+    <adj-syn id="a#00298525" noun-id ="n#05587029" caus-stat="stat"/>
+    <adj-syn id="a#01313142" noun-id ="n#05602106" caus-stat="stat"/>
+    <adj-syn id="a#00670575" noun-id ="n#05581430" caus-stat="stat"/>
+    <adj-syn id="a#01817423" noun-id ="n#05581430" caus-stat="stat"/>
+    <adj-syn id="a#00670575" noun-id ="n#05599226" caus-stat="stat"/>
+    <adj-syn id="a#02329300" noun-id ="n#05608917" caus-stat="caus"/>
+    <adj-syn id="a#00670575" noun-id ="n#05597617" caus-stat="stat"/>
+    <adj-syn id="a#01680937" noun-id ="n#05602852" caus-stat="stat"/>
+    <adj-syn id="a#00218804" noun-id ="n#05577970" caus-stat="caus"/>
+    <adj-syn id="a#01566364" noun-id ="n#05577970" caus-stat="caus"/>
+    <adj-syn id="a#00119743" noun-id ="n#05611927" caus-stat="stat"/>
+    <adj-syn id="a#01178424" noun-id ="n#05606995" caus-stat="stat"/>
+    <adj-syn id="a#01178424" noun-id ="n#05606995" caus-stat="stat"/>
+    <adj-syn id="a#01940621" noun-id ="n#05591481" caus-stat="stat"/>
+    <adj-syn id="a#01313226" noun-id ="n#05599930" caus-stat="caus"/>
+    <adj-syn id="a#01101074" noun-id ="n#05599930" caus-stat="caus"/>
+    <adj-syn id="a#01101074" noun-id ="n#05599930" caus-stat="stat"/>
+    <adj-syn id="a#01308632" noun-id ="n#05599930" caus-stat="caus"/>
+    <adj-syn id="a#01308632" noun-id ="n#05599930" caus-stat="stat"/>
+    <adj-syn id="a#01605426" noun-id ="n#05606509" caus-stat="stat"/>
+    <adj-syn id="a#02002844" noun-id ="n#05598965" caus-stat="caus"/>
+    <adj-syn id="a#01944086" noun-id ="n#05598965" caus-stat="caus"/>
+    <adj-syn id="a#00557087" noun-id ="n#05598965" caus-stat="stat"/>
+    <adj-syn id="a#01999937" noun-id ="n#05598965" caus-stat="caus"/>
+    <adj-syn id="a#02001946" noun-id ="n#05598965" caus-stat="caus"/>
+    <adj-syn id="a#00194690" noun-id ="n#05591591" caus-stat="caus"/>
+    <adj-syn id="a#00082641" noun-id ="n#05591591" caus-stat="stat"/>
+    <adj-syn id="a#00196607" noun-id ="n#05595349" caus-stat="caus"/>
+    <adj-syn id="a#00330837" noun-id ="n#05595349" caus-stat="stat"/>
+    <adj-syn id="a#02027041" noun-id ="n#05586720" caus-stat="caus"/>
+    <adj-syn id="a#02026715" noun-id ="n#05586720" caus-stat="caus"/>
+    <adj-syn id="a#01486036" noun-id ="n#05579963" caus-stat="caus"/>
+    <adj-syn id="a#01176593" noun-id ="n#05579963" caus-stat="caus"/>
+    <adj-syn id="a#00157347" noun-id ="n#05579963" caus-stat="stat"/>
+    <adj-syn id="a#00157147" noun-id ="n#05579963" caus-stat="stat"/>
+    <adj-syn id="a#00156446" noun-id ="n#05579963" caus-stat="stat"/>
+    <adj-syn id="a#00157147" noun-id ="n#05580828" caus-stat="stat"/>
+    <adj-syn id="a#00157347" noun-id ="n#05580828" caus-stat="stat"/>
+    <adj-syn id="a#00164569" noun-id ="n#05592914" caus-stat="stat"/>
+    <adj-syn id="a#00331296" noun-id ="n#05592914" caus-stat="stat"/>
+    <adj-syn id="a#00557191" noun-id ="n#05599598" caus-stat="stat"/>
+    <adj-syn id="a#01111155" noun-id ="n#05579029" caus-stat="stat"/>
+    <adj-syn id="a#00510407" noun-id ="n#05578925" caus-stat="stat"/>
+    <adj-syn id="a#01311729" noun-id ="n#05601413" caus-stat="stat"/>
+    <adj-syn id="a#01310938" noun-id ="n#05601413" caus-stat="stat"/>
+    <adj-syn id="a#01101631" noun-id ="n#05601413" caus-stat="stat"/>
+    <adj-syn id="a#00472844" noun-id ="n#05601413" caus-stat="stat"/>
+    <adj-syn id="a#01681118" noun-id ="n#05602279" caus-stat="stat"/>
+    <adj-syn id="a#01102326" noun-id ="n#05602279" caus-stat="stat"/>
+    <adj-syn id="a#01230203" noun-id ="n#05583004" caus-stat="caus"/>
+    <adj-syn id="a#00195880" noun-id ="n#05583004" caus-stat="caus"/>
+    <adj-syn id="a#00405649" noun-id ="n#05583004" caus-stat="stat"/>
+    <adj-syn id="a#02247311" noun-id ="n#05583004" caus-stat="stat"/>
+    <adj-syn id="a#01089436" noun-id ="n#05612278" caus-stat="stat"/>
+    <adj-syn id="a#02248299" noun-id ="n#05582875" caus-stat="caus"/>
+    <adj-syn id="a#02246531" noun-id ="n#05582875" caus-stat="stat"/>
+    <adj-syn id="a#01319150" noun-id ="n#05615127" caus-stat="stat"/>
+    <adj-syn id="a#02263541" noun-id ="n#05615127" caus-stat="stat"/>
+    <adj-syn id="a#01404342" noun-id ="n#05615833" caus-stat="stat"/>
+    <adj-syn id="a#02329048" noun-id ="n#05615833" caus-stat="stat"/>
+    <adj-syn id="a#00331296" noun-id ="n#05592739" caus-stat="stat"/>
+    <adj-syn id="a#00248123" noun-id ="n#05592739" caus-stat="stat"/>
+    <adj-syn id="a#00874850" noun-id ="n#05597153" caus-stat="caus"/>
+    <adj-syn id="a#00872975" noun-id ="n#05597153" caus-stat="stat"/>
+    <adj-syn id="a#00495682" noun-id ="n#05587339" caus-stat="caus"/>
+    <adj-syn id="a#00248776" noun-id ="n#05592071" caus-stat="stat"/>
+    <adj-syn id="a#00670575" noun-id ="n#05596663" caus-stat="stat"/>
+    <adj-syn id="a#00118752" noun-id ="n#05588822" caus-stat="stat"/>
+    <adj-syn id="a#00159086" noun-id ="n#05593296" caus-stat="stat"/>
+    <adj-syn id="a#00510544" noun-id ="n#05579184" caus-stat="stat"/>
+    <adj-syn id="a#01194979" noun-id ="n#05576931" caus-stat="stat"/>
+    <adj-syn id="a#01024196" noun-id ="n#05576931" caus-stat="stat"/>
+    <adj-syn id="a#00222851" noun-id ="n#05613522" caus-stat="stat"/>
+    <adj-syn id="a#02411442" noun-id ="n#05609617" caus-stat="stat"/>
+    <adj-syn id="a#01312115" noun-id ="n#05601315" caus-stat="stat"/>
+    <adj-syn id="a#02235465" noun-id ="n#05600968" caus-stat="caus"/>
+    <adj-syn id="a#01313374" noun-id ="n#05600968" caus-stat="stat"/>
+    <adj-syn id="a#01617066" noun-id ="n#05582577" caus-stat="caus"/>
+    <adj-syn id="a#02314238" noun-id ="n#05600844" caus-stat="stat"/>
+    <adj-syn id="a#01940830" noun-id ="n#05576115" caus-stat="stat"/>
+    <adj-syn id="a#00119459" noun-id ="n#05588321" caus-stat="stat"/>
+
+  </adj-syn-list>
+
+  <verb-syn-list>
+
+    <verb-syn id="v#01211403" noun-id ="n#05577810" caus-stat="stat"/>
+    <verb-syn id="v#01247189" noun-id ="n#05575841" caus-stat="stat"/>
+    <verb-syn id="v#01206630" noun-id ="n#05608483" caus-stat="caus"/>
+    <verb-syn id="v#01242326" noun-id ="n#05589957" caus-stat="caus"/>
+    <verb-syn id="v#01761948" noun-id ="n#05585608" caus-stat="caus"/>
+    <verb-syn id="v#00591365" noun-id ="n#05590744" caus-stat="stat"/>
+    <verb-syn id="v#01217571" noun-id ="n#05590744" caus-stat="caus"/>
+    <verb-syn id="v#01244286" noun-id ="n#05577059" caus-stat="caus"/>
+    <verb-syn id="v#01220411" noun-id ="n#05587878" caus-stat="stat"/>
+    <verb-syn id="v#01219920" noun-id ="n#05587878" caus-stat="caus"/>
+    <verb-syn id="v#01221002" noun-id ="n#05589430" caus-stat="caus"/>
+    <verb-syn id="v#01231091" noun-id ="n#05583387" caus-stat="stat"/>
+    <verb-syn id="v#00454501" noun-id ="n#05575439" caus-stat="stat"/>
+    <verb-syn id="v#00491471" noun-id ="n#05582358" caus-stat="caus"/>
+    <verb-syn id="v#01225879" noun-id ="n#05601647" caus-stat="stat"/>
+    <verb-syn id="v#01214954" noun-id ="n#05582729" caus-stat="caus"/>
+    <verb-syn id="v#01204371" noun-id ="n#05586846" caus-stat="caus"/>
+    <verb-syn id="v#01232387" noun-id ="n#05573752" caus-stat="caus"/>
+    <verb-syn id="v#01228249" noun-id ="n#05580938" caus-stat="caus"/>
+    <verb-syn id="v#00582621" noun-id ="n#05598350" caus-stat="caus"/>
+    <verb-syn id="v#00582462" noun-id ="n#05598350" caus-stat="stat"/>
+    <verb-syn id="v#01240173" noun-id ="n#05598350" caus-stat="caus"/>
+    <verb-syn id="v#00582840" noun-id ="n#05598350" caus-stat="stat"/>
+    <verb-syn id="v#00582994" noun-id ="n#05598350" caus-stat="caus"/>
+    <verb-syn id="v#01240960" noun-id ="n#05603115" caus-stat="caus"/>
+    <verb-syn id="v#01238399" noun-id ="n#05597982" caus-stat="caus"/>
+    <verb-syn id="v#01243364" noun-id ="n#05615645" caus-stat="stat"/>
+    <verb-syn id="v#01243184" noun-id ="n#05615476" caus-stat="stat"/>
+    <verb-syn id="v#01827420" noun-id ="n#05594044" caus-stat="caus"/>
+    <verb-syn id="v#01827420" noun-id ="n#05578595" caus-stat="caus"/>
+    <verb-syn id="v#01222619" noun-id ="n#05581054" caus-stat="caus"/>
+    <verb-syn id="v#01211520" noun-id ="n#05577544" caus-stat="stat"/>
+    <verb-syn id="v#00812241" noun-id ="n#05598833" caus-stat="caus"/>
+    <verb-syn id="v#01239476" noun-id ="n#05598833" caus-stat="caus"/>
+    <verb-syn id="v#00258652" noun-id ="n#05587152" caus-stat="caus"/>
+    <verb-syn id="v#00258652" noun-id ="n#05587152" caus-stat="caus"/>
+    <verb-syn id="v#01246798" noun-id ="n#05612765" caus-stat="stat"/>
+    <verb-syn id="v#01411779" noun-id ="n#05590900" caus-stat="stat"/>
+    <verb-syn id="v#01447824" noun-id ="n#05583116" caus-stat="caus"/>
+    <verb-syn id="v#00750517" noun-id ="n#05607104" caus-stat="caus"/>
+    <verb-syn id="v#01238101" noun-id ="n#05603599" caus-stat="caus"/>
+    <verb-syn id="v#01238101" noun-id ="n#05603287" caus-stat="caus"/>
+    <verb-syn id="v#01235891" noun-id ="n#05606636" caus-stat="stat"/>
+    <verb-syn id="v#01211520" noun-id ="n#05610803" caus-stat="stat"/>
+    <verb-syn id="v#00548543" noun-id ="n#05577411" caus-stat="stat"/>
+    <verb-syn id="v#01222254" noun-id ="n#05581284" caus-stat="caus"/>
+    <verb-syn id="v#01241117" noun-id ="n#05607201" caus-stat="caus"/>
+    <verb-syn id="v#01233868" noun-id ="n#05577676" caus-stat="caus"/>
+    <verb-syn id="v#01502738" noun-id ="n#05577676" caus-stat="stat"/>
+    <verb-syn id="v#00459758" noun-id ="n#05576628" caus-stat="caus"/>
+    <verb-syn id="v#01212998" noun-id ="n#05576323" caus-stat="stat"/>
+    <verb-syn id="v#01239708" noun-id ="n#05605389" caus-stat="caus"/>
+    <verb-syn id="v#01830311" noun-id ="n#05579445" caus-stat="stat"/>
+    <verb-syn id="v#00476269" noun-id ="n#05593817" caus-stat="stat"/>
+    <verb-syn id="v#01205957" noun-id ="n#05593817" caus-stat="stat"/>
+    <verb-syn id="v#01226873" noun-id ="n#05593817" caus-stat="caus"/>
+    <verb-syn id="v#01238553" noun-id ="n#05587663" caus-stat="caus"/>
+    <verb-syn id="v#01236227" noun-id ="n#05596414" caus-stat="stat"/>
+    <verb-syn id="v#01236227" noun-id ="n#05596414" caus-stat="caus"/>
+    <verb-syn id="v#01223592" noun-id ="n#05580420" caus-stat="caus"/>
+    <verb-syn id="v#01240452" noun-id ="n#05606270" caus-stat="caus"/>
+    <verb-syn id="v#01246666" noun-id ="n#05612539" caus-stat="stat"/>
+    <verb-syn id="v#01246968" noun-id ="n#05612539" caus-stat="stat"/>
+    <verb-syn id="v#01236581" noun-id ="n#05596742" caus-stat="caus"/>
+    <verb-syn id="v#00487133" noun-id ="n#05583266" caus-stat="stat"/>
+    <verb-syn id="v#00582048" noun-id ="n#05596527" caus-stat="stat"/>
+    <verb-syn id="v#01237518" noun-id ="n#05596527" caus-stat="stat"/>
+    <verb-syn id="v#00467945" noun-id ="n#05575676" caus-stat="stat"/>
+    <verb-syn id="v#01215644" noun-id ="n#05590260" caus-stat="stat"/>
+    <verb-syn id="v#01215760" noun-id ="n#05590260" caus-stat="stat"/>
+    <verb-syn id="v#01215448" noun-id ="n#05590260" caus-stat="stat"/>
+    <verb-syn id="v#01215921" noun-id ="n#05590260" caus-stat="stat"/>
+    <verb-syn id="v#00612137" noun-id ="n#05616059" caus-stat="stat"/>
+    <verb-syn id="v#01229968" noun-id ="n#05589778" caus-stat="caus"/>
+    <verb-syn id="v#01822979" noun-id ="n#05599694" caus-stat="caus"/>
+    <verb-syn id="v#01220279" noun-id ="n#05588413" caus-stat="caus"/>
+    <verb-syn id="v#01237013" noun-id ="n#05596105" caus-stat="stat"/>
+    <verb-syn id="v#01237403" noun-id ="n#05596105" caus-stat="caus"/>
+    <verb-syn id="v#01226612" noun-id ="n#05601776" caus-stat="caus"/>
+    <verb-syn id="v#01226464" noun-id ="n#05601776" caus-stat="stat"/>
+    <verb-syn id="v#01211054" noun-id ="n#05612377" caus-stat="stat"/>
+    <verb-syn id="v#01762305" noun-id ="n#05590065" caus-stat="caus"/>
+    <verb-syn id="v#01211167" noun-id ="n#05609785" caus-stat="stat"/>
+    <verb-syn id="v#01246466" noun-id ="n#05583906" caus-stat="stat"/>
+    <verb-syn id="v#01236040" noun-id ="n#05605928" caus-stat="stat"/>
+    <verb-syn id="v#01236040" noun-id ="n#05606155" caus-stat="stat"/>
+    <verb-syn id="v#01216971" noun-id ="n#05591212" caus-stat="caus"/>
+    <verb-syn id="v#01217571" noun-id ="n#05591212" caus-stat="stat"/>
+    <verb-syn id="v#01228249" noun-id ="n#05581967" caus-stat="caus"/>
+    <verb-syn id="v#00467782" noun-id ="n#05616407" caus-stat="stat"/>
+    <verb-syn id="v#01220279" noun-id ="n#05588725" caus-stat="caus"/>
+    <verb-syn id="v#01216252" noun-id ="n#05593389" caus-stat="caus"/>
+    <verb-syn id="v#00580082" noun-id ="n#05614225" caus-stat="caus"/>
+    <verb-syn id="v#01237403" noun-id ="n#05596218" caus-stat="caus"/>
+    <verb-syn id="v#01237680" noun-id ="n#05596218" caus-stat="stat"/>
+    <verb-syn id="v#01213391" noun-id ="n#05573285" caus-stat="stat"/>
+    <verb-syn id="v#01213205" noun-id ="n#05573285" caus-stat="stat"/>
+    <verb-syn id="v#01212004" noun-id ="n#05607724" caus-stat="stat"/>
+    <verb-syn id="v#01247684" noun-id ="n#05607724" caus-stat="stat"/>
+    <verb-syn id="v#01211759" noun-id ="n#05607724" caus-stat="stat"/>
+    <verb-syn id="v#01502875" noun-id ="n#05578076" caus-stat="caus"/>
+    <verb-syn id="v#01233868" noun-id ="n#05578076" caus-stat="caus"/>
+    <verb-syn id="v#01762305" noun-id ="n#05604181" caus-stat="caus"/>
+    <verb-syn id="v#01217082" noun-id ="n#05591377" caus-stat="caus"/>
+    <verb-syn id="v#01217265" noun-id ="n#05591377" caus-stat="stat"/>
+    <verb-syn id="v#01221816" noun-id ="n#05589637" caus-stat="caus"/>
+    <verb-syn id="v#01860661" noun-id ="n#05581430" caus-stat="stat"/>
+    <verb-syn id="v#01209835" noun-id ="n#05581430" caus-stat="stat"/>
+    <verb-syn id="v#00598839" noun-id ="n#05599226" caus-stat="stat"/>
+    <verb-syn id="v#01244174" noun-id ="n#05597617" caus-stat="stat"/>
+    <verb-syn id="v#00582048" noun-id ="n#05597617" caus-stat="stat"/>
+    <verb-syn id="v#01237680" noun-id ="n#05597617" caus-stat="stat"/>
+    <verb-syn id="v#01225879" noun-id ="n#05602852" caus-stat="stat"/>
+    <verb-syn id="v#01502738" noun-id ="n#05577970" caus-stat="stat"/>
+    <verb-syn id="v#01234179" noun-id ="n#05577970" caus-stat="caus"/>
+    <verb-syn id="v#00496653" noun-id ="n#05606995" caus-stat="stat"/>
+    <verb-syn id="v#01214144" noun-id ="n#05591481" caus-stat="stat"/>
+    <verb-syn id="v#01214306" noun-id ="n#05591481" caus-stat="stat"/>
+    <verb-syn id="v#01237116" noun-id ="n#05599930" caus-stat="caus"/>
+    <verb-syn id="v#01239189" noun-id ="n#05598965" caus-stat="caus"/>
+    <verb-syn id="v#01219733" noun-id ="n#05591591" caus-stat="caus"/>
+    <verb-syn id="v#01214618" noun-id ="n#05591591" caus-stat="caus"/>
+    <verb-syn id="v#00689385" noun-id ="n#05595349" caus-stat="caus"/>
+    <verb-syn id="v#01205436" noun-id ="n#05595349" caus-stat="caus"/>
+    <verb-syn id="v#01223746" noun-id ="n#05579963" caus-stat="caus"/>
+    <verb-syn id="v#01709572" noun-id ="n#05579963" caus-stat="caus"/>
+    <verb-syn id="v#01226464" noun-id ="n#05601413" caus-stat="stat"/>
+    <verb-syn id="v#01226464" noun-id ="n#05602279" caus-stat="stat"/>
+    <verb-syn id="v#01208417" noun-id ="n#05586373" caus-stat="caus"/>
+    <verb-syn id="v#01202395" noun-id ="n#05586373" caus-stat="caus"/>
+    <verb-syn id="v#00577163" noun-id ="n#05586373" caus-stat="caus"/>
+    <verb-syn id="v#01202110" noun-id ="n#05586373" caus-stat="caus"/>
+    <verb-syn id="v#00183525" noun-id ="n#05583004" caus-stat="caus"/>
+    <verb-syn id="v#00421500" noun-id ="n#05583004" caus-stat="caus"/>
+    <verb-syn id="v#01447978" noun-id ="n#05583004" caus-stat="caus"/>
+    <verb-syn id="v#01857366" noun-id ="n#05612278" caus-stat="stat"/>
+    <verb-syn id="v#01231478" noun-id ="n#05612278" caus-stat="stat"/>
+    <verb-syn id="v#00491581" noun-id ="n#05582875" caus-stat="caus"/>
+    <verb-syn id="v#01239069" noun-id ="n#05597153" caus-stat="caus"/>
+    <verb-syn id="v#00582048" noun-id ="n#05596663" caus-stat="stat"/>
+    <verb-syn id="v#01244174" noun-id ="n#05596663" caus-stat="stat"/>
+    <verb-syn id="v#00626227" noun-id ="n#05582577" caus-stat="stat"/>
+
+  </verb-syn-list>
+
+  <adv-syn-list>
+
+    <adv-syn id="r#00215267" noun-id ="n#05575841" caus-stat="caus"/>
+    <adv-syn id="r#00257643" noun-id ="n#05575110" caus-stat="stat"/>
+    <adv-syn id="r#00223640" noun-id ="n#05587878" caus-stat="stat"/>
+    <adv-syn id="r#00182087" noun-id ="n#05593480" caus-stat="stat"/>
+    <adv-syn id="r#00182087" noun-id ="n#05594203" caus-stat="stat"/>
+    <adv-syn id="r#00261067" noun-id ="n#05563581" caus-stat="stat"/>
+    <adv-syn id="r#00182087" noun-id ="n#05591792" caus-stat="stat"/>
+    <adv-syn id="r#00214298" noun-id ="n#05601647" caus-stat="stat"/>
+    <adv-syn id="r#00238872" noun-id ="n#05611680" caus-stat="stat"/>
+    <adv-syn id="r#00273738" noun-id ="n#05609411" caus-stat="caus"/>
+    <adv-syn id="r#00389425" noun-id ="n#05609295" caus-stat="stat"/>
+    <adv-syn id="r#00182910" noun-id ="n#05586846" caus-stat="stat"/>
+    <adv-syn id="r#00227177" noun-id ="n#05598350" caus-stat="caus"/>
+    <adv-syn id="r#00227177" noun-id ="n#05598350" caus-stat="stat"/>
+    <adv-syn id="r#00227305" noun-id ="n#05602960" caus-stat="caus"/>
+    <adv-syn id="r#00227305" noun-id ="n#05602960" caus-stat="stat"/>
+    <adv-syn id="r#00403897" noun-id ="n#05598089" caus-stat="stat"/>
+    <adv-syn id="r#00150972" noun-id ="n#05597982" caus-stat="stat"/>
+    <adv-syn id="r#00282876" noun-id ="n#05616177" caus-stat="stat"/>
+    <adv-syn id="r#00288531" noun-id ="n#05581054" caus-stat="stat"/>
+    <adv-syn id="r#00297720" noun-id ="n#05612765" caus-stat="stat"/>
+    <adv-syn id="r#00228933" noun-id ="n#05579830" caus-stat="stat"/>
+    <adv-syn id="r#00079394" noun-id ="n#05583116" caus-stat="caus"/>
+    <adv-syn id="r#00296382" noun-id ="n#05606636" caus-stat="stat"/>
+    <adv-syn id="r#00296382" noun-id ="n#05603932" caus-stat="stat"/>
+    <adv-syn id="r#00303711" noun-id ="n#05593002" caus-stat="stat"/>
+    <adv-syn id="r#00308582" noun-id ="n#05577676" caus-stat="stat"/>
+    <adv-syn id="r#00308724" noun-id ="n#05577676" caus-stat="stat"/>
+    <adv-syn id="r#00308881" noun-id ="n#05577676" caus-stat="caus"/>
+    <adv-syn id="r#00312722" noun-id ="n#05605389" caus-stat="caus"/>
+    <adv-syn id="r#00493129" noun-id ="n#05593817" caus-stat="caus"/>
+    <adv-syn id="r#00111977" noun-id ="n#05593817" caus-stat="caus"/>
+    <adv-syn id="r#00314694" noun-id ="n#05593817" caus-stat="stat"/>
+    <adv-syn id="r#00315910" noun-id ="n#05600250" caus-stat="stat"/>
+    <adv-syn id="r#00197382" noun-id ="n#05616745" caus-stat="stat"/>
+    <adv-syn id="r#00161132" noun-id ="n#05584398" caus-stat="stat"/>
+    <adv-syn id="r#00144019" noun-id ="n#05587663" caus-stat="stat"/>
+    <adv-syn id="r#00323106" noun-id ="n#05580420" caus-stat="caus"/>
+    <adv-syn id="r#00188539" noun-id ="n#05616285" caus-stat="stat"/>
+    <adv-syn id="r#00323550" noun-id ="n#05606270" caus-stat="caus"/>
+    <adv-syn id="r#00185177" noun-id ="n#05616611" caus-stat="stat"/>
+    <adv-syn id="r#00297720" noun-id ="n#05612539" caus-stat="stat"/>
+    <adv-syn id="r#00002940" noun-id ="n#05612539" caus-stat="caus"/>
+    <adv-syn id="r#00242297" noun-id ="n#05583266" caus-stat="stat"/>
+    <adv-syn id="r#00319405" noun-id ="n#05617136" caus-stat="stat"/>
+    <adv-syn id="r#00330011" noun-id ="n#05617136" caus-stat="stat"/>
+    <adv-syn id="r#00223740" noun-id ="n#05596527" caus-stat="stat"/>
+    <adv-syn id="r#00226872" noun-id ="n#05575676" caus-stat="stat"/>
+    <adv-syn id="r#00196317" noun-id ="n#05590260" caus-stat="caus"/>
+    <adv-syn id="r#00196317" noun-id ="n#05590260" caus-stat="stat"/>
+    <adv-syn id="r#00196457" noun-id ="n#05595229" caus-stat="stat"/>
+    <adv-syn id="r#00137715" noun-id ="n#05583678" caus-stat="stat"/>
+    <adv-syn id="r#00337887" noun-id ="n#05601181" caus-stat="caus"/>
+    <adv-syn id="r#00220692" noun-id ="n#05588413" caus-stat="stat"/>
+    <adv-syn id="r#00343284" noun-id ="n#05599822" caus-stat="stat"/>
+    <adv-syn id="r#00228716" noun-id ="n#05600505" caus-stat="stat"/>
+    <adv-syn id="r#00266557" noun-id ="n#05578355" caus-stat="stat"/>
+    <adv-syn id="r#00266557" noun-id ="n#05578169" caus-stat="stat"/>
+    <adv-syn id="r#00345753" noun-id ="n#05601776" caus-stat="stat"/>
+    <adv-syn id="r#00345753" noun-id ="n#05601776" caus-stat="caus"/>
+    <adv-syn id="r#00048845" noun-id ="n#05595732" caus-stat="stat"/>
+    <adv-syn id="r#00348685" noun-id ="n#05609785" caus-stat="caus"/>
+    <adv-syn id="r#00349592" noun-id ="n#05579669" caus-stat="stat"/>
+    <adv-syn id="r#00142272" noun-id ="n#05593183" caus-stat="stat"/>
+    <adv-syn id="r#00178680" noun-id ="n#05597503" caus-stat="caus"/>
+    <adv-syn id="r#00178680" noun-id ="n#05597503" caus-stat="stat"/>
+    <adv-syn id="r#00196759" noun-id ="n#05583906" caus-stat="caus"/>
+    <adv-syn id="r#00196856" noun-id ="n#05583906" caus-stat="stat"/>
+    <adv-syn id="r#00196759" noun-id ="n#05605928" caus-stat="caus"/>
+    <adv-syn id="r#00196856" noun-id ="n#05605928" caus-stat="stat"/>
+    <adv-syn id="r#00196759" noun-id ="n#05606155" caus-stat="caus"/>
+    <adv-syn id="r#00196856" noun-id ="n#05606155" caus-stat="stat"/>
+    <adv-syn id="r#00312487" noun-id ="n#05606847" caus-stat="stat"/>
+    <adv-syn id="r#00197005" noun-id ="n#05606847" caus-stat="stat"/>
+    <adv-syn id="r#00243839" noun-id ="n#05591212" caus-stat="caus"/>
+    <adv-syn id="r#00054569" noun-id ="n#05591212" caus-stat="caus"/>
+    <adv-syn id="r#00351154" noun-id ="n#05591212" caus-stat="caus"/>
+    <adv-syn id="r#00238872" noun-id ="n#05610898" caus-stat="stat"/>
+    <adv-syn id="r#00353628" noun-id ="n#05589074" caus-stat="stat"/>
+    <adv-syn id="r#00207646" noun-id ="n#05581967" caus-stat="caus"/>
+    <adv-syn id="r#00207646" noun-id ="n#05581967" caus-stat="stat"/>
+    <adv-syn id="r#00355286" noun-id ="n#05591290" caus-stat="stat"/>
+    <adv-syn id="r#00169660" noun-id ="n#05586117" caus-stat="stat"/>
+    <adv-syn id="r#00367067" noun-id ="n#05579322" caus-stat="stat"/>
+    <adv-syn id="r#00367200" noun-id ="n#05588960" caus-stat="stat"/>
+    <adv-syn id="r#00220692" noun-id ="n#05588725" caus-stat="stat"/>
+    <adv-syn id="r#00372453" noun-id ="n#05594325" caus-stat="stat"/>
+    <adv-syn id="r#00297720" noun-id ="n#05612865" caus-stat="stat"/>
+    <adv-syn id="r#00378612" noun-id ="n#05612865" caus-stat="stat"/>
+    <adv-syn id="r#00342819" noun-id ="n#05596218" caus-stat="stat"/>
+    <adv-syn id="r#00342819" noun-id ="n#05596218" caus-stat="stat"/>
+    <adv-syn id="r#00343022" noun-id ="n#05603196" caus-stat="caus"/>
+    <adv-syn id="r#00343022" noun-id ="n#05603196" caus-stat="stat"/>
+    <adv-syn id="r#00381099" noun-id ="n#05587782" caus-stat="stat"/>
+    <adv-syn id="r#00381099" noun-id ="n#05563906" caus-stat="stat"/>
+    <adv-syn id="r#00387194" noun-id ="n#05588618" caus-stat="stat"/>
+    <adv-syn id="r#00225391" noun-id ="n#05607724" caus-stat="stat"/>
+    <adv-syn id="r#00260705" noun-id ="n#05607724" caus-stat="caus"/>
+    <adv-syn id="r#00389554" noun-id ="n#05613127" caus-stat="stat"/>
+    <adv-syn id="r#00197662" noun-id ="n#05613388" caus-stat="stat"/>
+    <adv-syn id="r#00189439" noun-id ="n#05615937" caus-stat="stat"/>
+    <adv-syn id="r#00397497" noun-id ="n#05601051" caus-stat="stat"/>
+    <adv-syn id="r#00397497" noun-id ="n#05601051" caus-stat="stat"/>
+    <adv-syn id="r#00399172" noun-id ="n#05601957" caus-stat="caus"/>
+    <adv-syn id="r#00399172" noun-id ="n#05601957" caus-stat="stat"/>
+    <adv-syn id="r#00268673" noun-id ="n#05610694" caus-stat="stat"/>
+    <adv-syn id="r#00408211" noun-id ="n#05604181" caus-stat="caus"/>
+    <adv-syn id="r#00408432" noun-id ="n#05606361" caus-stat="stat"/>
+    <adv-syn id="r#00413054" noun-id ="n#05587497" caus-stat="stat"/>
+    <adv-syn id="r#00413918" noun-id ="n#05600734" caus-stat="stat"/>
+    <adv-syn id="r#00408616" noun-id ="n#05607505" caus-stat="stat"/>
+    <adv-syn id="r#00417427" noun-id ="n#05587029" caus-stat="stat"/>
+    <adv-syn id="r#00419566" noun-id ="n#05602106" caus-stat="stat"/>
+    <adv-syn id="r#00186262" noun-id ="n#05581430" caus-stat="stat"/>
+    <adv-syn id="r#00186262" noun-id ="n#05599226" caus-stat="stat"/>
+    <adv-syn id="r#00207812" noun-id ="n#05608917" caus-stat="caus"/>
+    <adv-syn id="r#00359722" noun-id ="n#05602852" caus-stat="stat"/>
+    <adv-syn id="r#00304232" noun-id ="n#05577970" caus-stat="caus"/>
+    <adv-syn id="r#00435658" noun-id ="n#05611927" caus-stat="stat"/>
+    <adv-syn id="r#00259750" noun-id ="n#05606995" caus-stat="stat"/>
+    <adv-syn id="r#00435962" noun-id ="n#05606995" caus-stat="stat"/>
+    <adv-syn id="r#00437701" noun-id ="n#05591481" caus-stat="stat"/>
+    <adv-syn id="r#00090468" noun-id ="n#05599930" caus-stat="caus"/>
+    <adv-syn id="r#00399051" noun-id ="n#05599930" caus-stat="stat"/>
+    <adv-syn id="r#00179505" noun-id ="n#05598965" caus-stat="caus"/>
+    <adv-syn id="r#00014198" noun-id ="n#05598965" caus-stat="caus"/>
+    <adv-syn id="r#00340392" noun-id ="n#05591591" caus-stat="caus"/>
+    <adv-syn id="r#00433904" noun-id ="n#05595349" caus-stat="caus"/>
+    <adv-syn id="r#00113354" noun-id ="n#05580651" caus-stat=""/>
+    <adv-syn id="r#00443082" noun-id ="n#05586720" caus-stat="caus"/>
+    <adv-syn id="r#00308234" noun-id ="n#05579963" caus-stat="caus"/>
+    <adv-syn id="r#00445721" noun-id ="n#05580828" caus-stat="caus"/>
+    <adv-syn id="r#00445721" noun-id ="n#05580828" caus-stat="stat"/>
+    <adv-syn id="r#00454522" noun-id ="n#05578925" caus-stat="stat"/>
+    <adv-syn id="r#00315910" noun-id ="n#05601413" caus-stat="stat"/>
+    <adv-syn id="r#00455379" noun-id ="n#05601413" caus-stat="stat"/>
+    <adv-syn id="r#00315910" noun-id ="n#05602279" caus-stat="stat"/>
+    <adv-syn id="r#00455379" noun-id ="n#05602279" caus-stat="stat"/>
+    <adv-syn id="r#00209555" noun-id ="n#05582875" caus-stat="caus"/>
+    <adv-syn id="r#00141302" noun-id ="n#05582875" caus-stat="caus"/>
+    <adv-syn id="r#00466103" noun-id ="n#05582875" caus-stat="stat"/>
+    <adv-syn id="r#00188539" noun-id ="n#05615127" caus-stat="stat"/>
+    <adv-syn id="r#00469972" noun-id ="n#05615833" caus-stat="stat"/>
+    <adv-syn id="r#00225227" noun-id ="n#05592739" caus-stat="stat"/>
+    <adv-syn id="r#00183058" noun-id ="n#05587339" caus-stat="stat"/>
+    <adv-syn id="r#00473201" noun-id ="n#05592071" caus-stat="stat"/>
+    <adv-syn id="r#00191539" noun-id ="n#05596663" caus-stat="stat"/>
+    <adv-syn id="r#00262054" noun-id ="n#05593296" caus-stat="stat"/>
+    <adv-syn id="r#00479516" noun-id ="n#05579184" caus-stat="stat"/>
+    <adv-syn id="r#00437488" noun-id ="n#05613522" caus-stat="stat"/>
+    <adv-syn id="r#00090468" noun-id ="n#05600968" caus-stat="stat"/>
+    <adv-syn id="r#00090468" noun-id ="n#05600968" caus-stat="caus"/>
+    <adv-syn id="r#00179150" noun-id ="n#05582577" caus-stat="caus"/>
+    <adv-syn id="r#00493548" noun-id ="n#05588321" caus-stat="stat"/>
+
+  </adv-syn-list>
+
+</syn-list>
+

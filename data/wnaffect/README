@@ -1,0 +1,37 @@
+WordNet 1.6
+-----------
+
+URL: https://wordnet.princeton.edu
+License: custom (MIT-like)
+Path: wordnet-1.6
+
+Dowloaded from https://wordnet.princeton.edu/wordnet/download/old-versions
+
+
+WordNet-Affect Lexicon
+----------------------
+
+URL: http://wndomains.fbk.eu/wnaffect.html
+License: Creative Commons Attribution 3.0 Unported License
+Path: wn-affect-1.1
+
+Downloaded from  https://github.com/larsmans/wordnet-domains-sentiwords
+
+
+Notes
+-----
+
+  + wn-affect-1.1/a-hierarchy.xml organizes emotion aspects into a hierarchy
+
+  + wn-affect-1.1/a-synsets.xml associates named aspects with wordnet-1.6 synsets
+
+  + some named aspects do not have associated synsets, e.g. "merriment"
+
+  + three categories in `a-synsets` do not appear in `a-hierarchy`. We remap
+    them as follows:
+
+        joy-pride      -> self-pride
+        levity-gaiety  -> playfulness
+        general-gaiety -> merriment
+
+  + we merge neutral and ambiguous emotion categories into "neutral"
