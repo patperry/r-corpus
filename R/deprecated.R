@@ -12,30 +12,3 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-sentence_filter <- function(crlf_break = FALSE,
-                            suppress = abbreviations("english"))
-{
-    .Deprecated("text_filter")
-    text_filter(sent_crlf = crlf_break, sent_suppress = suppress)
-}
-
-
-token_filter <- function(map_case = TRUE,
-                         map_quote = TRUE, remove_ignorable = TRUE,
-                         stemmer = NULL, stem_except = drop,
-                         combine = abbreviations("english"),
-                         drop_letter = FALSE, drop_mark = FALSE,
-                         drop_number = FALSE, drop_punct = FALSE,
-                         drop_symbol = FALSE, drop_other = FALSE,
-                         drop = NULL, drop_except = NULL)
-{
-    .Deprecated("text_filter")
-    text_filter(map_case = map_case,
-                map_quote = map_quote, remove_ignorable = remove_ignorable,
-                stemmer = stemmer, stem_dropped = TRUE,
-                stem_except = stem_except, combine = combine,
-                drop_letter = drop_letter, drop_mark = drop_mark,
-                drop_number = drop_number, drop_punct = drop_punct,
-                drop_symbol = drop_symbol, drop_other = drop_other,
-                drop = drop, drop_except = drop_except)
-}

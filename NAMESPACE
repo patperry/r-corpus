@@ -56,8 +56,6 @@ export(utf8_width)
 
 
 ## Deprecated
-export(sentence_filter)
-export(token_filter)
 
 
 ## New S3 methods

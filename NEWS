@@ -1,5 +1,7 @@
 Changes in version 0.9.0
 
+ * Removed deprecated functions token_filter() and sentence_filter().
+
  * Removed 'term' column from text_locate() output.
 
  * Added text_match() function to return matching terms as a factor.
