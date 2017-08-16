@@ -89,8 +89,8 @@ Text filter with the following options:
 	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
 	drop_letter: FALSE
 	drop_number: FALSE
-	drop_symbol: FALSE
 	drop_punct: TRUE
+	drop_symbol: FALSE
 	drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
 	drop_except: NULL
 	sent_crlf: FALSE

@@ -50,8 +50,8 @@ text_filter.default <- function(x = NULL, ...,
     ans$combine <- combine
     ans$drop_letter <- drop_letter
     ans$drop_number <- drop_number
-    ans$drop_symbol <- drop_symbol
     ans$drop_punct <- drop_punct
+    ans$drop_symbol <- drop_symbol
     ans$drop <- drop
     ans$drop_except <- drop_except
     ans$sent_crlf <- sent_crlf
@@ -155,8 +155,8 @@ text_filter.corpus_text <- function(x = NULL, ...)
 `$<-.corpus_text_filter` <- function(x, name, value)
 {
     if (name %in% c("map_case", "map_quote", "remove_ignorable",
-                    "drop_letter", "drop_number", "drop_symbol",
-                    "drop_punct", "stem_dropped", "sent_crlf")) {
+                    "drop_letter", "drop_number", "drop_punct",
+                    "drop_symbol", "stem_dropped", "sent_crlf")) {
         value <- as_option(name, value)
     } else if (name %in% c("stem_except", "combine", "drop", "drop_except",
                            "sent_suppress")) {
