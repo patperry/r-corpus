@@ -379,23 +379,23 @@ term_stats(lines2, f)
 1  fanny      816     806
 2  must       508     492
 3  crawford   493     488
-4  will       495     471
-5  mr.        482     466
-6  much       459     450
-7  miss       432     419
-8  said       406     400
-9  mrs.       408     399
-10 sir        372     366
-11 edmund     364     364
-12 one        370     358
-13 think      349     346
-14 now        333     331
-15 might      324     320
-16 time       310     307
-17 little     309     300
-18 nothing    301     291
+4  mr.        482     466
+5  much       459     450
+6  miss       432     419
+7  said       406     400
+8  mrs.       408     399
+9  sir        372     366
+10 edmund     364     364
+11 one        370     358
+12 think      349     346
+13 now        333     331
+14 might      324     320
+15 time       310     307
+16 little     309     300
+17 nothing    301     291
+18 well       299     286
 ⋮
-(8458 rows total)
+(8457 rows total)
 ```
 
 The *readtext* package

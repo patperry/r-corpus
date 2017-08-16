@@ -14,8 +14,7 @@
         \code{"finnish"}, \code{"french"}, \code{"german"},
         \code{"hungarian"}, \code{"italian"}, \code{"norwegian"},
         \code{"portuguese"}, and \code{"russian"}; these values
-        retrieve the language-specific stop word lists compiled by the
-        \href{http://snowballstem.org/}{Snowball stemming project}.}
+        retrieve the language-specific stop word lists.}
 }
 \details{
     \code{stopwords} returns a character vector of case-folded \sQuote{stop}
@@ -23,7 +22,11 @@
     performing other text analysis tasks.
 
     The built-in word lists returned by this function are reasonable defaults,
-    but they may require further tailoring to suit your particular task.
+    but they may require further tailoring to suit your particular task. The
+    original lists were compiled by the
+    \href{http://snowballstem.org/}{Snowball stemming project}. Following
+    the Quanteda text analysis software, we have tailored the original
+    lists by adding the word "will" to the English list.
 }
 \value{
     A character vector of unique stop words of the specified kind (or kinds
@@ -41,5 +44,5 @@
     head(stopwords(c("spanish", "portuguese")))
 
     # add words to the default list:
-    my_stopwords <- c(stopwords("english"), "will", "mr", "mrs", "ms")
+    my_stopwords <- c(stopwords("english"), "mr.", "mrs.", "ms.")
 }

@@ -1,5 +1,7 @@
 Changes in version 0.9.0
 
+ * Following *quanteda*, add "will" to the English stop word list.
+
  * Add special handling for hyphens so that, for example, "world-wide"
    is a single token (but "-world-wide-" is three tokens).
 
