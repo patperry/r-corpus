@@ -113,3 +113,14 @@ test_that("'text_sub' can get third-to-last token", {
 
     expect_equal(text_sub(x, -3, -3), y)
 })
+
+
+test_that("'text_sub' can be applied twice", {
+    x <- paste(letters, collapse = " ")
+
+    y <- text_sub(x, 5, 8)
+    expect_equal(y, as_text(c("e f g h ")))
+
+    z <- text_sub(y, 2, 3)
+    expect_equal(z, as_text(c("f g ")))
+})

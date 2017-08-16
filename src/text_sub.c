@@ -104,7 +104,7 @@ SEXP text_sub(SEXP sx, SEXP sstart, SEXP send)
 			s = 1;
 		}
 
-		base = text[i].ptr;
+		base = text[i].ptr - (INTEGER(tstart)[i] - 1);
 
 		// find start
 		j = 0;
