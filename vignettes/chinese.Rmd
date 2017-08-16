@@ -88,12 +88,9 @@ Text filter with the following options:
 	stem_except: NULL
 	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
 	drop_letter: FALSE
-	drop_mark: FALSE
 	drop_number: FALSE
 	drop_symbol: FALSE
 	drop_punct: TRUE
-	drop_other: FALSE
-	drop_url: FALSE
 	drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
 	drop_except: NULL
 	sent_crlf: FALSE

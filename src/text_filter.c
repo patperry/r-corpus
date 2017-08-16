@@ -102,7 +102,8 @@ static const char *filter_stemmer(SEXP filter)
 
 static int filter_flags(SEXP filter)
 {
-	int flags = CORPUS_FILTER_IGNORE_SPACE;
+	int flags = (CORPUS_FILTER_IGNORE_SPACE
+			| CORPUS_FILTER_IGNORE_OTHER);
 
 	if (filter_logical(filter, "drop_letter", 0)) {
 		flags |= CORPUS_FILTER_DROP_LETTER;
@@ -118,14 +119,6 @@ static int filter_flags(SEXP filter)
 
 	if (filter_logical(filter, "drop_symbol", 0)) {
 		flags |= CORPUS_FILTER_DROP_SYMBOL;
-	}
-
-	if (filter_logical(filter, "drop_other", 0)) {
-		flags |= CORPUS_FILTER_DROP_OTHER;
-	}
-
-	if (filter_logical(filter, "drop_url", 0)) {
-		flags |= CORPUS_FILTER_DROP_URL;
 	}
 
 	return flags;

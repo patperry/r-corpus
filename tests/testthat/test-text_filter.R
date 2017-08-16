@@ -14,7 +14,6 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$drop_number, FALSE)
     expect_equal(f$drop_punct, FALSE)
     expect_equal(f$drop_symbol, FALSE)
-    expect_equal(f$drop_other, FALSE)
     expect_equal(f$drop, NULL)
     expect_equal(f$drop_except, NULL)
     expect_equal(f$sent_crlf, FALSE)

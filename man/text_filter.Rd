@@ -29,7 +29,6 @@
                         combine = abbreviations("english"),
                         drop_letter = FALSE, drop_number = FALSE,
                         drop_punct = FALSE, drop_symbol = FALSE,
-                        drop_other = FALSE, drop_url = FALSE,
                         drop = NULL, drop_except = NULL,
                         sent_crlf = FALSE,
                         sent_suppress = abbreviations("english"))
@@ -88,24 +87,16 @@
         \code{"punct"} tokens (punctuation) with \code{NA}.}
 
     \item{drop_symbol}{a logical value indicating whether to replace
-        \code{"symbol"} tokens (emoji, math, currency, and other symbols)
-        with \code{NA}.}
-
-    \item{drop_other}{a logical value indicating whether to replace
-        \code{"other"} tokens (types that do not fall into any other
-        categories) with \code{NA}.}
-
-    \item{drop_url}{a logical value indicating whether to replace
-        \code{"url"} tokens (web addresses starting with \code{"http:/"} or
-        \code{"https:/"}) with \code{NA}.}
+        \code{"symbol"} tokens (emoji, math, currency, URLs, and other
+        symbols) with \code{NA}.}
 
     \item{drop}{a character vector of types to replace with \code{NA},
         or \code{NULL}.}
 
     \item{drop_except}{a character of types to exempt from the drop
         rules specified by the \code{drop_letter}, \code{drop_number},
-        \code{drop_punct}, \code{drop_symbol}, \code{drop_other},
-        \code{drop_url}, and \code{drop} arguments, or \code{NULL}.}
+        \code{drop_punct}, \code{drop_symbol}, and \code{drop}
+        arguments, or \code{NULL}.}
 
     \item{sent_crlf}{a logical value indicating whether to break
         sentences on carriage returns or line feeds.}
