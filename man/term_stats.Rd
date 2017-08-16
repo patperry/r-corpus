@@ -1,11 +1,11 @@
-\name{term_counts}
-\alias{term_counts}
-\title{Term Frequencies}
+\name{term_stats}
+\alias{term_stats}
+\title{Term Stats}
 \description{
-    Tokenize a set of texts and tabulate the term occurrence frequencies.
+    Tokenize a set of texts and tabulate the term occurrence statistics.
 }
 \usage{
-    term_counts(x, filter = text_filter(x), weights = NULL,
+    term_stats(x, filter = text_filter(x), weights = NULL,
                 ngrams = NULL, min_count = NULL, max_count = NULL,
                 min_support = NULL, max_support = NULL, types = FALSE)
 }
@@ -36,7 +36,7 @@
         the types that make up the terms.}
 }
 \details{
-    \code{term_counts} tokenizes a set of texts and computes the occurrence
+    \code{term_stats} tokenizes a set of texts and computes the occurrence
     counts and supports for each term. The \sQuote{count} is the number of
     occurrences of the term across all texts; the \sQuote{support} is the
     number of texts containing the term. If \code{weights} is
@@ -66,20 +66,20 @@
     \code{\link{text_tokens}}, \code{\link{term_matrix}}.
 }
 \examples{
-    term_counts("A rose is a rose is a rose.")
+    term_stats("A rose is a rose is a rose.")
 
     # remove punctuation and stop words
-    term_counts("A rose is a rose is a rose.",
+    term_stats("A rose is a rose is a rose.",
                 text_filter(drop_symbol = TRUE, drop = stopwords("english")))
 
     # weight the texts
-    term_counts(c("A rose is a rose is a rose.",
+    term_stats(c("A rose is a rose is a rose.",
                   "A Rose is red, a violet is blue!"),
                 weights = c(100, 1))
 
     # unigrams, bigrams, and trigrams
-    term_counts("A rose is a rose is a rose.", ngrams = 1:3)
+    term_stats("A rose is a rose is a rose.", ngrams = 1:3)
 
     # also include the type information
-    term_counts("A rose is a rose is a rose.", ngrams = 1:3, types = TRUE)
+    term_stats("A rose is a rose is a rose.", ngrams = 1:3, types = TRUE)
 }

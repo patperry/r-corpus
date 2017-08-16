@@ -13,9 +13,9 @@
 #  limitations under the License.
 
 
-term_counts <- function(x, filter = text_filter(x), weights = NULL,
-                        ngrams = NULL, min_count = NULL, max_count = NULL,
-                        min_support = NULL, max_support = NULL, types = FALSE)
+term_stats <- function(x, filter = text_filter(x), weights = NULL,
+                       ngrams = NULL, min_count = NULL, max_count = NULL,
+                       min_support = NULL, max_support = NULL, types = FALSE)
 {
     with_rethrow({
         x <- as_text(x, filter = filter)

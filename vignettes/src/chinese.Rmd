@@ -84,7 +84,7 @@ head(data.frame(text = data$name,
 ```
 and examine term frequencies
 ```{r}
-(stats <- term_counts(data))
+(stats <- term_stats(data))
 ```
 These operations all use the `text_filter(data)` value we set above to determine
 the token and sentence boundaries.
@@ -113,7 +113,7 @@ term
 ```{r}
 sents <- text_split(data) # split text into sentences
 subset <- text_subset(sents, '\u6539\u9769') # select those with the term
-term_counts(subset) # count the word occurrences
+term_stats(subset) # count the word occurrences
 ```
 The first term is the search query. It appears 2931 times in the corpus,
 in 2457 different sentences. The second term in the list appears in

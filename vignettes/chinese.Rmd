@@ -123,7 +123,7 @@ head(data.frame(text = data$name,
 and examine term frequencies
 
 ```r
-(stats <- term_counts(data))
+(stats <- term_stats(data))
 ```
 
 ```
@@ -183,7 +183,7 @@ term
 ```r
 sents <- text_split(data) # split text into sentences
 subset <- text_subset(sents, '\u6539\u9769') # select those with the term
-term_counts(subset) # count the word occurrences
+term_stats(subset) # count the word occurrences
 ```
 
 ```

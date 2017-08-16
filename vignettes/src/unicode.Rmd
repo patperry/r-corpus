@@ -60,11 +60,11 @@ encoded as UTF-8. So, we should be in good shape. However, we run into trouble
 as soon as we try to process the text:
 
 ```r
-term_counts(lines) # produces an error
+term_stats(lines) # produces an error
 ```
 
 ```
-Error in term_counts(lines) :
+Error in term_stats(lines) :
   argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
 ```
 
@@ -228,11 +228,11 @@ Back to our original problem: getting the text of _Mansfield Park_ into R.
 Our first attempt failed:
 
 ```r
-term_counts(lines)
+term_stats(lines)
 ```
 
 ```
-Error in term_counts(lines) :
+Error in term_stats(lines) :
   argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)
 ```
 
@@ -256,7 +256,7 @@ It worked! Now we can analyze our text.
 
 ```{r}
 f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
-term_counts(lines2, f)
+term_stats(lines2, f)
 ```
 
 The *readtext* package

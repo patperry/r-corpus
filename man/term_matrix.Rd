@@ -79,7 +79,7 @@
     a factor.
 }
 \seealso{
-    \code{\link{text_tokens}}, \code{\link{term_counts}}.
+    \code{\link{text_tokens}}, \code{\link{term_stats}}.
 }
 \examples{
     text <- c("A rose is a rose is a rose.",

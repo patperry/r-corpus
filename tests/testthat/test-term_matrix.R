@@ -107,7 +107,7 @@ test_that("'term_matrix can select ngrams", {
     x <- term_matrix(text, ngrams = ngrams)
     terms <- colnames(x)
     for (i in seq_len(nrow(x))) {
-        stats <- term_counts(text[i], ngrams = ngrams)
+        stats <- term_stats(text[i], ngrams = ngrams)
         expect_true(all(stats$term %in% terms))
         expect_equal(as.numeric(x[i,stats$term]), stats$count)
         expect_true(all(x[i,!terms %in% stats$term] == 0))

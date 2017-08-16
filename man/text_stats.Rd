@@ -22,7 +22,7 @@
     \code{sentences}, with one row for each text.
 }
 \seealso{
-    \code{\link{text_filter}}, \code{\link{term_counts}}.
+    \code{\link{text_filter}}, \code{\link{term_stats}}.
 }
 \examples{
     text_stats(c("A rose is a rose is a rose.",

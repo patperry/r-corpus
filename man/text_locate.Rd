@@ -65,7 +65,7 @@
     passed-in \code{filter} argument.
 }
 \seealso{
-    \code{\link{term_counts}}, \code{\link{term_frame}}.
+    \code{\link{term_stats}}, \code{\link{term_frame}}.
 }
 \examples{
     text <- c("Rose is a rose is a rose is a rose.",
