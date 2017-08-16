@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include "corpus/src/array.h"
@@ -231,14 +232,14 @@ out:
 
 SEXP text_split_sentences(SEXP sx, SEXP ssize)
 {
-	SEXP ans, sctx;
+	SEXP ans, sctx, snsent;
 	struct context *ctx;
 	struct corpus_sentfilter *filter;
 	const struct corpus_text *text;
 	struct corpus_text current;
 	R_xlen_t i, n;
 	size_t attr, size;
-	double s, block_size;
+	double s, block_size, nsent, nbin, min_size, extra, target;
 	int nprot, err = 0;
 
 	nprot = 0;
@@ -255,6 +256,12 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 		block_size = 1;
 	}
 
+	if (block_size != 1) {
+		PROTECT(snsent = text_nsentence(sx)); nprot++;
+	} else {
+		target = 1;
+	}
+
 	PROTECT(sctx = alloc_context(sizeof(*ctx), context_destroy)); nprot++;
         ctx = as_context(sctx);
 
@@ -268,6 +275,17 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
 			context_add(ctx, &text[i], i);
 			continue;
+		}
+
+		if (block_size != 1) {
+			nsent = REAL(snsent)[i];
+			nbin = ceil(nsent / block_size);
+			min_size = floor(nsent / nbin);
+			extra = nsent - nbin * min_size;
+			target = min_size;
+			if (extra > 0) {
+				target += 1;
+			}
 		}
 
 		s = 0;
@@ -286,7 +304,7 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 			attr |= CORPUS_TEXT_BITS(&filter->current);
 			s++;
 
-			if (s < block_size) {
+			if (s < target) {
 				continue;
 			}
 
@@ -294,6 +312,13 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 			context_add(ctx, &current, i);
 
 			s = 0;
+
+			if (block_size != 1) {
+				extra -= 1;
+				if (extra <= 0) {
+					target = min_size;
+				}
+			}
 		}
 		TRY(filter->error);
 
@@ -314,14 +339,14 @@ out:
 
 SEXP text_split_tokens(SEXP sx, SEXP ssize)
 {
-	SEXP ans, sctx;
+	SEXP ans, sctx, sntok;
 	struct context *ctx;
 	struct corpus_filter *filter;
 	const struct corpus_text *text;
 	struct corpus_text current;
 	R_xlen_t i, n;
 	size_t attr, size;
-	double s, block_size;
+	double s, block_size, ntok, nbin, min_size, extra, target;
 	int nprot, err = 0;
 
 	nprot = 0;
@@ -336,6 +361,12 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 	block_size = REAL(ssize)[0];
 	if (!(block_size >= 1)) {
 		block_size = 1;
+	}
+
+	if (block_size != 1) {
+		PROTECT(sntok = text_ntoken(sx)); nprot++;
+	} else {
+		target = 1;
 	}
 
 	PROTECT(sctx = alloc_context(sizeof(*ctx), context_destroy)); nprot++;
@@ -353,6 +384,17 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 			continue;
 		}
 
+		if (block_size != 1) {
+			ntok = REAL(sntok)[i];
+			nbin = ceil(ntok / block_size);
+			min_size = floor(ntok / nbin);
+			extra = ntok - nbin * min_size;
+			target = min_size;
+			if (extra > 0) {
+				target += 1;
+			}
+		}
+
 		// start with an empty block
 		s = 0;
 		size = 0;
@@ -363,11 +405,18 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 		while (corpus_filter_advance(filter)) {
 			// if we encounter a non-dropped, non-ignored
 			// token and the block is already full, add it
-			if (filter->type_id >= 0 && s == block_size) {
+			if (filter->type_id >= 0 && s >= target) {
 				current.attr = attr | size;
 				context_add(ctx, &current, i);
 				size = 0;
 				s = 0;
+
+				if (block_size != 1) {
+					extra -= 1;
+					if (extra <= 0) {
+						target = min_size;
+					}
+				}
 			}
 
 			// if the block is empty, initialize it

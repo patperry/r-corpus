@@ -17,17 +17,24 @@
     \item{units}{the block size units, either \code{"sentences"} or
         \code{"tokens"}.}
 
-    \item{size}{the block size, a positive integer giving the number of
-        units per block.}
+    \item{size}{the block size, a positive integer giving the maximum
+        number of units per block.}
 
     \item{filter}{a text filter defining the token and sentence
         boundaries.}
 }
 \details{
-    \code{text_split} splits text into blocks of the given size, measured
-    in the specified units.  When \code{units = "sentences"}, units are
-    sentences; when \code{units = "tokens"}, units are non-\code{NA}
-    tokens.
+    \code{text_split} splits text into roughly evenly-sized blocks,
+    measured in the specified units.  When \code{units = "sentences"},
+    units are sentences; when \code{units = "tokens"}, units are
+    non-\code{NA} tokens. The \code{size} parameter specifies the
+    maximum block size.
+
+    When the minimum block size does not evenly divide the number of
+    total units in a text, the block sizes will not be exactly equal.
+    However, it will still be the case that no block will has more
+    than one unit more than any other block. The extra units get
+    allocated to the first segments in the split.
 
     Sentences and tokens are defined by the \code{filter} argument.
     The documentation for \code{\link{text_tokens}} describes the
@@ -115,4 +122,8 @@
     text_split(c("What. Are. You. Doing????",
                 "She asked 'do you really mean that?' and I said 'yes.'"),
                units = "tokens", size = 4)
+
+    # blocks are approximately evenly sized; 'size' gives maximum size
+    text_split(paste(letters, collapse = " "), "tokens", 4)
+    text_split(paste(letters, collapse = " "), "tokens", 16)
 }
