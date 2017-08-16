@@ -5,17 +5,16 @@
 \description{
     The WordNet-Affect Lexicon is a hand-curate collection of
     emotion-related words (nouns, verbs, adjectives, and adverbs),
-    classified as \dQuote{Positive}, \dQuote{Negative}, and
-    \dQuote{Neutral}, and categorized into 29 subcategories
-    (\dQuote{Joy}, \dQuote{Love}, \dQuote{Fear}, etc.).
+    classified as \dQuote{Positive}, \dQuote{Negative},
+    \dQuote{Neutral}, or \dQuote{Ambiguous} and categorized into
+    28 subcategories (\dQuote{Joy}, \dQuote{Love}, \dQuote{Fear},
+    etc.).
 
     Terms can and do appear in multiple categories.
 
-    The original lexicon uses four main subcategories, but as
-    presented here, the lexicon combines \dQuote{neutral}
-    and \dQuote{ambiguous} emotions into a single class. Also,
-    the original lexicon contains multi-word phrases, but they
-    are excluded here.
+    The original lexicon contains multi-word phrases, but they
+    are excluded here. Also, we removed the term \sQuote{thing}
+    from the lexicon.
 }
 \usage{wnaffect}
 \format{A data frame with one row for each term classification.}

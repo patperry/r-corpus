@@ -145,7 +145,7 @@ def clean_emotion(emotion):
         'positive': 'Positive',
         'negative': 'Negative',
         'neutral': 'Neutral',
-        'ambiguous': 'Neutral'}.get(emotion))
+        'ambiguous': 'Ambiguous'}.get(emotion))
             
 def clean_categ(categ):
     return({
@@ -183,7 +183,7 @@ for emotion in ['positive', 'negative', 'neutral', 'ambiguous']:
                 terms = synsets[pos][synset_offset]
                 for t in terms:
                     t = clean_term(t)
-                    if len(t.split()) > 1:
+                    if len(t.split()) > 1 or t == "thing":
                         continue
                     print(t, pos.upper(), clean_categ(categ),
                             clean_emotion(emotion), sep="\t", file = f)
