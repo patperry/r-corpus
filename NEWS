@@ -1,5 +1,11 @@
 Changes in version 0.9.0
 
+ * Add special handling for hyphens so that, for example, "world-wide"
+   is a single token (but "-world-wide-" is three tokens).
+
+ * Merged 'url' and 'symbol' word categories.  Removed 'other' word
+   category (ignore these characters).
+
  * Renamed term_counts() to term_stats().
 
  * Added text_stats() function.

@@ -379,7 +379,7 @@ term_stats(lines2, f)
 1  fanny      816     806
 2  must       508     492
 3  crawford   493     488
-4  will       498     474
+4  will       495     471
 5  mr.        482     466
 6  much       459     450
 7  miss       432     419
@@ -387,15 +387,15 @@ term_stats(lines2, f)
 9  mrs.       408     399
 10 sir        372     366
 11 edmund     364     364
-12 one        372     360
+12 one        370     358
 13 think      349     346
 14 now        333     331
-15 good       326     321
-16 might      324     320
-17 time       315     312
-18 well       324     311
+15 might      324     320
+16 time       310     307
+17 little     309     300
+18 nothing    301     291
 ⋮
-(8239 rows total)
+(8458 rows total)
 ```
 
 The *readtext* package
