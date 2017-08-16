@@ -108,10 +108,6 @@ static int filter_flags(SEXP filter)
 		flags |= CORPUS_FILTER_DROP_LETTER;
 	}
 
-	if (filter_logical(filter, "drop_mark", 0)) {
-		flags |= CORPUS_FILTER_DROP_MARK;
-	}
-
 	if (filter_logical(filter, "drop_number", 0)) {
 		flags |= CORPUS_FILTER_DROP_NUMBER;
 	}

@@ -11,7 +11,6 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$stem_except, NULL)
     expect_equal(f$combine, abbreviations("english"))
     expect_equal(f$drop_letter, FALSE)
-    expect_equal(f$drop_mark, FALSE)
     expect_equal(f$drop_number, FALSE)
     expect_equal(f$drop_punct, FALSE)
     expect_equal(f$drop_symbol, FALSE)

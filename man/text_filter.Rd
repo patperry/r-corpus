@@ -27,10 +27,9 @@
                         stemmer = NULL, stem_dropped = FALSE,
                         stem_except = NULL,
                         combine = abbreviations("english"),
-                        drop_letter = FALSE, drop_mark = FALSE,
-                        drop_number = FALSE, drop_punct = FALSE,
-                        drop_symbol = FALSE, drop_other = FALSE,
-                        drop_url = FALSE,
+                        drop_letter = FALSE, drop_number = FALSE,
+                        drop_punct = FALSE, drop_symbol = FALSE,
+                        drop_other = FALSE, drop_url = FALSE,
                         drop = NULL, drop_except = NULL,
                         sent_crlf = FALSE,
                         sent_suppress = abbreviations("english"))
@@ -81,10 +80,6 @@
         \code{"letter"} tokens (cased letters, kana, idoegraphic, letter-like
         numeric characters and other letters) with \code{NA}.}
 
-    \item{drop_mark}{a logical value indicating whether to replace
-        \code{"mark"} tokens (subscripts, superscripts, modifier letters,
-        modifier symbols, and other marks) with \code{NA}.}
-
     \item{drop_number}{a logical value indicating whether to replace
         \code{"number"} tokens (decimal digits, words appearing to be
         numbers, and other numeric characters) with \code{NA}.}
@@ -108,10 +103,9 @@
         or \code{NULL}.}
 
     \item{drop_except}{a character of types to exempt from the drop
-        rules specified by the \code{drop_letter}, \code{drop_mark},
-        \code{drop_number}, \code{drop_punct}, \code{drop_symbol},
-        \code{drop_other}, \code{drop_url}, and \code{drop} arguments,
-        or \code{NULL}.}
+        rules specified by the \code{drop_letter}, \code{drop_number},
+        \code{drop_punct}, \code{drop_symbol}, \code{drop_other},
+        \code{drop_url}, and \code{drop} arguments, or \code{NULL}.}
 
     \item{sent_crlf}{a logical value indicating whether to break
         sentences on carriage returns or line feeds.}
