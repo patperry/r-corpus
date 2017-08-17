@@ -731,30 +731,14 @@ unit <- 1000 # rate per 1000 tokens
 count <- text_count(chunks, "witch")
 rate <-  count / size * unit
 
-i <- seq_along(witch)
-```
-
-```
-Error in eval(expr, envir, enclos): object 'witch' not found
-```
-
-```r
-plot(i, witch, type = "l", xlab = "Segment",
+i <- seq_along(rate)
+plot(i, rate, type = "l", xlab = "Segment",
      ylab = "Rate \u00d7 1000",
      main = paste(dQuote("witch"), "Occurrences"), col = 2)
+points(i, rate, pch = 16, cex = 0.5, col = 2)
 ```
 
-```
-Error in plot(i, witch, type = "l", xlab = "Segment", ylab = "Rate × 1000", : object 'i' not found
-```
-
-```r
-points(i, witch, pch = 16, cex = 0.5, col = 2)
-```
-
-```
-Error in points(i, witch, pch = 16, cex = 0.5, col = 2): object 'i' not found
-```
+!['witch' Occurences](corpus-witch-occurences-1.png)
 
 Here, the chunks have varying sizes, so it's important to look at the rates rather
 than the raw counts.

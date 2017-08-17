@@ -327,7 +327,7 @@ text_split(c("the wonderful wizard of oz", paste(LETTERS, collapse = " ")),
 We can combine `text_split` with `text_count` to measure the occurrences rates
 for the term "witch" over the course of the novel:
 
-```{r witche-occurences, fig.width = 12, fig.cap = "'witch' Occurences"}
+```{r witch-occurences, fig.width = 12, fig.cap = "'witch' Occurences"}
 chunks <- text_split(data, "tokens", 500)
 size <- text_ntoken(chunks)
 
@@ -335,11 +335,11 @@ unit <- 1000 # rate per 1000 tokens
 count <- text_count(chunks, "witch")
 rate <-  count / size * unit
 
-i <- seq_along(witch)
-plot(i, witch, type = "l", xlab = "Segment",
+i <- seq_along(rate)
+plot(i, rate, type = "l", xlab = "Segment",
      ylab = "Rate \u00d7 1000",
      main = paste(dQuote("witch"), "Occurrences"), col = 2)
-points(i, witch, pch = 16, cex = 0.5, col = 2)
+points(i, rate, pch = 16, cex = 0.5, col = 2)
 ```
 
 Here, the chunks have varying sizes, so it's important to look at the rates rather
