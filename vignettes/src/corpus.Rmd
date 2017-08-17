@@ -50,12 +50,16 @@ chapter <- grep("^[[:space:]]*[[:digit:]]+\\.", lines)
 # ... and appear after the half title page
 chapter <- chapter[chapter > half_title]
 
-start <- c(1, chapter)
+# get the section texts (including the front matter)
+start <- c(1, chapter + 1)
 end <- c(chapter - 1, length(lines))
+text <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"), start, end)
 
-sections <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"),
-                   start, end)
-names(sections) <- c("front", sprintf("ch%02d", seq_along(chapter)))
+# discard the front matter
+text <- text[-1]
+
+# get the section titles, removing the prefix ("1.", "2.", etc.)
+title <- sub("^[[:space:]]*[[:digit:]]+[.][[:space:]]*", "", lines[chapter])
 ```
 
 Finally, we convert the sections from an R character object to a *corpus*
@@ -64,7 +68,10 @@ necessary, but it makes downstream processing more convenient. We also
 add the `"corpus_frame"` class to the data frame.
 
 ```{r}
-data <- data.frame(text = as_text(sections))
+data <- data.frame(title,
+                   text = as_text(text),
+                   stringsAsFactors = FALSE)
+rownames(data) <-  sprintf("ch%02d", seq_along(chapter))
 class(data) <- c("corpus_frame", "data.frame")
 ```
 Note that we do not need to specify `stringsAsFactors = FALSE` for text
@@ -105,10 +112,10 @@ To restore the defaults, set the text filter to `NULL`:
 ```{r}
 text_filter(data) <- NULL
 ```
-I'm going to drop punctuation and common function words ("stop" words).
+In addition to mapping case and quotes (the defaults), I'm going to drop
+punctuation.
 ```{r}
-text_filter(data) <- text_filter(drop_punct = TRUE,
-                                 drop = stopwords("english"))
+text_filter(data) <- text_filter(drop_punct = TRUE)
 ```
 
 The tokenizer allows for precise controlling over token dropping and token
@@ -134,23 +141,18 @@ texts. We can use these functions to get an overview of the section lengths
 and lexical diversities.
 
 ```{r}
-stats <- data.frame(tokens = text_ntoken(data),
-                    types = text_ntype(data),
-                    sentences = text_nsentence(data))
-head(stats, n = 10)
+(stats <- text_stats(data))
 ```
 
 [Heaps' law][heaps-law] says that the logarithm of the number of unique
 types is a linear function of the number of tokens. We can test this law
 formally with a regression analysis.
 
-In this analysis, we will exclude the front matter since the writing mode is
-different than the main chapters. We will also exclude the last chapter
-(Chapter 24), because it is much shorter than the others and has a
-disproportionate influence on the fit.
+In this analysis, we will exclude the last chapter (Chapter 24), because it is
+much shorter than the others and has a disproportionate influence on the fit.
 
 ```{r}
-subset <- !row.names(stats) %in% c("front", "ch24")
+subset <- row.names(stats) != "ch24"
 model <- lm(log(types) ~ log(tokens), stats, subset)
 summary(model)
 ```
@@ -174,7 +176,7 @@ text(log(stats$tokens)[subset][outlier], rstandard(model)[outlier],
 The analysis tells us that Heap's law accurately characterizes the lexical
 diversity (type-to-token ratio) for the main chapters in *The Wizard of Oz*.
 The number of unique types grows roughly as the number of tokens raised to the
-power `0.7`.
+power `0.6`.
 
 
 The one chapter with an unusually low lexical diversity is Chapter 16. This
@@ -182,6 +184,164 @@ chapter contains mostly dialogue between Oz and Dorothy's simple-minded
 companions (the Scarecrow, Tin Woodman, and Lion).
 
 
+Sentiment Analysis
+------------------
+
+### Emotion lexicon
+
+Next we will look at usage rates for emotion words from the WordNet Affect
+lexicon. As a starting point, we will take the "Positive", "Negative", and
+"Ambigous" emotion terms (exluding the other category, "Neutral").
+
+```{r}
+affect <- subset(wnaffect, emotion != "Neutral")
+affect$emotion <- droplevels(affect$emotion) # drop the unused 'Neutral' level
+affect$category <- droplevels(affect$category) # drop unused categories
+```
+
+Rather than blindly applying the lexicon, we first check to see what the most
+common emotion terms are.
+```{r}
+counts <- term_stats(data)
+subset(counts, term %in% affect$term)
+```
+
+A few terms jump out as unusual: "yellow" is probably for the yellow brick
+road, and "wicked" is probably for the wicked witch. When these terms appear,
+they probably don't describe an emotional state. We can verify this using the
+`text_locate` function, which shows these terms in context.
+
+```{r}
+text_locate(data, "yellow")
+text_locate(data, "wicked")
+```
+
+We can also inspect the first token after each appearance of "wicked":
+```{r}
+term_stats(text_sub(text_locate(data, "wicked")$after, 1, 1))
+```
+of the 72 appearances of "wicked", 58 are followed by "witch" or "witches".
+Likewise, "yellow" is often referring to the road, or referring to the color
+of an object and not an emotion:
+```{r}
+term_stats(text_sub(text_locate(data, "yellow")$after, 1, 1))
+```
+
+The word "heart" is also suspiciously frequent. Here are some occurrences of
+that word:
+```{r}
+text_locate(data, "heart")
+```
+
+A central part of the novel's plot is the Tin Woodman's quest for a heart; it
+is not surprising that the word "heart" shows up so frequently. Indeed, most
+appearances of the word "heart" are within 25 tokens of "woodman":
+
+```{r}
+loc <- text_locate(data, "heart")
+before <- text_detect(text_sub(loc$before, -25, -1), "woodman")
+after <- text_detect(text_sub(loc$after, 1, 25), "woodman")
+summary(before | after)
+```
+"Woodman" appears within 25 tokens of "heart" in in 45 of the 67
+contexts where the latter word appears.
+
+
+All of this analysis shows that we should probably exclude these terms if we
+are interested in words that connote emotion in _The Wizard of Oz_:
+
+```{r}
+affect <- subset(affect, !term %in% c("heart", "wicked", "yellow"))
+```
+
+### Counting emotion words
+
+```{r emotion, fig.width = 12, fig.cap = "Emotion in Oz"}
+
+term_scores <- with(affect, unclass(table(term, emotion)))
+term_scores <- term_scores / rowSums(term_scores)
+
+chunks <- text_split(data, "tokens", 500)
+n <- text_ntoken(chunks)
+x <- term_matrix(chunks, select = rownames(term_scores))
+text_scores <- x %*% term_scores
+
+# compute the rates per 1000 tokens
+unit <- 1000
+rate <- list(pos = text_scores[, "Positive"] / n * unit,
+             neg = text_scores[, "Negative"] / n * unit,
+             ambig = text_scores[, "Ambiguous"] / n * unit)
+rate$total <- rate$pos + rate$neg + rate$ambig
+
+# compute the standard errors
+se <- lapply(rate, function(r) sqrt(r * (unit - r) / n))
+
+# set up segment IDs
+i <- seq_len(nrow(chunks))
+
+# set the plot margins, with extra space below the plot
+par(mar = c(4, 4, 7, 6) + 0.1, ps = 10, las = 1)
+
+# set up the plot coordinates; put labels but no axes
+xlim <- range(i - 0.5, i + 0.5)
+ylim <- range(0, rate$total + se$total, rate$total - se$total)
+plot(xlim, ylim, type = "n", xlab = "Segment", ylab = "Rate \u00d7 1000", axes = FALSE,
+     xaxs = "i")
+usr <- par("usr") # get the user coordinates for later
+
+# put tick marks at multiples of 5 on the x axis; labels at multiples of 10
+axis(1, at = i[i %% 5 == 0], labels = FALSE)
+axis(1, at = i[i %% 10 == 0], labels = TRUE)
+
+# defaults for the y axis
+axis(2)
+
+# label x axis with chapter titles
+labels <- data$title
+at <- tapply(i, chunks$parent, min) - 0.5
+
+# (adapted from https://www.r-bloggers.com/rotated-axis-labels-in-r-plots/)
+text(at, usr[4] + 0.01 * diff(usr[3:4]),
+     labels = labels, adj = 0, srt = 45, cex = 0.6, xpd = TRUE)
+
+# put vertical lines at chapter boundaries
+abline(v = at, col = "gray")
+
+# frame the plot
+box()
+
+# colors for the different emotions, from RColorBrewer::brewer.pal(3, "Set2")
+col <- c(total = "#000000", pos = "#FC8D62", neg = "#8DA0CB", ambig = "#66C2A5")
+
+# add a legend on the right hand side
+legend(usr[2] + 0.02 * diff(usr[1:2]), usr[3] + 0.8 * diff(usr[3:4]),
+       legend = c("Total", "Positive", "Negative", "Ambiguous"),
+       title = expression(bold("Emotion")),
+       fill = col[c("total", "pos", "neg", "ambig")],
+       cex = 0.8, xpd = TRUE)
+
+# plot each rate type
+for (t in names(rate)) {
+    r <- rate[[t]]
+    s <- se[[t]]
+    cl <- col[[t]]
+
+    if (t == "total") {
+        # for the total rate, put a dashed line at the mean rate
+        abline(h = mean(r), lty = 2, col = cl)
+
+        # and put standard errors around interesting points, where is rate >2 sd away from mean
+        int <- abs((r - mean(r)) / sd(r)) > 2
+        segments(i[int], (r - s)[int], i[int], (r + s)[int], col = cl)
+        segments((i - .2)[int], (r - s)[int], (i + .2)[int], (r - s)[int], col = cl)
+        segments((i - .2)[int], (r + s)[int], (i + .2)[int], (r + s)[int], col = cl)
+    }
+
+    # add lines and points
+    lines(i, r, col = cl)
+    points(i, r, col = cl, pch = 16, cex = 0.5)
+}
+```
 
 [gutenberg-oz]: http://www.gutenberg.org/ebooks/55 "The Wonderful Wizard of Oz"
 [heaps-law]: https://en.wikipedia.org/wiki/Heaps%27_law "Heap's law"
