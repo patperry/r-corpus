@@ -12,7 +12,6 @@ Introduction to corpus
 Overview
 --------
 
-
 Data preparation
 ----------------
 
@@ -60,89 +59,120 @@ text <- text[-1]
 title <- sub("^[[:space:]]*[[:digit:]]+[.][[:space:]]*", "", lines[chapter])
 ```
 
-Finally, we convert the sections from an R character object to a *corpus*
-text object, and we store the text in a data frame. This is not strictly
-necessary, but it makes downstream processing more convenient. We also
-add the `"corpus_frame"` class to the data frame.
+
+Corpus object
+-------------
+
+Now that we have obtained our raw data, we put everything together into a
+corpus object, constructed via the `corpus` function:
 
 
 ```r
-data <- data.frame(title,
-                   text = as_text(text),
-                   stringsAsFactors = FALSE)
-rownames(data) <-  sprintf("ch%02d", seq_along(chapter))
-class(data) <- c("corpus_frame", "data.frame")
+data <- corpus(title, text)
+rownames(data) <- sprintf("ch%02d", seq_along(chapter))
 ```
-Note that we do not need to specify `stringsAsFactors = FALSE` for text
-objects.  The only affect of the `"corpus_frame"` class is to make printing
-nicer:
+
+The `corpus` function behaves similarly to the `data.frame` function, but
+expects one of the columns to be named `"text"`. Note that we do not need
+to specify `stringsAsFactors = FALSE` when creating a corpus object.
+As an alternative to using the `corpus` function, we can construct a data
+frame using some other method (e.g., `read.csv` or `read_ndjson`) and use
+the `as_corpus` function.
+
+
+A corpus object is just a data frame with a column named "text" of type
+`"corpus_text"`. When using the *corpus* library, it is not strictly necessary
+to use corpus objects as inputs; most functions will accept with character
+vectors and ordinary data frames. Using a corpus object gives better
+printing behavior and allows setting a `text_filter` attribute to override
+the default text preprocessing.
+
+
+The `corpus` function returns a data frame with the class attribute set to
+`c("corpus_frame", "data.frame")`, to make printing nicer:
+
 
 ```r
-print(data) # cuts off after 18 rows
+emoji <- data.frame(text = sapply(0x1f600 + 1:30, intToUtf8),
+                    stringsAsFactors = FALSE)
+print(emoji) # as a data frame
 ```
 
 ```
-     title                            
-ch01 The Cyclone                      
-ch02 The Council with the Munchkins   
-ch03 How Dorothy Saved the Scarecrow  
-ch04 The Road Through the Forest      
-ch05 The Rescue of the Tin Woodman    
-ch06 The Cowardly Lion                
-ch07 The Journey to the Great Oz      
-ch08 The Deadly Poppy Field           
-ch09 The Queen of the Field Mice      
-ch10 The Guardian of the Gate         
-ch11 The Wonderful City of Oz         
-ch12 The Search for the Wicked Witch  
-ch13 The Rescue                       
-ch14 The Winged Monkeys               
-ch15 The Discovery of Oz, the Terrible
-ch16 The Magic Art of the Great Humbug
-ch17 How the Balloon Was Launched     
-ch18 Away to the South                
-     text                                                                                           
-ch01 \n\nDorothy lived in the midst of the great Kansas prairies, with Uncle\nHenry, who was a farm…
-ch02 \n\nShe was awakened by a shock, so sudden and severe that if Dorothy had\nnot been lying on t…
-ch03 \n\nWhen Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cu…
-ch04 \n\nAfter a few hours the road began to be rough, and the walking grew so\ndifficult that the …
-ch05 \n\nWhen Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasi…
-ch06 \n\nAll this time Dorothy and her companions had been walking through the\nthick woods.  The r…
-ch07 \n\nThey were obliged to camp out that night under a large tree in the\nforest, for there were…
-ch08 \n\nOur little party of travelers awakened the next morning refreshed and\nfull of hope, and D…
-ch09 \n\n"We cannot be far from the road of yellow brick, now," remarked the\nScarecrow, as he stoo…
-ch10 \n\nIt was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a l…
-ch11 \n\nEven with eyes protected by the green spectacles, Dorothy and her\nfriends were at first d…
-ch12 \n\nThe soldier with the green whiskers led them through the streets of the\nEmerald City unti…
-ch13 \n\nThe Cowardly Lion was much pleased to hear that the Wicked Witch had\nbeen melted by a buc…
-ch14 \n\nYou will remember there was no road--not even a pathway--between the\ncastle of the Wicked…
-ch15 \n\nThe four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After …
-ch16 \n\nNext morning the Scarecrow said to his friends:\n\n"Congratulate me.  I am going to Oz to …
-ch17 \n\nFor three days Dorothy heard nothing from Oz.  These were sad days for\nthe little girl, a…
-ch18 \n\nDorothy wept bitterly at the passing of her hope to get home to Kansas\nagain; but when sh…
+         text
+1  \U0001f601
+2  \U0001f602
+3  \U0001f603
+4  \U0001f604
+5  \U0001f605
+6  \U0001f606
+7  \U0001f607
+8  \U0001f608
+9  \U0001f609
+10 \U0001f60a
+11 \U0001f60b
+12 \U0001f60c
+13 \U0001f60d
+14 \U0001f60e
+15 \U0001f60f
+16 \U0001f610
+17 \U0001f611
+18 \U0001f612
+19 \U0001f613
+20 \U0001f614
+21 \U0001f615
+22 \U0001f616
+23 \U0001f617
+24 \U0001f618
+25 \U0001f619
+26 \U0001f61a
+27 \U0001f61b
+28 \U0001f61c
+29 \U0001f61d
+30 \U0001f61e
+```
+
+```r
+print(as_corpus(emoji)) # as a corpus (cuts off after 18 rows)
+```
+
+```
+   text
+1    😁​
+2    😂​
+3    😃​
+4    😄​
+5    😅​
+6    😆​
+7    😇​
+8    😈​
+9    😉​
+10   😊​
+11   😋​
+12   😌​
+13   😍​
+14   😎​
+15   😏​
+16   😐​
+17   😑​
+18   😒​
 ⋮
-(24 rows total)
+(30 rows total)
 ```
 
 ```r
-print(data, 5) # cuts off after 5 rows
+print(as_corpus(emoji), 5) # cuts off after 5 rows
 ```
 
 ```
-     title                          
-ch01 The Cyclone                    
-ch02 The Council with the Munchkins 
-ch03 How Dorothy Saved the Scarecrow
-ch04 The Road Through the Forest    
-ch05 The Rescue of the Tin Woodman  
-     text                                                                                           
-ch01 \n\nDorothy lived in the midst of the great Kansas prairies, with Uncle\nHenry, who was a farm…
-ch02 \n\nShe was awakened by a shock, so sudden and severe that if Dorothy had\nnot been lying on t…
-ch03 \n\nWhen Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cu…
-ch04 \n\nAfter a few hours the road began to be rough, and the walking grew so\ndifficult that the …
-ch05 \n\nWhen Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasi…
+  text
+1   😁​
+2   😂​
+3   😃​
+4   😄​
+5   😅​
 ⋮
-(24 rows total)
+(30 rows total)
 ```
 
 
@@ -360,8 +390,8 @@ chapter contains mostly dialogue between Oz and Dorothy's simple-minded
 companions (the Scarecrow, Tin Woodman, and Lion).
 
 
-Sentiment Analysis
-------------------
+Emotional affect
+----------------
 
 ### Emotion lexicon
 

@@ -16,7 +16,6 @@ palette(RColorBrewer::brewer.pal(6, "Set1"))
 Overview
 --------
 
-
 Data preparation
 ----------------
 
@@ -62,24 +61,43 @@ text <- text[-1]
 title <- sub("^[[:space:]]*[[:digit:]]+[.][[:space:]]*", "", lines[chapter])
 ```
 
-Finally, we convert the sections from an R character object to a *corpus*
-text object, and we store the text in a data frame. This is not strictly
-necessary, but it makes downstream processing more convenient. We also
-add the `"corpus_frame"` class to the data frame.
+
+Corpus object
+-------------
+
+Now that we have obtained our raw data, we put everything together into a
+corpus object, constructed via the `corpus` function:
 
 ```{r}
-data <- data.frame(title,
-                   text = as_text(text),
-                   stringsAsFactors = FALSE)
-rownames(data) <-  sprintf("ch%02d", seq_along(chapter))
-class(data) <- c("corpus_frame", "data.frame")
+data <- corpus(title, text)
+rownames(data) <- sprintf("ch%02d", seq_along(chapter))
 ```
-Note that we do not need to specify `stringsAsFactors = FALSE` for text
-objects.  The only affect of the `"corpus_frame"` class is to make printing
-nicer:
+
+The `corpus` function behaves similarly to the `data.frame` function, but
+expects one of the columns to be named `"text"`. Note that we do not need
+to specify `stringsAsFactors = FALSE` when creating a corpus object.
+As an alternative to using the `corpus` function, we can construct a data
+frame using some other method (e.g., `read.csv` or `read_ndjson`) and use
+the `as_corpus` function.
+
+
+A corpus object is just a data frame with a column named "text" of type
+`"corpus_text"`. When using the *corpus* library, it is not strictly necessary
+to use corpus objects as inputs; most functions will accept with character
+vectors and ordinary data frames. Using a corpus object gives better
+printing behavior and allows setting a `text_filter` attribute to override
+the default text preprocessing.
+
+
+The `corpus` function returns a data frame with the class attribute set to
+`c("corpus_frame", "data.frame")`, to make printing nicer:
+
 ```{r}
-print(data) # cuts off after 18 rows
-print(data, 5) # cuts off after 5 rows
+emoji <- data.frame(text = sapply(0x1f600 + 1:30, intToUtf8),
+                    stringsAsFactors = FALSE)
+print(emoji) # as a data frame
+print(as_corpus(emoji)) # as a corpus (cuts off after 18 rows)
+print(as_corpus(emoji), 5) # cuts off after 5 rows
 ```
 
 
@@ -184,8 +202,8 @@ chapter contains mostly dialogue between Oz and Dorothy's simple-minded
 companions (the Scarecrow, Tin Woodman, and Lion).
 
 
-Sentiment Analysis
-------------------
+Emotional affect
+----------------
 
 ### Emotion lexicon
 

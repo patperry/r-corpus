@@ -1,6 +1,5 @@
 \name{corpus-package}
 \alias{corpus-package}
-\alias{corpus}
 \docType{package}
 \title{
 The Corpus Package
