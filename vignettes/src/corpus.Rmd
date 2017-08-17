@@ -283,6 +283,68 @@ If we would like, we can search for multiple phrases at the same time:
 text_locate(data, c("wicked witch", "toto", "oz"))
 ```
 
+We can also count term occurrences, test for whether a term appears in a text,
+and get the subset of texts containing a term:
+
+```{r}
+text_count(data, "the great oz")
+text_detect(data, "the great oz")
+text_subset(data, "the great oz")
+```
+
+
+Segmenting text
+---------------
+
+*Corpus* can split text into blocks of sentences or tokens using the
+`text_split` function. By default, this function splits into sentences. Here,
+for example, are the last 10 sentences in the book:
+
+```{r}
+tail(text_split(data), 10)
+```
+
+The result of `text_split` is a data frame, with one row for each segment
+identifying the parent text (as a factor), the index of the segment in the
+parent text (an integer), and the segment text.
+
+
+The second argument to `text_split` specifies, the units, "sentences" or
+"tokens". The third argument specifies the maximum segment size, defaulting
+to one. Each text gets divided into approximately equal-sized segments, with
+no segment being larger than the specified size.
+
+
+Here is an example of splitting two texts into segments of size at most four
+tokens.
+
+```{r}
+text_split(c("the wonderful wizard of oz", paste(LETTERS, collapse = " ")),
+           "tokens", 4)
+```
+
+
+We can combine `text_split` with `text_count` to measure the occurrences rates
+for the term "witch" over the course of the novel:
+
+```{r witche-occurences, fig.width = 12, fig.cap = "'witch' Occurences"}
+chunks <- text_split(data, "tokens", 500)
+size <- text_ntoken(chunks)
+
+unit <- 1000 # rate per 1000 tokens
+count <- text_count(chunks, "witch")
+rate <-  count / size * unit
+
+i <- seq_along(witch)
+plot(i, witch, type = "l", xlab = "Segment",
+     ylab = "Rate \u00d7 1000",
+     main = paste(dQuote("witch"), "Occurrences"), col = 2)
+points(i, witch, pch = 16, cex = 0.5, col = 2)
+```
+
+Here, the chunks have varying sizes, so it's important to look at the rates rather
+than the raw counts.
+
 
 Emotional affect
 ----------------

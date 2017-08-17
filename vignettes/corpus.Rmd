@@ -609,6 +609,156 @@ text_locate(data, c("wicked witch", "toto", "oz"))
 (303 rows total)
 ```
 
+We can also count term occurrences, test for whether a term appears in a text,
+and get the subset of texts containing a term:
+
+
+```r
+text_count(data, "the great oz")
+```
+
+```
+ch01 ch02 ch03 ch04 ch05 ch06 ch07 ch08 ch09 ch10 ch11 ch12 ch13 ch14 ch15 ch16 ch17 ch18 ch19 ch20 
+   0    0    3    1    1    1    0    0    0    5    3    1    0    0    2    0    0    0    0    0 
+ch21 ch22 ch23 ch24 
+   0    0    0    0 
+```
+
+```r
+text_detect(data, "the great oz")
+```
+
+```
+ ch01  ch02  ch03  ch04  ch05  ch06  ch07  ch08  ch09  ch10  ch11  ch12  ch13  ch14  ch15  ch16 
+FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE  TRUE FALSE 
+ ch17  ch18  ch19  ch20  ch21  ch22  ch23  ch24 
+FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE 
+```
+
+```r
+text_subset(data, "the great oz")
+```
+
+```
+ch03                                                                                           
+"When Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cut …"
+ch04                                                                                           
+"After a few hours the road began to be rough, and the walking grew so\ndifficult that the Sc…"
+ch05                                                                                           
+"When Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasing…"
+ch06                                                                                           
+"All this time Dorothy and her companions had been walking through the\nthick woods.  The roa…"
+ch10                                                                                           
+"It was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a lon…"
+ch11                                                                                           
+"Even with eyes protected by the green spectacles, Dorothy and her\nfriends were at first daz…"
+ch12                                                                                           
+"The soldier with the green whiskers led them through the streets of the\nEmerald City until …"
+ch15                                                                                           
+"The four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After ri…"
+```
+
+
+Segmenting text
+---------------
+
+*Corpus* can split text into blocks of sentences or tokens using the
+`text_split` function. By default, this function splits into sentences. Here,
+for example, are the last 10 sentences in the book:
+
+
+```r
+tail(text_split(data), 10)
+```
+
+```
+     parent index text                                                                              
+2207 ch23      62 Dorothy stood up and found she was in her stocking-feet.                          
+2208 ch23      63 For the\nSilver Shoes had fallen off in her flight through the air, and were\nlos…
+2209 ch24       1 Aunt Em had just come out of the house to water the cabbages when she\nlooked up …
+2210 ch24       2 "My darling child!"                                                               
+2211 ch24       3 she cried, folding the little girl in her arms and\ncovering her face with kisses…
+2212 ch24       4 "Where in the world did you come from?"\n\n                                       
+2213 ch24       5 "From the Land of Oz," said Dorothy gravely.                                      
+2214 ch24       6 "And here is Toto, too.\n                                                         
+2215 ch24       7 And oh, Aunt Em!                                                                  
+2216 ch24       8 I'm so glad to be at home again!"\n\n\n\n\n\n\n\n                                 
+```
+
+The result of `text_split` is a data frame, with one row for each segment
+identifying the parent text (as a factor), the index of the segment in the
+parent text (an integer), and the segment text.
+
+
+The second argument to `text_split` specifies, the units, "sentences" or
+"tokens". The third argument specifies the maximum segment size, defaulting
+to one. Each text gets divided into approximately equal-sized segments, with
+no segment being larger than the specified size.
+
+
+Here is an example of splitting two texts into segments of size at most four
+tokens.
+
+
+```r
+text_split(c("the wonderful wizard of oz", paste(LETTERS, collapse = " ")),
+           "tokens", 4)
+```
+
+```
+  parent index text                 
+1 1          1 the wonderful wizard 
+2 1          2 of oz                
+3 2          1 A B C D              
+4 2          2 E F G H              
+5 2          3 I J K L              
+6 2          4 M N O P              
+7 2          5 Q R S T              
+8 2          6 U V W                
+9 2          7 X Y Z                
+```
+
+
+We can combine `text_split` with `text_count` to measure the occurrences rates
+for the term "witch" over the course of the novel:
+
+
+```r
+chunks <- text_split(data, "tokens", 500)
+size <- text_ntoken(chunks)
+
+unit <- 1000 # rate per 1000 tokens
+count <- text_count(chunks, "witch")
+rate <-  count / size * unit
+
+i <- seq_along(witch)
+```
+
+```
+Error in eval(expr, envir, enclos): object 'witch' not found
+```
+
+```r
+plot(i, witch, type = "l", xlab = "Segment",
+     ylab = "Rate \u00d7 1000",
+     main = paste(dQuote("witch"), "Occurrences"), col = 2)
+```
+
+```
+Error in plot(i, witch, type = "l", xlab = "Segment", ylab = "Rate × 1000", : object 'i' not found
+```
+
+```r
+points(i, witch, pch = 16, cex = 0.5, col = 2)
+```
+
+```
+Error in points(i, witch, pch = 16, cex = 0.5, col = 2): object 'i' not found
+```
+
+Here, the chunks have varying sizes, so it's important to look at the rates rather
+than the raw counts.
+
 
 Emotional affect
 ----------------
