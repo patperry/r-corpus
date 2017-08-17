@@ -247,7 +247,6 @@ SEXP items_termset(SEXP termset);
 SEXP abbreviations(SEXP kind);
 SEXP text_count(SEXP x, SEXP terms);
 SEXP text_detect(SEXP x, SEXP terms);
-SEXP text_filter_update(SEXP x);
 SEXP text_length(SEXP x);
 SEXP text_locate(SEXP x, SEXP terms);
 SEXP text_match(SEXP x, SEXP terms);

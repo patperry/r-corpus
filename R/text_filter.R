@@ -143,9 +143,9 @@ text_filter.corpus_text <- function(x = NULL, ...)
     value0 <- text_filter(x)
     if (!identical(value, value0)) {
         y <- unclass(x)
+        y$handle <- .Call(C_alloc_text_handle)
         y$filter <- value
         class(y) <- class(x)
-        .Call(C_text_filter_update, y)
         x <- y
     }
     x

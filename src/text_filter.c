@@ -17,34 +17,6 @@
 #include "rcorpus.h"
 
 
-SEXP text_filter_update(SEXP x)
-{
-	SEXP handle;
-	struct rcorpus_text *obj;
-
-	handle = getListElement(x, "handle");
-	obj = R_ExternalPtrAddr(handle);
-
-	if (!obj) {
-		goto out;
-	}
-
-	if (obj->has_filter) {
-		corpus_filter_destroy(&obj->filter);
-		obj->has_filter = 0;
-		obj->valid_filter = 0;
-	}
-
-	if (obj->has_sentfilter) {
-		corpus_sentfilter_destroy(&obj->sentfilter);
-		obj->has_sentfilter = 0;
-		obj->valid_sentfilter = 0;
-	}
-out:
-	return R_NilValue;
-}
-
-
 static int filter_logical(SEXP filter, const char *key, int nullval)
 {
 	SEXP val = getListElement(filter, key);

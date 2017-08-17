@@ -159,3 +159,15 @@ test_that("'as_text' with NULL filter gives default filter", {
     y <- as_text(x, filter = NULL)
     expect_equal(text_filter(y), text_filter())
 })
+
+
+test_that("'text_filter' clears the old filter", {
+    x <- as_text("wicked")
+    y <- as_text(x, filter = text_filter(stemmer = "english"))
+
+    toks1 <- text_tokens(y)
+    expect_equal(text_tokens(y), list("wick"))
+
+    toks2 <- text_tokens(x)
+    expect_equal(toks2, list("wicked"))
+})
