@@ -1,5 +1,9 @@
 Changes in version 0.9.0
 
+ * Change format.corpus_frame to use elastic column widths for text.
+
+ * Allow `rows = -1` for print.corpus_frame to print all rows.
+
  * Add corpus(), as_corpus(), is_corpus() functions.
 
  * Make text_split() split into evenly-sized blocks, with the 'size'
@@ -47,6 +51,9 @@ Changes in version 0.9.0
  * Added text_length() for text length, including NA tokens.
 
  * Added checks for underflow in read_ndjson() double deserialization.
+
+ * Fixed bug in `text_filter<-` where assignment did not make a deep copy
+   of the object.
 
  * Fixed bug in utf8_format, utf8_print, utf8_width where internal
    double quotes were not escaped.
