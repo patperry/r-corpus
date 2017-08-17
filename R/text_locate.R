@@ -154,7 +154,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
         w <- floor(ctxwidth)
         rval[[i]] <- format(x[[i]], chars = w - ellipsis, width = w,
                             display = display, justify = "right")
-        names[[i]] <- format("before", width = w, justify = "left")
+        names[[i]] <- format("before", width = w, justify = "centre")
     }
 
     if ("after" %in% names) {
@@ -162,7 +162,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
         w <- ceiling(ctxwidth)
         rval[[i]] <- format(x[[i]], chars = w - ellipsis, width = w,
                             display = display, justify = "left")
-        names[[i]] <- format("after", width = w, justify = "right")
+        names[[i]] <- format("after", width = w, justify = "centre")
     }
     names(rval) <- names
 

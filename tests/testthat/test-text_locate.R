@@ -163,7 +163,7 @@ test_that("'text_locate' prints results correctly", {
 
     lines <- strsplit(capture_output(print(loc)), "\n")[[1]]
     expect_equal(lines, c(
-"  text before                        instance                          after",
+"  text            before             instance             after             ",
 "1 1                                    Rose    is a rose is a rose is a r...",
 "2 3                  Snow White and    Rose    Red                          "))
     options(width = oldwidth)
