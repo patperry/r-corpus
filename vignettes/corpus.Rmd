@@ -88,91 +88,72 @@ printing behavior and allows setting a `text_filter` attribute to override
 the default text preprocessing.
 
 
-The `corpus` function returns a data frame with the class attribute set to
-`c("corpus_frame", "data.frame")`, to make printing nicer:
-
-
 ```r
-emoji <- data.frame(text = sapply(0x1f600 + 1:30, intToUtf8),
-                    stringsAsFactors = FALSE)
-print(emoji) # as a data frame
+print(data) # better output than printing a data frame, cuts off after 18 rows
 ```
 
 ```
-         text
-1  \U0001f601
-2  \U0001f602
-3  \U0001f603
-4  \U0001f604
-5  \U0001f605
-6  \U0001f606
-7  \U0001f607
-8  \U0001f608
-9  \U0001f609
-10 \U0001f60a
-11 \U0001f60b
-12 \U0001f60c
-13 \U0001f60d
-14 \U0001f60e
-15 \U0001f60f
-16 \U0001f610
-17 \U0001f611
-18 \U0001f612
-19 \U0001f613
-20 \U0001f614
-21 \U0001f615
-22 \U0001f616
-23 \U0001f617
-24 \U0001f618
-25 \U0001f619
-26 \U0001f61a
-27 \U0001f61b
-28 \U0001f61c
-29 \U0001f61d
-30 \U0001f61e
-```
-
-```r
-print(as_corpus(emoji)) # as a corpus (cuts off after 18 rows)
-```
-
-```
-   text
-1    😁​
-2    😂​
-3    😃​
-4    😄​
-5    😅​
-6    😆​
-7    😇​
-8    😈​
-9    😉​
-10   😊​
-11   😋​
-12   😌​
-13   😍​
-14   😎​
-15   😏​
-16   😐​
-17   😑​
-18   😒​
+     title                            
+ch01 The Cyclone                      
+ch02 The Council with the Munchkins   
+ch03 How Dorothy Saved the Scarecrow  
+ch04 The Road Through the Forest      
+ch05 The Rescue of the Tin Woodman    
+ch06 The Cowardly Lion                
+ch07 The Journey to the Great Oz      
+ch08 The Deadly Poppy Field           
+ch09 The Queen of the Field Mice      
+ch10 The Guardian of the Gate         
+ch11 The Wonderful City of Oz         
+ch12 The Search for the Wicked Witch  
+ch13 The Rescue                       
+ch14 The Winged Monkeys               
+ch15 The Discovery of Oz, the Terrible
+ch16 The Magic Art of the Great Humbug
+ch17 How the Balloon Was Launched     
+ch18 Away to the South                
+     text                                                                                           
+ch01 \n\nDorothy lived in the midst of the great Kansas prairies, with Uncle\nHenry, who was a farm…
+ch02 \n\nShe was awakened by a shock, so sudden and severe that if Dorothy had\nnot been lying on t…
+ch03 \n\nWhen Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cu…
+ch04 \n\nAfter a few hours the road began to be rough, and the walking grew so\ndifficult that the …
+ch05 \n\nWhen Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasi…
+ch06 \n\nAll this time Dorothy and her companions had been walking through the\nthick woods.  The r…
+ch07 \n\nThey were obliged to camp out that night under a large tree in the\nforest, for there were…
+ch08 \n\nOur little party of travelers awakened the next morning refreshed and\nfull of hope, and D…
+ch09 \n\n"We cannot be far from the road of yellow brick, now," remarked the\nScarecrow, as he stoo…
+ch10 \n\nIt was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a l…
+ch11 \n\nEven with eyes protected by the green spectacles, Dorothy and her\nfriends were at first d…
+ch12 \n\nThe soldier with the green whiskers led them through the streets of the\nEmerald City unti…
+ch13 \n\nThe Cowardly Lion was much pleased to hear that the Wicked Witch had\nbeen melted by a buc…
+ch14 \n\nYou will remember there was no road--not even a pathway--between the\ncastle of the Wicked…
+ch15 \n\nThe four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After …
+ch16 \n\nNext morning the Scarecrow said to his friends:\n\n"Congratulate me.  I am going to Oz to …
+ch17 \n\nFor three days Dorothy heard nothing from Oz.  These were sad days for\nthe little girl, a…
+ch18 \n\nDorothy wept bitterly at the passing of her hope to get home to Kansas\nagain; but when sh…
 ⋮
-(30 rows total)
+(24 rows total)
 ```
 
 ```r
-print(as_corpus(emoji), 5) # cuts off after 5 rows
+print(data, 5) # cuts off after 5 rows
 ```
 
 ```
-  text
-1   😁​
-2   😂​
-3   😃​
-4   😄​
-5   😅​
+     title                          
+ch01 The Cyclone                    
+ch02 The Council with the Munchkins 
+ch03 How Dorothy Saved the Scarecrow
+ch04 The Road Through the Forest    
+ch05 The Rescue of the Tin Woodman  
+     text                                                                                           
+ch01 \n\nDorothy lived in the midst of the great Kansas prairies, with Uncle\nHenry, who was a farm…
+ch02 \n\nShe was awakened by a shock, so sudden and severe that if Dorothy had\nnot been lying on t…
+ch03 \n\nWhen Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cu…
+ch04 \n\nAfter a few hours the road began to be rough, and the walking grew so\ndifficult that the …
+ch05 \n\nWhen Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasi…
 ⋮
-(30 rows total)
+(24 rows total)
 ```
 
 
@@ -231,8 +212,7 @@ Text filter with the following options:
 	sent_crlf: FALSE
 	sent_suppress:  chr [1:146] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```
-If the text column is of type `corpus_text` as returned by `as_text`, then
-we can change the text filter properties:
+We can change the text filter properties:
 
 ```r
 text_filter(data)$map_case <- FALSE
@@ -291,6 +271,8 @@ tokenization process.
 Text statistics
 ---------------
 
+### Token, type, and sentence counts
+
 The `text_ntoken`, `text_ntype`, and `text_nsentence` functions return the
 numbers of tokens, unique types, and sentences, respectively, in a set of
 texts. We can use these functions to get an overview of the section lengths
@@ -298,7 +280,8 @@ and lexical diversities.
 
 
 ```r
-(stats <- text_stats(data))
+stats <- text_stats(data)
+print(stats, -1) # print all rows instead of truncating at 18
 ```
 
 ```
@@ -321,9 +304,19 @@ ch15   2760   638       188
 ch16    921   316        71
 ch17   1151   400        72
 ch18   1162   379        87
-⋮
-(24 rows total)
+ch19   1011   401        53
+ch20   1500   511        88
+ch21    891   360        50
+ch22    931   364        50
+ch23   1250   404        63
+ch24     74    56         8
 ```
+
+We can see that the last chapter is the shortest, with 74 tokens, 56 unique
+types, and 8 sentences. Chapter 12 is the longest.
+
+
+### Testing Heaps' law
 
 [Heaps' law][heaps-law] says that the logarithm of the number of unique
 types is a linear function of the number of tokens. We can test this law
@@ -390,6 +383,20 @@ chapter contains mostly dialogue between Oz and Dorothy's simple-minded
 companions (the Scarecrow, Tin Woodman, and Lion).
 
 
+Term statistics
+---------------
+
+### Counts and prevalence
+
+### Higher-order n-grams
+
+### Testing Zipf's law
+
+
+Searching for terms
+-------------------
+
+
 Emotional affect
 ----------------
 
@@ -397,12 +404,12 @@ Emotional affect
 
 Next we will look at usage rates for emotion words from the WordNet Affect
 lexicon. As a starting point, we will take the "Positive", "Negative", and
-"Ambigous" emotion terms (exluding the other category, "Neutral").
+"Ambiguous" emotion terms (excluding the other category, "Neutral").
 
 
 ```r
 affect <- subset(wnaffect, emotion != "Neutral")
-affect$emotion <- droplevels(affect$emotion) # drop the unused 'Neutral' level
+affect$emotion <- droplevels(affect$emotion) # drop the unused "Neutral" level
 affect$category <- droplevels(affect$category) # drop unused categories
 ```
 
@@ -410,30 +417,29 @@ Rather than blindly applying the lexicon, we first check to see what the most
 common emotion terms are.
 
 ```r
-counts <- term_stats(data)
-subset(counts, term %in% affect$term)
+term_stats(data, subset = term %in% affect$term)
 ```
 
 ```
-    term       count support
-59  down          93      22
-86  great        138      20
-90  good          74      20
-105 like          64      19
-144 heart         67      16
-191 yellow        33      14
-206 near          20      14
-208 glad          19      14
-216 afraid        29      13
-248 still         20      12
-254 surprise      15      12
-283 happy         15      11
-294 wicked        72      10
-316 low           15      10
-325 close         13      10
-341 terrible      27       9
-363 sorry         14       9
-368 frightened    13       9
+   term       count support
+1  down          93      22
+2  great        138      20
+3  good          74      20
+4  like          64      19
+5  heart         67      16
+6  yellow        33      14
+7  near          20      14
+8  glad          19      14
+9  afraid        29      13
+10 still         20      12
+11 surprise      15      12
+12 happy         15      11
+13 wicked        72      10
+14 low           15      10
+15 close         13      10
+16 terrible      27       9
+17 sorry         14       9
+18 frightened    13       9
 ⋮
 (168 rows total)
 ```

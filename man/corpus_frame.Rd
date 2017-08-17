@@ -21,7 +21,8 @@
     \item{x}{data frame object to print or format.}
 
     \item{rows}{integer scalar giving the maximum number of rows to print
-        before truncating the output.}
+        before truncating the output. A negative or missing value indicates
+        no upper limit.}
 
     \item{chars}{maximum number of character units to display; see
         \code{\link{utf8_format}}.}

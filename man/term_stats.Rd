@@ -6,8 +6,9 @@
 }
 \usage{
     term_stats(x, filter = text_filter(x), weights = NULL,
-                ngrams = NULL, min_count = NULL, max_count = NULL,
-                min_support = NULL, max_support = NULL, types = FALSE)
+               ngrams = NULL, min_count = NULL, max_count = NULL,
+               min_support = NULL, max_support = NULL, types = FALSE,
+               subset)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}
@@ -34,6 +35,9 @@
 
     \item{types}{a logical value indicating whether to include columns for
         the types that make up the terms.}
+
+    \item{subset}{logical expression indicating elements or rows to keep:
+          missing values are taken as false.}
 }
 \details{
     \code{term_stats} tokenizes a set of texts and computes the occurrence

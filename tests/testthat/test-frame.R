@@ -1,6 +1,20 @@
 
 context("frame")
 
+test_that("'print.corpus_frame' can print all rows", {
+    d <- data.frame(x = 1:50)
+
+    expect_equal(capture_output(print.corpus_frame(d, -1)),
+                 capture_output(print.corpus_frame(d, .Machine$integer.max)))
+
+    expect_equal(capture_output(print.corpus_frame(d, NA)),
+                 capture_output(print.corpus_frame(d, .Machine$integer.max)))
+
+    expect_equal(capture_output(print.corpus_frame(d, NULL)),
+                 capture_output(print.corpus_frame(d, .Machine$integer.max)))
+})
+
+
 test_that("'print.corpus_frame' produces the same results on ASCII", {
     d <- data.frame(x = 1:10, f = gl(2,5), ch = I(letters[1:10]))
     dr <- d

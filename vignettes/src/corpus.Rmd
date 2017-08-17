@@ -88,16 +88,9 @@ vectors and ordinary data frames. Using a corpus object gives better
 printing behavior and allows setting a `text_filter` attribute to override
 the default text preprocessing.
 
-
-The `corpus` function returns a data frame with the class attribute set to
-`c("corpus_frame", "data.frame")`, to make printing nicer:
-
 ```{r}
-emoji <- data.frame(text = sapply(0x1f600 + 1:30, intToUtf8),
-                    stringsAsFactors = FALSE)
-print(emoji) # as a data frame
-print(as_corpus(emoji)) # as a corpus (cuts off after 18 rows)
-print(as_corpus(emoji), 5) # cuts off after 5 rows
+print(data) # better output than printing a data frame, cuts off after 18 rows
+print(data, 5) # cuts off after 5 rows
 ```
 
 
@@ -118,8 +111,7 @@ segmentation and normalization. We can inspect the text filter:
 ```{r}
 text_filter(data)
 ```
-If the text column is of type `corpus_text` as returned by `as_text`, then
-we can change the text filter properties:
+We can change the text filter properties:
 ```{r}
 text_filter(data)$map_case <- FALSE
 text_filter(data)$drop_punct <- TRUE
@@ -153,14 +145,23 @@ tokenization process.
 Text statistics
 ---------------
 
+### Token, type, and sentence counts
+
 The `text_ntoken`, `text_ntype`, and `text_nsentence` functions return the
 numbers of tokens, unique types, and sentences, respectively, in a set of
 texts. We can use these functions to get an overview of the section lengths
 and lexical diversities.
 
 ```{r}
-(stats <- text_stats(data))
+stats <- text_stats(data)
+print(stats, -1) # print all rows instead of truncating at 18
 ```
+
+We can see that the last chapter is the shortest, with 74 tokens, 56 unique
+types, and 8 sentences. Chapter 12 is the longest.
+
+
+### Testing Heaps' law
 
 [Heaps' law][heaps-law] says that the logarithm of the number of unique
 types is a linear function of the number of tokens. We can test this law
@@ -202,6 +203,20 @@ chapter contains mostly dialogue between Oz and Dorothy's simple-minded
 companions (the Scarecrow, Tin Woodman, and Lion).
 
 
+Term statistics
+---------------
+
+### Counts and prevalence
+
+### Higher-order n-grams
+
+### Testing Zipf's law
+
+
+Searching for terms
+-------------------
+
+
 Emotional affect
 ----------------
 
@@ -209,19 +224,18 @@ Emotional affect
 
 Next we will look at usage rates for emotion words from the WordNet Affect
 lexicon. As a starting point, we will take the "Positive", "Negative", and
-"Ambigous" emotion terms (exluding the other category, "Neutral").
+"Ambiguous" emotion terms (excluding the other category, "Neutral").
 
 ```{r}
 affect <- subset(wnaffect, emotion != "Neutral")
-affect$emotion <- droplevels(affect$emotion) # drop the unused 'Neutral' level
+affect$emotion <- droplevels(affect$emotion) # drop the unused "Neutral" level
 affect$category <- droplevels(affect$category) # drop unused categories
 ```
 
 Rather than blindly applying the lexicon, we first check to see what the most
 common emotion terms are.
 ```{r}
-counts <- term_stats(data)
-subset(counts, term %in% affect$term)
+term_stats(data, subset = term %in% affect$term)
 ```
 
 A few terms jump out as unusual: "yellow" is probably for the yellow brick

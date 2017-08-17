@@ -124,7 +124,7 @@ print.corpus_frame <- function(x, rows = 18L, chars = NULL, digits = NULL,
     nc <- length(x)
 
     with_rethrow({
-        rows <- as_max_print("rows", rows)
+        rows <- as_integer_scalar("rows", rows)
         chars <- as_chars("chars", chars)
         digits <- as_digits("digits", digits)
         quote <- as_option("quote", quote)
@@ -141,6 +141,10 @@ print.corpus_frame <- function(x, rows = 18L, chars = NULL, digits = NULL,
         max <- as_max_print("max", max)
         display <- as_option("display", display)
     })
+
+    if (is.na(rows) || rows < 0) {
+        rows <- .Machine$integer.max
+    }
 
     if (length(x) == 0) {
         cat(sprintf(ngettext(n, "data frame with 0 columns and %d row",

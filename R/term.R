@@ -15,7 +15,8 @@
 
 term_stats <- function(x, filter = text_filter(x), weights = NULL,
                        ngrams = NULL, min_count = NULL, max_count = NULL,
-                       min_support = NULL, max_support = NULL, types = FALSE)
+                       min_support = NULL, max_support = NULL, types = FALSE,
+                       subset)
 {
     with_rethrow({
         x <- as_text(x, filter = filter)
@@ -36,6 +37,18 @@ term_stats <- function(x, filter = text_filter(x), weights = NULL,
 
     ans <- ans[o, , drop = FALSE]
     row.names(ans) <- NULL
+
+    if (!missing(subset)) {
+        e <- substitute(subset)
+        r <- eval(e, ans, parent.frame())
+        if (!is.logical(r))  {
+            stop("'subset' must be logical")
+        }
+        r <- r & !is.na(r)
+        ans <- ans[r, , drop = FALSE]
+        row.names(ans) <- NULL
+    }
+
     ans
 }
 
