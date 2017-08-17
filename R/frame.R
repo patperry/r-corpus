@@ -32,15 +32,24 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
         print.gap <- as_print_gap("print.gap", print.gap)
     })
 
-    if (is.null(chars)) {
+
+    if ((stretch <- is.null(chars))) {
+        width <- getOption("width")
+        rn <- rownames(x)
+        rn[is.na(rn)] <- "NA"
+        rownames_width <- max(0, utf8_width(rn))
+
+        gap <- if (is.null(print.gap)) 1 else print.gap
+
         utf8 <- Sys.getlocale("LC_CTYPE") != "C"
         ellipsis <- if (utf8) 1 else 3
         quotes <- if (quote) 2 else 0
-        gap <- if (is.null(print.gap)) 1 else print.gap
-        width <- getOption("width")
-        chars <- (width - ellipsis - quotes
-                  - gap - max(0, utf8_width(rownames(x))))
-        chars <- max(chars, 12)
+
+        chars_min <- 24
+        chars_max <- (width - ellipsis - quotes
+                      - gap - rownames_width)
+        chars_max <- max(chars_max, chars_min)
+        chars <- chars_max
     }
 
     nr <- .row_names_info(x, 2L)
@@ -48,10 +57,19 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
     names <- names(x)
 
     cols <- vector("list", nc)
+
+    if (stretch) {
+        chars_left <- chars_max
+    }
+
     for (i in seq_len(nc)) {
         elt <- x[[i]]
         cl <- class(elt)
         fac <- FALSE
+
+        if (stretch) {
+            chars <- max(chars_min, chars_left)
+        }
 
         if (is.factor(elt) && (identical(cl, "factor")
                                || identical(cl, c("AsIs", "factor")))) {
@@ -83,6 +101,20 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                       justify = justify,
                                       width = max(0, utf8_width(cols[[i]])),
                                       na.encode = TRUE, na.print = "NA")
+        }
+
+        if (stretch) {
+            cn <- names[[i]]
+            if (is.na(cn)) {
+                cn <- "NA"
+            }
+
+            chars_left <- (chars_left - gap
+                           - max(utf8_width(cols[[i]], quote = quote),
+                                 utf8_width(cn)))
+            if (chars_left < 0) {
+                chars_left <- chars_max
+            }
         }
     }
 
