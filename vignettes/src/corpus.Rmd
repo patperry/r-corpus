@@ -320,28 +320,36 @@ legend(usr[2] + 0.01 * diff(usr[1:2]), usr[3] + 0.8 * diff(usr[3:4]),
        fill = col[c("total", "pos", "neg", "ambig")],
        cex = 0.8, xpd = TRUE)
 
+# for the total rate, put a dashed line at the mean rate
+abline(h = mean(rate$total), lty = 2, col = col[["total"]])
+
 # plot each rate type
-for (t in names(rate)) {
+for (t in c("ambig", "neg", "pos", "total")) {
     r <- rate[[t]]
     s <- se[[t]]
     cl <- col[[t]]
 
-    if (t == "total") {
-        # for the total rate, put a dashed line at the mean rate
-        abline(h = mean(r), lty = 2, col = cl)
+    # add lines and points
+    lines(i, r, col = cl)
+    points(i, r, col = cl, pch = 16, cex = 0.5)
 
-        # and put standard errors around interesting points, where is rate >2 sd away from mean
+    # for the total, put standard errors around interesting points
+    if (t == "total") {
+        # "interesting" defined as rate >2 sd away from mean
         int <- abs((r - mean(r)) / sd(r)) > 2
+
         segments(i[int], (r - s)[int], i[int], (r + s)[int], col = cl)
         segments((i - .2)[int], (r - s)[int], (i + .2)[int], (r - s)[int], col = cl)
         segments((i - .2)[int], (r + s)[int], (i + .2)[int], (r + s)[int], col = cl)
     }
-
-    # add lines and points
-    lines(i, r, col = cl)
-    points(i, r, col = cl, pch = 16, cex = 0.5)
 }
 ```
+
+There are two segments with particularly high emotion: segment 45 from "The
+Wonderful City of Oz", where the Tin Woodman and the Cowardly Lion ask the
+Wizard for help, and he compels them to defeat the Wicked Witch of the West;
+and segment 64, from "The Discovery of Oz, the Terrible", where Dorothy and
+her companions discover that the Wizard of Oz is just a common man.
 
 [gutenberg-oz]: http://www.gutenberg.org/ebooks/55 "The Wonderful Wizard of Oz"
 [heaps-law]: https://en.wikipedia.org/wiki/Heaps%27_law "Heap's law"
