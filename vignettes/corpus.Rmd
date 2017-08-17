@@ -597,7 +597,7 @@ se <- lapply(rate, function(r) sqrt(r * (unit - r) / n))
 i <- seq_len(nrow(chunks))
 
 # set the plot margins, with extra space below the plot
-par(mar = c(4, 4, 7, 6) + 0.1, ps = 11, las = 1)
+par(mar = c(4, 4, 8, 6) + 0.1, las = 1)
 
 # set up the plot coordinates; put labels but no axes
 xlim <- range(i - 0.5, i + 0.5)
