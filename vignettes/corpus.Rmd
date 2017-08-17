@@ -48,7 +48,7 @@ chapter <- grep("^[[:space:]]*[[:digit:]]+\\.", lines)
 chapter <- chapter[chapter > half_title]
 
 # get the section texts (including the front matter)
-start <- c(1, chapter + 1)
+start <- c(1, chapter + 3) # + 3 to skip title and two empty lines
 end <- c(chapter - 1, length(lines))
 text <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"), start, end)
 
@@ -94,24 +94,24 @@ print(data) # better output than printing a data frame, cuts off after 18 rows
 
 ```
      title                             text                                                         
-ch01 The Cyclone                       \n\nDorothy lived in the midst of the great Kansas prairies,…
-ch02 The Council with the Munchkins    \n\nShe was awakened by a shock, so sudden and severe that i…
-ch03 How Dorothy Saved the Scarecrow   \n\nWhen Dorothy was left alone she began to feel hungry.  S…
-ch04 The Road Through the Forest       \n\nAfter a few hours the road began to be rough, and the wa…
-ch05 The Rescue of the Tin Woodman     \n\nWhen Dorothy awoke the sun was shining through the trees…
-ch06 The Cowardly Lion                 \n\nAll this time Dorothy and her companions had been walkin…
-ch07 The Journey to the Great Oz       \n\nThey were obliged to camp out that night under a large t…
-ch08 The Deadly Poppy Field            \n\nOur little party of travelers awakened the next morning …
-ch09 The Queen of the Field Mice       \n\n"We cannot be far from the road of yellow brick, now," r…
-ch10 The Guardian of the Gate          \n\nIt was some time before the Cowardly Lion awakened, for …
-ch11 The Wonderful City of Oz          \n\nEven with eyes protected by the green spectacles, Doroth…
-ch12 The Search for the Wicked Witch   \n\nThe soldier with the green whiskers led them through the…
-ch13 The Rescue                        \n\nThe Cowardly Lion was much pleased to hear that the Wick…
-ch14 The Winged Monkeys                \n\nYou will remember there was no road--not even a pathway-…
-ch15 The Discovery of Oz, the Terrible \n\nThe four travelers walked up to the great gate of Emeral…
-ch16 The Magic Art of the Great Humbug \n\nNext morning the Scarecrow said to his friends:\n\n"Cong…
-ch17 How the Balloon Was Launched      \n\nFor three days Dorothy heard nothing from Oz.  These wer…
-ch18 Away to the South                 \n\nDorothy wept bitterly at the passing of her hope to get …
+ch01 The Cyclone                       Dorothy lived in the midst of the great Kansas prairies, wit…
+ch02 The Council with the Munchkins    She was awakened by a shock, so sudden and severe that if Do…
+ch03 How Dorothy Saved the Scarecrow   When Dorothy was left alone she began to feel hungry.  So sh…
+ch04 The Road Through the Forest       After a few hours the road began to be rough, and the walkin…
+ch05 The Rescue of the Tin Woodman     When Dorothy awoke the sun was shining through the trees and…
+ch06 The Cowardly Lion                 All this time Dorothy and her companions had been walking th…
+ch07 The Journey to the Great Oz       They were obliged to camp out that night under a large tree …
+ch08 The Deadly Poppy Field            Our little party of travelers awakened the next morning refr…
+ch09 The Queen of the Field Mice       "We cannot be far from the road of yellow brick, now," remar…
+ch10 The Guardian of the Gate          It was some time before the Cowardly Lion awakened, for he h…
+ch11 The Wonderful City of Oz          Even with eyes protected by the green spectacles, Dorothy an…
+ch12 The Search for the Wicked Witch   The soldier with the green whiskers led them through the str…
+ch13 The Rescue                        The Cowardly Lion was much pleased to hear that the Wicked W…
+ch14 The Winged Monkeys                You will remember there was no road--not even a pathway--bet…
+ch15 The Discovery of Oz, the Terrible The four travelers walked up to the great gate of Emerald Ci…
+ch16 The Magic Art of the Great Humbug Next morning the Scarecrow said to his friends:\n\n"Congratu…
+ch17 How the Balloon Was Launched      For three days Dorothy heard nothing from Oz.  These were sa…
+ch18 Away to the South                 Dorothy wept bitterly at the passing of her hope to get home…
 ⋮
 (24 rows total)
 ```
@@ -122,11 +122,11 @@ print(data, 5) # cuts off after 5 rows
 
 ```
      title                           text                                                           
-ch01 The Cyclone                     \n\nDorothy lived in the midst of the great Kansas prairies, w…
-ch02 The Council with the Munchkins  \n\nShe was awakened by a shock, so sudden and severe that if …
-ch03 How Dorothy Saved the Scarecrow \n\nWhen Dorothy was left alone she began to feel hungry.  So …
-ch04 The Road Through the Forest     \n\nAfter a few hours the road began to be rough, and the walk…
-ch05 The Rescue of the Tin Woodman   \n\nWhen Dorothy awoke the sun was shining through the trees a…
+ch01 The Cyclone                     Dorothy lived in the midst of the great Kansas prairies, with …
+ch02 The Council with the Munchkins  She was awakened by a shock, so sudden and severe that if Doro…
+ch03 How Dorothy Saved the Scarecrow When Dorothy was left alone she began to feel hungry.  So she …
+ch04 The Road Through the Forest     After a few hours the road began to be rough, and the walking …
+ch05 The Rescue of the Tin Woodman   When Dorothy awoke the sun was shining through the trees and T…
 ⋮
 (24 rows total)
 ```
@@ -363,13 +363,251 @@ Term statistics
 
 ### Counts and prevalence
 
+We get term statistics using the `term_stats` function:
+
+
+```r
+term_stats(data)
+```
+
+```
+   term    count support
+1  the      2922      24
+2  and      1661      24
+3  to       1108      24
+4  of        824      24
+5  you       489      24
+6  in        478      24
+7  dorothy   345      24
+8  so        307      24
+9  with      271      24
+10 had       263      24
+11 is        260      24
+12 at        253      24
+13 when      158      24
+14 up        106      24
+15 again      87      24
+16 a         803      23
+17 was       501      23
+18 he        453      23
+⋮
+(2878 rows total)
+```
+
+This returns a data frame with each row giving the count and support for each
+term. The "count" is the total number of occurrences of the term in the
+corpus. The "support" is the number of texts containing the term. In the
+output above, we can see that "the" is the most common term, appearing 2922
+times total in all 24 chapters. The pronoun "he" is the 18th most common
+terms, appearing in all but one chapter.
+
+
+The most common words are function words, commonly known as "stop" words. We
+can exclude these terms from the tally using the `subset` argument.
+
+
+```r
+term_stats(data, subset = !term %in% stopwords("english"))
+```
+
+```
+   term      count support
+1  dorothy     345      24
+2  said        332      23
+3  little      139      22
+4  one         125      22
+5  asked       114      22
+6  came        104      22
+7  back         98      22
+8  girl         93      22
+9  toto         90      22
+10 get          85      22
+11 now          82      22
+12 answered     78      22
+13 scarecrow   217      21
+14 upon         85      21
+15 shall        82      21
+16 go           72      21
+17 looked       61      21
+18 time         43      21
+⋮
+(2734 rows total)
+```
+
+The character names "dorothy", "toto", and "scarecrow" show up at the top of
+the list of the most common terms.
+
+
 ### Higher-order n-grams
 
-### Testing Zipf's law
+Beyond searching for single-type terms, we can also search for multi-type
+terms ("n-grams").
+
+
+```r
+term_stats(data, ngrams = 5)
+```
+
+```
+   term                            count support
+1  scarecrow and the tin woodman      13       9
+2  the scarecrow and the tin          13       9
+3  the wicked witch of the            20       7
+4  the road of yellow brick           12       7
+5  wicked witch of the west           12       6
+6  soldier with the green whiskers     8       6
+7  the soldier with the green          8       6
+8  send me back to kansas              6       6
+9  to get back to kansas               7       5
+10 the tin woodman and the             6       5
+11 the guardian of the gates          10       4
+12 in the middle of the                8       4
+13 wicked witch of the east            8       4
+14 until they came to the              6       4
+15 to the land of the                  5       4
+16 and the tin woodman and             4       4
+17 in the midst of a                   4       4
+18 to give me a heart                  4       4
+⋮
+(20230 rows total)
+```
+
+The `types` argument allows us to request the component types in the result:
+
+
+```r
+term_stats(data, ngrams = 3, types = TRUE)
+```
+
+```
+   term                type1     type2     type3     count support
+1  the tin woodman     the       tin       woodman     112      18
+2  said the scarecrow  said      the       scarecrow    36      16
+3  the emerald city    the       emerald   city         53      14
+4  back to kansas      back      to        kansas       28      14
+5  as soon as          as        soon      as           17      13
+6  and the lion        and       the       lion         24      12
+7  the little girl     the       little    girl         21      12
+8  and the tin         and       the       tin          19      12
+9  and the scarecrow   and       the       scarecrow    21      11
+10 the scarecrow and   the       scarecrow and          19      11
+11 the wicked witch    the       wicked    witch        56      10
+12 said the tin        said      the       tin          19      10
+13 the cowardly lion   the       cowardly  lion         19      10
+14 the land of         the       land      of           19      10
+15 they came to        they      came      to           19      10
+16 scarecrow and the   scarecrow and       the          17      10
+17 get back to         get       back      to           15      10
+18 asked the scarecrow asked     the       scarecrow    10      10
+⋮
+(23596 rows total)
+```
+
+Here are the most common 2-, 3-grams starting with "dorothy", where the second
+type is not a function word
+
+```r
+term_stats(data, ngrams = 2:3, types = TRUE,
+           subset = type1 == "dorothy" & !type2 %in% stopwords("english"))
+```
+
+```
+   term              type1   type2   type3 count support
+1  dorothy went      dorothy went    <NA>      6       6
+2  dorothy looked    dorothy looked  <NA>      6       5
+3  dorothy said      dorothy said    <NA>      5       5
+4  dorothy saw       dorothy saw     <NA>      5       5
+5  dorothy walked    dorothy walked  <NA>      4       4
+6  dorothy went to   dorothy went    to        4       4
+7  dorothy asked     dorothy asked   <NA>      3       3
+8  dorothy found     dorothy found   <NA>      3       3
+9  dorothy looked at dorothy looked  at        3       3
+10 dorothy picked    dorothy picked  <NA>      3       3
+11 dorothy sat       dorothy sat     <NA>      3       3
+12 dorothy thought   dorothy thought <NA>      3       3
+13 dorothy put       dorothy put     <NA>      3       2
+14 dorothy stood     dorothy stood   <NA>      3       2
+15 dorothy ate       dorothy ate     <NA>      2       2
+16 dorothy awoke     dorothy awoke   <NA>      2       2
+17 dorothy awoke the dorothy awoke   the       2       2
+18 dorothy carried   dorothy carried <NA>      2       2
+⋮
+(202 rows total)
+```
 
 
 Searching for terms
 -------------------
+
+Now that we have identified common terms, we might be interested in seeing
+where they appear. For this, we use the `text_locate` function.
+
+Here are all instances of the term "dorothy looked":
+
+
+```r
+text_locate(data, "dorothy looked")
+```
+
+```
+  text                 before                    instance                     after                 
+1 ch02 …out from\nunder a block of wood."\n\n Dorothy looked , and gave a little cry of fright.  Th…
+2 ch05 …, as if he could not stir at all.\n\n Dorothy looked  at him in amazement, and so did the S…
+3 ch12 …ve a loud cry of fear, and then, as\n Dorothy looked  at her in wonder, the Witch began to …
+4 ch14 … all the mice hurrying after her.\n\n Dorothy looked  inside the Golden Cap and saw some wo…
+5 ch14 …s the Monkey King finished his story  Dorothy looked  down and saw the\ngreen, shining wall…
+6 ch16 …rmly he went back to his friends.\n\n Dorothy looked  at him curiously.  His head was quite…
+```
+
+Note that we match against the type of the token, not the raw token itself, so
+we are able to detect capitalized "Dorothy". This is especially useful when we
+wan't to search for a stemmed token. Here are all instances of tokens that
+stem to "scream":
+
+
+```r
+text_locate(data, "scream", filter = text_filter(stemmer = "english"))
+```
+
+```
+  text                  before                   instance                   after                   
+1 ch01 … by the child's laughter that she would   scream  \nand press her hand upon her heart whene…
+2 ch01 …close at hand.\n\n"Quick, Dorothy!" she  screamed .  "Run for the cellar!"\n\nToto jumped o…
+3 ch07 … loud\nand terrible a roar that Dorothy  screamed  and the Scarecrow fell over\nbackward, w…
+4 ch12  …away.\n\n"See what you have done!" she  screamed .  "In a minute I shall melt\naway."\n\n"…
+5 ch17 …he air without her.\n\n"Come back!" she  screamed .  "I want to go, too!"\n\n"I can't come …
+```
+
+If we would like, we can search for multiple phrases at the same time:
+
+
+```r
+text_locate(data, c("wicked witch", "toto", "oz"))
+```
+
+```
+    text                 before                   instance                    after                 
+1   ch01 … solemn, and rarely spoke.\n\nIt was      Toto       that made Dorothy laugh, and saved h…
+2   ch01 …as gray\nas her other surroundings.       Toto       was not gray; he was a little black… 
+3   ch01 …either side of his funny, wee nose.       Toto       played all day long, and\nDorothy pl…
+4   ch01 …ual.  Dorothy stood in the door with      Toto       in her arms, and looked at\nthe sky …
+5   ch01 … screamed.  "Run for the cellar!"\n\n     Toto       jumped out of Dorothy's arms and hid…
+6   ch01 …e small, dark\nhole.  Dorothy caught      Toto       at last and started to follow her au…
+7   ch01 … gently, like a baby in a cradle.\n\n     Toto       did not like it.  He ran about the r…
+8   ch01 …d to\nsee what would happen.\n\nOnce      Toto       got too near the open trap door, and…
+9   ch01 …all.  She crept to the hole,\ncaught      Toto       by the ear, and dragged him into the…
+10  ch01 … her bed, and lay down upon it; and\n     Toto       followed and lay down beside her.\n… 
+11  ch02 …h and wonder what had happened; and\n     Toto       put his cold little nose into her fa…
+12  ch02 …m.  She sprang from her bed and with      Toto       at her heels ran\nand opened the doo…
+13  ch02 …rateful to you for having killed the  Wicked Witch   of the\nEast, and for setting our pe…
+14  ch02 …ress, and saying she had\nkilled the  Wicked Witch   of the East?  Dorothy was an innocen…
+15  ch02 …she?" asked Dorothy.\n\n"She was the  Wicked Witch   of the East, as I said," answered th…
+16  ch02 …in this land of the East\n where the  Wicked Witch   ruled."\n\n"Are you a Munchkin?" ask…
+17  ch02 …ove me.  I am not as powerful as the  Wicked Witch   was who\nruled here, or I should hav…
+18  ch02 …only four witches in all the Land of       Oz       , and two of them,\nthose who live in…
+⋮
+(303 rows total)
+```
 
 
 Emotional affect
@@ -447,7 +685,7 @@ text_locate(data, "yellow")
 14 ch08 …arried them a long way past the road of   yellow   brick that led to the\nEmerald City.\n… 
 15 ch08 …was carpeted with them.  There were big   yellow   and white and\nblue and purple blossoms…
 16 ch08 … must hurry and get back to the road of   yellow   brick before dark,"\nhe said; and the S…
-17 ch09   \n\n"We cannot be far from the road of   yellow   brick, now," remarked the\nScarecrow, a…
+17 ch09       "We cannot be far from the road of   yellow   brick, now," remarked the\nScarecrow, a…
 18 ch09 … toward them.  It was, indeed, a\ngreat   yellow   Wildcat, and the Woodman thought it mus…
 ⋮
 (33 rows total)

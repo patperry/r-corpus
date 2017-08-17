@@ -50,7 +50,7 @@ chapter <- grep("^[[:space:]]*[[:digit:]]+\\.", lines)
 chapter <- chapter[chapter > half_title]
 
 # get the section texts (including the front matter)
-start <- c(1, chapter + 1)
+start <- c(1, chapter + 3) # + 3 to skip title and two empty lines
 end <- c(chapter - 1, length(lines))
 text <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"), start, end)
 
@@ -208,13 +208,80 @@ Term statistics
 
 ### Counts and prevalence
 
+We get term statistics using the `term_stats` function:
+
+```{r}
+term_stats(data)
+```
+
+This returns a data frame with each row giving the count and support for each
+term. The "count" is the total number of occurrences of the term in the
+corpus. The "support" is the number of texts containing the term. In the
+output above, we can see that "the" is the most common term, appearing 2922
+times total in all 24 chapters. The pronoun "he" is the 18th most common
+terms, appearing in all but one chapter.
+
+
+The most common words are function words, commonly known as "stop" words. We
+can exclude these terms from the tally using the `subset` argument.
+
+```{r}
+term_stats(data, subset = !term %in% stopwords("english"))
+```
+
+The character names "dorothy", "toto", and "scarecrow" show up at the top of
+the list of the most common terms.
+
+
 ### Higher-order n-grams
 
-### Testing Zipf's law
+Beyond searching for single-type terms, we can also search for multi-type
+terms ("n-grams").
+
+```{r}
+term_stats(data, ngrams = 5)
+```
+
+The `types` argument allows us to request the component types in the result:
+
+```{r}
+term_stats(data, ngrams = 3, types = TRUE)
+```
+
+Here are the most common 2-, 3-grams starting with "dorothy", where the second
+type is not a function word
+```{r}
+term_stats(data, ngrams = 2:3, types = TRUE,
+           subset = type1 == "dorothy" & !type2 %in% stopwords("english"))
+```
 
 
 Searching for terms
 -------------------
+
+Now that we have identified common terms, we might be interested in seeing
+where they appear. For this, we use the `text_locate` function.
+
+Here are all instances of the term "dorothy looked":
+
+```{r}
+text_locate(data, "dorothy looked")
+```
+
+Note that we match against the type of the token, not the raw token itself, so
+we are able to detect capitalized "Dorothy". This is especially useful when we
+wan't to search for a stemmed token. Here are all instances of tokens that
+stem to "scream":
+
+```{r}
+text_locate(data, "scream", filter = text_filter(stemmer = "english"))
+```
+
+If we would like, we can search for multiple phrases at the same time:
+
+```{r}
+text_locate(data, c("wicked witch", "toto", "oz"))
+```
 
 
 Emotional affect
