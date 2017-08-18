@@ -440,7 +440,7 @@ static void load_text(SEXP x)
 	const uint8_t *ptr;
 	double r;
 	R_xlen_t i, j, len, nrow;
-	int err = 0, s, nsrc, begin, end, flags;
+	int err = 0, s, nsrc, begin, end, flags = 0;
 
 	shandle = getListElement(x, "handle");
 

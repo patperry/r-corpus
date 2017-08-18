@@ -259,6 +259,8 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 	if (block_size != 1) {
 		PROTECT(snsent = text_nsentence(sx)); nprot++;
 	} else {
+		snsent = R_NilValue;
+		extra = 0;
 		target = 1;
 	}
 
@@ -366,6 +368,8 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 	if (block_size != 1) {
 		PROTECT(sntok = text_ntoken(sx)); nprot++;
 	} else {
+		sntok = R_NilValue;
+		extra = 0;
 		target = 1;
 	}
 
