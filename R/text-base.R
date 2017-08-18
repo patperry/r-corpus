@@ -245,6 +245,7 @@ print.corpus_text <- function(x, chars = NULL, quote = TRUE,
 
     fmt <- format.corpus_text(xsub, chars = chars, quote = quote,
                               na.print = na.print, print.gap = print.gap)
+    fmt <- utf8_encode(fmt, display)
 
     mat <- cbind(fmt)
     if (is.null(rownames(mat))) {

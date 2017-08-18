@@ -646,22 +646,14 @@ text_subset(data, "the great oz")
 ```
 
 ```
-ch03 "When Dorothy was left alone she began to feel hungry.  So she went to
-the cupboard and cut …"
-ch04 "After a few hours the road began to be rough, and the walking grew so
-difficult that the Sc…"
-ch05 "When Dorothy awoke the sun was shining through the trees and Toto had
-long been out chasing…"
-ch06 "All this time Dorothy and her companions had been walking through the
-thick woods.  The roa…"
-ch10 "It was some time before the Cowardly Lion awakened, for he had lain
-among the poppies a lon…"
-ch11 "Even with eyes protected by the green spectacles, Dorothy and her
-friends were at first daz…"
-ch12 "The soldier with the green whiskers led them through the streets of the
-Emerald City until …"
-ch15 "The four travelers walked up to the great gate of Emerald City and rang
-the bell.  After ri…"
+ch03 "When Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cut …"
+ch04 "After a few hours the road began to be rough, and the walking grew so\ndifficult that the Sc…"
+ch05 "When Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasing…"
+ch06 "All this time Dorothy and her companions had been walking through the\nthick woods.  The roa…"
+ch10 "It was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a lon…"
+ch11 "Even with eyes protected by the green spectacles, Dorothy and her\nfriends were at first daz…"
+ch12 "The soldier with the green whiskers led them through the streets of the\nEmerald City until …"
+ch15 "The four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After ri…"
 ```
 
 
