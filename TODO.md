@@ -20,3 +20,5 @@ Features
 
        m <- text_match(x, dict$term)
        score <- tapply(dict$score[m$term], m$text, mean, default = 0)
+
+ * Add `random` argument to `text_locate` for random order
