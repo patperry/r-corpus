@@ -60,7 +60,9 @@ Read text data into R or convert an existing character vector to type
 
 All *corpus* functions expecting text accept both vector and data frame
 arguments. When the input argument is a data frame, *corpus* extracts the
-texts from the column named `"text"`.
+texts from the column named `"text"`.  You can construct a data frame in
+the expected format from other R object using the `corpus()` or
+`as_corpus()` functions.
 
 
 ### Preprocessing
@@ -139,7 +141,7 @@ that matches the term after tokenization.
 
 *Corpus* can tabulate type or n-gram occurrence frequencies:
 
- + `term_counts()` for tabulating term occurrence frequencies, aggregating
+ + `term_stats()` for tabulating term occurrence statistics, aggregating
    over a set of texts.
 
  + `term_matrix()` for computing a term frequency matrix or its transpose
