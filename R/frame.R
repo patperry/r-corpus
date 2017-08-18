@@ -157,7 +157,7 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
     nc <- length(x)
 
     with_rethrow({
-        rows <- as_integer_scalar("rows", rows)
+        rows <- as_rows("rows", rows)
         chars <- as_chars("chars", chars)
         digits <- as_digits("digits", digits)
         quote <- as_option("quote", quote)
@@ -175,7 +175,7 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
         display <- as_option("display", display)
     })
 
-    if (is.na(rows) || rows < 0) {
+    if (is.null(rows) || rows < 0) {
         rows <- .Machine$integer.max
     }
 
@@ -217,10 +217,13 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
     if (n == 0) {
         cat("(0 rows)\n")
     } else if (trunc) {
-        ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
+        name_width <- max(0, utf8_width(rownames(m)))
+
+        ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", ".", "\u22ee")
+        ellipsis <- substr(ellipsis, 1, name_width)
         gap <- if (is.null(print.gap)) 1 else print.gap
-        nspace <- max(0, utf8_width(rownames(m))) + gap
-        space <- format(ellipsis, width = nspace)
+
+        space <- format(ellipsis, width = name_width + gap)
         cat(sprintf("%s(%d rows total)\n", space, n))
     }
 

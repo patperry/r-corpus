@@ -291,6 +291,21 @@ as_print_gap <- function(name, value)
 }
 
 
+as_rows <- function(name, value)
+{
+    if (is.null(value)) {
+        return(NULL)
+    }
+
+    value <- as_integer_scalar(name, value)
+    if (is.na(value)) {
+        stop(paste0("'", name, "' cannot be NA"))
+    }
+
+    value
+}
+
+
 as_size <- function(size)
 {
     if (!(is.numeric(size) && length(size) == 1 && !is.na(size))) {

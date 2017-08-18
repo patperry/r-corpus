@@ -7,11 +7,10 @@ test_that("'print.corpus_frame' can print all rows", {
     expect_equal(capture_output(print.corpus_frame(d, -1)),
                  capture_output(print.corpus_frame(d, .Machine$integer.max)))
 
-    expect_equal(capture_output(print.corpus_frame(d, NA)),
-                 capture_output(print.corpus_frame(d, .Machine$integer.max)))
-
     expect_equal(capture_output(print.corpus_frame(d, NULL)),
                  capture_output(print.corpus_frame(d, .Machine$integer.max)))
+
+    expect_error(print.corpus_frame(d, NA), "'rows' cannot be NA")
 })
 
 
