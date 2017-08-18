@@ -1664,14 +1664,17 @@ of the emotional dynamics of the novel. The "Positive", "Negative", and
 sense.  The novel starts slowly, then quickly gets exciting when the tornado
 hits Kansas. There is a lull while Dorothy is in Munchkinland, but gets
 exciting when Dorothy meets the Cowardly Lion in the forest. The excitement
-level ebbs and flows throughout the rest of the novel. The least exciting
-segment appears in "The Queen of the Field Mice", a chapter that got cut from
-the _Wizard of Oz_ movie.  There are two segments with particularly high
-emotion: segment 45 from "The Wonderful City of Oz", where the Tin Woodman and
-the Cowardly Lion ask the Wizard for help, and he compels them to defeat the
-Wicked Witch of the West; and segment 64, from "The Discovery of Oz, the
-Terrible", where Dorothy and her companions discover that the Wizard of Oz is
-just a common man.
+level ebbs and flows throughout the rest of the novel.
+
+
+The least exciting segment appears in "The Queen of the Field Mice", a chapter
+that got cut from the _Wizard of Oz_ movie.There are two segments with
+particularly high emotion: segment 45 from "The Wonderful City of Oz", where
+the Tin Woodman and the Cowardly Lion ask the Wizard for help, and he compels
+them to defeat the Wicked Witch of the West; and segment 64, from "The
+Discovery of Oz, the Terrible", where Dorothy and her companions discover that
+the Wizard of Oz is not a wizard at all, just a common man.
+
 
 
 [gutenberg-oz]: http://www.gutenberg.org/ebooks/55 "The Wonderful Wizard of Oz"
