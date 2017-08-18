@@ -50,15 +50,18 @@ chapter <- grep("^[[:space:]]*[[:digit:]]+\\.", lines)
 chapter <- chapter[chapter > half_title]
 
 # get the section texts (including the front matter)
-start <- c(1, chapter + 3) # + 3 to skip title and two empty lines
+start <- c(1, chapter + 1) # + 1 to skip title
 end <- c(chapter - 1, length(lines))
 text <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"), start, end)
+
+# trim leading and trailing white space
+text <- trimws(text)
 
 # discard the front matter
 text <- text[-1]
 
 # get the section titles, removing the prefix ("1.", "2.", etc.)
-title <- sub("^[[:space:]]*[[:digit:]]+[.][[:space:]]*", "", lines[chapter])
+title <- trimws(sub("^[[:space:]]*[[:digit:]]+[.][[:space:]]*", "", lines[chapter]))
 ```
 
 
@@ -500,7 +503,7 @@ se <- lapply(rate, function(r) sqrt(r * (unit - r) / n))
 i <- seq_len(nrow(chunks))
 
 # set the plot margins, with extra space below the plot
-par(mar = c(4, 4, 8, 6) + 0.1, las = 1)
+par(mar = c(4, 4, 11, 9) + 0.1, las = 1)
 
 # set up the plot coordinates; put labels but no axes
 xlim <- range(i - 0.5, i + 0.5)
@@ -516,16 +519,16 @@ axis(1, at = i[i %% 10 == 0], labels = TRUE)
 # defaults for the y axis
 axis(2)
 
-# label x axis with chapter titles
+# put vertical lines at chapter boundaries
+abline(v = tapply(i, chunks$parent, min) - 0.5, col = "gray")
+
+# put chapter titles above the plot
 labels <- data$title
-at <- tapply(i, chunks$parent, min) - 0.5
+at <- tapply(i, chunks$parent, mean)
 
 # (adapted from https://www.r-bloggers.com/rotated-axis-labels-in-r-plots/)
 text(at, usr[4] + 0.01 * diff(usr[3:4]),
-     labels = labels, adj = 0, srt = 45, cex = 0.6, xpd = TRUE)
-
-# put vertical lines at chapter boundaries
-abline(v = at, col = "gray")
+     labels = labels, adj = 0, srt = 45, cex = 0.8, xpd = TRUE)
 
 # frame the plot
 box()
@@ -534,7 +537,7 @@ box()
 col <- c(total = "#000000", pos = "#FC8D62", neg = "#8DA0CB", ambig = "#66C2A5")
 
 # add a legend on the right hand side
-legend(usr[2] + 0.01 * diff(usr[1:2]), usr[3] + 0.8 * diff(usr[3:4]),
+legend(usr[2] + 0.02 * diff(usr[1:2]), usr[3] + 0.8 * diff(usr[3:4]),
        legend = c("Total", "Positive", "Negative", "Ambiguous"),
        title = expression(bold("Emotion")),
        fill = col[c("total", "pos", "neg", "ambig")],
