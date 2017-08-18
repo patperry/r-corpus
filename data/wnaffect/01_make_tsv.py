@@ -165,7 +165,7 @@ def clean_term(t):
     return(re.sub("\(.*\)$", "", t.lower()))
 
 f = open('wnaffect.tsv', 'w')
-nterm = 0
+rows = set()
 print('term', 'pos', 'category', 'emotion', sep='\t', file = f)
 for emotion in ['positive', 'negative', 'neutral', 'ambiguous']:
     toplevel = emotion + '-emotion'
@@ -185,7 +185,9 @@ for emotion in ['positive', 'negative', 'neutral', 'ambiguous']:
                     t = clean_term(t)
                     if len(t.split()) > 1 or t == "thing":
                         continue
-                    print(t, pos.upper(), clean_categ(categ),
-                            clean_emotion(emotion), sep="\t", file = f)
-                    nterm = nterm + 1
+                    row = (t, pos.upper(), clean_categ(categ),
+                            clean_emotion(emotion))
+                    if row not in rows:
+                        print("\t".join(row), file = f)
+                        rows.add(row)
 f.close()
