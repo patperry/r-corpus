@@ -1531,19 +1531,24 @@ size across chapters:
 [73] 388 387 387 337 337 337 500 500 500 446 445 466 465 417 417 416  74
 ```
 
-(If we really want equal sized segments, we can concatenate the chapters
-together and then split the combined text into equal segments. The
-disadvantage of this approach is that some segments would be across multiple
-chapters.) 
+(If we wanted equal sized segments, we could have concatenated the chapters
+together and then split the combined text. The disadvantage of this approach
+is that some segments would be split across multiple chapters.) 
 
 
 ### Computing emotion rates
+
+For the count of each emotion category in each segment, we form a text-by-term
+matrix of counts, and then multiply this by the term-by-emotion score matrix.
 
 
 ```r
 x <- term_matrix(chunks, select = rownames(term_scores))
 text_scores <- x %*% term_scores
 ```
+
+For the occurence rates, we divide the counts by the segment sizes. We then
+multiply by 1000 so that rates are given as occurences per 1000 tokens.
 
 
 ```r
@@ -1555,17 +1560,28 @@ rate <- list(pos = text_scores[, "Positive"] / n * unit,
 rate$total <- rate$pos + rate$neg + rate$ambig
 ```
 
+We use the binomial variance formula to get the standard errors:
+
 
 ```r
 # compute the standard errors
 se <- lapply(rate, function(r) sqrt(r * (unit - r) / n))
 ```
 
-To adjust for this, we will convert the raw emotion term counts to rates by
-dividing by the segment size.
+This is a crude estimate that makes some independence assumptions, but it
+gives a reasonable approximation of the uncertainty associated with our
+measured rates.
+
 
 
 ### Plotting the results
+
+We plot the four rate curves as time series. Our main focus is on the total
+emotion usage. For this curve, we also put a horizonal dashed line at its
+mean, and we indicating the "interesting" segments, those that appear more
+than two standard deviations away from the main, by putting error bars on
+these points.
+
 
 
 ```r
@@ -1642,11 +1658,21 @@ for (t in c("ambig", "neg", "pos", "total")) {
 
 ### Discussion
 
-There are two segments with particularly high emotion: segment 45 from "The
-Wonderful City of Oz", where the Tin Woodman and the Cowardly Lion ask the
-Wizard for help, and he compels them to defeat the Wicked Witch of the West;
-and segment 64, from "The Discovery of Oz, the Terrible", where Dorothy and
-her companions discover that the Wizard of Oz is just a common man.
+This is a crude measurement, but it appears to give a reasonable approximation
+of the emotional dynamics of the novel. The "Positive", "Negative", and
+"Ambiguous" categories are hard to interpet, but "Total" emotion seems to make
+sense.  The novel starts slowly, then quickly gets exciting when the tornado
+hits Kansas. There is a lull while Dorothy is in Munchkinland, but gets
+exciting when Dorothy meets the Cowardly Lion in the forest. The excitement
+level ebbs and flows throughout the rest of the novel. The least exciting
+segment appears in "The Queen of the Field Mice", a chapter that got cut from
+the _Wizard of Oz_ movie.  There are two segments with particularly high
+emotion: segment 45 from "The Wonderful City of Oz", where the Tin Woodman and
+the Cowardly Lion ask the Wizard for help, and he compels them to defeat the
+Wicked Witch of the West; and segment 64, from "The Discovery of Oz, the
+Terrible", where Dorothy and her companions discover that the Wizard of Oz is
+just a common man.
+
 
 [gutenberg-oz]: http://www.gutenberg.org/ebooks/55 "The Wonderful Wizard of Oz"
 [heaps-law]: https://en.wikipedia.org/wiki/Heaps%27_law "Heap's law"
