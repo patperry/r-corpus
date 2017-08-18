@@ -9,7 +9,7 @@
     Look for instances of one or more terms in a set of texts.
 }
 \usage{
-    text_locate(x, terms, filter = text_filter(x))
+    text_locate(x, terms, filter = text_filter(x), random = FALSE)
 
     text_count(x, terms, filter = text_filter(x))
 
@@ -26,10 +26,14 @@
 
     \item{filter}{a text filter defining the token boundaries.}
 
+    \item{random{logical value indicating whether to return the matches in
+            random order.}
 }
 \details{
     \code{text_locate} finds all instances of the search terms in the
-    input text, along with their contexts.
+    input text, along with their contexts. When used with
+    \code{random = TRUE}, the function returns the results in random order;
+    this is useful for hand-inspecting a random sample of the matches.
 
     \code{text_count} counts the number of search term instances in
     each element of the text vector.
