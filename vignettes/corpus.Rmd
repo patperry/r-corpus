@@ -1676,6 +1676,21 @@ Discovery of Oz, the Terrible", where Dorothy and her companions discover that
 the Wizard of Oz is not a wizard at all, just a common man.
 
 
+Summary
+-------
+
+The *corpus* library provides facilities for transforming texts into sequences
+of tokens and for computing the statistics of these sequences. The
+`text_filter()` function allows us to control the transformation from text to
+tokens. The `text_stats()` and `term_stats()` functions compute text- and
+term-level occurrence statistics. The `text_locate()` function and allow us to
+search for terms within texts. The `term_matrix()` function computes a
+text-by-term frequency matrix. These functions and their variants provide the
+building blocks for analyzing text.
+
+For more information, check the other vignettes or the package documentation
+with `library(help = "corpus")`.
+
 
 [gutenberg-oz]: http://www.gutenberg.org/ebooks/55 "The Wonderful Wizard of Oz"
 [heaps-law]: https://en.wikipedia.org/wiki/Heaps%27_law "Heap's law"
