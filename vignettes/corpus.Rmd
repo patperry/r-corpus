@@ -89,7 +89,7 @@ the default text preprocessing.
 
 
 ```r
-print(data) # better output than printing a data frame, cuts off after 18 rows
+print(data) # better output than printing a data frame, cuts off after 20 rows
 ```
 
 ```
@@ -256,7 +256,7 @@ and lexical diversities.
 
 ```r
 stats <- text_stats(data)
-print(stats, -1) # print all rows instead of truncating at 18
+print(stats, -1) # print all rows instead of truncating at 20
 ```
 
 ```
@@ -399,8 +399,8 @@ This returns a data frame with each row giving the count and support for each
 term. The "count" is the total number of occurrences of the term in the
 corpus. The "support" is the number of texts containing the term. In the
 output above, we can see that "the" is the most common term, appearing 2922
-times total in all 24 chapters. The pronoun "he" is the 18th most common
-terms, appearing in all but one chapter.
+times total in all 24 chapters. The pronoun "her" is the 20th most common
+term, appearing in all but one chapter.
 
 
 The most common words are function words, commonly known as "stop" words. We
