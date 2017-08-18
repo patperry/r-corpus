@@ -198,7 +198,7 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
 }
 
 
-print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
+print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = FALSE,
                               na.print = NULL, print.gap = NULL,
                               max = NULL, display = TRUE, ...)
 {

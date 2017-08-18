@@ -303,8 +303,8 @@ text_sub(c("One, two, three!", "4 5 6 7 8 9 10"), 2, 4,
 ```
 
 ```
-[1] ", two, "
-[2] "5 6 7 " 
+[1] , two, 
+[2] 5 6 7  
 ```
 
 Negative indices count from the end of the sequence, with `-1` denoting the
@@ -318,8 +318,8 @@ text_sub(c("One, two, three!", "4 5 6 7 8 9 10"), -2, -1,
 ```
 
 ```
-[1] "three!"
-[2] "9 10"  
+[1] three!
+[2] 9 10  
 ```
 
 Note that `text_length` and `text_sub` count both dropped and non-dropped
@@ -335,30 +335,30 @@ print(last, -1)
 ```
 
 ```
-ch01 "Dorothy soon closed her eyes and fell fast asleep."         
-ch02 "way, and was not surprised in the least."                   
-ch03 "the Scarecrow; \"it's a lighted match.\""                   
-ch04 "in another\ncorner and waited patiently until morning came."
-ch05 ", and could not live unless she was fed."                   
-ch06 "heart of course I needn't mind so much.\""                  
-ch07 "soon send her back to her own home again."                  
-ch08 "and waited for the fresh breeze to waken her."              
-ch09 "near by, which she\nate for her dinner."                    
-ch10 "the portal into the streets of the Emerald City."           
-ch11 "of a hen that had laid a\ngreen egg."                       
-ch12 "they were no longer prisoners in a strange\nland."          
-ch13 "cheers and many good wishes to\ncarry with them."           
-ch14 "it was you brought away that wonderful Cap!\""              
-ch15 "he did she was willing to forgive him everything."          
-ch16 "I don't know\nhow it can be done.\""                        
-ch17 "the Wonderful\nWizard, and would not be comforted."         
-ch18 ", for it will be a long journey.\""                         
-ch19 "for we certainly must\nclimb over the wall.\""              
-ch20 "things in the\nworld than being a Scarecrow.\""             
-ch21 "as Dorothy was safely on her\nway to Kansas."               
-ch22 "and the others\nwere to be admitted at once."               
-ch23 "air, and were\nlost forever in the desert."                 
-ch24 "I'm so glad to be at home again!\""                         
+ch01 Dorothy soon closed her eyes and fell fast asleep.         
+ch02 way, and was not surprised in the least.                   
+ch03 the Scarecrow; "it's a lighted match."                     
+ch04 in another\ncorner and waited patiently until morning came.
+ch05 , and could not live unless she was fed.                   
+ch06 heart of course I needn't mind so much."                   
+ch07 soon send her back to her own home again.                  
+ch08 and waited for the fresh breeze to waken her.              
+ch09 near by, which she\nate for her dinner.                    
+ch10 the portal into the streets of the Emerald City.           
+ch11 of a hen that had laid a\ngreen egg.                       
+ch12 they were no longer prisoners in a strange\nland.          
+ch13 cheers and many good wishes to\ncarry with them.           
+ch14 it was you brought away that wonderful Cap!"               
+ch15 he did she was willing to forgive him everything.          
+ch16 I don't know\nhow it can be done."                         
+ch17 the Wonderful\nWizard, and would not be comforted.         
+ch18 , for it will be a long journey."                          
+ch19 for we certainly must\nclimb over the wall."               
+ch20 things in the\nworld than being a Scarecrow."              
+ch21 as Dorothy was safely on her\nway to Kansas.               
+ch22 and the others\nwere to be admitted at once.               
+ch23 air, and were\nlost forever in the desert.                 
+ch24 I'm so glad to be at home again!"                          
 ```
 
 Note that if we do not specify the ending position, it defaults to `-1`.
@@ -768,14 +768,14 @@ text_subset(data, "the great oz")
 ```
 
 ```
-ch03 "When Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cut …"
-ch04 "After a few hours the road began to be rough, and the walking grew so\ndifficult that the Sc…"
-ch05 "When Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasing…"
-ch06 "All this time Dorothy and her companions had been walking through the\nthick woods.  The roa…"
-ch10 "It was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a lon…"
-ch11 "Even with eyes protected by the green spectacles, Dorothy and her\nfriends were at first daz…"
-ch12 "The soldier with the green whiskers led them through the streets of the\nEmerald City until …"
-ch15 "The four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After ri…"
+ch03 When Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cut he…
+ch04 After a few hours the road began to be rough, and the walking grew so\ndifficult that the Scar…
+ch05 When Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasing b…
+ch06 All this time Dorothy and her companions had been walking through the\nthick woods.  The road …
+ch10 It was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a long …
+ch11 Even with eyes protected by the green spectacles, Dorothy and her\nfriends were at first dazzl…
+ch12 The soldier with the green whiskers led them through the streets of the\nEmerald City until th…
+ch15 The four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After ring…
 ```
 
 
