@@ -112,8 +112,9 @@ ch15 The Discovery of Oz, the Terrible The four travelers walked up to the great
 ch16 The Magic Art of the Great Humbug Next morning the Scarecrow said to his friends:\n\n"Congratu…
 ch17 How the Balloon Was Launched      For three days Dorothy heard nothing from Oz.  These were sa…
 ch18 Away to the South                 Dorothy wept bitterly at the passing of her hope to get home…
-⋮
-(24 rows total)
+ch19 Attacked by the Fighting Trees    The next morning Dorothy kissed the pretty green girl good-b…
+ch20 The Dainty China Country          While the Woodman was making a ladder from wood which he fou…
+⋮    (24 rows total)
 ```
 
 ```r
@@ -127,8 +128,7 @@ ch02 The Council with the Munchkins  She was awakened by a shock, so sudden and 
 ch03 How Dorothy Saved the Scarecrow When Dorothy was left alone she began to feel hungry.  So she …
 ch04 The Road Through the Forest     After a few hours the road began to be rough, and the walking …
 ch05 The Rescue of the Tin Woodman   When Dorothy awoke the sun was shining through the trees and T…
-⋮
-(24 rows total)
+⋮    (24 rows total)
 ```
 
 
@@ -390,8 +390,9 @@ term_stats(data)
 16 a         803      23
 17 was       501      23
 18 he        453      23
-⋮
-(2878 rows total)
+19 it        420      23
+20 her       410      23
+⋮  (2878 rows total)
 ```
 
 This returns a data frame with each row giving the count and support for each
@@ -430,8 +431,9 @@ term_stats(data, subset = !term %in% stopwords("english"))
 16 go           72      21
 17 looked       61      21
 18 time         43      21
-⋮
-(2734 rows total)
+19 great       138      20
+20 head         90      20
+⋮  (2734 rows total)
 ```
 
 The character names "dorothy", "toto", and "scarecrow" show up at the top of
@@ -468,8 +470,9 @@ term_stats(data, ngrams = 5)
 16 and the tin woodman and             4       4
 17 in the midst of a                   4       4
 18 to give me a heart                  4       4
-⋮
-(20230 rows total)
+19 to send me back to                  4       4
+20 what shall we do now                4       4
+⋮  (20230 rows total)
 ```
 
 The `types` argument allows us to request the component types in the result:
@@ -499,8 +502,9 @@ term_stats(data, ngrams = 3, types = TRUE)
 16 scarecrow and the   scarecrow and       the          17      10
 17 get back to         get       back      to           15      10
 18 asked the scarecrow asked     the       scarecrow    10      10
-⋮
-(23596 rows total)
+19 witch of the        witch     of        the          30       9
+20 to the emerald      to        the       emerald      21       9
+⋮  (23596 rows total)
 ```
 
 Here are the most common 2-, 3-grams starting with "dorothy", where the second
@@ -512,27 +516,28 @@ term_stats(data, ngrams = 2:3, types = TRUE,
 ```
 
 ```
-   term              type1   type2   type3 count support
-1  dorothy went      dorothy went    <NA>      6       6
-2  dorothy looked    dorothy looked  <NA>      6       5
-3  dorothy said      dorothy said    <NA>      5       5
-4  dorothy saw       dorothy saw     <NA>      5       5
-5  dorothy walked    dorothy walked  <NA>      4       4
-6  dorothy went to   dorothy went    to        4       4
-7  dorothy asked     dorothy asked   <NA>      3       3
-8  dorothy found     dorothy found   <NA>      3       3
-9  dorothy looked at dorothy looked  at        3       3
-10 dorothy picked    dorothy picked  <NA>      3       3
-11 dorothy sat       dorothy sat     <NA>      3       3
-12 dorothy thought   dorothy thought <NA>      3       3
-13 dorothy put       dorothy put     <NA>      3       2
-14 dorothy stood     dorothy stood   <NA>      3       2
-15 dorothy ate       dorothy ate     <NA>      2       2
-16 dorothy awoke     dorothy awoke   <NA>      2       2
-17 dorothy awoke the dorothy awoke   the       2       2
-18 dorothy carried   dorothy carried <NA>      2       2
-⋮
-(202 rows total)
+   term              type1   type2     type3 count support
+1  dorothy went      dorothy went      <NA>      6       6
+2  dorothy looked    dorothy looked    <NA>      6       5
+3  dorothy said      dorothy said      <NA>      5       5
+4  dorothy saw       dorothy saw       <NA>      5       5
+5  dorothy walked    dorothy walked    <NA>      4       4
+6  dorothy went to   dorothy went      to        4       4
+7  dorothy asked     dorothy asked     <NA>      3       3
+8  dorothy found     dorothy found     <NA>      3       3
+9  dorothy looked at dorothy looked    at        3       3
+10 dorothy picked    dorothy picked    <NA>      3       3
+11 dorothy sat       dorothy sat       <NA>      3       3
+12 dorothy thought   dorothy thought   <NA>      3       3
+13 dorothy put       dorothy put       <NA>      3       2
+14 dorothy stood     dorothy stood     <NA>      3       2
+15 dorothy ate       dorothy ate       <NA>      2       2
+16 dorothy awoke     dorothy awoke     <NA>      2       2
+17 dorothy awoke the dorothy awoke     the       2       2
+18 dorothy carried   dorothy carried   <NA>      2       2
+19 dorothy earnestly dorothy earnestly <NA>      2       2
+20 dorothy entered   dorothy entered   <NA>      2       2
+⋮  (202 rows total)
 ```
 
 
@@ -605,8 +610,9 @@ text_locate(data, c("wicked witch", "toto", "oz"))
 16  ch02 …in this land of the East\n where the  Wicked Witch   ruled."\n\n"Are you a Munchkin?" ask…
 17  ch02 …ove me.  I am not as powerful as the  Wicked Witch   was who\nruled here, or I should hav…
 18  ch02 …only four witches in all the Land of       Oz       , and two of them,\nthose who live in…
-⋮
-(303 rows total)
+19  ch02 …killed one of them, there is but one  Wicked Witch  \nin all the Land of Oz--the one who …
+20  ch02 …one Wicked Witch\nin all the Land of       Oz       --the one who lives in the West."\n\n…
+⋮   (303 rows total)
 ```
 
 We can also count term occurrences, test for whether a term appears in a text,
@@ -640,22 +646,22 @@ text_subset(data, "the great oz")
 ```
 
 ```
-ch03                                                                                           
-"When Dorothy was left alone she began to feel hungry.  So she went to\nthe cupboard and cut …"
-ch04                                                                                           
-"After a few hours the road began to be rough, and the walking grew so\ndifficult that the Sc…"
-ch05                                                                                           
-"When Dorothy awoke the sun was shining through the trees and Toto had\nlong been out chasing…"
-ch06                                                                                           
-"All this time Dorothy and her companions had been walking through the\nthick woods.  The roa…"
-ch10                                                                                           
-"It was some time before the Cowardly Lion awakened, for he had lain\namong the poppies a lon…"
-ch11                                                                                           
-"Even with eyes protected by the green spectacles, Dorothy and her\nfriends were at first daz…"
-ch12                                                                                           
-"The soldier with the green whiskers led them through the streets of the\nEmerald City until …"
-ch15                                                                                           
-"The four travelers walked up to the great gate of Emerald City and rang\nthe bell.  After ri…"
+ch03 "When Dorothy was left alone she began to feel hungry.  So she went to
+the cupboard and cut …"
+ch04 "After a few hours the road began to be rough, and the walking grew so
+difficult that the Sc…"
+ch05 "When Dorothy awoke the sun was shining through the trees and Toto had
+long been out chasing…"
+ch06 "All this time Dorothy and her companions had been walking through the
+thick woods.  The roa…"
+ch10 "It was some time before the Cowardly Lion awakened, for he had lain
+among the poppies a lon…"
+ch11 "Even with eyes protected by the green spectacles, Dorothy and her
+friends were at first daz…"
+ch12 "The soldier with the green whiskers led them through the streets of the
+Emerald City until …"
+ch15 "The four travelers walked up to the great gate of Emerald City and rang
+the bell.  After ri…"
 ```
 
 
@@ -787,8 +793,9 @@ term_stats(data, subset = term %in% affect$term)
 16 terrible      27       9
 17 sorry         14       9
 18 frightened    13       9
-⋮
-(168 rows total)
+19 blue          21       8
+20 dark          16       8
+⋮  (168 rows total)
 ```
 
 A few terms jump out as unusual: "yellow" is probably for the yellow brick
@@ -821,8 +828,9 @@ text_locate(data, "yellow")
 16 ch08 … must hurry and get back to the road of   yellow   brick before dark,"\nhe said; and the S…
 17 ch09       "We cannot be far from the road of   yellow   brick, now," remarked the\nScarecrow, a…
 18 ch09 … toward them.  It was, indeed, a\ngreat   yellow   Wildcat, and the Woodman thought it mus…
-⋮
-(33 rows total)
+19 ch10 …st journey on until we find the road of   yellow   brick again," said\nDorothy, "and then …
+20 ch10 …t long before they reached the road\nof   yellow   brick and turned again toward the Emera…
+⋮  (33 rows total)
 ```
 
 ```r
@@ -849,8 +857,9 @@ text_locate(data, "wicked")
 16 ch05 … used to it.  But my action angered the   Wicked   Witch of the East,\nfor she had promise…
 17 ch05 …I had them replaced with tin ones.\nThe   Wicked   Witch then made the axe slip and cut of…
 18 ch05 … of tin.\n\n"I thought I had beaten the   Wicked   Witch then, and I worked harder than\ne…
-⋮
-(72 rows total)
+19 ch08 …hall be carried into the country of the   Wicked   Witch of the West,\nand she will enchan…
+20 ch11 … silver shoes?"\n\n"I got them from the   Wicked   Witch of the East, when my house fell o…
+⋮  (72 rows total)
 ```
 
 We can also inspect the first token after each appearance of "wicked":
@@ -922,8 +931,9 @@ text_locate(data, "heart")
 16 ch06 …ins to beat fast."\n\n"Perhaps you have   heart    disease," said the Tin Woodman.\n\n"It …
 17 ch06 …t to be glad, for it\nproves you have a   heart   .  For my part, I have no heart; so I ca…
 18 ch06 …u have a heart.  For my part, I have no   heart   ; so I cannot\nhave heart disease."\n\n"…
-⋮
-(67 rows total)
+19 ch06 …art, I have no heart; so I cannot\nhave   heart    disease."\n\n"Perhaps," said the Lion t…
+20 ch06 …aid the Lion thoughtfully, "if I had no   heart    I should not\nbe a coward."\n\n"Have yo…
+⋮  (67 rows total)
 ```
 
 A central part of the novel's plot is the Tin Woodman's quest for a heart; it

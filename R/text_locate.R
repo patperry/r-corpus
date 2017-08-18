@@ -176,7 +176,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
 }
 
 
-print.corpus_text_locate <- function(x, rows = 18L, print.gap = NULL,
+print.corpus_text_locate <- function(x, rows = 20L, print.gap = NULL,
                                      display = TRUE, ...)
 {
     fmt <- format.corpus_text_locate(x, print.gap = print.gap,

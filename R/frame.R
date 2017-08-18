@@ -91,10 +91,10 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                 na.encode = na.encode, quote = quote,
                                 na.print = na.print,
                                 print.gap = print.gap, ...)
-            char <- FALSE
+            char <- is_text(elt)
         }
 
-        if (char || is_text(elt)) {
+        if (char) {
             # use same justification for column and name
             names[[i]] <- utf8_format(names[[i]],
                                       chars = .Machine$integer.max,
@@ -109,9 +109,10 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                 cn <- "NA"
             }
 
-            chars_left <- (chars_left - gap
-                           - max(utf8_width(cols[[i]], quote = quote),
-                                 utf8_width(cn)))
+            cw <- utf8_width(cols[[i]], quote = quote)
+            cw[is.na(cw)] <- if (char && !quote) 4 else 2
+
+            chars_left <- (chars_left - gap - max(cw, utf8_width(cn)))
             if (chars_left < 0) {
                 chars_left <- chars_max
             }
@@ -138,7 +139,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
 }
 
 
-print.corpus_frame <- function(x, rows = 18L, chars = NULL, digits = NULL,
+print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
                                quote = FALSE, na.print = NULL,
                                print.gap = NULL, right = FALSE,
                                row.names = TRUE, max = NULL,
@@ -217,7 +218,10 @@ print.corpus_frame <- function(x, rows = 18L, chars = NULL, digits = NULL,
         cat("(0 rows)\n")
     } else if (trunc) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
-        cat(sprintf("%s\n(%d rows total)\n", ellipsis, n))
+        gap <- if (is.null(print.gap)) 1 else print.gap
+        nspace <- max(0, utf8_width(rownames(m))) + gap
+        space <- format(ellipsis, width = nspace)
+        cat(sprintf("%s(%d rows total)\n", space, n))
     }
 
     invisible(x)

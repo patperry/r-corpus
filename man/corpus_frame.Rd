@@ -7,7 +7,7 @@
     Printing and formatting corpus data frames.
 }
 \usage{
-    \method{print}{corpus_frame}(x, rows = 18L, chars = NULL, digits = NULL,
+    \method{print}{corpus_frame}(x, rows = 20L, chars = NULL, digits = NULL,
                        quote = FALSE, na.print = NULL,
                        print.gap = NULL, right = FALSE,
                        row.names = TRUE, max = NULL,

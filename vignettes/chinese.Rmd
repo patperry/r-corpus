@@ -143,8 +143,9 @@ and examine term frequencies
 16 增长  1800      49
 17 化    1740      49
 18 继续  1670      49
-⋮
-(11612 rows total)
+19 技术  1586      49
+20 工业  1580      49
+⋮  (11612 rows total)
 ```
 These operations all use the `text_filter(data)` value we set above to determine
 the token and sentence boundaries.
@@ -203,8 +204,9 @@ term_stats(subset) # count the word occurrences
 16 进行   239     232
 17 加快   230     225
 18 化     261     224
-⋮
-(3888 rows total)
+19 加强   248     224
+20 主义   275     221
+⋮  (3888 rows total)
 ```
 The first term is the search query. It appears 2931 times in the corpus,
 in 2457 different sentences. The second term in the list appears in
@@ -241,8 +243,9 @@ text_locate(data, "\u6027")
 16   2    …进一步地提高农民的增产积极    性    ，促进农业生产的发展。这对… 
 17   2    …高农民特别是中农的生产积极    性    。\n\n　　关于粮食的计划收… 
 18   2    …害关系，从而更加积极地创造    性    地参加国家建设。\n\n　　人… 
-⋮
-(1341 rows total)
+19   2    …，我们必须大大地削减非生产    性    建设的支出。几年来在非生产… 
+20   2    …年计划中，工业部门的非生产    性    投资只占全部投资的百分之十… 
+⋮    (1341 rows total)
 ```
 *Note: the alignment looks bad here because the Chinese characters have
 widths between 1 and 2 spaces each. The spacing in the table is set assuming

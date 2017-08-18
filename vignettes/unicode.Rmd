@@ -394,8 +394,9 @@ term_stats(lines2, f)
 16 little     309     300
 17 nothing    301     291
 18 well       299     286
-⋮
-(8457 rows total)
+19 thomas     288     285
+20 good       280     275
+⋮  (8457 rows total)
 ```
 
 The *readtext* package

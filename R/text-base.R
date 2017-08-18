@@ -224,9 +224,16 @@ print.corpus_text <- function(x, chars = NULL, quote = TRUE,
         return(invisible(x))
     }
 
+    if (is.null(print.gap)) {
+        print.gap <- 1L
+    }
+
     if (is.null(max)) {
         max <- getOption("max.print")
     }
+
+    width <- getOption("width")
+    stdout <- as.integer(stdout()) == 1
 
     if (length(x) <= max) {
         xsub <- x
@@ -239,9 +246,18 @@ print.corpus_text <- function(x, chars = NULL, quote = TRUE,
     fmt <- format.corpus_text(xsub, chars = chars, quote = quote,
                               na.print = na.print, print.gap = print.gap)
 
-    utf8_print(fmt, chars = .Machine$integer.max, quote = FALSE,
-               print.gap = print.gap, max = .Machine$integer.max,
-               display = display)
+    mat <- cbind(fmt)
+    if (is.null(rownames(mat))) {
+        rownames(mat) <- format(paste0("[", seq_len(nrow(mat)), "]"),
+                                justify = "right")
+    }
+    colnames(mat) <- NULL
+
+    .Call(C_print_table, mat, print.gap, FALSE, max, width, stdout)
+
+    #utf8_print(fmt, chars = .Machine$integer.max, quote = FALSE,
+    #           print.gap = print.gap, max = .Machine$integer.max,
+    #           display = display)
 
     if (nextra > 0) {
         ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
