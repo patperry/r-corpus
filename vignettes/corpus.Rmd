@@ -566,7 +566,7 @@ text_locate(data, "dorothy looked")
 
 Note that we match against the type of the token, not the raw token itself, so
 we are able to detect capitalized "Dorothy". This is especially useful when we
-wan't to search for a stemmed token. Here are all instances of tokens that
+want to search for a stemmed token. Here are all instances of tokens that
 stem to "scream":
 
 
