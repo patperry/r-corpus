@@ -437,7 +437,9 @@ text_split(c("the wonderful wizard of oz", paste(LETTERS, collapse = " ")),
 ### Application: Witch tracking
 
 We can combine `text_split` with `text_count` to measure the occurrences rates
-for the term "witch" over the course of the novel:
+for the term "witch" over the course of the novel.  Here, the chunks have
+varying sizes, so we look at the rates rather than the raw counts.
+
 
 ```{r witch-occurences, fig.width = 12, fig.cap = "'witch' Occurences"}
 chunks <- text_split(data, "tokens", 500)
@@ -454,8 +456,11 @@ plot(i, rate, type = "l", xlab = "Segment",
 points(i, rate, pch = 16, cex = 0.5, col = 2)
 ```
 
-Here, the chunks have varying sizes, so it's important to look at the rates rather
-than the raw counts.
+We can see Dorothy's house landing on the Wicked Witch of the East in the and
+the subsequent fallout in the beginning of the novel. Around segment 40, we
+see the events surrounding Dorothy's battle with the Wicked Witch of the West.
+At the end of the novel, we see the Good Witch of the South appearing to help
+Dorothy get home.
 
 
 Term frequency matrix
