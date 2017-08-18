@@ -1,9 +1,10 @@
 Package: corpus
-Version: 0.8.0.9000
-Date: 2017-07-18
+Version: 0.9.0
+Date: 2017-08-18
 Title: Text Corpus Analysis
 Author: Patrick O. Perry [aut, cre],
   Martin Porter and Richard Boulton [ctb, cph] (Snowball),
+  Carlo Strapparava and Alessandro Valitutti [ctb, cph] (WordNet-Affect),
   Unicode, Inc. [ctb, cph] (Unicode Character Database)
 Maintainer: Patrick O. Perry <pperry@stern.nyu.edu>
 Depends: R (>= 2.10)
