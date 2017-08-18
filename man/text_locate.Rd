@@ -26,7 +26,7 @@
 
     \item{filter}{a text filter defining the token boundaries.}
 
-    \item{random{logical value indicating whether to return the matches in
+    \item{random}{logical value indicating whether to return the matches in
             random order.}
 }
 \details{
