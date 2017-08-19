@@ -569,13 +569,12 @@ term_stats(data, subset = term %in% affect$term)
 ```
 
 A few terms jump out as unusual: "yellow" is probably for the yellow brick
-road, and "wicked" is probably for the wicked witch. When these terms appear,
-they probably don't describe an emotional state. We can verify this using the
-`text_locate` function, which shows these terms in context.
+road; "down" and "near" probably do not evoke emotions.  We can inspect the
+usages of the most common terms using the `text_locate` function, which shows
+these terms in context.
 
 ```{r}
-text_locate(data, "yellow", random = TRUE)
-text_locate(data, "wicked", random = TRUE)
+text_locate(data, "down", random = TRUE)
 ```
 
 Here, we use the `random = TRUE` option to return the matches in random order.
@@ -584,31 +583,24 @@ ensure that we don't make conclusions about these words using a biased sample.
 With the default option (`random = FALSE`), we would only see the matches at
 the beginning of the novel.
 
-
-We can also inspect the first token after each appearance of "wicked":
-
-```{r}
-term_stats(text_sub(text_locate(data, "wicked")$after, 1, 1))
-```
-
-of the 72 appearances of "wicked", 58 are followed by "witch" or "witches".
-Likewise, "yellow" is often referring to the road, or referring to the color
-of an object and not an emotion:
+It looks like "down" is mostly used as a preposition, not an emotion. We will
+exclude it form the lexicon.
 
 ```{r}
-term_stats(text_sub(text_locate(data, "yellow")$after, 1, 1))
+text_locate(data, "good", random = TRUE)
 ```
 
-The word "heart" is also suspiciously frequent. Here are some occurrences of
-that word:
+"Good" seems to be an appropriate emotion work, evoking positive affection or
+love. We will keep it in the lexicon.
 
 ```{r}
 text_locate(data, "heart", random = TRUE)
 ```
 
-A central part of the novel's plot is the Tin Woodman's quest for a heart; it
-is not surprising that the word "heart" shows up so frequently. Indeed, most
-appearances of the word "heart" are within 25 tokens of "woodman":
+"Heart" is mostly used as an object (noun), not an emotion meaning compassion.
+The Tin Woodman's search for a heart is a central plot of the novel, so it is
+not surprising that the term shows up frequently. We can look for
+co-occurrences of "heart" with "woodman":
 
 ```{r}
 loc <- text_locate(data, "heart")
@@ -616,16 +608,38 @@ before <- text_detect(text_sub(loc$before, -25, -1), "woodman")
 after <- text_detect(text_sub(loc$after, 1, 25), "woodman")
 summary(before | after)
 ```
-"Woodman" appears within 25 tokens of "heart" in in 45 of the 67
-contexts where the latter word appears.
 
-All of this analysis shows that we should probably exclude these terms if we
-are interested in words that connote emotion in _The Wizard of Oz_. We will
-also drop some other terms from the lexicon based on similar considerations
-(not shown here):
+"Woodman" appears within 25 tokens of "heart" in in 45 of the 67 contexts
+where the latter word appears.
+
+The decision of whether to include or exclude "heart" is a difficult judgement
+call. Most of the time it appears, it describes an object, not an emotion.
+Still, that object does have an emotional association.  I'm deciding to
+include "heart", but this is not a clear-cut decision.
+
+We can also inspect the first token after each appearance of "yellow":
 
 ```{r}
-affect <- subset(affect, !term %in% c("drop", "heart", "wicked", "yellow", "blue"))
+term_stats(text_sub(text_locate(data, "yellow")$after, 1, 1))
+```
+
+Over half the time, "yellow" prefaces "brick" or "bricks", and otherwise it
+describes objects. There it does not describe or evoke emotion.
+
+```{r}
+term_stats(text_sub(text_locate(data, "yellow")$after, 1, 1))
+```
+
+Similar analysis not shown here indicates that "great" is mostly used to
+describe size, not positive enthusiasm; "like" is often used to mean "similar
+to", not "affection for"; "blue" is mostly used as a color, not an emotion.
+
+All of this analysis shows that we should probably exclude some of the common
+terms from the lexicon.
+
+```{r}
+affect <- subset(affect, !term %in% c("down", "great", "like",
+                                      "yellow", "near", "low", "blue"))
 ```
 
 ### Term emotion matrix
