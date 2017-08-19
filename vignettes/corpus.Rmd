@@ -1487,7 +1487,8 @@ times that term *i* appeared in the affect lexicon with emotion *j*.
 
 We re-classify any term appearing in two or more categories as ambigous:
 
-``{r}
+
+```r
 ncat <- rowSums(term_scores > 0)
 term_scores[ncat > 1, c("Positive", "Negative", "Ambiguous")] <- c(0, 0, 1)
 ```
