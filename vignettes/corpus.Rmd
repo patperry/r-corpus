@@ -1519,7 +1519,7 @@ term_scores[term_scores > 1] <- 1
 
 ### Segmenting chapters into smaller chunks
 
-To compute emotion occurence rates, we start by splitting each chapter into
+To compute emotion occurrence rates, we start by splitting each chapter into
 equal-sized segments of at most 500 tokens. The specific size of 500 tokens is
 somewhat arbitrary, but not entirely so. We want the segments to be large enough
 so that our rate estimates are reliable, but not so large that the emotion
@@ -1674,21 +1674,22 @@ for (t in c("ambig", "neg", "pos", "total")) {
 ### Discussion
 
 This is a crude measurement, but it appears to give a reasonable approximation
-of the emotional dynamics of the novel. The "Positive", "Negative", and
-"Ambiguous" categories are hard to interpet, but "Total" emotion seems to make
-sense.  The novel starts slowly, then quickly gets exciting when the tornado
-hits Kansas. There is a lull while Dorothy is in Munchkinland, but gets
-exciting when Dorothy meets the Cowardly Lion in the forest. The excitement
-level ebbs and flows throughout the rest of the novel.
+of the emotional dynamics of the novel.  There are some interesting dynamics
+to the "Positive" and "Negative" emotions, but I'm going to focus on the
+"Total" emotion.
 
 
-The least exciting segment appears in "The Queen of the Field Mice", a chapter
-that got cut from the _Wizard of Oz_ movie.There are two segments with
-particularly high emotion: segment 45 from "The Wonderful City of Oz", where
-the Tin Woodman and the Cowardly Lion ask the Wizard for help, and he compels
-them to defeat the Wicked Witch of the West; and segment 64, from "The
-Discovery of Oz, the Terrible", where Dorothy and her companions discover that
-the Wizard of Oz is not a wizard at all, just a common man.
+There are five segments where the rate of emotion word usage is two or more
+standard deviations above the mean for the rest of the novel. In all five
+cases, these are statistically significant differences (more than two standard
+errors above the mean). The first two interesting segments are when Dorothy
+meets the Tin Woodman and the Cowardly Lion. The next is when the Dorothy and
+her companions meet the Great Oz for the first time and he tasks them with
+defeating the Wicked Witch of the West; this is the point in the novel with
+the highest emotion word usage. The fourth interesting point is when Oz is
+revealed to be a common man, not a great wizard. The last emotional segment is
+when Dorothy and her companions leave the Emerald city feeling triumphant and
+hopeful.
 
 
 Summary
