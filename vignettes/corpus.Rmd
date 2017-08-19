@@ -1467,8 +1467,7 @@ terms from the lexicon.
 
 
 ```r
-affect <- subset(affect, !term %in% c("down", "great", "like",
-                                      "yellow", "near", "low", "blue"))
+affect <- subset(affect, !term %in% c("down", "great", "like", "yellow", "near", "low", "blue"))
 ```
 
 ### Term emotion matrix

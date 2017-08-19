@@ -638,8 +638,7 @@ All of this analysis shows that we should probably exclude some of the common
 terms from the lexicon.
 
 ```{r}
-affect <- subset(affect, !term %in% c("down", "great", "like",
-                                      "yellow", "near", "low", "blue"))
+affect <- subset(affect, !term %in% c("down", "great", "like", "yellow", "near", "low", "blue"))
 ```
 
 ### Term emotion matrix
