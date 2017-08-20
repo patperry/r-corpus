@@ -1,11 +1,11 @@
 <!--
-%\VignetteIndexEntry{Introduction to corpus}
+%\VignetteIndexEntry{Getting started with corpus}
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteEncoding{UTF-8}
 -->
 
-Introduction to corpus
-======================
+Getting started with *corpus*
+=============================
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(comment = "", fig.path = "corpus-", fig.retina = TRUE)

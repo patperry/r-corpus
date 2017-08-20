@@ -1,11 +1,11 @@
 <!--
-%\VignetteIndexEntry{Introduction to corpus}
+%\VignetteIndexEntry{Getting started with corpus}
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteEncoding{UTF-8}
 -->
 
-Introduction to corpus
-======================
+Getting started with *corpus*
+=============================
 
 
 
