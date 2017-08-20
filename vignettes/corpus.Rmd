@@ -1638,7 +1638,7 @@ box()
 col <- c(total = "#000000", pos = "#FC8D62", neg = "#8DA0CB", ambig = "#66C2A5")
 
 # add a legend on the right hand side
-legend(usr[2] + 0.02 * diff(usr[1:2]), usr[3] + 0.8 * diff(usr[3:4]),
+legend(usr[2] + 0.015 * diff(usr[1:2]), usr[3] + 0.8 * diff(usr[3:4]),
        legend = c("Total", "Positive", "Negative", "Ambiguous"),
        title = expression(bold("Emotion")),
        fill = col[c("total", "pos", "neg", "ambig")],
