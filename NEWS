@@ -1,3 +1,8 @@
+Changes in version 0.9.0.9000
+
+ * Fix buffer overrun for case folding Greek letters.
+
+
 Changes in version 0.9.0
 
  * Add new vignette, "Introduction to corpus" vignette.
