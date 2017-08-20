@@ -25,10 +25,8 @@ test_that("'utf8_width' gives NA for non-ASCII in C locale", {
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    expect_equal(utf8_width(c("hello", "\u200b", "\u22ee", "\u6027",
-                              intToUtf8(0x1f642)),
-                            encode = FALSE),
-                 c(5, NA, NA, NA, NA))
+    x <- c("hello", "\u200b", "\u22ee", "\u6027", intToUtf8(0x1f642))
+    expect_equal(utf8_width(x, encode = FALSE), c(5, NA, NA, NA, NA))
 })
 
 
