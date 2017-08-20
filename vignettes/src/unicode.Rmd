@@ -33,7 +33,7 @@ encoding. If you don't, R will try to guess the encoding, and if it guesses
 incorrectly, it will wrongly interpret the sequence of ones and zeros.
 
 
-We will demonstrate the difficulties with encodings with the text of
+We will demonstrate the difficulties of encodings with the text of
 Jane Austen's novel, _Mansfield Park_ provided by
 [Project Gutenberg][gutenberg]. We will download the text, then
 read in the lines of the novel using the *[readr][readr]* package.
@@ -82,7 +82,7 @@ lines[!utf8_valid(lines)]
 ```
 So, there aren't any other invalid lines.
 
-The offending byte in line 15252 is displayed as `\xa3` an escape code
+The offending byte in line 15252 is displayed as `\xa3`, an escape code
 for hexadecimal value 0xa3, decimal value 163. To understand why this
 is invalid, we need to learn more about UTF-8 encoding.
 
@@ -109,14 +109,17 @@ utf8_print(ascii, quote = FALSE)
 The first 32 codes (the first two rows of the table) are special control
 codes, the most common of which, `0x0a` denotes a new line (`\n`). The special
 code `0x00` often denotes the end of the input, and R does not allow this
-value in character strings. When `utf8_print` the low level `utf8_encode`
-subroutine format control codes, they do so as `\uXXXX` for four hexadecimal
-digits `XXXX` or as `\UXXXXYYYY` for eight hexadecimal digits `XXXXYYYY`.
+value in character strings. When you call `utf8_print`, it uses the low
+level `utf8_encode` subroutine format control codes; they format
+as `\uXXXX` for four hexadecimal digits `XXXX` or as `\UXXXXYYYY`
+for eight hexadecimal digits `XXXXYYYY`.
 
-Compare the output with the base R print function:
+Compare `utf8_print` output with the output with the base R print function:
+
 ```{r}
 print(ascii, quote = FALSE)
 ```
+
 Base R format control codes below 128 using octal escapes. There are some
 other differences between the function which we will highlight below.
 
@@ -140,9 +143,11 @@ As with ASCII, the first 32 numbers are control codes. The others are
 characters common in Latin languages. Note that `0xa3`, the invalid byte
 from _Mansfield Park_, corresponds to a pound sign in the Latin-1 encoding.
 Given the context of the byte:
-```
+
+```{r}
 lines[15252]
 ```
+
 this is probably the right symbol. The text is probably encoded in Latin-1,
 not UTF-8 or ASCII as claimed in the file.
 
