@@ -108,6 +108,7 @@ static void context_destroy(void *obj)
 {
 	struct context *ctx = obj;
 
+	corpus_free(ctx->count);
 	corpus_free(ctx->support);
 
 	if (ctx->has_termset) {

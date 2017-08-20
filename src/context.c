@@ -55,7 +55,7 @@ SEXP alloc_context(size_t size, void (*destroy_func)(void *))
         R_RegisterCFinalizerEx(ans, free_context, TRUE);
 
 	TRY_ALLOC(obj = corpus_calloc(1, size == 0 ? 1 : size));
-	TRY_ALLOC(ctx = corpus_malloc(sizeof(*ctx)));
+	TRY_ALLOC(ctx = corpus_calloc(1, sizeof(*ctx)));
 
 	ctx->data = obj;
 	ctx->destroy_func = destroy_func;
