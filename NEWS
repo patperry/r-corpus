@@ -1,17 +1,17 @@
 Changes in version 0.9.1
 
+ * Fix buffer overrun for case folding some Greek letters.
+
  * Fix memory leak in read_ndjson.
 
  * Fix memory leak in JSON object deserialization.
-
- * Fix buffer overrun for case folding some Greek letters.
 
  * Fix memory leak in term_stats.
 
  * Rename 'wnaffect' to 'affect_wordnet'.
 
 
-Changes in version 0.9.0
+Changes in version 0.9.0 (2017-07-19)
 
  * Add new vignette, "Introduction to corpus" vignette.
 
