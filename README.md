@@ -218,6 +218,14 @@ This project is released with a [Contributor Code of Conduct][conduct],
 and if you choose to contribute, you must adhere to its terms.
 
 
+Acknownedgments
+---------------
+
+The API and feature set for *corpus* were heavily inspired by
+[*quanteda*][quanteda], developed by Ken Benoit and collaborators, and
+[*stringr*][stringr], developed by Hadley Wickham.
+
+
 License
 -------
 
@@ -242,7 +250,9 @@ License
 [issues]: https://github.com/patperry/r-corpus/issues "Issues"
 [ndjson]: http://ndjson.org/ "Newline-Delimited JSON"
 [nfkc]: http://unicode.org/reports/tr15/ "Unicode Normalization Forms"
+[quanteda]: http://quanteda.io/ "Quanteda"
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries "Unicode Text Segmentation, Sentence Boundaries"
+[stringr]: http://stringr.tidyverse.org/ "Stringr"
 [travis]: https://travis-ci.org/patperry/r-corpus "Continuous Integration (Linux)"
 [travis-badge]: https://api.travis-ci.org/patperry/r-corpus.svg?branch=master "Continuous Integration (Linux)"
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries "Unicode Text Segmentation, Word Boundaries"
