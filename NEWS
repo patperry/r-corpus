@@ -1,5 +1,9 @@
 Changes in version 0.9.0.9000
 
+ * Fix memory leak in read_ndjson.
+
+ * Fix memory leak in JSON object deserialization.
+
  * Fix buffer overrun for case folding Greek letters.
 
 

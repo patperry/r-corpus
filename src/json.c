@@ -48,6 +48,7 @@ static SEXP subfield_json(SEXP sdata, SEXP sname);
 static void free_json(SEXP sjson)
 {
         struct json *obj = R_ExternalPtrAddr(sjson);
+        R_SetExternalPtrAddr(sjson, NULL);
 	if (obj) {
 		corpus_schema_destroy(&obj->schema);
 		corpus_free(obj->rows);
@@ -168,6 +169,9 @@ static void json_load(SEXP sdata)
 		return;
 	}
 
+	// set up the finalizer
+	R_RegisterCFinalizerEx(shandle, free_json, TRUE);
+
 	sbuffer = getListElement(sdata, "buffer");
 	PROTECT(sparent = alloc_json(sbuffer, R_NilValue, R_NilValue));
 	sparent_handle = getListElement(sparent, "handle");
@@ -245,7 +249,6 @@ static void json_load(SEXP sdata)
 	if (srows != R_NilValue) {
 		PROTECT(sparent2 = subrows_json(sparent, srows));
 		free_json(sparent_handle);
-		R_SetExternalPtrAddr(sparent_handle, NULL);
 		UNPROTECT(2);
 		PROTECT(sparent = sparent2);
 		sparent_handle = getListElement(sparent, "handle");
@@ -259,7 +262,6 @@ static void json_load(SEXP sdata)
 			sfield = STRING_ELT(sfield_path, j);
 			PROTECT(sparent2 = subfield_json(sparent, sfield));
 			free_json(sparent_handle);
-			R_SetExternalPtrAddr(sparent_handle, NULL);
 			UNPROTECT(2);
 			PROTECT(sparent = sparent2);
 			sparent_handle = getListElement(sparent, "handle");
