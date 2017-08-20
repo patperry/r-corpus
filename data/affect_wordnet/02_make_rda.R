@@ -5,8 +5,8 @@ raw$pos <- factor(raw$pos, levels = c("NOUN", "ADJ", "VERB", "ADV"))
 raw$category <- factor(raw$category, levels = unique(raw$category))
 raw$emotion <- factor(raw$emotion, levels = unique(raw$emotion))
 
-wnaffect <- raw
-class(wnaffect) <- c("corpus_frame", "data.frame")
+affect_wordnet <- raw
+class(affect_wordnet) <- c("corpus_frame", "data.frame")
 
-save(wnaffect, file = "../wnaffect.rda")
-tools::resaveRdaFiles("../wnaffect.rda")
+save(affect_wordnet, file = "../affect_wordnet.rda")
+tools::resaveRdaFiles("../affect_wordnet.rda")

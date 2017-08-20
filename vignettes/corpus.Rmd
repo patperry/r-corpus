@@ -1109,7 +1109,7 @@ Emotion lexicon
 
 
 ```r
-wnaffect
+affect_wordnet
 ```
 
 ```
@@ -1143,7 +1143,7 @@ and a variety of sub-categories. Here is a summary:
 
 
 ```r
-summary(wnaffect)
+summary(affect_wordnet)
 ```
 
 ```
@@ -1161,7 +1161,7 @@ Here are the term counts broken down by category:
 
 
 ```r
-with(wnaffect, table(category, emotion))
+with(affect_wordnet, table(category, emotion))
 ```
 
 ```
@@ -1202,7 +1202,7 @@ Terms can appear in multiple categories, or with multiple parts of speech.
 
 ```r
 # some duplicate terms
-subset(wnaffect, term %in% c("caring", "chill", "hopeful"))
+subset(affect_wordnet, term %in% c("caring", "chill", "hopeful"))
 ```
 
 ```
@@ -1240,7 +1240,7 @@ point the WordNet-Affect lexicon, but we will remove "Neutral" emotion words.
 
 
 ```r
-affect <- subset(wnaffect, emotion != "Neutral")
+affect <- subset(affect_wordnet, emotion != "Neutral")
 affect$emotion <- droplevels(affect$emotion) # drop the unused "Neutral" level
 affect$category <- droplevels(affect$category) # drop unused categories
 ```

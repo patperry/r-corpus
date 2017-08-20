@@ -12,8 +12,8 @@
 ^bench$
 ^data/federalist$
 ^data/federalist/
-^data/wnaffect$
-^data/wnaffect/
+^data/affect_wordnet$
+^data/affect_wordnet/
 ^dist$
 ^src/corpus/[.]git$
 ^src/corpus/[.]travis[.]yml$

@@ -8,6 +8,8 @@ Changes in version 0.9.0.9000
 
  * Fix memory leak in term_stats.
 
+ * Rename 'wnaffect' to 'affect_wordnet'.
+
 
 Changes in version 0.9.0
 
