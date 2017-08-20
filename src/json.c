@@ -47,10 +47,11 @@ static SEXP subfield_json(SEXP sdata, SEXP sname);
 
 static void free_json(SEXP sjson)
 {
-        struct json *d = R_ExternalPtrAddr(sjson);
-	if (d) {
-		corpus_free(d->rows);
-		corpus_free(d);
+        struct json *obj = R_ExternalPtrAddr(sjson);
+	if (obj) {
+		corpus_schema_destroy(&obj->schema);
+		corpus_free(obj->rows);
+		corpus_free(obj);
 	}
 }
 
