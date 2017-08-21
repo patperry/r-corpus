@@ -1,6 +1,9 @@
 language: R
 cache: packages
 
+r_check_args:
+  - '--use-valgrind'
+
 r_github_packages:
   - patperry/covr
 
