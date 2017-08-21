@@ -624,11 +624,8 @@ term_stats(text_sub(text_locate(data, "yellow")$after, 1, 1))
 ```
 
 Over half the time, "yellow" prefaces "brick" or "bricks", and otherwise it
-describes objects. There it does not describe or evoke emotion.
-
-```{r}
-term_stats(text_sub(text_locate(data, "yellow")$after, 1, 1))
-```
+describes objects. It does not describe or evoke emotion, and we should
+exclude it from the lexicon.
 
 Similar analysis not shown here indicates that "great" is mostly used to
 describe size, not positive enthusiasm; "like" is often used to mean "similar
