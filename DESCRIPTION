@@ -2,11 +2,17 @@ Package: corpus
 Version: 0.9.1.9000
 Date: 2017-08-20
 Title: Text Corpus Analysis
-Author: Patrick O. Perry [aut, cre],
-  Martin Porter and Richard Boulton [ctb, cph] (Snowball),
-  Carlo Strapparava and Alessandro Valitutti [ctb, cph] (WordNet-Affect),
-  Unicode, Inc. [ctb, cph] (Unicode Character Database)
-Maintainer: Patrick O. Perry <pperry@stern.nyu.edu>
+Authors@R: c(
+  person(c("Patrick", "O."), "Perry", role = c("aut", "cre"),
+         email = "pperry@stern.nyu.edu"),
+  person("Martin", "Porter"),
+  person("Richard", "Boulton", role = c("ctb", "cph"),
+         comment = "Snowball"),
+  person("Carlo", "Strapparava"),
+  person("Alessandro", "Valitutti", role = c("ctb", "cph"),
+         comment = "WordNet-Affect"),
+  person("Unicode, Inc.", role = c("ctb", "cph"),
+         comment = "Unicode Character Database"))
 Depends: R (>= 2.10)
 Imports: Matrix
 Suggests:
