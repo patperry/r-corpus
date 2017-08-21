@@ -1,6 +1,8 @@
 Changes in version 0.9.1.9000
 
- * Fix bug in utf8_normalize when the input contains a backslash (\)
+ * Switch as_utf8() default argument to normalize = FALSE.
+
+ * Fix bug in utf8_normalize() when the input contains a backslash (\)
 
 
 Changes in version 0.9.1

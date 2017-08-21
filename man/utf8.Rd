@@ -12,7 +12,7 @@
     UTF-8 text validation, normalization, formatting, and printing.
 }
 \usage{
-    as_utf8(x, normalize = TRUE)
+    as_utf8(x, normalize = FALSE)
 
     utf8_valid(x)
 
