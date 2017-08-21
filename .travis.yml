@@ -1,12 +1,14 @@
 language: R
 cache: packages
 
-r_check_args: '--use-valgrind'
-
-addons:
-  apt:
-    packages:
-    - valgrind
+# valgrind (disabled; takes too long, and errors don't affect the build)
+#
+# r_check_args: '--use-valgrind'
+#
+# addons:
+#  apt:
+#    packages:
+#    - valgrind
 
 r_github_packages:
   - patperry/covr
