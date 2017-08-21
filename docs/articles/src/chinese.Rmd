@@ -1,0 +1,134 @@
+<!--
+%\VignetteIndexEntry{Chinese text handling}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+-->
+
+Chinese text handling
+=====================
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(comment = "", fig.path = "chinese-", fig.retina = TRUE)
+```
+
+This vignette shows how to work with Chinese language materials using the
+corpus package.  It's based on Haiyan Wang's [rOpenSci demo](https://github.com/ropensci/textworkshop17/tree/master/demos/chineseDemo)
+and assumes you have `httr`, `stringi`, and `wordcloud` installed.
+
+We'll start by loading the package and setting a seed to ensure reproducible
+results
+```{r}
+library("corpus")
+set.seed(100)
+```
+
+## Documents and stopwords
+
+First download a stop word list suitable for Chinese, the Baidu stop words
+```{r, message = FALSE, warning = FALSE}
+cstops <- "https://raw.githubusercontent.com/ropensci/textworkshop17/master/demos/chineseDemo/ChineseStopWords.txt"
+csw <- paste(readLines(cstops, encoding = "UTF-8"), collapse = "\n") # download
+csw <- gsub("\\s", "", csw)           # remove whitespace
+stop_words <- strsplit(csw, ",")[[1]] # extract the comma-separated words
+```
+Next, download some demonstration documents. These are in plain text format,
+encoded in UTF-8.
+```{r, message = FALSE, warning = FALSE}
+gov_reports <- "https://api.github.com/repos/ropensci/textworkshop17/contents/demos/chineseDemo/govReports"
+raw <- httr::GET(gov_reports)
+paths <- sapply(httr::content(raw), function(x) x$path)
+names <- tools::file_path_sans_ext(basename(paths))
+urls <- sapply(httr::content(raw), function(x) x$download_url)
+text <- sapply(urls, function(url) paste(readLines(url, warn = FALSE,
+                                                   encoding = "UTF-8"),
+                                         collapse = "\n"))
+names(text) <- names
+```
+
+## Tokenization
+
+Corpus does not know how to tokenize languages with no spaces between words.
+Fortunately, the ICU library (used internally by the `stringi` package) does,
+by using a dictionary of words along with information about their relative
+usage rates.
+
+We use `stringi`'s tokenizer, collect a dictionary of the word types,
+and then manually insert zero-width spaces between tokens.
+```{r}
+toks <- stringi::stri_split_boundaries(text, type = "word")
+dict <- unique(c(toks, recursive = TRUE)) # unique words
+text2 <- sapply(toks, paste, collapse = "\u200b")
+```
+and put the input text in a data frame for convenient analysis
+```{r}
+data <- data.frame(name = names, text = as_text(text2),
+                   stringsAsFactors = FALSE)
+```
+
+We then specify a token filter to determine what is counted by other corpus
+functions.  Here we set `combine = dict` so that multi-word
+tokens get treated as single entities
+```{r}
+f <- text_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
+(text_filter(data) <- f) # set the text column's filter
+```
+
+## Document statistics
+
+We can now compute type, token, and sentence counts
+```{r}
+head(data.frame(text = data$name,
+                types = text_ntype(data),
+                tokens = text_ntoken(data),
+                sentences = text_nsentence(data)))
+```
+and examine term frequencies
+```{r}
+(stats <- term_stats(data))
+```
+These operations all use the `text_filter(data)` value we set above to determine
+the token and sentence boundaries.
+
+
+## Visualization
+
+We can visualize word frequencies with a wordcloud.  You may want to use a font
+suitable for Chinese ('STSong' is a good choice for Mac users). We switch to
+this font, create the wordcloud, then switch back.
+```{r wordcloud, message = FALSE, warning = FALSE, fig.cap = "Word cloud"}
+font_family <- par("family") # the previous font family
+par(family = "STSong") # change to a nice Chinese font
+with(stats, {
+    wordcloud::wordcloud(term, count, min.freq = 500,
+                         random.order = FALSE, rot.per = 0.25,
+                         colors = RColorBrewer::brewer.pal(8, "Dark2"))
+})
+par(family = font_family) # switch the font back
+```
+
+## Co-occurrences 
+
+Here are the terms that show up in sentences containing a particular
+term
+```{r}
+sents <- text_split(data) # split text into sentences
+subset <- text_subset(sents, '\u6539\u9769') # select those with the term
+term_stats(subset) # count the word occurrences
+```
+The first term is the search query. It appears 2931 times in the corpus,
+in 2457 different sentences. The second term in the list appears in
+652 of 2457 sentences containing the search term. (I don't speak Chinese,
+but Google translate tells me that the search term is "reform", and the
+second and third items in the list are "development" and "system".)
+
+
+## Keyword in context
+
+Finally, here's how we might show terms in their local context
+```{r}
+text_locate(data, "\u6027")
+```
+*Note: the alignment looks bad here because the Chinese characters have
+widths between 1 and 2 spaces each. The spacing in the table is set assuming
+that Chinese characters take exactly 2 spaces each. If you know how to set
+the font to make the widths agree, please contact me.*

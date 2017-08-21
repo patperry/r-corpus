@@ -15,6 +15,7 @@
 ^data/affect_wordnet$
 ^data/affect_wordnet/
 ^dist$
+^docs$
 ^src/corpus/[.]git$
 ^src/corpus/[.]travis[.]yml$
 ^src/corpus/Makefile$
