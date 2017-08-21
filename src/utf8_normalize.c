@@ -98,7 +98,7 @@ SEXP utf8_normalize(SEXP x, SEXP map_case, SEXP map_compat, SEXP map_quote,
 
 		ptr = (const uint8_t *)translateCharUTF8(elt);
 		size = strlen((const char *)ptr);
-		TRY(corpus_text_assign(&text, ptr, size, 0));
+		TRY(corpus_text_assign(&text, ptr, size, CORPUS_TEXT_NOESCAPE));
 		TRY(corpus_typemap_set(&ctx->map, &text));
 
 		ptr = ctx->map.type.ptr;

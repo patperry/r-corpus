@@ -69,3 +69,8 @@ test_that("'utf8_normalize' accepts NULL", {
 test_that("'utf8_normalize' accepts NA", {
     expect_equal(utf8_normalize(NA_character_), NA_character_)
 })
+
+
+test_that("'utf8_normalize' can handle backslash", {
+    expect_equal(utf8_normalize("\\m"), "\\m")
+})
