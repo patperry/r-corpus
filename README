@@ -216,8 +216,9 @@ and if you choose to contribute, you must adhere to its terms.
 Acknownedgments
 ---------------
 
-The API and feature set for *corpus* were heavily inspired by
-[*quanteda*][quanteda], developed by Ken Benoit and collaborators, and
+The API and feature set for *corpus* draw inspiration from
+[*quanteda*][quanteda], developed by Ken Benoit and collaborators;
+[*tidytext*][tidytext], developed by Julia Silge and David Robinson; and
 [*stringr*][stringr], developed by Hadley Wickham.
 
 
@@ -248,6 +249,7 @@ License
 [quanteda]: http://quanteda.io/ "Quanteda"
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries "Unicode Text Segmentation, Sentence Boundaries"
 [stringr]: http://stringr.tidyverse.org/ "Stringr"
+[tidytext]: http://tidytextmining.com/
 [travis]: https://travis-ci.org/patperry/r-corpus "Continuous Integration (Linux)"
 [travis-badge]: https://api.travis-ci.org/patperry/r-corpus.svg?branch=master "Continuous Integration (Linux)"
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries "Unicode Text Segmentation, Word Boundaries"
