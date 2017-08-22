@@ -152,19 +152,19 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_text.html'>as_text</a></span>(<span class='fu'>c</span>(<span class='st'>"A man, a plan."</span>, <span class='st'>"A \"canal\"?"</span>, <span class='st'>"Panama!"</span>),
-                 <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_text.html'>as_text</a></span>(<span class='fu'>c</span>(<span class='st'>"A man, a plan."</span>, <span class='st'>"A \"canal\"?"</span>, <span class='st'>"Panama!"</span>),
+             <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 
-    <span class='co'># entire text</span>
-    <span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "A man, a plan."
+<span class='co'># entire text</span>
+<span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "A man, a plan."
 #&gt; [2] "A \"canal\"?"  
 #&gt; [3] "Panama!"       </div><div class='input'>
-    <span class='co'># first three elements</span>
-    <span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; [1] "A man, "  
+<span class='co'># first three elements</span>
+<span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; [1] "A man, "  
 #&gt; [2] "A \"canal"
 #&gt; [3] "Panama!"  </div><div class='input'>
-    <span class='co'># last two elements</span>
-    <span class='fu'>text_sub</span>(<span class='no'>x</span>, -<span class='fl'>2</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "plan."  
+<span class='co'># last two elements</span>
+<span class='fu'>text_sub</span>(<span class='no'>x</span>, -<span class='fl'>2</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "plan."  
 #&gt; [2] "\"?"    
 #&gt; [3] "Panama!"</div></pre>
   </div>

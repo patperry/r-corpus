@@ -64,16 +64,16 @@ is_corpus(x)
     \code{\link{corpus_text}}, \code{\link{read_ndjson}}.
 }
 \examples{
-    # convert a data frame:
-    emoji <- data.frame(text = sapply(0x1f600 + 1:30, intToUtf8),
-                        stringsAsFactors = FALSE)
-    as_corpus(emoji)
+# convert a data frame:
+emoji <- data.frame(text = sapply(0x1f600 + 1:30, intToUtf8),
+                    stringsAsFactors = FALSE)
+as_corpus(emoji)
 
-    # construct directly (no need for stringsAsFactors = FALSE):
-    corpus(text = sapply(0x1f600 + 1:30, intToUtf8))
+# construct directly (no need for stringsAsFactors = FALSE):
+corpus(text = sapply(0x1f600 + 1:30, intToUtf8))
     
-    # convert a character vector:
-    as_corpus(c(a = "goodnight", b = "moon")) # keeps names
-    as_corpus(c(a = "goodnight", b = "moon"), row.names = NULL) # drops names
+# convert a character vector:
+as_corpus(c(a = "goodnight", b = "moon")) # keeps names
+as_corpus(c(a = "goodnight", b = "moon"), row.names = NULL) # drops names
 }
 \keyword{classes}

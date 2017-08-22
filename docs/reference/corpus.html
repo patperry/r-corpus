@@ -167,10 +167,10 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='co'># convert a data frame:</span>
-    <span class='no'>emoji</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>sapply</span>(<span class='fl'>0x1f600</span> + <span class='fl'>1</span>:<span class='fl'>30</span>, <span class='no'>intToUtf8</span>),
-                        <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-    <span class='fu'>as_corpus</span>(<span class='no'>emoji</span>)</div><div class='output co'>#&gt;    text
+    <pre class="examples"><div class='input'><span class='co'># convert a data frame:</span>
+<span class='no'>emoji</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>sapply</span>(<span class='fl'>0x1f600</span> + <span class='fl'>1</span>:<span class='fl'>30</span>, <span class='no'>intToUtf8</span>),
+                    <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>as_corpus</span>(<span class='no'>emoji</span>)</div><div class='output co'>#&gt;    text
 #&gt; 1    😁​
 #&gt; 2    😂​
 #&gt; 3    😃​
@@ -192,8 +192,8 @@
 #&gt; 19   😓​
 #&gt; 20   😔​
 #&gt; ⋮  (30 rows total)</div><div class='input'>
-    <span class='co'># construct directly (no need for stringsAsFactors = FALSE):</span>
-    <span class='fu'>corpus</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>sapply</span>(<span class='fl'>0x1f600</span> + <span class='fl'>1</span>:<span class='fl'>30</span>, <span class='no'>intToUtf8</span>))</div><div class='output co'>#&gt;    text
+<span class='co'># construct directly (no need for stringsAsFactors = FALSE):</span>
+<span class='fu'>corpus</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>sapply</span>(<span class='fl'>0x1f600</span> + <span class='fl'>1</span>:<span class='fl'>30</span>, <span class='no'>intToUtf8</span>))</div><div class='output co'>#&gt;    text
 #&gt; 1    😁​
 #&gt; 2    😂​
 #&gt; 3    😃​
@@ -215,10 +215,10 @@
 #&gt; 19   😓​
 #&gt; 20   😔​
 #&gt; ⋮  (30 rows total)</div><div class='input'>
-    <span class='co'># convert a character vector:</span>
-    <span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt;   text     
+<span class='co'># convert a character vector:</span>
+<span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt;   text     
 #&gt; 1 goodnight
-#&gt; 2 moon     </div><div class='input'>    <span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>) <span class='co'># drops names</span></div><div class='output co'>#&gt;   text     
+#&gt; 2 moon     </div><div class='input'><span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>) <span class='co'># drops names</span></div><div class='output co'>#&gt;   text     
 #&gt; 1 goodnight
 #&gt; 2 moon     </div></pre>
   </div>

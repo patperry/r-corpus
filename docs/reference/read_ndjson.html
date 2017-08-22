@@ -199,21 +199,20 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='co'># Memory mapping</span>
-    <span class='no'>lines</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>'{ "a": 1, "b": true }'</span>,
-               <span class='st'>'{ "b": false, "nested": { "c": 100, "d": false }}'</span>,
-               <span class='st'>'{ "a": 3.14, "nested": { "d": true }}'</span>)
-    <span class='no'>file</span> <span class='kw'>&lt;-</span> <span class='fu'>tempfile</span>()
-    <span class='fu'>writeLines</span>(<span class='no'>lines</span>, <span class='no'>file</span>)
-    (<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'>read_ndjson</span>(<span class='no'>file</span>, <span class='kw'>mmap</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt;      a     b nested.c nested.d
+    <pre class="examples"><div class='input'><span class='co'># Memory mapping</span>
+<span class='no'>lines</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>'{ "a": 1, "b": true }'</span>,
+           <span class='st'>'{ "b": false, "nested": { "c": 100, "d": false }}'</span>,
+           <span class='st'>'{ "a": 3.14, "nested": { "d": true }}'</span>)
+<span class='no'>file</span> <span class='kw'>&lt;-</span> <span class='fu'>tempfile</span>()
+<span class='fu'>writeLines</span>(<span class='no'>lines</span>, <span class='no'>file</span>)
+(<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'>read_ndjson</span>(<span class='no'>file</span>, <span class='kw'>mmap</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt;      a     b nested.c nested.d
 #&gt; 1 1.00  TRUE       NA       NA
 #&gt; 2   NA FALSE      100    FALSE
 #&gt; 3 3.14    NA       NA     TRUE</div><div class='input'>
-    <span class='no'>data</span>$<span class='no'>a</span></div><div class='output co'>#&gt; [1] 1.00   NA 3.14</div><div class='input'>    <span class='no'>data</span>$<span class='no'>b</span></div><div class='output co'>#&gt; [1]  TRUE FALSE    NA</div><div class='input'>    <span class='no'>data</span>$<span class='no'>nested.c</span></div><div class='output co'>#&gt; [1]  NA 100  NA</div><div class='input'>    <span class='no'>data</span>$<span class='no'>nested.d</span></div><div class='output co'>#&gt; [1]    NA FALSE  TRUE</div><div class='input'>
-    <span class='fu'>rm</span>(<span class='st'>"data"</span>)
-    <span class='fu'>gc</span>() <span class='co'># force the garbage collector to release the memory-map</span></div><div class='output co'>#&gt;           used (Mb) gc trigger  (Mb) max used  (Mb)
-#&gt; Ncells 1783178 95.3    3205452 171.2  2637877 140.9
-#&gt; Vcells 3661573 28.0    5767974  44.1  5762360  44.0</div><div class='input'>    <span class='fu'>file.remove</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; [1] TRUE</div></pre>
+<span class='no'>data</span>$<span class='no'>a</span></div><div class='output co'>#&gt; [1] 1.00   NA 3.14</div><div class='input'><span class='no'>data</span>$<span class='no'>b</span></div><div class='output co'>#&gt; [1]  TRUE FALSE    NA</div><div class='input'><span class='no'>data</span>$<span class='no'>nested.c</span></div><div class='output co'>#&gt; [1]  NA 100  NA</div><div class='input'><span class='no'>data</span>$<span class='no'>nested.d</span></div><div class='output co'>#&gt; [1]    NA FALSE  TRUE</div><div class='input'>
+<span class='fu'>rm</span>(<span class='st'>"data"</span>)
+<span class='fu'>invisible</span>(<span class='fu'>gc</span>()) <span class='co'># force the garbage collector to release the memory-map</span>
+<span class='fu'>file.remove</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; [1] TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

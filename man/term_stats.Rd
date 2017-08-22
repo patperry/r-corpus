@@ -70,20 +70,20 @@ term_stats(x, filter = text_filter(x), weights = NULL,
     \code{\link{text_tokens}}, \code{\link{term_matrix}}.
 }
 \examples{
-    term_stats("A rose is a rose is a rose.")
+term_stats("A rose is a rose is a rose.")
 
-    # remove punctuation and stop words
-    term_stats("A rose is a rose is a rose.",
-                text_filter(drop_symbol = TRUE, drop = stopwords("english")))
+# remove punctuation and stop words
+term_stats("A rose is a rose is a rose.",
+           text_filter(drop_symbol = TRUE, drop = stopwords("english")))
 
-    # weight the texts
-    term_stats(c("A rose is a rose is a rose.",
-                  "A Rose is red, a violet is blue!"),
-                weights = c(100, 1))
+# weight the texts
+term_stats(c("A rose is a rose is a rose.",
+             "A Rose is red, a violet is blue!"),
+           weights = c(100, 1))
 
-    # unigrams, bigrams, and trigrams
-    term_stats("A rose is a rose is a rose.", ngrams = 1:3)
+# unigrams, bigrams, and trigrams
+term_stats("A rose is a rose is a rose.", ngrams = 1:3)
 
-    # also include the type information
-    term_stats("A rose is a rose is a rose.", ngrams = 1:3, types = TRUE)
+# also include the type information
+term_stats("A rose is a rose is a rose.", ngrams = 1:3, types = TRUE)
 }

@@ -196,20 +196,20 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>)</div><div class='output co'>#&gt;   term count support
+    <pre class="examples"><div class='input'><span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>)</div><div class='output co'>#&gt;   term count support
 #&gt; 1 a        3       1
 #&gt; 2 rose     3       1
 #&gt; 3 is       2       1
 #&gt; 4 .        1       1</div><div class='input'>
-    <span class='co'># remove punctuation and stop words</span>
-    <span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>,
-                <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>)))</div><div class='output co'>#&gt;   term count support
+<span class='co'># remove punctuation and stop words</span>
+<span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>,
+           <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>)))</div><div class='output co'>#&gt;   term count support
 #&gt; 1 rose     3       1
 #&gt; 2 .        1       1</div><div class='input'>
-    <span class='co'># weight the texts</span>
-    <span class='fu'>term_stats</span>(<span class='fu'>c</span>(<span class='st'>"A rose is a rose is a rose."</span>,
-                  <span class='st'>"A Rose is red, a violet is blue!"</span>),
-                <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>100</span>, <span class='fl'>1</span>))</div><div class='output co'>#&gt;   term   count support
+<span class='co'># weight the texts</span>
+<span class='fu'>term_stats</span>(<span class='fu'>c</span>(<span class='st'>"A rose is a rose is a rose."</span>,
+             <span class='st'>"A Rose is red, a violet is blue!"</span>),
+           <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>100</span>, <span class='fl'>1</span>))</div><div class='output co'>#&gt;   term   count support
 #&gt; 1 a        302     101
 #&gt; 2 rose     301     101
 #&gt; 3 is       202     101
@@ -219,8 +219,8 @@
 #&gt; 7 blue       1       1
 #&gt; 8 red        1       1
 #&gt; 9 violet     1       1</div><div class='input'>
-    <span class='co'># unigrams, bigrams, and trigrams</span>
-    <span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt;    term      count support
+<span class='co'># unigrams, bigrams, and trigrams</span>
+<span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt;    term      count support
 #&gt; 1  a             3       1
 #&gt; 2  a rose        3       1
 #&gt; 3  rose          3       1
@@ -233,8 +233,8 @@
 #&gt; 10 .             1       1
 #&gt; 11 a rose .      1       1
 #&gt; 12 rose .        1       1</div><div class='input'>
-    <span class='co'># also include the type information</span>
-    <span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>types</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;    term      type1 type2 type3 count support
+<span class='co'># also include the type information</span>
+<span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>types</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;    term      type1 type2 type3 count support
 #&gt; 1  a         a     &lt;NA&gt;  &lt;NA&gt;      3       1
 #&gt; 2  a rose    a     rose  &lt;NA&gt;      3       1
 #&gt; 3  rose      rose  &lt;NA&gt;  &lt;NA&gt;      3       1

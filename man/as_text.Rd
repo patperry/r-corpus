@@ -84,10 +84,10 @@ is_text(x)
     \code{\link{read_ndjson}}.
 }
 \examples{
-    as_text("hello, world!")
-    as_text(c(a = "goodnight", b = "moon")) # keeps names
-    as_text(c(a = "goodnight", b = "moon"), names = NULL) # drops names
+as_text("hello, world!")
+as_text(c(a = "goodnight", b = "moon")) # keeps names
+as_text(c(a = "goodnight", b = "moon"), names = NULL) # drops names
 
-    is_text("hello") # FALSE, "hello" is character, not text
+is_text("hello") # FALSE, "hello" is character, not text
 }
 \keyword{classes}

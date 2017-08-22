@@ -153,15 +153,15 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='no'>text</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"I saw Mr. Jones today."</span>,
-              <span class='st'>"Split across\na line."</span>,
-              <span class='st'>"What. Are. You. Doing????"</span>,
-              <span class='st'>"She asked 'do you really mean that?' and I said 'yes.'"</span>)
+    <pre class="examples"><div class='input'><span class='no'>text</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"I saw Mr. Jones today."</span>,
+          <span class='st'>"Split across\na line."</span>,
+          <span class='st'>"What. Are. You. Doing????"</span>,
+          <span class='st'>"She asked 'do you really mean that?' and I said 'yes.'"</span>)
 
-    <span class='co'># count the number of unique types</span>
-    <span class='fu'>text_ntype</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; [1]  6  5  6 14</div><div class='input'>    <span class='fu'>text_ntype</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] 25</div><div class='input'>
-    <span class='co'># get the type sets</span>
-    <span class='fu'>text_types</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; [[1]]
+<span class='co'># count the number of unique types</span>
+<span class='fu'>text_ntype</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; [1]  6  5  6 14</div><div class='input'><span class='fu'>text_ntype</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] 25</div><div class='input'>
+<span class='co'># get the type sets</span>
+<span class='fu'>text_types</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "."     "i"     "jones" "mr."   "saw"   "today"
 #&gt; 
 #&gt; [[2]]
@@ -173,7 +173,7 @@
 #&gt; [[4]]
 #&gt;  [1] "?"      "."      "'"      "and"    "asked"  "do"     "i"      "mean"  
 #&gt;  [9] "really" "said"   "she"    "that"   "yes"    "you"   
-#&gt; </div><div class='input'>    <span class='fu'>text_types</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  [1] "?"      "."      "'"      "a"      "across" "and"    "are"    "asked" 
+#&gt; </div><div class='input'><span class='fu'>text_types</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  [1] "?"      "."      "'"      "a"      "across" "and"    "are"    "asked" 
 #&gt;  [9] "do"     "doing"  "i"      "jones"  "line"   "mean"   "mr."    "really"
 #&gt; [17] "said"   "saw"    "she"    "split"  "that"   "today"  "what"   "yes"   
 #&gt; [25] "you"   </div></pre>

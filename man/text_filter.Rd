@@ -22,16 +22,16 @@ text_filter(x) <- value
 \method{text_filter}{data.frame}(x = NULL, ...)
 
 \method{text_filter}{default}(x = NULL, ...,
-                    map_case = TRUE, map_quote = TRUE,
-                    remove_ignorable = TRUE,
-                    stemmer = NULL, stem_dropped = FALSE,
-                    stem_except = NULL,
-                    combine = abbreviations("english"),
-                    drop_letter = FALSE, drop_number = FALSE,
-                    drop_punct = FALSE, drop_symbol = FALSE,
-                    drop = NULL, drop_except = NULL,
-                    sent_crlf = FALSE,
-                    sent_suppress = abbreviations("english"))
+            map_case = TRUE, map_quote = TRUE,
+            remove_ignorable = TRUE,
+            stemmer = NULL, stem_dropped = FALSE,
+            stem_except = NULL,
+            combine = abbreviations("english"),
+            drop_letter = FALSE, drop_number = FALSE,
+            drop_punct = FALSE, drop_symbol = FALSE,
+            drop = NULL, drop_except = NULL,
+            sent_crlf = FALSE,
+            sent_suppress = abbreviations("english"))
 }
 \arguments{
     \item{x}{text or corpus object.}
@@ -124,35 +124,35 @@ text_filter(x) <- value
     \code{\link{stopwords}}.
 }
 \examples{
-    # text filter with default options set
-    text_filter()
+# text filter with default options set
+text_filter()
 
-    # specify some options but leave others unchanged
-    f <- text_filter(map_case = FALSE, drop = stopwords("english"))
+# specify some options but leave others unchanged
+f <- text_filter(map_case = FALSE, drop = stopwords("english"))
 
-    # set the text filter property
-    x <- as_text(c("Marnie the Dog is #1 on the internet."))
-    text_filter(x) <- f
-    text_tokens(x) # by default, uses x's text_filter to tokenize
+# set the text filter property
+x <- as_text(c("Marnie the Dog is #1 on the internet."))
+text_filter(x) <- f
+text_tokens(x) # by default, uses x's text_filter to tokenize
 
-    # change a filter property
-    f2 <- text_filter(x, map_case = TRUE)
-    # equivalent to:
-    # f2 <- text_filter(x)
-    # f2$map_case <- TRUE
+# change a filter property
+f2 <- text_filter(x, map_case = TRUE)
+# equivalent to:
+# f2 <- text_filter(x)
+# f2$map_case <- TRUE
 
-    text_tokens(x, f2) # override text_filter(x)
+text_tokens(x, f2) # override text_filter(x)
 
-    # setting text_filter on a data frame is allowed if it has a
-    # column names "text" of type "corpus_text"
-    d <- data.frame(text = x)
-    text_filter(d) <- f2
-    text_tokens(d)
+# setting text_filter on a data frame is allowed if it has a
+# column names "text" of type "corpus_text"
+d <- data.frame(text = x)
+text_filter(d) <- f2
+text_tokens(d)
 
-    # but you can't set text filters on character objects
-    y <- "hello world"
-    \dontrun{text_filter(y) <- f2} # gives an error
+# but you can't set text filters on character objects
+y <- "hello world"
+\dontrun{text_filter(y) <- f2 # gives an error}
 
-    d2 <- data.frame(text = "hello world", stringsAsFactors = FALSE)
-    \dontrun{text_filter(d2) <- f2} # gives an error
+d2 <- data.frame(text = "hello world", stringsAsFactors = FALSE)
+\dontrun{text_filter(d2) <- f2 # gives an error}
 }

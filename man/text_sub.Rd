@@ -37,15 +37,15 @@ text_sub(x, start = 1L, end = -1L, filter = text_filter(x))
     \code{\link{text_tokens}}, \code{\link{text_length}}.
 }
 \examples{
-    x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!"),
-                 filter = text_filter(drop_punct = TRUE))
+x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!"),
+             filter = text_filter(drop_punct = TRUE))
 
-    # entire text
-    text_sub(x, 1, -1)
+# entire text
+text_sub(x, 1, -1)
 
-    # first three elements
-    text_sub(x, 1, 3)
+# first three elements
+text_sub(x, 1, 3)
 
-    # last two elements
-    text_sub(x, -2, -1)
+# last two elements
+text_sub(x, -2, -1)
 }

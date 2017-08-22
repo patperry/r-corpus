@@ -117,16 +117,16 @@
 
 <span class='co'># S3 method for default</span>
 <span class='fu'>text_filter</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>,
-                    <span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>map_quote</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                    <span class='kw'>remove_ignorable</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                    <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stem_dropped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                    <span class='kw'>stem_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-                    <span class='kw'>combine</span> <span class='kw'>=</span> <span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>),
-                    <span class='kw'>drop_letter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_number</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                    <span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                    <span class='kw'>drop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>drop_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-                    <span class='kw'>sent_crlf</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                    <span class='kw'>sent_suppress</span> <span class='kw'>=</span> <span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>))</pre>
+            <span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>map_quote</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+            <span class='kw'>remove_ignorable</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+            <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stem_dropped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+            <span class='kw'>stem_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>combine</span> <span class='kw'>=</span> <span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>),
+            <span class='kw'>drop_letter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_number</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+            <span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+            <span class='kw'>drop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>drop_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>sent_crlf</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+            <span class='kw'>sent_suppress</span> <span class='kw'>=</span> <span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -261,8 +261,8 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='co'># text filter with default options set</span>
-    <span class='fu'>text_filter</span>()</div><div class='output co'>#&gt; Text filter with the following options:
+    <pre class="examples"><div class='input'><span class='co'># text filter with default options set</span>
+<span class='fu'>text_filter</span>()</div><div class='output co'>#&gt; Text filter with the following options:
 #&gt; 
 #&gt; 	map_case: TRUE
 #&gt; 	map_quote: TRUE
@@ -279,43 +279,41 @@
 #&gt; 	drop_except: NULL
 #&gt; 	sent_crlf: FALSE
 #&gt; 	sent_suppress:  chr [1:146] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...</div><div class='input'>
-    <span class='co'># specify some options but leave others unchanged</span>
-    <span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))
+<span class='co'># specify some options but leave others unchanged</span>
+<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))
 
-    <span class='co'># set the text filter property</span>
-    <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_text.html'>as_text</a></span>(<span class='fu'>c</span>(<span class='st'>"Marnie the Dog is #1 on the internet."</span>))
-    <span class='fu'>text_filter</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>f</span>
-    <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>) <span class='co'># by default, uses x's text_filter to tokenize</span></div><div class='output co'>#&gt; [[1]]
+<span class='co'># set the text filter property</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_text.html'>as_text</a></span>(<span class='fu'>c</span>(<span class='st'>"Marnie the Dog is #1 on the internet."</span>))
+<span class='fu'>text_filter</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>f</span>
+<span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>) <span class='co'># by default, uses x's text_filter to tokenize</span></div><div class='output co'>#&gt; [[1]]
 #&gt;  [1] "Marnie"   NA         "Dog"      NA         "#"        "1"       
 #&gt;  [7] NA         NA         "internet" "."       
 #&gt; </div><div class='input'>
-    <span class='co'># change a filter property</span>
-    <span class='no'>f2</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='no'>x</span>, <span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-    <span class='co'># equivalent to:</span>
-    <span class='co'># f2 &lt;- text_filter(x)</span>
-    <span class='co'># f2$map_case &lt;- TRUE</span>
+<span class='co'># change a filter property</span>
+<span class='no'>f2</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='no'>x</span>, <span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='co'># equivalent to:</span>
+<span class='co'># f2 &lt;- text_filter(x)</span>
+<span class='co'># f2$map_case &lt;- TRUE</span>
 
-    <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>, <span class='no'>f2</span>) <span class='co'># override text_filter(x)</span></div><div class='output co'>#&gt; [[1]]
+<span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>, <span class='no'>f2</span>) <span class='co'># override text_filter(x)</span></div><div class='output co'>#&gt; [[1]]
 #&gt;  [1] "marnie"   NA         "dog"      NA         "#"        "1"       
 #&gt;  [7] NA         NA         "internet" "."       
 #&gt; </div><div class='input'>
-    <span class='co'># setting text_filter on a data frame is allowed if it has a</span>
-    <span class='co'># column names "text" of type "corpus_text"</span>
-    <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='no'>x</span>)
-    <span class='fu'>text_filter</span>(<span class='no'>d</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span>
-    <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [[1]]
+<span class='co'># setting text_filter on a data frame is allowed if it has a</span>
+<span class='co'># column names "text" of type "corpus_text"</span>
+<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='no'>x</span>)
+<span class='fu'>text_filter</span>(<span class='no'>d</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span>
+<span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt;  [1] "marnie"   NA         "dog"      NA         "#"        "1"       
 #&gt;  [7] NA         NA         "internet" "."       
 #&gt; </div><div class='input'>
-    <span class='co'># but you can't set text filters on character objects</span>
-    <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='st'>"hello world"</span></div><span class='co'># NOT RUN {</span>
-<span class='fu'>text_filter</span>(<span class='no'>y</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span>
-<span class='co'># }</span><div class='input'> <span class='co'># gives an error</span>
-
-    <span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"hello world"</span>, <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><span class='co'># NOT RUN {</span>
-<span class='fu'>text_filter</span>(<span class='no'>d2</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span>
-<span class='co'># }</span><div class='input'> # gives an error
-</div></pre>
+<span class='co'># but you can't set text filters on character objects</span>
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='st'>"hello world"</span></div><span class='co'># NOT RUN {</span>
+<span class='fu'>text_filter</span>(<span class='no'>y</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span> <span class='co'># gives an error</span>
+<span class='co'># }</span><div class='input'>
+<span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='st'>"hello world"</span>, <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><span class='co'># NOT RUN {</span>
+<span class='fu'>text_filter</span>(<span class='no'>d2</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span> <span class='co'># gives an error</span>
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

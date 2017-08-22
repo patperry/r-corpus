@@ -82,36 +82,36 @@ term_frame(x, filter = text_filter(x), weights = NULL,
     \code{\link{text_tokens}}, \code{\link{term_stats}}.
 }
 \examples{
-    text <- c("A rose is a rose is a rose.",
-              "A Rose is red, a violet is blue!",
-              "A rose by any other name would smell as sweet.")
-    term_matrix(text)
+text <- c("A rose is a rose is a rose.",
+          "A Rose is red, a violet is blue!",
+          "A rose by any other name would smell as sweet.")
+term_matrix(text)
 
-    # select certain terms
-    term_matrix(text, select = c("rose", "red", "violet", "sweet"))
+# select certain terms
+term_matrix(text, select = c("rose", "red", "violet", "sweet"))
 
-    # specify a grouping factor
-    term_matrix(text, group = c("Good", "Bad", "Good"))
+# specify a grouping factor
+term_matrix(text, group = c("Good", "Bad", "Good"))
 
-    # weight the texts
-    term_matrix(text, weights = c(1, 2, 10),
-                group = c("Good", "Bad", "Good"))
+# weight the texts
+term_matrix(text, weights = c(1, 2, 10),
+            group = c("Good", "Bad", "Good"))
 
-    # include higher-order n-grams
-    term_matrix(text, ngrams = 1:3)
+# include higher-order n-grams
+term_matrix(text, ngrams = 1:3)
 
-    # select certain multi-type terms
-    term_matrix(text, select = c("a rose", "a violet", "sweet", "smell"))
+# select certain multi-type terms
+term_matrix(text, select = c("a rose", "a violet", "sweet", "smell"))
 
-    # transpose the result
-    term_matrix(text, ngrams = 1:2, transpose = TRUE)[1:10, ] # first 10 rows
+# transpose the result
+term_matrix(text, ngrams = 1:2, transpose = TRUE)[1:10, ] # first 10 rows
 
-    # data frame
-    head(term_frame(text), n = 10) # first 10 rows
+# data frame
+head(term_frame(text), n = 10) # first 10 rows
 
-    # with grouping
-    term_frame(text, group = c("Good", "Bad", "Good"))
+# with grouping
+term_frame(text, group = c("Good", "Bad", "Good"))
 
-    # taking names from the input
-    term_frame(c(a = "One sentence.", b = "Another", c = "!!"))
+# taking names from the input
+term_frame(c(a = "One sentence.", b = "Another", c = "!!"))
 }

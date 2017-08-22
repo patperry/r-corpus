@@ -25,6 +25,6 @@ text_stats(x, filter = text_filter(x))
     \code{\link{text_filter}}, \code{\link{term_stats}}.
 }
 \examples{
-    text_stats(c("A rose is a rose is a rose.",
-                  "A Rose is red. A violet is blue!"))
+text_stats(c("A rose is a rose is a rose.",
+             "A Rose is red. A violet is blue!"))
 }

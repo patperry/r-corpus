@@ -38,13 +38,13 @@ abbreviations(kind = "english")
     \code{\link{text_filter}}.
 }
 \examples{
-    head(abbreviations("english"))
-    head(abbreviations("french"))
-    abbreviations(NULL)
+head(abbreviations("english"))
+head(abbreviations("french"))
+abbreviations(NULL)
 
-    # multiple kinds:
-    head(abbreviations(c("italian", "portuguese")))
+# multiple kinds:
+head(abbreviations(c("italian", "portuguese")))
 
-    # add words to the default list:
-    my_abbrev <- c(abbreviations("english"), "Mon.", "Tues.", "Weds.")
+# add words to the default list:
+my_abbrev <- c(abbreviations("english"), "Mon.", "Tues.", "Weds.")
 }

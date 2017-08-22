@@ -156,46 +156,46 @@ utf8_width(x, encode = TRUE, quote = FALSE)
     \code{\link{as_text}}, \code{\link{iconv}}.
 }
 \examples{
-    # the second element is encoded in latin-1, but declared as UTF-8
-    x <- c("fa\u00E7ile", "fa\xE7ile", "fa\xC3\xA7ile")
-    Encoding(x) <- c("UTF-8", "UTF-8", "bytes")
+# the second element is encoded in latin-1, but declared as UTF-8
+x <- c("fa\u00E7ile", "fa\xE7ile", "fa\xC3\xA7ile")
+Encoding(x) <- c("UTF-8", "UTF-8", "bytes")
 
-    # attempt to convert to UTF-8 (fails)
-    \dontrun{as_utf8(x)}
+# attempt to convert to UTF-8 (fails)
+\dontrun{as_utf8(x)}
 
-    y <- x
-    Encoding(y[2]) <- "latin1" # mark the correct encoding
-    as_utf8(y) # succeeds
+y <- x
+Encoding(y[2]) <- "latin1" # mark the correct encoding
+as_utf8(y) # succeeds
 
-    # test for valid UTF-8
-    utf8_valid(x)
+# test for valid UTF-8
+utf8_valid(x)
 
-    # normalize text
-    angstrom <- c("\u00c5", "\u0041\u030a", "\u212b")
-    utf8_normalize(angstrom) == "\u00c5"
+# normalize text
+angstrom <- c("\u00c5", "\u0041\u030a", "\u212b")
+utf8_normalize(angstrom) == "\u00c5"
 
-    # encoding
-    utf8_encode(x)
+# encoding
+utf8_encode(x)
 
-    # formatting
-    utf8_format(x, chars = 3)
-    utf8_format(x, chars = 3, justify = "centre", width = 10)
-    utf8_format(x, chars = 3, justify = "right")
+# formatting
+utf8_format(x, chars = 3)
+utf8_format(x, chars = 3, justify = "centre", width = 10)
+utf8_format(x, chars = 3, justify = "right")
 
-    # get widths
-    utf8_width(x)
-    utf8_width(x, encode = FALSE)
-    utf8_width('"')
-    utf8_width('"', quote = TRUE)
+# get widths
+utf8_width(x)
+utf8_width(x, encode = FALSE)
+utf8_width('"')
+utf8_width('"', quote = TRUE)
 
-    # printing (assumes that output is capable of displaying Unicode 10.0.0)
-    print(intToUtf8(0x1F600 + 0:79)) # with default R print function
-    utf8_print(intToUtf8(0x1F600 + 0:79)) # with utf8_print, truncates line
-    utf8_print(intToUtf8(0x1F600 + 0:79), chars = 1000) # higher character limit
+# printing (assumes that output is capable of displaying Unicode 10.0.0)
+print(intToUtf8(0x1F600 + 0:79)) # with default R print function
+utf8_print(intToUtf8(0x1F600 + 0:79)) # with utf8_print, truncates line
+utf8_print(intToUtf8(0x1F600 + 0:79), chars = 1000) # higher character limit
 
-    # in C locale, output ASCII (same results on all platforms)
-    oldlocale <- Sys.getlocale("LC_CTYPE")
-    invisible(Sys.setlocale("LC_CTYPE", "C")) # switch to C locale
-    utf8_print(intToUtf8(0x1F600 + 0:79))
-    invisible(Sys.setlocale("LC_CTYPE", oldlocale)) # switch back to old locale
+# in C locale, output ASCII (same results on all platforms)
+oldlocale <- Sys.getlocale("LC_CTYPE")
+invisible(Sys.setlocale("LC_CTYPE", "C")) # switch to C locale
+utf8_print(intToUtf8(0x1F600 + 0:79))
+invisible(Sys.setlocale("LC_CTYPE", oldlocale)) # switch back to old locale
 }

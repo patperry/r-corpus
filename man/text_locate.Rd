@@ -72,16 +72,16 @@ text_subset(x, terms, filter = text_filter(x))
     \code{\link{term_stats}}, \code{\link{term_frame}}.
 }
 \examples{
-    text <- c("Rose is a rose is a rose is a rose.",
-              "A rose by any other name would smell as sweet.",
-              "Snow White and Rose Red")
+text <- c("Rose is a rose is a rose is a rose.",
+          "A rose by any other name would smell as sweet.",
+          "Snow White and Rose Red")
 
-    text_count(text, "rose")
-    text_detect(text, "rose")
-    text_locate(text, "rose")
-    text_match(text, "rose")
-    text_subset(text, "a rose")
+text_count(text, "rose")
+text_detect(text, "rose")
+text_locate(text, "rose")
+text_match(text, "rose")
+text_subset(text, "a rose")
 
-    # search for multiple terms
-    text_locate(text, c("rose", "rose red", "snow white"))
+# search for multiple terms
+text_locate(text, c("rose", "rose red", "snow white"))
 }

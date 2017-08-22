@@ -36,13 +36,13 @@ stopwords(kind = "english")
     \code{\link{text_filter}}
 }
 \examples{
-    head(stopwords("english"))
-    head(stopwords("russian"))
-    stopwords(NULL)
+head(stopwords("english"))
+head(stopwords("russian"))
+stopwords(NULL)
 
-    # combine multiple lists, removing duplicates
-    head(stopwords(c("spanish", "portuguese")))
+# combine multiple lists, removing duplicates
+head(stopwords(c("spanish", "portuguese")))
 
-    # add words to the default list:
-    my_stopwords <- c(stopwords("english"), "mr.", "mrs.", "ms.")
+# add words to the default list:
+my_stopwords <- c(stopwords("english"), "mr.", "mrs.", "ms.")
 }

@@ -76,14 +76,14 @@
     \code{\link{print.data.frame}}, \code{\link{utf8_print}}
 }
 \examples{
-    # default data frame printing
-    x <- data.frame(text = c("hello world", intToUtf8(0x1f638 + 0:3), letters))
-    print(x)
+# default data frame printing
+x <- data.frame(text = c("hello world", intToUtf8(0x1f638 + 0:3), letters))
+print(x)
 
-    # corpus frame printing
-    y <- x
-    class(y) <- c("corpus_frame", "data.frame")
-    print(y)
+# corpus frame printing
+y <- x
+class(y) <- c("corpus_frame", "data.frame")
+print(y)
 
-    print(y, 10) # change truncation limit
+print(y, 10) # change truncation limit
 }

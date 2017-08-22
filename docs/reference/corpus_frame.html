@@ -210,9 +210,9 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>    <span class='co'># default data frame printing</span>
-    <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"hello world"</span>, <span class='fu'>intToUtf8</span>(<span class='fl'>0x1f638</span> + <span class='fl'>0</span>:<span class='fl'>3</span>), <span class='no'>letters</span>))
-    <span class='fu'>print</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;                                        text
+    <pre class="examples"><div class='input'><span class='co'># default data frame printing</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"hello world"</span>, <span class='fu'>intToUtf8</span>(<span class='fl'>0x1f638</span> + <span class='fl'>0</span>:<span class='fl'>3</span>), <span class='no'>letters</span>))
+<span class='fu'>print</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;                                        text
 #&gt; 1                               hello world
 #&gt; 2  \U0001f638\U0001f639\U0001f63a\U0001f63b
 #&gt; 3                                         a
@@ -241,10 +241,10 @@
 #&gt; 26                                        x
 #&gt; 27                                        y
 #&gt; 28                                        z</div><div class='input'>
-    <span class='co'># corpus frame printing</span>
-    <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>
-    <span class='fu'>class</span>(<span class='no'>y</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"corpus_frame"</span>, <span class='st'>"data.frame"</span>)
-    <span class='fu'>print</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt;    text       
+<span class='co'># corpus frame printing</span>
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>
+<span class='fu'>class</span>(<span class='no'>y</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"corpus_frame"</span>, <span class='st'>"data.frame"</span>)
+<span class='fu'>print</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt;    text       
 #&gt; 1  hello world
 #&gt; 2  😸​😹​😺​😻​   
 #&gt; 3  a          
@@ -266,7 +266,7 @@
 #&gt; 19 q          
 #&gt; 20 r          
 #&gt; ⋮  (28 rows total)</div><div class='input'>
-    <span class='fu'>print</span>(<span class='no'>y</span>, <span class='fl'>10</span>) <span class='co'># change truncation limit</span></div><div class='output co'>#&gt;    text       
+<span class='fu'>print</span>(<span class='no'>y</span>, <span class='fl'>10</span>) <span class='co'># change truncation limit</span></div><div class='output co'>#&gt;    text       
 #&gt; 1  hello world
 #&gt; 2  😸​😹​😺​😻​   
 #&gt; 3  a          
