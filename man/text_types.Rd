@@ -6,9 +6,9 @@
     Get or measure the set of types (unique token values).
 }
 \usage{
-    text_types(x, filter = text_filter(x), collapse = FALSE)
+text_types(x, filter = text_filter(x), collapse = FALSE)
 
-    text_ntype(x, filter = text_filter(x), collapse = FALSE)
+text_ntype(x, filter = text_filter(x), collapse = FALSE)
 }
 \arguments{
     \item{x}{a text or character vector.}

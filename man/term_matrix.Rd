@@ -6,12 +6,12 @@
     Tokenize a set of texts and compute a term frequency matrix or data frame.
 }
 \usage{
-    term_matrix(x, filter = text_filter(x), weights = NULL,
-                ngrams = NULL, select = NULL, group = NULL,
-                transpose = FALSE)
+term_matrix(x, filter = text_filter(x), weights = NULL,
+            ngrams = NULL, select = NULL, group = NULL,
+            transpose = FALSE)
 
-    term_frame(x, filter = text_filter(x), weights = NULL,
-               ngrams = NULL, select = NULL, group = NULL)
+term_frame(x, filter = text_filter(x), weights = NULL,
+           ngrams = NULL, select = NULL, group = NULL)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}

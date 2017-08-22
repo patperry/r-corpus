@@ -8,11 +8,11 @@
    a particular \sQuote{type}.
 }
 \usage{
-    text_tokens(x, filter = text_filter(x))
+text_tokens(x, filter = text_filter(x))
 
-    text_ntoken(x, filter = text_filter(x))
+text_ntoken(x, filter = text_filter(x))
 
-    text_length(x, filter = text_filter(x))
+text_length(x, filter = text_filter(x))
 }
 \arguments{
     \item{x}{object to be tokenized.}

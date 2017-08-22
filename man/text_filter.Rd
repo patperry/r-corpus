@@ -14,24 +14,24 @@
    a sequence of tokens or sentences.
 }
 \usage{
-    text_filter(x = NULL, ...)
-    text_filter(x) <- value
+text_filter(x = NULL, ...)
+text_filter(x) <- value
 
-    \method{text_filter}{corpus_text}(x = NULL, ...)
+\method{text_filter}{corpus_text}(x = NULL, ...)
 
-    \method{text_filter}{data.frame}(x = NULL, ...)
+\method{text_filter}{data.frame}(x = NULL, ...)
 
-    \method{text_filter}{default}(x = NULL, ...,
-                        map_case = TRUE, map_quote = TRUE,
-                        remove_ignorable = TRUE,
-                        stemmer = NULL, stem_dropped = FALSE,
-                        stem_except = NULL,
-                        combine = abbreviations("english"),
-                        drop_letter = FALSE, drop_number = FALSE,
-                        drop_punct = FALSE, drop_symbol = FALSE,
-                        drop = NULL, drop_except = NULL,
-                        sent_crlf = FALSE,
-                        sent_suppress = abbreviations("english"))
+\method{text_filter}{default}(x = NULL, ...,
+                    map_case = TRUE, map_quote = TRUE,
+                    remove_ignorable = TRUE,
+                    stemmer = NULL, stem_dropped = FALSE,
+                    stem_except = NULL,
+                    combine = abbreviations("english"),
+                    drop_letter = FALSE, drop_number = FALSE,
+                    drop_punct = FALSE, drop_symbol = FALSE,
+                    drop = NULL, drop_except = NULL,
+                    sent_crlf = FALSE,
+                    sent_suppress = abbreviations("english"))
 }
 \arguments{
     \item{x}{text or corpus object.}

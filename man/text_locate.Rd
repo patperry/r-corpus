@@ -9,15 +9,15 @@
     Look for instances of one or more terms in a set of texts.
 }
 \usage{
-    text_locate(x, terms, filter = text_filter(x), random = FALSE)
+text_locate(x, terms, filter = text_filter(x), random = FALSE)
 
-    text_count(x, terms, filter = text_filter(x))
+text_count(x, terms, filter = text_filter(x))
 
-    text_detect(x, terms, filter = text_filter(x))
+text_detect(x, terms, filter = text_filter(x))
 
-    text_match(x, terms, filter = text_filter(x))
+text_match(x, terms, filter = text_filter(x))
 
-    text_subset(x, terms, filter = text_filter(x))
+text_subset(x, terms, filter = text_filter(x))
 }
 \arguments{
     \item{x}{a text or character vector.}

@@ -7,9 +7,9 @@
     Segment text into smaller units.
 }
 \usage{
-    text_split(x, units = "sentences", size = 1, filter = text_filter(x))
+text_split(x, units = "sentences", size = 1, filter = text_filter(x))
 
-    text_nsentence(x, filter = text_filter(x))
+text_nsentence(x, filter = text_filter(x))
 }
 \arguments{
     \item{x}{a text or character vector.}

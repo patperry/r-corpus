@@ -12,24 +12,24 @@
     UTF-8 text validation, normalization, formatting, and printing.
 }
 \usage{
-    as_utf8(x, normalize = FALSE)
+as_utf8(x, normalize = FALSE)
 
-    utf8_valid(x)
+utf8_valid(x)
 
-    utf8_normalize(x, map_case = FALSE, map_compat = FALSE,
-                   map_quote = FALSE, remove_ignorable = FALSE)
+utf8_normalize(x, map_case = FALSE, map_compat = FALSE,
+               map_quote = FALSE, remove_ignorable = FALSE)
 
-    utf8_encode(x, display = FALSE)
+utf8_encode(x, display = FALSE)
 
-    utf8_format(x, trim = FALSE, chars = NULL, justify = "left",
-                width = NULL, na.encode = TRUE, quote = FALSE,
-                na.print = NULL, print.gap = NULL, ...)
+utf8_format(x, trim = FALSE, chars = NULL, justify = "left",
+            width = NULL, na.encode = TRUE, quote = FALSE,
+            na.print = NULL, print.gap = NULL, ...)
 
-    utf8_print(x, chars = NULL, quote = TRUE, na.print = NULL,
-               print.gap = NULL, right = FALSE, max = NULL,
-               display = TRUE, ...)
+utf8_print(x, chars = NULL, quote = TRUE, na.print = NULL,
+           print.gap = NULL, right = FALSE, max = NULL,
+           display = TRUE, ...)
 
-    utf8_width(x, encode = TRUE, quote = FALSE)
+utf8_width(x, encode = TRUE, quote = FALSE)
 }
 \arguments{
     \item{x}{character object.}

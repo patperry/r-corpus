@@ -12,11 +12,11 @@
     Create or test for corpus objects.
 }
 \usage{
-    corpus(..., row.names = NULL, filter = NULL)
+corpus(..., row.names = NULL, filter = NULL)
 
-    as_corpus(x, row.names = NULL, filter = NULL, ...)
+as_corpus(x, row.names = NULL, filter = NULL, ...)
 
-    is_corpus(x)
+is_corpus(x)
 }
 \arguments{
     \item{\dots}{data frame columns for \code{corpus};

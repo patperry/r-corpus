@@ -5,7 +5,7 @@
     Extract token subsequences from a set of texts.
 }
 \usage{
-    text_sub(x, start = 1L, end = -1L, filter = text_filter(x))
+text_sub(x, start = 1L, end = -1L, filter = text_filter(x))
 }
 \arguments{
     \item{x}{text vector or corpus object.}

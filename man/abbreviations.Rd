@@ -5,7 +5,7 @@
     Get a list of common abbreviations.
 }
 \usage{
-    abbreviations(kind = "english")
+abbreviations(kind = "english")
 }
 \arguments{
     \item{kind}{the name (or names) of the abbreviation list(s),

@@ -7,9 +7,9 @@
   \pkg{corpus} only, and may be defunct as soon as the next release.
 }
 \usage{
-    term_counts(x, filter = text_filter(x), weights = NULL,
-                ngrams = NULL, min_count = NULL, max_count = NULL,
-                min_support = NULL, max_support = NULL, types = FALSE)
+term_counts(x, filter = text_filter(x), weights = NULL,
+            ngrams = NULL, min_count = NULL, max_count = NULL,
+            min_support = NULL, max_support = NULL, types = FALSE)
 }
 \arguments{
     \item{x}{a text vector to tokenize.}

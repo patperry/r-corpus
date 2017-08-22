@@ -7,7 +7,7 @@
     (NDJSON) format.
 }
 \usage{
-    read_ndjson(file, mmap = FALSE, simplify = TRUE, text = NULL)
+read_ndjson(file, mmap = FALSE, simplify = TRUE, text = NULL)
 }
 \arguments{
     \item{file}{the name of the file which the data are to be read from,

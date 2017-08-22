@@ -5,7 +5,7 @@
     Report descriptive statistics for a set of texts.
 }
 \usage{
-    text_stats(x, filter = text_filter(x))
+text_stats(x, filter = text_filter(x))
 }
 \arguments{
     \item{x}{a text corpus.}

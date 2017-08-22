@@ -5,7 +5,7 @@
     Get a list of common function words (\sQuote{stop} words).
 }
 \usage{
-    stopwords(kind = "english")
+stopwords(kind = "english")
 }
 \arguments{
     \item{kind}{a character vector giving the desired name or names

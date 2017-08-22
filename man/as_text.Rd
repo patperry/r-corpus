@@ -12,8 +12,9 @@
     Create or test for text objects.
 }
 \usage{
-    as_text(x, names = NULL, filter = NULL, ...)
-    is_text(x)
+as_text(x, names = NULL, filter = NULL, ...)
+
+is_text(x)
 }
 \arguments{
     \item{x}{object to be coerced or tested.}
