@@ -40,4 +40,7 @@ doc: $(BUILT_VIGNETTES) README
 install: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'devtools::install(".")'
 
-.PHONY: all bench clean check dist doc install
+site:
+	$(RSCRIPT) -e 'pkgdown::build_site(".")'
+
+.PHONY: all bench clean check dist doc install site
