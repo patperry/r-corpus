@@ -10,6 +10,7 @@
 #  distributed under the License is distributed on an "AS IS" BASIS,
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
+#  limitations under the License.
 
 format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                 na.encode = TRUE, quote = FALSE,
