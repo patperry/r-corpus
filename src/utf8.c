@@ -755,6 +755,7 @@ const char *translate_utf8(SEXP x)
 	cetype_t ce;
 	int len, wlen;
 
+	ce = getCharCE(x);
 	if (encodes_utf8(ce)) {
 		return CHAR(x);
 	}
