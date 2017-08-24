@@ -79,7 +79,8 @@ gutenberg_parse <- function(lines, verbose = TRUE)
 
         match <- match[match < start]
         if (length(match) > 0) {
-            meta[[f]] <- sub(pattern, "\\1", lines[match])
+            # take the field from the first match
+            meta[[f]] <- sub(pattern, "\\1", lines[match[[1]]])
         }
     }
 
@@ -181,9 +182,12 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
 gutenberg_corpus <- function(ids, mirror = NULL, verbose = TRUE, ...)
 {
     rows <- lapply(ids, gutenberg_download, mirror = mirror, verbose = verbose)
-    args <- c(rows) # remove names
+
+    args <- rows
+    names(args) <- NULL
     args[["stringsAsFactors"]] <- FALSE
     data <- do.call(rbind.data.frame, args)
+
     rownames(data) <- names(rows)
     as_corpus(data, ...)
 }
