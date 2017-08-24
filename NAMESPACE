@@ -4,6 +4,7 @@ useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 
 ## Imports
 importFrom(Matrix, sparseMatrix)
+importFrom(utils, download.file)
 importFrom(utils, str)
 
 
@@ -23,6 +24,7 @@ export(as_text.data.frame)
 export(as_text.default)
 export(as_utf8)
 export(corpus)
+export(gutenberg_corpus)
 export(is_corpus)
 export(is_text)
 export(format.corpus_frame)
