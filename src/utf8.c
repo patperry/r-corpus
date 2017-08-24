@@ -768,7 +768,7 @@ const char *translate_utf8(SEXP x)
 		return raw;
 	}
 
-	n = LENGTH(raw);
+	n = LENGTH(x);
 
 	if (CharacterMode == RGui) {
 		// string is already in UTF-16
