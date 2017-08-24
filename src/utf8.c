@@ -773,10 +773,10 @@ const char *translate_utf8(SEXP x)
 	n = LENGTH(x);
 
 	if (CharacterMode == RGui) {
--               // string is already in UTF-16
--               wstr = (LPWSTR)raw;
--               wlen = n / (int)sizeof(*wstr);
--       } else {
+		// string is already in UTF-16
+		wstr = (LPWSTR)raw;
+		wlen = n / (int)sizeof(*wstr);
+	} else {
 		// translate from current code page to UTF-16
 
 		// ConsoleCP for terminal, ACP otherwise
