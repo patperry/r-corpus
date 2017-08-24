@@ -57,7 +57,7 @@ gutenberg_parse <- function(lines, verbose = TRUE)
     empty <- (lines == "")
 
     # find the end of the Project Gutenberg header
-    start_pat <- paste("^\\\\*\\\\*\\\\*.*PROJECT GUTENBERG",
+    start_pat <- paste("^[*][*][*].*PROJECT GUTENBERG.*[*][*][*]",
                        "END.*SMALL PRINT", sep = "|")
     start_match <- grep(start_pat, lines)
     if (length(start_match) == 0) {
@@ -105,8 +105,11 @@ gutenberg_parse <- function(lines, verbose = TRUE)
                             "prepared by",
                             "transcribed from",
                             "project gutenberg",
+                            "^[*][*][*]",
                             "^note: ",
-                            "^special thanks", sep = "|")
+                            "^special thanks",
+                            "^this is a retranscription",
+                            sep = "|")
     note_start <- grep(note_start_pat, lines, ignore.case = TRUE)
     note_start <- note_start[start <= note_start & note_start <= end]
 
@@ -173,7 +176,16 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
     on.exit(close(con), add = TRUE)
     lines <- readLines(con, encoding = "UTF-8", warn = FALSE)
 
-    record <- gutenberg_parse(lines, verbose = verbose)
+    if (id == 1) {
+        start <- min(which(lines == "The Declaration of Independence of The United States of America"))
+        end <- max(which(lines == "December, 1972  [Etext #2]")) - 4
+        record <- list(title = "The Declaration of Independence of The United States of America",
+                       author = "Founding Fathers",
+                       language = "English",
+                       text = paste(lines[start:end], collapse = "\n"))
+    } else {
+        record <- gutenberg_parse(lines, verbose = verbose)
+    }
 
     record
 }
