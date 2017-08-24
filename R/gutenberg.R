@@ -65,11 +65,25 @@ gutenberg_parse <- function(lines, verbose = TRUE)
     }
     start <- start_match[[1]] + 1
 
+    # look for the encoding, and convert to UTF-8
+    enc_pat <- "Character set encoding:[[:space:]]*(.*)[[:space:]]*$"
+    enc_match <- grep(enc_pat, lines[seq_len(start - 1)])
+    if (length(enc_match) > 0) {
+        enc <- sub(enc_pat, "\\1", lines[enc_match[[1]]])
+        if (!enc %in% c("ASCII", "UTF-8")) {
+            if (verbose) {
+                message("Converting text from declared encoding \"", enc,
+                        "\" to UTF-8")
+            }
+            lines <- iconv(lines, enc, "UTF-8")
+        }
+    }
+
     # find metadata
     fields <- c("title" = "Title",
                 "author" = "Author",
-                "language" = "Language",
-                "encoding" = "Character set encoding")
+                "language" = "Language")
+
     meta <- rep(NA_character_, length(fields))
     names(meta) <- names(fields)
 
@@ -121,18 +135,8 @@ gutenberg_parse <- function(lines, verbose = TRUE)
         note_start <- note_start[start <= note_start]
     }
 
+    # concatenate the content lines
     text <- paste(lines[start:end], collapse = "\n")
-
-    # convert from the declared encoding to UTF-8
-    enc <- meta[["encoding"]]
-    if (!is.na(enc) && !enc %in% c("ASCII", "UTF-8") && enc %in% iconvlist()) {
-        if (verbose) {
-            message("Converting text from declared encoding \"", enc,
-                    "\" to UTF-8")
-        }
-        text <- iconv(text, enc, "UTF-8")
-    }
-    meta <- meta[-match("encoding", names(meta))]
 
     record <- c(meta, text = text)
     as.list(record)
