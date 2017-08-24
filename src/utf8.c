@@ -772,7 +772,7 @@ const char *translate_utf8(SEXP x)
 
 	n = LENGTH(x);
 
-	if (CharacterMode == RGui) {
+	if (0 && CharacterMode == RGui) {
 		// string is already in UTF-16
 		wstr = (LPWSTR)raw;
 		wlen = n / (int)sizeof(*wstr);
