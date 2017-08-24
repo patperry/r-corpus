@@ -770,7 +770,7 @@ const char *translate_utf8(SEXP x)
 
 	if (encodes_utf8(ce)) {
 		return raw;
-	} if (!(ce == CE_NATIVE || ce == CE_LATIN1 && cp == 1252)) {
+	} if (!(ce == CE_NATIVE || (ce == CE_LATIN1 && cp == 1252))) {
 		return translateCharUTF8(x);
 	}
 
