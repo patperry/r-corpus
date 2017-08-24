@@ -747,8 +747,9 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
-#include <R_ext/RStartup.h>
 
+#define Win32
+#include <R_ext/RStartup.h>
 extern UImode CharacterMode;
 
 const char *translate_utf8(SEXP x)
@@ -772,7 +773,7 @@ const char *translate_utf8(SEXP x)
 	if (CharacterMode == RGui) {
 		// string is already in UTF-16
 		wstr = (LPWSTR)raw;
-		wlen = n / sizeof(*wstr);
+		wlen = n / (int)sizeof(*wstr);
 	} else {
 		// translate from current code page to UTF-16
 
