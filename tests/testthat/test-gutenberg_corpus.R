@@ -1,7 +1,7 @@
 context("gutenberg_corpus")
 
 test_that("'gutenberg_corpus' can download Jules Verne in French", {
-    if (!identical(Sys.getenv("WEB_RESOURCE_TESTS"), "true")) {
+    if (!identical(Sys.getenv("TEST_WEB_RESOURCES"), "true")) {
         skip("Not on Travis")
     }
 

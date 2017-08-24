@@ -15,5 +15,5 @@ r_github_packages:
 
 after_success:
   - export LC_ALL="C"
-  - export WEB_RESOURCE_TESTS="true"
+  - export TEST_WEB_RESOURCES="true"
   - Rscript -e 'covr::codecov(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
