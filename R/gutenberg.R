@@ -184,10 +184,8 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
 
     # fall back to plain text if something went wrong downloading the index
     if (verbose) {
-        message("Failed listing available file extensions; falling back to '.zip'")
-        if (length(suffix) == 0) {
-            suffix <- ""
-        }
+        message("Failed listing available file extensions; trying all possibilities")
+        suffix <- c("-0", "-8", "")
     }
 
     # Files have typically have suffixes "-0", "-8", "". I couldn't
@@ -195,11 +193,28 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
     # "-8" is original encoding, "" is unknown.
 
     # Prefer the first matching file in the directory.
-    base_name <- paste0(id, suffix[[1]])
-    url <- paste0(base_url,  base_name, ".zip")
-    tmp <- tempfile(fileext = ".zip")
-    utils::download.file(url, tmp, quiet = !verbose)
-    on.exit(unlink(tmp), add = TRUE)
+    ok <- FALSE
+    for (s in suffix) {
+        base_name <- paste0(id, suffix[[1]])
+        url <- paste0(base_url,  base_name, ".zip")
+        tmp <- tempfile(fileext = ".zip")
+        ok <- tryCatch({
+            suppressWarnings({
+                utils::download.file(url, tmp, quiet = !verbose)
+            })
+            TRUE
+        }, error = function(e) {
+            FALSE
+        })
+        if (ok) {
+            on.exit(unlink(tmp), add = TRUE)
+            break
+        }
+    }
+
+    if (!ok) {
+        stop(sprintf("Failed downloading Gutenberg Text #%d", id))
+    }
 
     con <- unz(tmp, paste0(base_name, ".txt"))
     on.exit(close(con), add = TRUE)
