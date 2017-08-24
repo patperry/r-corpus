@@ -751,6 +751,7 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 #define Win32
 #include <R_ext/RStartup.h>
 extern UImode CharacterMode;
+extern unsigned int localeCP;
 
 const char *translate_utf8(SEXP x)
 {
@@ -766,7 +767,7 @@ const char *translate_utf8(SEXP x)
 
 	if (encodes_utf8(ce)) {
 		return raw;
-	} else if (ce != CE_NATIVE) {
+	} if (!(ce == CE_NATIVE || ce == CE_LATIN1 && localeCP == 1252)) {
 		return translateCharUTF8(x);
 	}
 
