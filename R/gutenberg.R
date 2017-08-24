@@ -182,6 +182,14 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
     # only use plain text formats
     suffix <- suffix[suffix %in% c("-0", "-8", "")]
 
+    # fall back to plain text if something went wrong downloading the index
+    if (verbose) {
+        message("Failed listing available file extensions; falling back to '.zip'")
+        if (length(suffix) == 0) {
+            suffix <- ""
+        }
+    }
+
     # Files have typically have suffixes "-0", "-8", "". I couldn't
     # find documentation, but it appears that "-0" is UTF-8 encoded,
     # "-8" is original encoding, "" is unknown.
