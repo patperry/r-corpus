@@ -13,6 +13,18 @@
 #  limitations under the License.
 
 
+# retrieved from https://www.gutenberg.org/MIRRORS.ALL on 2017-08-24
+gutenberg_default_mirrors <- c(
+    "http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg/",
+    "http://eremita.di.uminho.pt/gutenberg/",
+    "http://mirror.csclub.uwaterloo.ca/gutenberg/",
+    "http://www.gutenberg.org/dirs/",
+    "http://mirrors.xmission.com/gutenberg/",
+    "http://gutenberg.pglaf.org/",
+    "http://aleph.gutenberg.org/",
+    "http://gutenberg.readingroo.ms/")
+
+
 gutenberg_get_mirror <- function(verbose = TRUE)
 {
     # used cached value if possible
@@ -32,6 +44,11 @@ gutenberg_get_mirror <- function(verbose = TRUE)
     pattern <- "^.*\\| (http://[^[:space:]]*)[[:space:]]+\\|.*$"
     rows <- grep(pattern, meta, value = TRUE)
     urls <- sub(pattern, "\\1", rows)
+
+    if (length(urls) == 0) {
+        message("Failed retrieving MIRRORS.ALL; using default list (possibly outdated)")
+        urls <- gutenberg_default_mirrors
+    }
 
     # choose a mirror based on the current time
     i <- 1 + as.integer(Sys.time()) %% length(urls)
