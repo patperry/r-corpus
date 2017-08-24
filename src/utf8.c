@@ -751,7 +751,6 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 #define Win32
 #include <R_ext/RStartup.h>
 extern UImode CharacterMode;
-extern unsigned int localeCP;
 
 const char *translate_utf8(SEXP x)
 {
@@ -765,19 +764,19 @@ const char *translate_utf8(SEXP x)
 	ce = getCharCE(x);
 	raw = CHAR(x);
 
+	// ConsoleCP for terminal, ACP otherwise
+	// (see https://go-review.googlesource.com/c/27575/ )
+	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+
 	if (encodes_utf8(ce)) {
 		return raw;
-	} if (!(ce == CE_NATIVE || ce == CE_LATIN1 && localeCP == 1252)) {
+	} if (!(ce == CE_NATIVE || ce == CE_LATIN1 && cp == 1252)) {
 		return translateCharUTF8(x);
 	}
 
 	n = LENGTH(x);
 
 	// translate from current code page to UTF-16
-
-	// ConsoleCP for terminal, ACP otherwise
-	// (see https://go-review.googlesource.com/c/27575/ )
-	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
 
 	wlen = MultiByteToWideChar(cp, 0, raw, n, NULL, 0);
 	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
