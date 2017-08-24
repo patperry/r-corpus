@@ -556,7 +556,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	}
 	TRY(TYPEOF(sname) != CHARSXP ? CORPUS_ERROR_INTERNAL : 0);
 
-	name_ptr = translateCharUTF8(sname);
+	name_ptr = translate_utf8(sname);
 	name_len = strlen(name_ptr);
 	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8)); nprot++;
 	TRY(corpus_text_assign(&name, (uint8_t *)name_ptr, name_len,
@@ -807,14 +807,14 @@ static int in_string_set(SEXP strs, SEXP item)
 		return 0;
 	}
 
-	s2 = translateCharUTF8(item);
+	s2 = translate_utf8(item);
 
 	for (i = 0; i < n; i++) {
 		if (STRING_ELT(strs, i) == NA_STRING) {
 			continue;
 		}
 
-		s1 = translateCharUTF8(STRING_ELT(strs, i));
+		s1 = translate_utf8(STRING_ELT(strs, i));
 		if (strcmp(s1, s2) == 0) {
 			return 1;
 		}

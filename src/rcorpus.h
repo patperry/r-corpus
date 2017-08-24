@@ -286,5 +286,6 @@ int charsxp_width(SEXP charsxp, int quote, int utf8);
 int encodes_utf8(cetype_t ce);
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
+const char *translate_utf8(SEXP x);
 
 #endif /* RCORPUS_H */

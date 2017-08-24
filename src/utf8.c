@@ -479,7 +479,7 @@ static SEXP charsxp_encode(SEXP sx, int display, int utf8, char **bufptr,
 
 	ce = getCharCE(sx);
 	if (!encodes_utf8(ce)) {
-		str2 = (const uint8_t *)translateCharUTF8(sx);
+		str2 = (const uint8_t *)translate_utf8(sx);
 		ce = CE_UTF8;
 		if (str2 != str) {
 			str = str2;
@@ -551,7 +551,7 @@ SEXP utf8_coerce(SEXP sx)
 			str = (const uint8_t *)CHAR(sstr);
 			size = (size_t)XLENGTH(sstr);
 		} else {
-			str = (const uint8_t *)translateCharUTF8(sstr);
+			str = (const uint8_t *)translate_utf8(sstr);
 			size = strlen((const char *)str);
 		}
 
@@ -648,7 +648,7 @@ SEXP utf8_valid(SEXP sx)
 			str = (const uint8_t *)CHAR(sstr);
 			size = (size_t)XLENGTH(sstr);
 		} else {
-			str = (const uint8_t *)translateCharUTF8(sstr);
+			str = (const uint8_t *)translate_utf8(sstr);
 			size = strlen((const char *)str);
 		}
 
@@ -744,3 +744,41 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 
 	return ans;
 }
+
+#if (defined(_WIN32) || defined(_WIN64))
+#include <windows.h>
+
+const char *translate_utf8(SEXP x)
+{
+	LPWSTR wstr;
+	char *str;
+	cetype_t ce;
+	int len, wlen;
+
+	if (encodes_utf8(ce)) {
+		return CHAR(x);
+	}
+
+	// native encoding is wide chars (UTF-16)
+	wstr = (LPWSTR)CHAR(x);
+	wlen = LENGTH(x) / sizeof(*wstr);
+
+	// determine length of output to UTF-8
+	len = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
+
+	// perform the conversion
+	str = R_alloc(len + 1, 1); // add space for NUL
+	WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, str, len, NULL, NULL);
+	str[len] = '\0';
+
+	return str;
+}
+
+#else
+
+const char *translate_utf8(SEXP x)
+{
+	return translateCharUTF8(x);
+}
+
+#endif

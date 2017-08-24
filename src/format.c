@@ -100,7 +100,7 @@ static void text_init_charsxp(struct text *text, SEXP charsxp)
 		size = (size_t)XLENGTH(charsxp);
 
 		if (!encodes_utf8(ce)) {
-			ptr2 = (const uint8_t *)translateCharUTF8(charsxp);
+			ptr2 = (const uint8_t *)translate_utf8(charsxp);
 			if (ptr2 != ptr) {
 				ptr = ptr2;
 				size = strlen((const char *)ptr);

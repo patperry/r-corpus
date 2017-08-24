@@ -42,7 +42,7 @@ static SEXP wordlist(const uint8_t **(*callback)(const char *, int *),
 		return R_NilValue;
 	}
 
-	kind = translateCharUTF8(STRING_ELT(skind, 0));
+	kind = translate_utf8(STRING_ELT(skind, 0));
 	strs = (const char **)callback(kind, &n);
 
 	if (!strs) {

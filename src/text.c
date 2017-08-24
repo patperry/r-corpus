@@ -368,7 +368,7 @@ SEXP as_text_character(SEXP x, SEXP filter)
 		}
 
 		// convert to UTF-8
-		ptr = translateCharUTF8(str);
+		ptr = translate_utf8(str);
 		if (ptr != CHAR(str)) {
 			if (!duped) {
 				SET_VECTOR_ELT(sources, 0, (x = duplicate(x)));
