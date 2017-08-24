@@ -766,6 +766,8 @@ const char *translate_utf8(SEXP x)
 
 	if (encodes_utf8(ce)) {
 		return raw;
+	} else if (ce != CE_NATIVE) {
+		return translateCharUTF8(x);
 	}
 
 	n = LENGTH(x);
