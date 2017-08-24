@@ -183,8 +183,10 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
     suffix <- suffix[suffix %in% c("-0", "-8", "")]
 
     # fall back to plain text if something went wrong downloading the index
-    if (verbose) {
-        message("Failed listing available file extensions; trying all possibilities")
+    if (length(suffix) == 0) {
+        if (verbose) {
+            message("Failed listing available file extensions; trying all possibilities")
+        }
         suffix <- c("-0", "-8", "")
     }
 
@@ -195,7 +197,7 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
     # Prefer the first matching file in the directory.
     ok <- FALSE
     for (s in suffix) {
-        base_name <- paste0(id, suffix[[1]])
+        base_name <- paste0(id, s)
         url <- paste0(base_url,  base_name, ".zip")
         tmp <- tempfile(fileext = ".zip")
         ok <- tryCatch({
