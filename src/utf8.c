@@ -747,27 +747,46 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
+#include <R_ext/RStartup.h>
+
+extern UImode CharacterMode;
 
 const char *translate_utf8(SEXP x)
 {
 	LPWSTR wstr;
+	const char *raw;
 	char *str;
 	cetype_t ce;
-	int len, wlen;
+	int len, wlen, n;
+	UINT cp;
 
 	ce = getCharCE(x);
+	raw = CHAR(x);
+
 	if (encodes_utf8(ce)) {
-		return CHAR(x);
+		return raw;
 	}
 
-	// native encoding is wide chars (UTF-16)
-	wstr = (LPWSTR)CHAR(x);
-	wlen = LENGTH(x) / sizeof(*wstr);
+	n = LENGTH(raw);
 
-	// determine length of output to UTF-8
+	if (CharacterMode == RGui) {
+		// string is already in UTF-16
+		wstr = (LPWSTR)raw;
+		wlen = n / sizeof(*wstr);
+	} else {
+		// translate from current code page to UTF-16
+
+		// ConsoleCP for terminal, ACP otherwise
+		// (see https://go-review.googlesource.com/c/27575/ )
+		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+
+		wlen = MultiByteToWideChar(cp, 0, raw, n, NULL, 0);
+		wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
+		MultiByteToWideChar(cp, 0, raw, n, wstr, wlen);
+	}
+
+	// convert from UTF-16 to UTF-8
 	len = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
-
-	// perform the conversion
 	str = R_alloc(len + 1, 1); // add space for NUL
 	WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, str, len, NULL, NULL);
 	str[len] = '\0';
