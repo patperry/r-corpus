@@ -770,16 +770,23 @@ const char *translate_utf8(SEXP x)
 		return translateCharUTF8(x);
 	}
 
-	// translate from current code page to UTF-16
-
-	// ConsoleCP for terminal, ACP otherwise
-	// (see https://go-review.googlesource.com/c/27575/ )
-	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
 	n = LENGTH(x);
 
-	wlen = MultiByteToWideChar(cp, 0, raw, n, NULL, 0);
-	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
-	MultiByteToWideChar(cp, 0, raw, n, wstr, wlen);
+	if (CharacterMode == RGui) {
+-               // string is already in UTF-16
+-               wstr = (LPWSTR)raw;
+-               wlen = n / (int)sizeof(*wstr);
+-       } else {
+		// translate from current code page to UTF-16
+
+		// ConsoleCP for terminal, ACP otherwise
+		// (see https://go-review.googlesource.com/c/27575/ )
+		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+
+		wlen = MultiByteToWideChar(cp, 0, raw, n, NULL, 0);
+		wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
+		MultiByteToWideChar(cp, 0, raw, n, wstr, wlen);
+	}
 
 	// convert from UTF-16 to UTF-8
 	len = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
