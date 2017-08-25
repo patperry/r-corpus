@@ -2,4 +2,5 @@
 *.o
 *.so
 .Rhistory
-dist/
+/README
+/dist/
