@@ -6,6 +6,9 @@ Changes in version 0.9.1.9000
 
  * Fix bug in utf8_normalize() when the input contains a backslash (\).
 
+ * Fix bug in term_matrix() column names (non-ASCII names were getting
+   replaced by Unicode escapes).
+
  * Work around R Windows bug in converting native to UTF-8; described at
    https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329 .
 

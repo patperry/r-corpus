@@ -217,3 +217,14 @@ test_that("'term_frame' with group gives equivalent results to 'term_matrix'", {
                                                 colnames(x)))
     expect_equal(x, xtf)
 })
+
+
+test_that("'term_matrix' can handle mmapped JSON with escapes", {
+    tmp <- tempfile()
+    writeLines('{"text": "\\u00a3"}', tmp)
+    on.exit(unlink(tmp))
+
+    data <- read_ndjson(tmp, mmap = TRUE, text = "text")
+    x <- term_matrix(data)
+    expect_equal(colnames(x), "\u00a3")
+})

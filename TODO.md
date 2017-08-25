@@ -10,6 +10,8 @@ Bugs
 Features
 --------
 
+ * wrap.pad, width arguments to `utf8_print`
+
  * `token_kind` and `token_map` functions (?)
 
  * `summary.text` could be better
