@@ -779,7 +779,8 @@ const char *translate_utf8(SEXP x)
 
 	// R seems to mark native strings as "latin1" when the code page
 	// is set to 1252, but this doesn't seem to be correct. Work
-	// around this behavior by using the Windows API.
+	// around this behavior by treating "latin1" as native on
+	// Windows-1252 (otherwise use default R translation from Latin-1).
 	if (ce == CE_LATIN1 && cp != 1252) {
 		return translateCharUTF8(x);
 	}
