@@ -763,21 +763,19 @@ const char *translate_utf8(SEXP x)
 
 	ce = getCharCE(x);
 	raw = CHAR(x);
+	n = LENGTH(x);
 
 	// ConsoleCP for terminal, ACP otherwise
 	// (see https://go-review.googlesource.com/c/27575/ )
 	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
 
-	if (encodes_utf8(ce)) {
+	if (encodes_utf8(ce) || n == 0) {
 		return raw;
 	} if (!(ce == CE_NATIVE || (ce == CE_LATIN1 && cp == 1252))) {
 		return translateCharUTF8(x);
 	}
 
-	n = LENGTH(x);
-
 	// translate from current code page to UTF-16
-
 	wlen = MultiByteToWideChar(cp, 0, raw, n, NULL, 0);
 	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
 	MultiByteToWideChar(cp, 0, raw, n, wstr, wlen);
