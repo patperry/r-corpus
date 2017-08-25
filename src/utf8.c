@@ -765,13 +765,22 @@ const char *translate_utf8(SEXP x)
 	raw = CHAR(x);
 	n = LENGTH(x);
 
-	// ConsoleCP for terminal, ACP otherwise
+	if (encodes_utf8(ce) || n == 0) {
+		return raw;
+	}
+
+	if (ce != CE_NATIVE && ce != CE_LATIN1) {
+		return translateCharUTF8(x);
+	}
+
+	// determine code page: ConsoleCP for terminal, ACP otherwise
 	// (see https://go-review.googlesource.com/c/27575/ )
 	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
 
-	if (encodes_utf8(ce) || n == 0) {
-		return raw;
-	} if (!(ce == CE_NATIVE || (ce == CE_LATIN1 && cp == 1252))) {
+	// R seems to mark native strings as "latin1" when the code page
+	// is set to 1252, but this doesn't seem to be correct. Work
+	// around this behavior by using the Windows API.
+	if (ce == CE_LATIN1 && cp != 1252) {
 		return translateCharUTF8(x);
 	}
 
