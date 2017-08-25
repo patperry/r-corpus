@@ -14,7 +14,7 @@ r_github_packages:
   - patperry/covr
 
 before_install:
-    - sed -e '/^\[!\[/d' README.md > README
+  - sed -e '/^\[!\[/d' README.md > README
 
 after_success:
   - export LC_ALL="C"
