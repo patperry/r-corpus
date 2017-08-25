@@ -1,11 +1,16 @@
 Changes in version 0.9.1.9000
 
+ * Add gutenberg_corpus() for downloading a corpus from Project Gutenberg.
+
  * Switch as_utf8() default argument to normalize = FALSE.
 
- * Fix bug in utf8_normalize() when the input contains a backslash (\)
+ * Fix bug in utf8_normalize() when the input contains a backslash (\).
+
+ * Work around R Windows bug in converting native to UTF-8; described at
+   https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329 .
 
 
-Changes in version 0.9.1
+Changes in version 0.9.1 (2017-08-20)
 
  * Fix buffer overrun for case folding some Greek letters.
 
@@ -18,7 +23,7 @@ Changes in version 0.9.1
  * Rename 'wnaffect' to 'affect_wordnet'.
 
 
-Changes in version 0.9.0 (2017-07-19)
+Changes in version 0.9.0 (2017-08-19)
 
  * Add new vignette, "Introduction to corpus" vignette.
 
