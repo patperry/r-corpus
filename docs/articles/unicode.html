@@ -51,7 +51,7 @@
       <a href="../articles/chinese.html">Chinese text handling</a>
     </li>
     <li>
-      <a href="../articles/unicode.html">Unicode: Emoji, accents, and other international text</a>
+      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
     </li>
   </ul>
 </li>
@@ -83,24 +83,29 @@
     
 <div class="contents">
 <!--
-%\VignetteIndexEntry{Unicode: Emoji, accents, and other international text}
+%\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteEncoding{UTF-8}
 -->
-<div id="unicode-emoji-accents-and-other-international-text" class="section level1">
+<div id="unicode-emoji-accents-and-international-text" class="section level1">
 <h1 class="hasAnchor">
-<a href="#unicode-emoji-accents-and-other-international-text" class="anchor"></a>Unicode: Emoji, accents, and other international text</h1>
+<a href="#unicode-emoji-accents-and-international-text" class="anchor"></a>Unicode: Emoji, accents, and international text</h1>
 <div id="character-encoding" class="section level2">
 <h2 class="hasAnchor">
 <a href="#character-encoding" class="anchor"></a>Character encoding</h2>
 <p>Before we can analyze a text in R, we first need to get its digital representation, a sequence of ones and zeros. In practice this works by first choosing an <em>encoding</em> for the text that assigns each character a numerical value, and then translating the sequence of characters in the text to the corresponding sequence of numbers specified by the encoding. Today, most new text is encoded according to the <a href="http://unicode.org/charts/">Unicode standard</a>, specifically the 8-bit block Unicode Transfer Format, <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8</a>. Joel Spolsky gives a good overview of the situation in an <a href="https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/">essay from 2003</a>.</p>
 <p>The software community has mostly moved to UTF-8 as a standard for text storage and interchange, but there is still a large volume of text in other encodings. Whenever you read a text file into R, you need to specify the encoding. If you don’t, R will try to guess the encoding, and if it guesses incorrectly, it will wrongly interpret the sequence of ones and zeros.</p>
-<p>We will demonstrate the difficulties of encodings with the text of Jane Austen’s novel, <em>Mansfield Park</em> provided by <a href="http://www.gutenberg.org">Project Gutenberg</a>. We will download the text, then read in the lines of the novel using the <em><a href="https://github.com/tidyverse/readr#readme">readr</a></em> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
-url &lt;-<span class="st"> "http://www.gutenberg.org/files/141/141.txt"</span>
+<p>We will demonstrate the difficulties of encodings with the text of Jane Austen’s novel, <em>Mansfield Park</em> provided by <a href="http://www.gutenberg.org">Project Gutenberg</a>. We will download the text, then read in the lines of the novel.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the zipped text from a Project Gutenberg mirror</span>
+url &lt;-<span class="st">  "http://mirror.csclub.uwaterloo.ca/gutenberg/1/4/141/141.zip"</span>
+tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
 <span class="kw">download.file</span>(url, tmp)
-lines &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/readr/topics/read_lines">read_lines</a></span>(tmp)</code></pre></div>
-<p>The <code>read_lines</code> function has a <code>locale</code> argument which, if left unspecified as here, defaults to assuming that text is encoded as “UTF-8”. Really, we should specify the encoding ourselves. Unfortunately, the file extension “.txt” does not tell us the encoding. However, if we read the first few lines of the file, we see the following:</p>
+
+<span class="co"># read the text from the zip file</span>
+con &lt;-<span class="st"> </span><span class="kw">unz</span>(tmp, <span class="st">"141.txt"</span>, <span class="dt">encoding =</span> <span class="st">"UTF-8"</span>)
+lines &lt;-<span class="st"> </span><span class="kw">readLines</span>(con)
+<span class="kw">close</span>(con)</code></pre></div>
+<p>The <code>unz</code> function and other similar file connection functions have <code>encoding</code> arguments which, if left unspecified default to assuming that text is encoded in your operating system’s native encoding. To ensure consistent behavior across all platforms (Mac, Windows, and Linux), you should set this option explicitly. Here, we set <code>encoding = "UTF-8"</code>. This is a reasonable default, but it is not awlays appropriate. In general, you should determine the appropriate <code>encoding</code> value by looking at the file. Unfortunately, the file extension <code>".txt"</code> is not informative, and could correspond to any encoding. However, if we read the first few lines of the file, we see the following:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lines[<span class="dv">11</span><span class="op">:</span><span class="dv">20</span>]</code></pre></div>
 <pre><code> [1] "Author: Jane Austen"                                         
  [2] ""                                                            
@@ -112,7 +117,8 @@ lines &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="
  [8] "Character set encoding: ASCII"                               
  [9] ""                                                            
 [10] "*** START OF THIS PROJECT GUTENBERG EBOOK MANSFIELD PARK ***"</code></pre>
-<p>The file claims to be ASCII, and we read in the text assuming that it was encoded as UTF-8. So, we should be in good shape. However, we run into trouble as soon as we try to process the text:</p>
+<p>The character set encoding is reported as ASCII, which is a subset of UTF-8. So, we should be in good shape.</p>
+<p>Unfortunately, we run into trouble as soon as we try to process the text:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(lines) <span class="co"># produces an error</span></code></pre></div>
 <pre><code>Error in term_stats(lines) :
   argument entry 15252 is marked as "UTF-8" but contains an invalid byte in position 36 (\xa3)</code></pre>
@@ -281,7 +287,7 @@ lines2[<span class="dv">15252</span>]</code></pre></div>
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li>
-<a href="#unicode-emoji-accents-and-other-international-text">Unicode: Emoji, accents, and other international text</a><ul class="nav nav-pills nav-stacked">
+<a href="#unicode-emoji-accents-and-international-text">Unicode: Emoji, accents, and international text</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#character-encoding">Character encoding</a></li>
       <li><a href="#utf-8">UTF-8</a></li>
       <li><a href="#translating-to-utf-8">Translating to UTF-8</a></li>

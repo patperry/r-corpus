@@ -1,11 +1,11 @@
 <!--
-%\VignetteIndexEntry{Unicode: Emoji, accents, and other international text}
+%\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteEncoding{UTF-8}
 -->
 
-Unicode: Emoji, accents, and other international text
-=====================================================
+Unicode: Emoji, accents, and international text
+===============================================
 
 
 
@@ -32,21 +32,30 @@ incorrectly, it will wrongly interpret the sequence of ones and zeros.
 We will demonstrate the difficulties of encodings with the text of
 Jane Austen's novel, _Mansfield Park_ provided by
 [Project Gutenberg][gutenberg]. We will download the text, then
-read in the lines of the novel using the *[readr][readr]* package.
+read in the lines of the novel.
 
 
 ```r
+# download the zipped text from a Project Gutenberg mirror
+url <-  "http://mirror.csclub.uwaterloo.ca/gutenberg/1/4/141/141.zip"
 tmp <- tempfile()
-url <- "http://www.gutenberg.org/files/141/141.txt"
 download.file(url, tmp)
-lines <- readr::read_lines(tmp)
+
+# read the text from the zip file
+con <- unz(tmp, "141.txt", encoding = "UTF-8")
+lines <- readLines(con)
+close(con)
 ```
 
-The `read_lines` function has a `locale` argument which, if left unspecified
-as here, defaults to assuming that text is encoded as "UTF-8". Really, we
-should specify the encoding ourselves. Unfortunately, the file
-extension ".txt" does not tell us the encoding. However, if we read the first
-few lines of the file, we see the following:
+The `unz` function and other similar file connection functions have `encoding`
+arguments which, if left unspecified default to assuming that text is encoded
+in your operating system's native encoding. To ensure consistent behavior
+across all platforms (Mac, Windows, and Linux), you should set this option
+explicitly. Here, we set `encoding = "UTF-8"`. This is a reasonable default,
+but it is not awlays appropriate. In general, you should determine the
+appropriate `encoding` value by looking at the file. Unfortunately, the file
+extension `".txt"` is not informative, and could correspond to any encoding.
+However, if we read the first few lines of the file, we see the following:
 
 
 ```r
@@ -66,9 +75,11 @@ lines[11:20]
 [10] "*** START OF THIS PROJECT GUTENBERG EBOOK MANSFIELD PARK ***"
 ```
 
-The file claims to be ASCII, and we read in the text assuming that it was
-encoded as UTF-8. So, we should be in good shape. However, we run into trouble
-as soon as we try to process the text:
+The character set encoding is reported as ASCII, which is a subset of UTF-8.
+So, we should be in good shape.
+
+
+Unfortunately, we run into trouble as soon as we try to process the text:
 
 ```r
 term_stats(lines) # produces an error

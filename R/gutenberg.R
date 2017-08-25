@@ -205,7 +205,7 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
     utils::download.file(url, tmp, quiet = !verbose)
     on.exit(unlink(tmp), add = TRUE)
 
-    con <- unz(tmp, paste0(base_name, ".txt"))
+    con <- unz(tmp, paste0(base_name, ".txt"), encoding = "UTF-8")
     on.exit(close(con), add = TRUE)
     lines <- readLines(con, encoding = "UTF-8", warn = FALSE)
 
