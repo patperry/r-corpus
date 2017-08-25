@@ -41,10 +41,7 @@ gutenberg_get_mirror <- function(verbose = TRUE)
 
     # don't error if the download fails
     meta <- tryCatch({
-        suppressWarnings({
-            readLines(mirrors_url)
-        })
-        TRUE
+        readLines(mirrors_url)
     }, error = function(e) {
         character()
     })
