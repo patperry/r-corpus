@@ -43,39 +43,6 @@ as_character_vector <- function(name, value, utf8 = TRUE)
 }
 
 
-as_chars <- function(name, value)
-{
-    if (is.null(value)) {
-        return(NULL)
-    }
-
-    value <- as_integer_scalar(name, value)
-    if (is.na(value) || value < 0) {
-        stop(sprintf("'%s' must be NULL, or a non-negative integer", name))
-    }
-    value
-}
-
-
-as_digits <- function(name, value)
-{
-    if (is.null(value)) {
-        return(NULL)
-    }
-
-    value <- as_integer_scalar(name, value)
-    if (is.na(value)) {
-        value <- getOption("digits")
-    }
-    if (value < 0) {
-        stop(paste0("'", name, "' must be non-negative"))
-    } else if (value >= 23) {
-        stop(paste0("'", name, "' must be less than 23"))
-    }
-    value
-}
-
-
 as_double_scalar <- function(name, value, allow_null = FALSE)
 {
     if (is.null(value)) {
@@ -171,12 +138,6 @@ as_integer_scalar <- function(name, value, null = NA_integer_)
 }
 
 
-as_justify <- function(name, value)
-{
-    as_enum(name, value, c("left", "right", "centre", "none"))
-}
-
-
 as_kind <- function(kind)
 {
     if (is.null(kind) || all(is.na(kind))) {
@@ -187,22 +148,6 @@ as_kind <- function(kind)
     kind <- as_character_vector("kind", kind, utf8 = TRUE)
     kind <- unique(kind[!is.na(kind)])
     kind
-}
-
-
-as_max_print <- function(name, value)
-{
-    if (is.null(value)) {
-        return(NULL)
-    }
-    value <- as_integer_scalar(name, value)
-    if (is.na(value)) {
-        stop(sprintf("'%s' cannot be NA", name))
-    }
-    if (value < 0) {
-        stop(sprintf("'%s' must be non-negative", name))
-    }
-    value
 }
 
 
@@ -261,6 +206,22 @@ as_ngrams <- function(ngrams)
 }
 
 
+as_nonnegative <- function(name, value)
+{
+    if (is.null(value)) {
+        return(NULL)
+    }
+    value <- as_integer_scalar(name, value)
+    if (is.na(value)) {
+        stop(sprintf("'%s' cannot be NA", name))
+    }
+    if (value < 0) {
+        stop(sprintf("'%s' must be non-negative", name))
+    }
+    value
+}
+
+
 as_option <- function(name, value)
 {
     if (is.null(value)) {
@@ -271,23 +232,6 @@ as_option <- function(name, value)
         stop(paste0("'", name, "' must be TRUE or FALSE"))
     }
     as.logical(value)
-}
-
-
-as_print_gap <- function(name, value)
-{
-    if (is.null(value)) {
-        return(NULL)
-    }
-    value <- as_integer_scalar(name, value)
-    if (is.na(value)) {
-        stop(paste0("'", name, "' cannot be NA"))
-    } else if (value < 0) {
-        stop(paste0("'", name, "' must be non-negative"))
-    } else if (value > 1024) {
-        stop(paste0("'", name, "' must be less than or equal to 1024"))
-    }
-    value
 }
 
 
@@ -369,4 +313,31 @@ as_weights <- function(weights, n)
     }
 
     weights
+}
+
+as_chars <- as_nonnegative
+
+as_digits <- function(name, value)
+{
+    value <- as_nonnegative(name, value)
+    if (!is.null(value) && value > 22) {
+        stop(sprintf("'%s' must be less than or equal to 22", name))
+    }
+    value
+}
+
+as_justify <- function(name, value)
+{
+    as_enum(name, value, c("left", "right", "centre", "none"))
+}
+
+as_max_print <- as_nonnegative
+
+as_print_gap <- function(name, value)
+{
+    value <- as_nonnegative(name, value)
+    if (!is.null(value) && value > 1024) {
+        stop(sprintf("'%s' must be less than or equal to 1024", name))
+    }
+    value
 }
