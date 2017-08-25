@@ -311,3 +311,27 @@ test_that("'print.corpus_frame' does not need a gap at the end", {
     expect_equal(length(strsplit(capture_output(print.corpus_frame(d)),
                                  "\n")[[1]]), 2)
 })
+
+
+test_that("'print.corpus_frame' can wrap 4 columns", {
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype), add = TRUE)
+
+    oldwidth <- options()$width
+    options(width = 80)
+    on.exit(options(width = oldwidth), add = TRUE)
+
+    x <- corpus(title = "The Declaration of Independence of The United States of America",
+                author = "Founding Fathers",
+                language = "English",
+                text = "The Declaration of Independence of The United States of America\n\n\nWhen in the course of human events")
+
+    lines <- c(
+'  title                                                          ',
+'1 The Declaration of Independence of The United States of America',
+'  author           language text                                                ',
+'1 Founding Fathers English  The Declaration of Independence of The United Sta...')
+
+    expect_equal(strsplit(capture_output(print.corpus_frame(x)), "\n")[[1]],
+                 lines)
+})
