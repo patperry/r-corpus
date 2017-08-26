@@ -774,20 +774,19 @@ const char *translate_utf8(SEXP x)
 		return translateCharUTF8(x);
 	}
 
-	cp = localeCP;
-	if (cp == 0) {
-		// Failed determining code page from locale. Use native
-		// code page: ConsoleCP for terminal, ACP otherwise
-		// (see https://go-review.googlesource.com/c/27575/ )
-		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
-	}
-
-	// R seems to mark native strings as "latin1" when the code page
-	// is set to 1252, but this doesn't seem to be correct. Work
-	// around this behavior by treating "latin1" as native on
-	// Windows-1252 (otherwise use default R translation from Latin-1).
-	if (ce == CE_LATIN1 && cp != 1252) {
-		return translateCharUTF8(x);
+	if (ce == LATIN1) {
+		// R seems to mark native strings as "latin1" when the code page
+		// is set to 1252, but this doesn't seem to be correct. Work
+		// around this behavior by decoding "latin1" as Windows-1252.
+		cp = 1252;
+	} else {
+		cp = localeCP;
+		if (cp == 0) {
+			// Failed determining code page from locale. Use native
+			// code page: ConsoleCP for terminal, ACP otherwise
+			// (see https://go-review.googlesource.com/c/27575/ )
+			cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+		}
 	}
 
 	// translate from current code page to UTF-16
