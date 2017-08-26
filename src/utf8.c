@@ -751,6 +751,7 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 #define Win32
 #include <R_ext/RStartup.h>
 extern UImode CharacterMode;
+extern unsigned int localeCP;
 
 const char *translate_utf8(SEXP x)
 {
@@ -773,9 +774,13 @@ const char *translate_utf8(SEXP x)
 		return translateCharUTF8(x);
 	}
 
-	// determine code page: ConsoleCP for terminal, ACP otherwise
-	// (see https://go-review.googlesource.com/c/27575/ )
-	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+	cp = localeCP;
+	if (cp == 0) {
+		// Failed determining code page from locale. Use native
+		// code page: ConsoleCP for terminal, ACP otherwise
+		// (see https://go-review.googlesource.com/c/27575/ )
+		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+	}
 
 	// R seems to mark native strings as "latin1" when the code page
 	// is set to 1252, but this doesn't seem to be correct. Work
