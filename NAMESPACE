@@ -11,8 +11,9 @@ importFrom(utils, str)
 ## Exports
 export(abbreviations)
 export(as_corpus)
-export(as_corpus.Corpus)
 export(as_corpus.character)
+export(as_corpus.Corpus)
+export(as_corpus.corpus)
 export(as_corpus.corpus_json)
 export(as_corpus.corpus_text)
 export(as_corpus.data.frame)
@@ -72,17 +73,19 @@ export(term_counts)
 
 
 ## New S3 methods
+S3method(as_corpus, character)
 S3method(as_corpus, Corpus)
+S3method(as_corpus, corpus)
 S3method(as_corpus, corpus_json)
 S3method(as_corpus, corpus_text)
-S3method(as_corpus, character)
 S3method(as_corpus, default)
 S3method(as_corpus, data.frame)
 
+S3method(as_text, character)
 S3method(as_text, Corpus)
+S3method(as_text, corpus)
 S3method(as_text, corpus_json)
 S3method(as_text, corpus_text)
-S3method(as_text, character)
 S3method(as_text, default)
 S3method(as_text, data.frame)
 

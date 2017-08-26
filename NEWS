@@ -1,5 +1,9 @@
 Changes in version 0.9.1.9000
 
+ * Add support for tm 'Corpus' and quanteda 'corpus' objects; all functions
+   expecting text (text_tokens, term_matrix, etc.) should work seamlessly
+   on these objects.
+
  * Add gutenberg_corpus() for downloading a corpus from Project Gutenberg.
 
  * Switch as_utf8() default argument to normalize = FALSE.

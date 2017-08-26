@@ -29,16 +29,6 @@ test_that("'as_text' and 'as_corpus' work on tm VCorpus", {
     crude <- structure(list(content = content, meta = meta, dmeta = dmeta),
                        class = c("VCorpus", "Corpus"))
 
-    if (FALSE) {
-    # lightweight versions of tm functions, in case tm isn't loaded
-    as.character.PlainTextDocument <<- function(x)
-        unclass(x)$content
-    as.list.VCorpus <<- function(x)
-        stats::setNames(unclass(x)$content, names(x))
-    names.VCorpus <<- function(x)
-        as.character(sapply(unclass(x)$content, function(y) y$meta$id))
-    }
-
     text <- as_text(crude)
     expect_equal(text, as_text(c("127" = "Diamond Shamrock Corp said that...",
                                  "144" = "OPEC may be forced to meet...",
@@ -46,9 +36,4 @@ test_that("'as_text' and 'as_corpus' work on tm VCorpus", {
 
     data <- as_corpus(crude)
     expect_equal(data, as_corpus(text))
-
-    if (FALSE) {
-    remove("as.character.PlainTextDocument", "as.list.VCorpus",
-           "names.VCorpus", envir = .GlobalEnv)
-    }
 })

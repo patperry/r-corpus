@@ -119,7 +119,7 @@ as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
     as_text(x[["text"]], names = names, filter = filter, ...)
 }
 
-
+# tm::Corpus
 as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
 {
     with_tm({
@@ -131,6 +131,16 @@ as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
     }
    
     as_text(x, names = names, filter = filter, ...)
+}
+
+# quanteda::corpus
+as_text.corpus <- function(x, names = NULL, filter = NULL, ...)
+{
+    text <- quanteda::texts(x)
+    if (missing(names)) {
+        names <- quanteda::docnames(x)
+    }
+    as_text(text, names = names, filter = filter, ...)
 }
 
 

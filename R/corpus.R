@@ -60,8 +60,12 @@ as_corpus.corpus_text <- function(x, row.names = NULL, filter = NULL, ...)
         stop("argument is not a valid text object")
     }
 
-    x <- data.frame(text = x)
-    as_corpus(x, row.names = row.names, filter = filter, ...)
+    if (missing(row.names)) {
+        row.names <- names(x)
+    }
+
+    x <- data.frame(text = x, row.names = row.names)
+    as_corpus(x, filter = filter, ...)
 }
 
 
@@ -85,7 +89,7 @@ as_corpus.data.frame <- function(x, row.names = NULL, filter = NULL, ...)
     x
 }
 
-
+# tm::Corpus
 as_corpus.Corpus <- function(x, row.names = NULL, filter = NULL, ...)
 {
     meta <- as.data.frame(x$dmeta)
@@ -107,7 +111,32 @@ as_corpus.Corpus <- function(x, row.names = NULL, filter = NULL, ...)
     }
     meta[["text"]] <- text
     class(meta) <- c("corpus_frame", "data.frame")
+    rownames(meta) <- row.names
 
+    meta
+}
+
+# quanteda::corpus
+as_corpus.corpus <- function(x, row.names = NULL, filter = NULL, ...)
+{
+    meta <- quanteda::docvars(x)
+    text <- quanteda::texts(x)
+    if (missing(row.names)) {
+        row.names <- quanteda::docnames(x)
+    }
+
+    if ("text" %in% names(meta)) {
+        names <- names(meta)
+        i <- match("text", names)
+        nm <- make.unique(c("text", names))[[i + 1]]
+        warning(sprintf("changing docvar name from 'text' to '%s'", nm))
+        names(meta)[[i]] <- nm
+    }
+
+    meta[["text"]] <- text
+    class(meta) <- c("corpus_frame", "data.frame")
+    rownames(meta) <- row.names
+    
     meta
 }
 
