@@ -146,4 +146,6 @@ test_that("'sentences' should work on S3 objects", {
     sents <- text_split(x, "sentences")
     sents2 <- text_split(x2, "sentences")
     expect_equal(sents, sents2)
+
+    remove("as.character.upper", envir = .GlobalEnv)
 })

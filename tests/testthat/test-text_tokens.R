@@ -67,6 +67,8 @@ test_that("'text_tokens' should work on S3 objects", {
     toks <- text_tokens(x)
     toks2 <- text_tokens(x2)
     expect_equal(toks, toks2)
+
+    remove("as.character.upper", envir = .GlobalEnv)
 })
 
 
