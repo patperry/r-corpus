@@ -86,6 +86,32 @@ as_corpus.data.frame <- function(x, row.names = NULL, filter = NULL, ...)
 }
 
 
+as_corpus.Corpus <- function(x, row.names = NULL, filter = NULL, ...)
+{
+    meta <- as.data.frame(x$dmeta)
+    with_tm({
+        x <- sapply(x, as.character)
+    })
+        
+    text <- as_text(x, names = NULL, filter = filter, ...)
+    if (missing(row.names)) {
+        row.names <- make.unique(names(x))
+    }
+
+    if ("text" %in% names(meta)) {
+        names <- names(meta)
+        i <- match("text", names)
+        nm <- make.unique(c("text", names))[[i + 1]]
+        warning(sprintf("changing meta-data column name from 'text' to '%s'", nm))
+        names(meta)[[i]] <- nm
+    }
+    meta[["text"]] <- text
+    class(meta) <- c("corpus_frame", "data.frame")
+
+    meta
+}
+
+
 is_corpus <- function(x)
 {
     if (!is.data.frame(x)) {

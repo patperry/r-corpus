@@ -34,3 +34,25 @@ with_rethrow <- function(expr)
         )
     )
 }
+
+
+with_tm <- function(expr)
+{
+    unload <- FALSE
+    if (!isNamespaceLoaded("tm")) {
+        message("Loading 'tm' namespace to convert Corpus object to text")
+        if (!requireNamespace("tm", quietly = TRUE)) {
+            stop("Failed attaching namespace for package 'tm'")
+        }
+        unload <- TRUE
+    }
+
+    force(expr)
+
+    if (unload) {
+        message("Finished converting Corpus object; unloading 'tm' namespace")
+        unloadNamespace("tm")
+    }
+
+    expr
+}

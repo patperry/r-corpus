@@ -1,5 +1,6 @@
 \name{as_text}
 \alias{as_text}
+\alias{as_text.Corpus}
 \alias{as_text.character}
 \alias{as_text.corpus_json}
 \alias{as_text.corpus_text}

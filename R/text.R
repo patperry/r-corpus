@@ -120,6 +120,20 @@ as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
 }
 
 
+as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
+{
+    with_tm({
+        x <- sapply(x, as.character)
+    })
+
+    if (missing(names)) {
+        names <- make.unique(names(x))
+    }
+   
+    as_text(x, names = names, filter = filter, ...)
+}
+
+
 is_text <- function(x)
 {
     if (!inherits(x, "corpus_text")) {
