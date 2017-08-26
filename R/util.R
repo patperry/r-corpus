@@ -29,7 +29,6 @@ with_rethrow <- function(expr)
             },
             message = function(m, call = parentcall) {
                 m$call <- call
-                message(m)
             }
         )
     )
