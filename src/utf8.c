@@ -774,7 +774,7 @@ const char *translate_utf8(SEXP x)
 		return translateCharUTF8(x);
 	}
 
-	if (ce == LATIN1) {
+	if (ce == CE_LATIN1) {
 		// R seems to mark native strings as "latin1" when the code page
 		// is set to 1252, but this doesn't seem to be correct. Work
 		// around this behavior by decoding "latin1" as Windows-1252.
