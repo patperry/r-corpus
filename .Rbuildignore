@@ -10,10 +10,12 @@
 ^TODO[.]md$
 ^appveyor[.]yml$
 ^bench$
-^data/federalist$
-^data/federalist/
 ^data/affect_wordnet$
 ^data/affect_wordnet/
+^data/federalist$
+^data/federalist/
+^data/sentiment_afinn$
+^data/sentiment_afinn/
 ^dist$
 ^docs$
 ^src/corpus/[.]git$

@@ -2,23 +2,22 @@ Package: corpus
 Version: 0.9.1.9000
 Date: 2017-08-20
 Title: Text Corpus Analysis
-Author: Patrick O. Perry [aut, cre],
-  Martin Porter and Richard Boulton [ctb, cph] (Snowball),
-  Carlo Strapparava and Alessandro Valitutti [ctb, cph] (WordNet-Affect),
-  Unicode, Inc. [ctb, cph] (Unicode Character Database)
-Authors@R: c(person(c("Patrick", "O."), "Perry",
-                    role = c("aut", "cre"),
-                    email = "pperry@stern.nyu.edu"),
-             person("Martin Porter and Richard Boulton",
-                    role = c("ctb", "cph"),
-                    comment = "Snowball"),
-             person("Carlo Strapparava and Alessandro Valitutti",
-                    role = c("ctb", "cph"),
-                    comment = "WordNet-Affect"),
-             person("Unicode, Inc.",
-                    role = c("ctb", "cph"),
-                    comment = "Unicode Character Database"))
-Maintainer: Patrick O. Perry <pperry@stern.nyu.edu>
+Authors@R: c(
+  person(c("Patrick", "O."), "Perry",
+         role = c("aut", "cph", "cre"),
+         email = "pperry@stern.nyu.edu"),
+  person(c("Finn", "\u00c5rup"), "Nielsen",
+         role = c("cph", "dtc"),
+         comment = "AFINN Sentiment Lexicon"),
+  person("Martin Porter and Richard Boulton",
+         role = c("ctb", "cph", "dtc"),
+         comment = "Snowball Stemmer and Stopword Lists"),
+  person("Carlo Strapparava and Alessandro Valitutti",
+         role = c("cph", "dtc"),
+         comment = "WordNet-Affect Lexicon"),
+  person("Unicode, Inc.",
+         role = c("cph", "dtc"),
+         comment = "Unicode Character Database"))
 Depends: R (>= 2.10)
 Imports: Matrix
 Suggests:

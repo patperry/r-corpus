@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Authors • corpus</title>
+<title>AFINN Sentiment Lexicon — sentiment_afinn • corpus</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -20,9 +20,9 @@
 
 
 <!-- pkgdown -->
-<link href="pkgdown.css" rel="stylesheet">
-<script src="jquery.sticky-kit.min.js"></script>
-<script src="pkgdown.js"></script>
+<link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script>
+<script src="../pkgdown.js"></script>
   
   
 <!-- mathjax -->
@@ -37,7 +37,7 @@
   </head>
 
   <body>
-    <div class="container template-authors">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -47,21 +47,21 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">corpus</a>
+      <a class="navbar-brand" href="../index.html">corpus</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="/index.html">
+  <a href="..//index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="articles/corpus.html">Get Started</a>
+  <a href="../articles/corpus.html">Get Started</a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -71,10 +71,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="articles/chinese.html">Chinese text handling</a>
+      <a href="../articles/chinese.html">Chinese text handling</a>
     </li>
     <li>
-      <a href="articles/unicode.html">Unicode: Emoji, accents, and international text</a>
+      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
     </li>
   </ul>
 </li>
@@ -96,38 +96,58 @@
       </header>
 
       <div class="row">
-  <div class="contents col-md-12">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Authors</h1>
+    <h1>AFINN Sentiment Lexicon</h1>
     </div>
 
-    <ul class="list-unstyled">
-      <li>
-        <p><strong>Patrick O. Perry</strong>. Author, copyright holder, maintainer.
-        </p>
-      </li>
-      <li>
-        <p><strong>Finn Årup Nielsen</strong>. Copyright holder, data contributor.
-        <br /><small>AFINN Sentiment Lexicon</small></p>
-      </li>
-      <li>
-        <p><strong>Martin Porter and Richard Boulton</strong>. Contributor, copyright holder, data contributor.
-        <br /><small>Snowball Stemmer and Stopword Lists</small></p>
-      </li>
-      <li>
-        <p><strong>Carlo Strapparava and Alessandro Valitutti</strong>. Copyright holder, data contributor.
-        <br /><small>WordNet-Affect Lexicon</small></p>
-      </li>
-      <li>
-        <p><strong>Unicode, Inc.</strong>. Copyright holder, data contributor.
-        <br /><small>Unicode Character Database</small></p>
-      </li>
-    </ul>
+    
+    <p>The AFINN lexicon is a list of English terms manually rated
+for valence with an integer between -5 (negative) and +5
+(positive) by Finn Årup Nielsen between
+2009 and 2011.</p>
+<p>The original lexicon contains some multi-word phrases, but they
+are excluded here.</p>
+<p>The original lexicon is distributed under the
+<a href='https://opendatacommons.org/licenses/odbl/1-0/'>Open Database License (ODbL) v1.0</a>.
+You are free to share, create works from, and adapt the lexicon, as long as you
+attribute the original lexicon in your work. If you adapt the lexicon, you
+must keep the adapted lexicon open and apply a similar license.</p>
+    
+
+    <pre class="usage"><span class='no'>sentiment_afinn</span></pre>
+        
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with one row for each term</p>
+    
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010'>http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010</a></p>
+    
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Finn Årup Nielsen
+A new ANEW: Evaluation of a word list for sentiment analysis in microblogs.
+<em>Proceedings of the ESWC2011 Workshop on 'Making Sense of Microposts': Big things come in small packages 718 in CEUR Workshop Proceedings</em>
+93-98. 2011 May.
+<a href='http://arxiv.org/abs/1103.2903'>http://arxiv.org/abs/1103.2903</a>.</p>
+    
 
   </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      
+      <li><a href="#format">Format</a></li>
 
+      <li><a href="#source">Source</a></li>
+
+      <li><a href="#references">References</a></li>
+          </ul>
+
+  </div>
 </div>
-
 
       <footer>
       <div class="copyright">
