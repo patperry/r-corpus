@@ -26,7 +26,7 @@ as_utf8 <- function(x, normalize = FALSE)
 as_raw <- function(x)
 {
     with_rethrow({
-        x <- as_character_vector("x", x, utf = FALSE)
+        x <- as_character_vector("x", x, utf8 = FALSE)
     })
     .Call(C_raw_coerce, x)
 }
