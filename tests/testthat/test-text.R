@@ -12,7 +12,29 @@ test_that("`as.data.frame` should work", {
 })
 
 
-test_that("serialization should work", {
+test_that("serialization of character should work", {
+    x <- c("Once upon a time there were four little Rabbits,",
+	       "and their names were: Flopsy, Mopsy, Cottontail, and Peter.",
+	       "They lived with their Mother in a sandbank,",
+	       "underneath the root of a very big fir tree.",
+	       "'Now, my dears,' said old Mrs. Rabbit one morning,",
+	       "'you may go into the fields or down the lane,",
+	       "but don't go into Mr. McGregor's garden --")
+    y <- c(NA_character_,
+	       "your Father had an accident there;",
+	       "he was put in a pie by Mrs. McGregor.'")
+
+    text <- c(as_text(x), as_text(y))
+
+    file <- tempfile()
+    saveRDS(text, file)
+    text2 <- readRDS(file)
+
+    expect_equal(text, text2)
+})
+
+
+test_that("serialization of JSON field should work", {
     x <- c("Once upon a time there were four little Rabbits,",
 	       "and their names were: Flopsy, Mopsy, Cottontail, and Peter.",
 	       "They lived with their Mother in a sandbank,",
@@ -25,7 +47,31 @@ test_that("serialization should work", {
 
     file <- tempfile()
     writeLines(paste0('{"text": "', x, '"}'), file)
-    ds <- read_ndjson(file)
+    ds <- read_ndjson(file, mmap = TRUE, text = "text")
+    text <- as_text(ds)
+
+    file2 <- tempfile()
+    saveRDS(text, file2)
+    text2 <- readRDS(file2)
+
+    expect_equal(text, text2)
+})
+
+
+test_that("serialization of JSON text should work", {
+    x <- c("Once upon a time there were four little Rabbits,",
+	       "and their names were: Flopsy, Mopsy, Cottontail, and Peter.",
+	       "They lived with their Mother in a sandbank,",
+	       "underneath the root of a very big fir tree.",
+	       "'Now, my dears,' said old Mrs. Rabbit one morning,",
+	       "'you may go into the fields or down the lane,",
+	       "but don't go into Mr. McGregor's garden --",
+	       "your Father had an accident there;",
+	       "he was put in a pie by Mrs. McGregor.'")
+
+    file <- tempfile()
+    writeLines(paste0('"', x, '"'), file)
+    ds <- read_ndjson(file, mmap = TRUE, simplify = FALSE)
     text <- as_text(ds)
 
     file2 <- tempfile()
