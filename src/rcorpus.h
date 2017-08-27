@@ -265,6 +265,9 @@ SEXP term_matrix_text(SEXP x, SEXP weights, SEXP ngrams,
 		      SEXP select, SEXP group);
 SEXP stopwords(SEXP kind);
 
+/* raw */
+SEXP raw_coerce(SEXP x);
+
 /* utf8 */
 SEXP utf8_coerce(SEXP x);
 SEXP utf8_encode(SEXP x, SEXP display, SEXP utf8);

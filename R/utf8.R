@@ -23,6 +23,15 @@ as_utf8 <- function(x, normalize = FALSE)
     ans
 }
 
+as_raw <- function(x)
+{
+    with_rethrow({
+        x <- as_character_vector("x", x, utf = FALSE)
+    })
+    .Call(C_raw_coerce, x)
+}
+
+
 # encode an R character string in a form suitable for display
 # in the current locale (determined by LC_CTYPE)
 utf8_encode <- function(x, display = FALSE)
