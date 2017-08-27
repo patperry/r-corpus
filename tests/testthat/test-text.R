@@ -34,3 +34,30 @@ test_that("serialization should work", {
 
     expect_equal(text, text2)
 })
+
+
+test_that("conversion to and from character should work", {
+    x <- c("Once upon a time there were four little Rabbits,",
+	       "and their names were: Flopsy, Mopsy, Cottontail, and Peter.",
+	       "They lived with their Mother in a sandbank,",
+	       "underneath the root of a very big fir tree.",
+	       "'Now, my dears,' said old Mrs. Rabbit one morning,",
+	       "'you may go into the fields or down the lane,",
+	       "but don't go into Mr. McGregor's garden --")
+    y <- c("your Father had an accident there;",
+           NA_character_,
+	       "he was put in a pie by Mrs. McGregor.'")
+
+    text_x <- as_text(x)
+    text_y <- as_text(y)
+
+    expect_equal(as.character(text_x), x)
+    expect_equal(as.character(text_y), y)
+
+    expect_equal(as.character(c(text_x, text_y)), c(x, y))
+
+    expect_equal(as.character(text_x[c(2,4,3,2)]), x[c(2,4,3,2)])
+
+    i <- c(5, 9, 2, 6, 3)
+    expect_equal(as.character(c(text_x, text_y)[i]), c(x, y)[i])
+})
