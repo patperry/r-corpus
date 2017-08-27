@@ -25,7 +25,7 @@
 enum source_type {
 	SOURCE_NONE = 0,
 	SOURCE_CHAR,
-	SOURCE_DATASET
+	SOURCE_JSON
 };
 
 
@@ -55,7 +55,7 @@ static void source_assign(struct source *source, SEXP value)
 		source->data.chars = value;
 		source->nrow = XLENGTH(value);
 	} else if (is_json(value)) {
-		source->type = SOURCE_DATASET;
+		source->type = SOURCE_JSON;
 		source->data.set = as_json(value);
 		source->nrow = source->data.set->nrow;
 	} else {
@@ -540,7 +540,7 @@ static void load_text(SEXP x)
 			}
 			break;
 
-		case SOURCE_DATASET:
+		case SOURCE_JSON:
 			// no need to validate input (handled by json)
 			corpus_data_text(&sources[s].data.set->rows[j], &txt);
 			flags = 0;
@@ -571,4 +571,66 @@ static void load_text(SEXP x)
 	}
 out:
 	CHECK_ERROR(err);
+}
+
+
+SEXP as_character_text(SEXP x)
+{
+	SEXP ans, str, sources, table, source, row, start, stop, src;
+	struct corpus_text *text;
+	struct mkchar mk;
+	R_xlen_t i, n, r;
+	int *is_char;
+	int s, ns, len, alloc;
+
+	text = as_text(x, &n);
+	sources = getListElement(x, "sources");
+	table = getListElement(x, "table");
+	source = getListElement(table, "source");
+	row = getListElement(table, "row");
+	start = getListElement(table, "start");
+	stop = getListElement(table, "stop");
+
+	// compute whether each source is character
+	ns = LENGTH(sources);
+	is_char = (void *)R_alloc(ns, sizeof(*is_char));
+	for (s = 0; s < ns; s++) {
+		src = VECTOR_ELT(sources, s);
+		is_char[s] = (TYPEOF(src) == STRSXP);
+	}
+
+	// allocate temporary buffer for decoding
+	mkchar_init(&mk);
+
+	PROTECT(ans = allocVector(STRSXP, n));
+	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+		s = INTEGER(source)[i] - 1;
+
+		// if the source is character, we might be able to use that
+		// instead of allocating a new object
+		alloc = 1;
+		if (is_char[s]) {
+			r = (R_xlen_t)(REAL(row)[i] - 1);
+			src = VECTOR_ELT(sources, s);
+			str = STRING_ELT(src, r);
+
+			if (str == NA_STRING) {
+				alloc = 0;
+			} else if (INTEGER(start)[i] == 1) {
+				len = LENGTH(str);
+				if (INTEGER(stop)[i] == len) {
+					alloc = 0;
+				}
+			}
+		}
+
+		if (alloc) {
+			str = mkchar_get(&mk, &text[i]);
+		}
+		SET_STRING_ELT(ans, i, str);
+	}
+
+	UNPROTECT(1);
+	return ans;
 }

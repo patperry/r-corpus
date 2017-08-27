@@ -51,33 +51,6 @@ SEXP length_text(SEXP stext)
 }
 
 
-SEXP as_character_text(SEXP stext)
-{
-	SEXP ans, str;
-	struct corpus_text *text;
-	struct mkchar mk;
-	R_xlen_t i, n;
-
-	text = as_text(stext, &n);
-
-	// allocate temporary buffer for decoding
-	mkchar_init(&mk);
-
-	PROTECT(ans = allocVector(STRSXP, n));
-
-	for (i = 0; i < n; i++) {
-		RCORPUS_CHECK_INTERRUPT(i);
-
-		str = mkchar_get(&mk, &text[i]);
-		SET_STRING_ELT(ans, i, str);
-
-	}
-
-	UNPROTECT(1);
-	return ans;
-}
-
-
 SEXP is_na_text(SEXP stext)
 {
 	SEXP ans;
