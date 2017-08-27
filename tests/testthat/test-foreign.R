@@ -43,7 +43,7 @@ test_that("'as_text' and 'as_corpus' work on quanteda corpus", {
     data <- data.frame(filename = c("reut-00001.xml",
                                     "reut-00002.xml",
                                     "reut-00004.xml"),
-                       text = c("Diamond Samrock Corb said that...",
+                       text = c("Diamond Shamrock Corp said that...",
                                 "OPEC may be forced to meet",
                                 "Texaco Canada said it lowered..."),
                        row.names = c("127", "144", "191"),
