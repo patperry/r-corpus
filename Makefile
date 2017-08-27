@@ -25,12 +25,15 @@ vignettes/unicode.Rmd: vignettes/src/unicode.Rmd
 bench:
 	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'
 
+check: $(CORPUS_LIB)
+	$(RSCRIPT) -e 'devtools::test(".")'
+
 clean:
 	$(RSCRIPT) -e 'devtools::clean_dll(".")'
 	rm -rf $(BUILT_VIGNETTES)
 
-check: $(CORPUS_LIB)
-	$(RSCRIPT) -e 'devtools::test(".")'
+cov:
+	$(RSCRIPT) -e 'covr::package_coverage(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
 
 dist: $(BUILT_VIGNETTES) README
 	mkdir -p dist && cd dist && R CMD build ..
@@ -43,4 +46,4 @@ install: $(CORPUS_LIB)
 site:
 	$(RSCRIPT) -e 'pkgdown::build_site(".")'
 
-.PHONY: all bench clean check dist doc install site
+.PHONY: all bench check clean con dist doc install site
