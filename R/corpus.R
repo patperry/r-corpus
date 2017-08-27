@@ -120,7 +120,7 @@ as_corpus.Corpus <- function(x, row.names = NULL, filter = NULL, ...)
 as_corpus.corpus <- function(x, row.names = NULL, filter = NULL, ...)
 {
     meta <- quanteda::docvars(x)
-    text <- quanteda::texts(x)
+    text <- as_text(quanteda::texts(x), names = NULL, filter = filter, ...)
     if (missing(row.names)) {
         row.names <- quanteda::docnames(x)
     }

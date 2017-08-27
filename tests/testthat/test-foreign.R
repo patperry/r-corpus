@@ -37,3 +37,20 @@ test_that("'as_text' and 'as_corpus' work on tm VCorpus", {
     data <- as_corpus(crude)
     expect_equal(data, as_corpus(text))
 })
+
+
+test_that("'as_text' and 'as_corpus' work on quanteda corpus", {
+    data <- data.frame(filename = c("reut-00001.xml",
+                                    "reut-00002.xml",
+                                    "reut-00004.xml"),
+                       text = c("Diamond Samrock Corb said that...",
+                                "OPEC may be forced to meet",
+                                "Texaco Canada said it lowered..."),
+                       row.names = c("127", "144", "191"),
+                       stringsAsFactors = FALSE)
+    qdata <- quanteda::corpus(data)
+    quanteda::docnames(qdata) <- rownames(data)
+
+    expect_equal(as_text(qdata), as_text(data))
+    expect_equal(as_corpus(data), as_corpus(qdata))
+})
