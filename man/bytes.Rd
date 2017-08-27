@@ -1,17 +1,17 @@
-\name{as_raw}
-\title{Character encoding}
-\alias{as_raw}
+\name{char_bytes}
+\title{Character Encoding}
+\alias{char_bytes}
 \description{
     Get the raw bytes representing a character vector.
 }
 \usage{
-as_raw(x)
+char_bytes(x)
 }
 \arguments{
     \item{x}{character object.}
 }
 \details{
-\code{as_raw} converts a character vector to a list of raw vectors
+\code{char_bytes} converts a character vector to a list of raw vectors
 with byte representation of the character vector elements.
 }
 \value{
@@ -26,5 +26,5 @@ the input, or \code{NULL} if the input entry is \code{NA}.
 # the second element is encoded in latin-1, but declared as UTF-8
 x <- c("fa\u00E7ile", "fa\xE7ile", "fa\xC3\xA7ile")
 Encoding(x) <- c("UTF-8", "UTF-8", "bytes")
-as_raw(x)
+char_bytes(x)
 }

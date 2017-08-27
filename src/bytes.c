@@ -17,7 +17,8 @@
 #include <string.h>
 #include "rcorpus.h"
 
-SEXP raw_coerce(SEXP x)
+
+SEXP char_bytes(SEXP x)
 {
 	SEXP ans, str, buf;
 	R_xlen_t i, n, len;
