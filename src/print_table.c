@@ -31,6 +31,7 @@
 #define Win32
 #include <R_ext/RStartup.h>
 extern UImode CharacterMode;
+extern unsigned int localeCP;
 
 static const char *translate(SEXP charsxp, int is_stdout)
 {
@@ -71,9 +72,13 @@ static const char *translate(SEXP charsxp, int is_stdout)
 	wstr = (LPWSTR)R_alloc(wlen, sizeof(*wstr));
 	MultiByteToWideChar(CP_UTF8, 0, raw, n + 1, wstr, wlen);
 
-	// Use ConsoleCP for terminal output to stdout, ACP otherwise
-	// (see https://go-review.googlesource.com/c/27575/ )
-	cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+	// for stdout, use native code page; otherwise use locale page
+	cp = is_stdout ? 0 : (UINT)localeCP;
+	if (cp == 0) {
+		// Use ConsoleCP for terminal output to stdout, ACP otherwise
+		// (see https://go-review.googlesource.com/c/27575/ )
+		cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+	}
 
 	// convert from UTF-16 to native code page
 	len = WideCharToMultiByte(cp, 0, wstr, wlen, NULL, 0, NULL, NULL);
