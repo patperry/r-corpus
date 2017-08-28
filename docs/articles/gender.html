@@ -113,7 +113,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")</span>
 (austen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gutenberg_corpus.html">gutenberg_corpus</a></span>(<span class="kw">c</span>(<span class="dv">161</span>, <span class="dv">1342</span>, <span class="dv">141</span>, <span class="dv">158</span>, <span class="dv">121</span>, <span class="dv">105</span>)))</code></pre></div>
 <pre><code>Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL</code></pre>
-<pre><code>Using mirror http://aleph.gutenberg.org/</code></pre>
+<pre><code>Using mirror http://eremita.di.uminho.pt/gutenberg/</code></pre>
 <pre><code>Converting text from declared encoding "ISO-8859-1" to UTF-8</code></pre>
 <pre><code>  title                 author      language text                                                   
 1 Sense and Sensibility Jane Austen English  SENSE AND SENSIBILITY\n\nby Jane Austen\n\n(1811)\n\n… 
@@ -231,7 +231,7 @@ log2_ratio &lt;-<span class="st"> </span><span class="kw">log2</span>(she) <span
 <span class="kw">qqnorm</span>(log2_ratio, <span class="dt">col =</span> <span class="dv">2</span>)
 <span class="kw">qqline</span>(log2_ratio, <span class="dt">col =</span> <span class="dv">1</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</code></pre></div>
 <div class="figure">
-<img src="gender-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14"><p class="caption">plot of chunk unnamed-chunk-14</p>
+<img src="gender-estimates-1.png" alt="Rate Ratio Estimates"><p class="caption">Rate Ratio Estimates</p>
 </div>
 <p>This doesn’t quite look like a normal, but the distribution is symmetric, and the tails are about as heavy as those of a normal. So, the z-score will be a reasonable measure of how typical or unusual each log rate is.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">z &lt;-<span class="st"> </span>(log2_ratio <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(log2_ratio)) <span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(log2_ratio)</code></pre></div>
@@ -289,7 +289,7 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <span class="co"># points at the estimates</span>
 <span class="kw">points</span>(r, log2_ratio, <span class="dt">col =</span> <span class="dv">2</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>)</code></pre></div>
 <div class="figure">
-<img src="gender-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20"><p class="caption">plot of chunk unnamed-chunk-20</p>
+<img src="gender-estimates_se-1.png" alt="Rate Ratio Estimates, with Error Bars"><p class="caption">Rate Ratio Estimates, with Error Bars</p>
 </div>
 <p>Notice that many of the more extreme estimates are not statistically significant. One word with a large estimate not deemed statistically significant is the word “stopped”. Here are the counts for that word, along with the log ratio estimate and standard error:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"stopped"</span>,])</code></pre></div>
@@ -368,9 +368,9 @@ col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class
 <span class="co"># estimates</span>
 <span class="kw">points</span>(est, i, <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="fl">0.75</span>, <span class="dt">col =</span> col)</code></pre></div>
 <div class="figure">
-<img src="gender-unnamed-chunk-24-1.png" alt="plot of chunk unnamed-chunk-24"><p class="caption">plot of chunk unnamed-chunk-24</p>
+<img src="gender-signif-1.png" alt="Statistically Significant Gender Imbalances"><p class="caption">Statistically Significant Gender Imbalances</p>
 </div>
-<p>Not all of these are practically significant: many show up because they are common words, and it is possible to get precise estimates of the gender imbalances.</p>
+<p>Not all of these are practically significant. Words like “should”, “will”, and “was” show up because they are common, and it is possible to get precise estimates of their gender imbalances. Still, we can see many examples of words that have both statistically and practically meaningful gender imbalances, especially “she”-slanted words like “remembered”, “read”, “longed”, and “felt”. I suspect that many of these words have gender imbalances simply because the protagonists are female. The novels give us insights into the protagonists’ emotional states, but not into those of the supporting characters. It would be nice if we could get more balanced comparison by adjusting for the genders of the protagonists. Until we do that, it’s hard to know if there’s anything meaningful in these differences.</p>
 </div>
 </div>
 </div>

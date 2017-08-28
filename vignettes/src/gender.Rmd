@@ -361,11 +361,17 @@ segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col)
 points(est, i, pch = 16, cex = 0.75, col = col)
 ```
 
-Not all of these are practically significant: many show up because they are
-common words, and it is possible to get precise estimates of the gender
-imbalances.
-
-
+Not all of these are practically significant. Words like "should", "will", and
+"was" show up because they are common, and it is possible to get precise
+estimates of their gender imbalances. Still, we can see many examples of words
+that have both statistically and practically meaningful gender imbalances,
+especially "she"-slanted words like "remembered", "read", "longed", and
+"felt". I suspect that many of these words have gender imbalances simply
+because the protagonists are female. The novels give us insights into the
+protagonists' emotional states, but not into those of the supporting
+characters. It would be nice if we could get more balanced comparison by
+adjusting for the genders of the protagonists. Until we do that, it's hard to
+know if there's anything meaningful in these differences.
 
 
 [delta-method]: https://en.wikipedia.org/wiki/Delta_method
