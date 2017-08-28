@@ -7,11 +7,13 @@
 Finding gendered words
 ======================
 
-
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(comment = "", fig.path = "corpus-", fig.retina = TRUE)
+knitr::opts_chunk$set(comment = "", fig.path = "gender-", fig.retina = TRUE)
 options(width = 100)
 ```
+
+Overview
+--------
 
 In this vignette, we will look for gender-associated words  We will do this
 by looking for words that follow the pronoun "she" more often than "he", or
@@ -19,15 +21,21 @@ vice-versa. The vignette is based on Julia Silge's blog post,
 ["Gender roles with text mining and n-grams"][silge-roles].
 
 
+We will use the *corpus* package, but not rely on any other external
+dependencies. The set-up is as follows.
+
 ```{r}
 library("corpus")
 
-# RColorBrewer::brewer.pal(6, "Set1")
+# colors from RColorBrewer::brewer.pal(6, "Set1")
 palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33"))
 
-set.seed(0) # ensure consistent runs
+# ensure consistent runs
+set.seed(0) 
 ```
 
+Gender bigrams in Austen's novels
+---------------------------------
 
 We will be studying gender in the context of Jane Austen's completed novels,
 downloaded from [Project Gutenberg][gutenberg].
@@ -86,6 +94,9 @@ Here, we changed the aggregation function from `identity()` to `sum()` to sum
 the counts over all types that are equal after removing underscores.
 
 
+Gender-specific usage rates
+---------------------------
+
 We want to find terms that are associated with particular gendered pronouns.
 As an example, take term "loves": 
 
@@ -136,7 +147,6 @@ she <- ((common_terms[,"she"] + 0.5) / (tot[["she"]] + 1))
 log2_ratio <- log2(she) - log2(he)
 ```
 
-
 Here are a histogram and normal probability plot of the estimates for the
 remaining terms.
 
@@ -166,6 +176,9 @@ The terms "remembered", "hurried", and "seized" have more "she" usages; the
 terms "gravely", "believes", and "bowed" have more "he" usages.
 
 
+Uncertainty quantification
+--------------------------
+
 It's hard to know which of these differences are meaningful without
 quantifying the error associated with the estimates. Some words are common,
 and we have reliable estimates of the log ratios. Other words are rare, and
@@ -176,6 +189,7 @@ the estimates of the log ratios will be unreliable.
 We need standard errors of our estimates. We can get these by starting with
 the proportion estimates `he` and `she`, and then applying the
 [delta method][delta-method].
+
 
 The `he` and `she` rates are proportions. We get their standard errors by
 using the usual formula for the standard error of a proportion, based on
@@ -191,11 +205,13 @@ delta method. We multiply the standard error by the absolute value of the
 derivative of the logarithm function evaluated at the estimate:
 
 ```{r}
-log2_he_se <- (1 / log(2)) * abs(1 / he) * he_se
-log2_she_se <- (1 / log(2)) * abs(1 / she) * she_se
+log2_he_se <- abs((1 / (log(2) * he)) * he_se
+log2_she_se <- abs(1 / (log(2) * she)) * she_se
 ```
 
-These formulas from using a Taylor expansion of `log2` around the estimate.
+These formulas follow from using a Taylor expansion of `log2` around the
+estimate, using that the derivative of `log2(x)` is `1 / (log(2) * x)`.
+
 
 Finally, for the standard error of `log2_ratio`, we assume that the `log2_he`
 and `log2_she` estimates are approximately independent, so that the variance
@@ -206,35 +222,99 @@ the standard error of the log ratio:
 log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
 ```
 
-```{r}
+Here are all of the estimated log ratios, along, with error bars for those
+that are statistically significantly different from zero.
+
+```{r, fig.width = 12}
+# put the estimates in increasing order
 r <- rank(log2_ratio, ties.method = "first")
 
-# significant cases
+# find the statistically significant cases
 signif <- (abs(log2_ratio) / log2_ratio_se > 2)
-
 i <- signif
 
+# set up the plot
 xlim <- xlim <- range(r)
 ylim <- range(log2_ratio,
               (log2_ratio - log2_ratio_se)[i],
               (log2_ratio + log2_ratio_se)[i])
-
 plot(xlim, ylim, type = "n", xlab = "Rank",
      ylab = expression(paste(Log[2], " (She / He) Usage Rate")))
-abline(h = 0, col = "gray", lty = 2)
-points(r, log2_ratio, col = 2, cex = 0.5)
 
+# horizontal line at zero
+abline(h = 0, col = "gray", lty = 2)
+
+# standard error around interesting points
 segments(r[i], (log2_ratio - log2_ratio_se)[i],
          r[i], (log2_ratio + log2_ratio_se)[i])
 segments((r - 0.4)[i], (log2_ratio - log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio - log2_ratio_se)[i])
 segments((r - 0.4)[i], (log2_ratio + log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio + log2_ratio_se)[i])
+
+# points at the estimates
+points(r, log2_ratio, col = 2, cex = 0.5)
 ```
+
+Notice that many of the more extreme estimates are not statistically
+significant. One word with a large estimate not deemed statistically
+significant is the word "stopped". Here are the counts for that word, along
+with the log ratio estimate and standard error:
+
+```{r}
+print(terms["stopped",])
+print(log2_ratio[["stopped"]])
+print(log2_ratio_se[["stopped"]])
+```
+
+This is a word with a large imbalance, but only in a relatively small number
+of samples. Due to the lack of data for the word "instantly", we deem this
+imbalance to not be statistically significant. Compare this to the word
+"felt":
+
+```{r}
+print(terms["felt",])
+print(log2_ratio[["felt"]])
+print(log2_ratio_se[["felt"]])
+```
+
+This has an effect size estimate on the same order as "stopped", but the
+estimate is much more reliable given the larger number of appearances of the
+word "felt". We judge "felt" both to have a practically significant difference
+*and* a statistically significant difference.
+
+
+The word "was" exhibits one other extreme:
+
+```{r}
+print(terms["was",])
+print(log2_ratio[["was"]])
+print(log2_ratio_se[["was"]])
+```
+
+This word has only a minor difference between "he" and "she", but it shows up
+often enough for us to get a reliable estimate of the difference. The word
+"was" has a statistically significant difference between the genders, but
+probably not a practically significant difference.
+
+
+In the context of our application, a word is practically significance if the
+absolute value of its estimate is large. This difference is statistically
+significant if the estimate is large relative to its standard error. If we
+only care about Austen's writing in these six novels, we may not care about
+statistical significance. If, however, we want to make a statement about
+Austen's writing style in general, then we want to generalize beyond our data
+set, and we should only do so for words we can get reliable estimates for.
+
+
+Results
+-------
+
+Here are the estimates for the words with statistically significant gender
+imbalances.
 
 
 ```{r fig.width = 12}
-
 # order by log ratio, then name
 o <- order(log2_ratio, names(log2_ratio))
 est <- log2_ratio[o]
@@ -249,30 +329,41 @@ se <- se[signif]
 term <- names(est)
 i <- seq_along(term)
 
-par(mar = c(5, 5, 2, 2) + 0.1)
+# set up the plot
+par(mar = c(5, 6, 2, 2) + 0.1)
 xlim <- range(est - se, est + se)
 ylim <- range(i)
 plot(xlim, ylim, type = "n",
      xlab = "Relative appearance after 'she' compared to 'he'",
      ylab = "", axes = FALSE)
 
-axis(2, at = i, labels = term, las = 1, cex.axis = 0.7)
-abline(h = i, lty = 3, col = "gray")
-
+# x-axis
 ticks <- seq(-3, 6)
 labels = paste0(2 ^ ticks, "x")
 labels[ticks == 0] <- "Same"
 axis(1, at = ticks, labels = labels)
 abline(v = ticks, col = "gray", lwd = 0.5)
 
+# y-axis, with term labels
+axis(2, at = i, labels = term, las = 1)
+abline(h = i, lty = 3, col = "gray")
+
+# frame the plot
 box()
 
+# standard errors
 col <- ifelse(est > 0, 3, 4)
 segments(est - se, i, est + se, i, lwd = 1.5, col = col)
 segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col)
 segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col)
+
+# estimates
 points(est, i, pch = 16, cex = 0.75, col = col)
 ```
+
+Not all of these are practically significant: many show up because they are
+common words, and it is possible to get precise estimates of the gender
+imbalances.
 
 
 

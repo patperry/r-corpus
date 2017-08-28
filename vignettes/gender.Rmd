@@ -9,6 +9,8 @@ Finding gendered words
 
 
 
+Overview
+--------
 
 In this vignette, we will look for gender-associated words  We will do this
 by looking for words that follow the pronoun "she" more often than "he", or
@@ -16,16 +18,22 @@ vice-versa. The vignette is based on Julia Silge's blog post,
 ["Gender roles with text mining and n-grams"][silge-roles].
 
 
+We will use the *corpus* package, but not rely on any other external
+dependencies. The set-up is as follows.
+
 
 ```r
 library("corpus")
 
-# RColorBrewer::brewer.pal(6, "Set1")
+# colors from RColorBrewer::brewer.pal(6, "Set1")
 palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33"))
 
-set.seed(0) # ensure consistent runs
+# ensure consistent runs
+set.seed(0) 
 ```
 
+Gender bigrams in Austen's novels
+---------------------------------
 
 We will be studying gender in the context of Jane Austen's completed novels,
 downloaded from [Project Gutenberg][gutenberg].
@@ -41,7 +49,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://mirror.csclub.uwaterloo.ca/gutenberg/
+Using mirror http://www.gutenberg.org/dirs/
 ```
 
 ```
@@ -175,6 +183,9 @@ Here, we changed the aggregation function from `identity()` to `sum()` to sum
 the counts over all types that are equal after removing underscores.
 
 
+Gender-specific usage rates
+---------------------------
+
 We want to find terms that are associated with particular gendered pronouns.
 As an example, take term "loves": 
 
@@ -249,7 +260,6 @@ she <- ((common_terms[,"she"] + 0.5) / (tot[["she"]] + 1))
 log2_ratio <- log2(she) - log2(he)
 ```
 
-
 Here are a histogram and normal probability plot of the estimates for the
 remaining terms.
 
@@ -293,6 +303,9 @@ The terms "remembered", "hurried", and "seized" have more "she" usages; the
 terms "gravely", "believes", and "bowed" have more "he" usages.
 
 
+Uncertainty quantification
+--------------------------
+
 It's hard to know which of these differences are meaningful without
 quantifying the error associated with the estimates. Some words are common,
 and we have reliable estimates of the log ratios. Other words are rare, and
@@ -303,6 +316,7 @@ the estimates of the log ratios will be unreliable.
 We need standard errors of our estimates. We can get these by starting with
 the proportion estimates `he` and `she`, and then applying the
 [delta method][delta-method].
+
 
 The `he` and `she` rates are proportions. We get their standard errors by
 using the usual formula for the standard error of a proportion, based on
@@ -320,11 +334,20 @@ derivative of the logarithm function evaluated at the estimate:
 
 
 ```r
-log2_he_se <- (1 / log(2)) * abs(1 / he) * he_se
-log2_she_se <- (1 / log(2)) * abs(1 / she) * she_se
+log2_he_se <- abs((1 / (log(2) * he)) * he_se
+log2_she_se <- abs(1 / (log(2) * she)) * she_se
 ```
 
-These formulas from using a Taylor expansion of `log2` around the estimate.
+```
+Error: <text>:2:1: unexpected symbol
+1: log2_he_se <- abs((1 / (log(2) * he)) * he_se
+2: log2_she_se
+   ^
+```
+
+These formulas follow from using a Taylor expansion of `log2` around the
+estimate, using that the derivative of `log2(x)` is `1 / (log(2) * x)`.
+
 
 Finally, for the standard error of `log2_ratio`, we assume that the `log2_he`
 and `log2_she` estimates are approximately independent, so that the variance
@@ -336,34 +359,211 @@ the standard error of the log ratio:
 log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
 ```
 
+```
+Error in eval(expr, envir, enclos): object 'log2_she_se' not found
+```
+
+Here are all of the estimated log ratios, along, with error bars for those
+that are statistically significantly different from zero.
+
 
 ```r
+# put the estimates in increasing order
 r <- rank(log2_ratio, ties.method = "first")
 
-# significant cases
+# find the statistically significant cases
 signif <- (abs(log2_ratio) / log2_ratio_se > 2)
+```
 
+```
+Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found
+```
+
+```r
 i <- signif
 
+# set up the plot
 xlim <- xlim <- range(r)
 ylim <- range(log2_ratio,
               (log2_ratio - log2_ratio_se)[i],
               (log2_ratio + log2_ratio_se)[i])
+```
 
+```
+Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found
+```
+
+```r
 plot(xlim, ylim, type = "n", xlab = "Rank",
      ylab = expression(paste(Log[2], " (She / He) Usage Rate")))
-abline(h = 0, col = "gray", lty = 2)
-points(r, log2_ratio, col = 2, cex = 0.5)
+```
 
+```
+Error in xy.coords(x, y, xlabel, ylabel, log): object 'ylim' not found
+```
+
+```r
+# horizontal line at zero
+abline(h = 0, col = "gray", lty = 2)
+```
+
+```
+Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): plot.new has not been called yet
+```
+
+```r
+# standard error around interesting points
 segments(r[i], (log2_ratio - log2_ratio_se)[i],
          r[i], (log2_ratio + log2_ratio_se)[i])
+```
+
+```
+Error in r[i]: invalid subscript type 'special'
+```
+
+```r
 segments((r - 0.4)[i], (log2_ratio - log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio - log2_ratio_se)[i])
+```
+
+```
+Error in (r - 0.4)[i]: invalid subscript type 'special'
+```
+
+```r
 segments((r - 0.4)[i], (log2_ratio + log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio + log2_ratio_se)[i])
 ```
 
-![plot of chunk unnamed-chunk-20](gender-unnamed-chunk-20-1.png)
+```
+Error in (r - 0.4)[i]: invalid subscript type 'special'
+```
+
+```r
+# points at the estimates
+points(r, log2_ratio, col = 2, cex = 0.5)
+```
+
+```
+Error in plot.xy(xy.coords(x, y), type = type, ...): plot.new has not been called yet
+```
+
+Notice that many of the more extreme estimates are not statistically
+significant. One word with a large estimate not deemed statistically
+significant is the word "stopped". Here are the counts for that word, along
+with the log ratio estimate and standard error:
+
+
+```r
+print(terms["stopped",])
+```
+
+```
+ he she 
+ 13   4 
+```
+
+```r
+print(log2_ratio[["stopped"]])
+```
+
+```
+[1] -2.083794
+```
+
+```r
+print(log2_ratio_se[["stopped"]])
+```
+
+```
+Error in print(log2_ratio_se[["stopped"]]): object 'log2_ratio_se' not found
+```
+
+This is a word with a large imbalance, but only in a relatively small number
+of samples. Due to the lack of data for the word "instantly", we deem this
+imbalance to not be statistically significant. Compare this to the word
+"felt":
+
+
+```r
+print(terms["felt",])
+```
+
+```
+ he she 
+ 36 189 
+```
+
+```r
+print(log2_ratio[["felt"]])
+```
+
+```
+[1] 1.877398
+```
+
+```r
+print(log2_ratio_se[["felt"]])
+```
+
+```
+Error in print(log2_ratio_se[["felt"]]): object 'log2_ratio_se' not found
+```
+
+This has an effect size estimate on the same order as "stopped", but the
+estimate is much more reliable given the larger number of appearances of the
+word "felt". We judge "felt" both to have a practically significant difference
+*and* a statistically significant difference.
+
+
+The word "was" exhibits one other extreme:
+
+
+```r
+print(terms["was",])
+```
+
+```
+  he  she 
+ 891 1378 
+```
+
+```r
+print(log2_ratio[["was"]])
+```
+
+```
+[1] 0.1299613
+```
+
+```r
+print(log2_ratio_se[["was"]])
+```
+
+```
+Error in print(log2_ratio_se[["was"]]): object 'log2_ratio_se' not found
+```
+
+This word has only a minor difference between "he" and "she", but it shows up
+often enough for us to get a reliable estimate of the difference. The word
+"was" has a statistically significant difference between the genders, but
+probably not a practically significant difference.
+
+
+In the context of our application, a word is practically significance if the
+absolute value of its estimate is large. This difference is statistically
+significant if the estimate is large relative to its standard error. If we
+only care about Austen's writing in these six novels, we may not care about
+statistical significance. If, however, we want to make a statement about
+Austen's writing style in general, then we want to generalize beyond our data
+set, and we should only do so for words we can get reliable estimates for.
+
+
+Results
+-------
+
+Here are the estimates for the words with statistically significant gender
+imbalances.
 
 
 
@@ -372,42 +572,106 @@ segments((r - 0.4)[i], (log2_ratio + log2_ratio_se)[i],
 o <- order(log2_ratio, names(log2_ratio))
 est <- log2_ratio[o]
 se <- log2_ratio_se[o]
+```
 
+```
+Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found
+```
+
+```r
 # only keep significant cases
 signif <- (abs(est) / se > 2)
-est <- est[signif]
-se <- se[signif]
+```
 
+```
+Error in eval(expr, envir, enclos): object 'se' not found
+```
+
+```r
+est <- est[signif]
+```
+
+```
+Error in est[signif]: invalid subscript type 'special'
+```
+
+```r
+se <- se[signif]
+```
+
+```
+Error in eval(expr, envir, enclos): object 'se' not found
+```
+
+```r
 # get the terms
 term <- names(est)
 i <- seq_along(term)
 
+# set up the plot
 par(mar = c(5, 6, 2, 2) + 0.1)
 xlim <- range(est - se, est + se)
+```
+
+```
+Error in eval(expr, envir, enclos): object 'se' not found
+```
+
+```r
 ylim <- range(i)
 plot(xlim, ylim, type = "n",
      xlab = "Relative appearance after 'she' compared to 'he'",
      ylab = "", axes = FALSE)
 
-axis(2, at = i, labels = term, las = 1)
-abline(h = i, lty = 3, col = "gray")
-
+# x-axis
 ticks <- seq(-3, 6)
 labels = paste0(2 ^ ticks, "x")
 labels[ticks == 0] <- "Same"
 axis(1, at = ticks, labels = labels)
 abline(v = ticks, col = "gray", lwd = 0.5)
 
+# y-axis, with term labels
+axis(2, at = i, labels = term, las = 1)
+abline(h = i, lty = 3, col = "gray")
+
+# frame the plot
 box()
 
+# standard errors
 col <- ifelse(est > 0, 3, 4)
 segments(est - se, i, est + se, i, lwd = 1.5, col = col)
+```
+
+```
+Error in segments(est - se, i, est + se, i, lwd = 1.5, col = col): object 'se' not found
+```
+
+```r
 segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col)
+```
+
+```
+Error in segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col): object 'se' not found
+```
+
+```r
 segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col)
+```
+
+```
+Error in segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col): object 'se' not found
+```
+
+```r
+# estimates
 points(est, i, pch = 16, cex = 0.75, col = col)
 ```
 
-![plot of chunk unnamed-chunk-21](gender-unnamed-chunk-21-1.png)
+![plot of chunk unnamed-chunk-24](gender-unnamed-chunk-24-1.png)
+
+Not all of these are practically significant: many show up because they are
+common words, and it is possible to get precise estimates of the gender
+imbalances.
 
 
 

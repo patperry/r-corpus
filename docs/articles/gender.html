@@ -93,18 +93,27 @@
 <div id="finding-gendered-words" class="section level1">
 <h1 class="hasAnchor">
 <a href="#finding-gendered-words" class="anchor"></a>Finding gendered words</h1>
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
 <p>In this vignette, we will look for gender-associated words We will do this by looking for words that follow the pronoun “she” more often than “he”, or vice-versa. The vignette is based on Julia Silge’s blog post, <a href="https://juliasilge.com/blog/gender-pronouns/" title="Gender roles with text mining and n-grams">“Gender roles with text mining and n-grams”</a>.</p>
+<p>We will use the <em>corpus</em> package, but not rely on any other external dependencies. The set-up is as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"corpus"</span>)
 
-<span class="co"># RColorBrewer::brewer.pal(6, "Set1")</span>
+<span class="co"># colors from RColorBrewer::brewer.pal(6, "Set1")</span>
 <span class="kw">palette</span>(<span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#377EB8"</span>, <span class="st">"#4DAF4A"</span>, <span class="st">"#984EA3"</span>, <span class="st">"#FF7F00"</span>, <span class="st">"#FFFF33"</span>))
 
-<span class="kw">set.seed</span>(<span class="dv">0</span>) <span class="co"># ensure consistent runs</span></code></pre></div>
+<span class="co"># ensure consistent runs</span>
+<span class="kw">set.seed</span>(<span class="dv">0</span>) </code></pre></div>
+</div>
+<div id="gender-bigrams-in-austens-novels" class="section level2">
+<h2 class="hasAnchor">
+<a href="#gender-bigrams-in-austens-novels" class="anchor"></a>Gender bigrams in Austen’s novels</h2>
 <p>We will be studying gender in the context of Jane Austen’s completed novels, downloaded from <a href="https://www.gutenberg.org/" title="Project Gutenberg">Project Gutenberg</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")</span>
 (austen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gutenberg_corpus.html">gutenberg_corpus</a></span>(<span class="kw">c</span>(<span class="dv">161</span>, <span class="dv">1342</span>, <span class="dv">141</span>, <span class="dv">158</span>, <span class="dv">121</span>, <span class="dv">105</span>)))</code></pre></div>
 <pre><code>Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL</code></pre>
-<pre><code>Using mirror http://mirror.csclub.uwaterloo.ca/gutenberg/</code></pre>
+<pre><code>Using mirror http://www.gutenberg.org/dirs/</code></pre>
 <pre><code>Converting text from declared encoding "ISO-8859-1" to UTF-8</code></pre>
 <pre><code>  title                 author      language text                                                   
 1 Sense and Sensibility Jane Austen English  SENSE AND SENSIBILITY\n\nby Jane Austen\n\n(1811)\n\n… 
@@ -185,6 +194,10 @@ absented    0   1
 absolutely  3   1
 abstained   0   1</code></pre>
 <p>Here, we changed the aggregation function from <code>identity()</code> to <code>sum()</code> to sum the counts over all types that are equal after removing underscores.</p>
+</div>
+<div id="gender-specific-usage-rates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#gender-specific-usage-rates" class="anchor"></a>Gender-specific usage rates</h2>
 <p>We want to find terms that are associated with particular gendered pronouns. As an example, take term “loves”:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">term &lt;-<span class="st"> "loves"</span>
 i &lt;-<span class="st"> </span><span class="kw">match</span>(term, <span class="kw">rownames</span>(terms))
@@ -218,7 +231,7 @@ log2_ratio &lt;-<span class="st"> </span><span class="kw">log2</span>(she) <span
 <span class="kw">qqnorm</span>(log2_ratio, <span class="dt">col =</span> <span class="dv">2</span>)
 <span class="kw">qqline</span>(log2_ratio, <span class="dt">col =</span> <span class="dv">1</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</code></pre></div>
 <div class="figure">
-<img src="corpus-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14"><p class="caption">plot of chunk unnamed-chunk-14</p>
+<img src="gender-unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14"><p class="caption">plot of chunk unnamed-chunk-14</p>
 </div>
 <p>This doesn’t quite look like a normal, but the distribution is symmetric, and the tails are about as heavy as those of a normal. So, the z-score will be a reasonable measure of how typical or unusual each log rate is.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">z &lt;-<span class="st"> </span>(log2_ratio <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(log2_ratio)) <span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(log2_ratio)</code></pre></div>
@@ -231,82 +244,145 @@ log2_ratio &lt;-<span class="st"> </span><span class="kw">log2</span>(she) <span
 remembered 
   4.545563 </code></pre>
 <p>The terms “remembered”, “hurried”, and “seized” have more “she” usages; the terms “gravely”, “believes”, and “bowed” have more “he” usages.</p>
+</div>
+<div id="uncertainty-quantification" class="section level2">
+<h2 class="hasAnchor">
+<a href="#uncertainty-quantification" class="anchor"></a>Uncertainty quantification</h2>
 <p>It’s hard to know which of these differences are meaningful without quantifying the error associated with the estimates. Some words are common, and we have reliable estimates of the log ratios. Other words are rare, and the estimates are based on a small number of occurrences. In the rare case, the estimates of the log ratios will be unreliable.</p>
 <p>We need standard errors of our estimates. We can get these by starting with the proportion estimates <code>he</code> and <code>she</code>, and then applying the <a href="https://en.wikipedia.org/wiki/Delta_method">delta method</a>.</p>
 <p>The <code>he</code> and <code>she</code> rates are proportions. We get their standard errors by using the usual formula for the standard error of a proportion, based on the Binomial variance formula:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">he_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(he <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>he) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"he"</span>]])
 she_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(he <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>he) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"he"</span>]])</code></pre></div>
 <p>To find the standard errors for the logarithms of these quantities, we use the delta method. We multiply the standard error by the absolute value of the derivative of the logarithm function evaluated at the estimate:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_he_se &lt;-<span class="st"> </span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">2</span>)) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>he) <span class="op">*</span><span class="st"> </span>he_se
-log2_she_se &lt;-<span class="st"> </span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">2</span>)) <span class="op">*</span><span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>she) <span class="op">*</span><span class="st"> </span>she_se</code></pre></div>
-<p>These formulas from using a Taylor expansion of <code>log2</code> around the estimate.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_he_se &lt;-<span class="st"> </span><span class="kw">abs</span>((<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>he)) <span class="op">*</span><span class="st"> </span>he_se
+log2_she_se &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>she)) <span class="op">*</span><span class="st"> </span>she_se</code></pre></div>
+<pre><code>Error: &lt;text&gt;:2:1: unexpected symbol
+1: log2_he_se &lt;- abs((1 / (log(2) * he)) * he_se
+2: log2_she_se
+   ^</code></pre>
+<p>These formulas follow from using a Taylor expansion of <code>log2</code> around the estimate, using that the derivative of <code>log2(x)</code> is <code>1 / (log(2) * x)</code>.</p>
 <p>Finally, for the standard error of <code>log2_ratio</code>, we assume that the <code>log2_he</code> and <code>log2_she</code> estimates are approximately independent, so that the variance of their difference is the sum of their variances. This gives a formula for the standard error of the log ratio:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_ratio_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(log2_she_se<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>log2_he_se<span class="op">^</span><span class="dv">2</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">r &lt;-<span class="st"> </span><span class="kw">rank</span>(log2_ratio, <span class="dt">ties.method =</span> <span class="st">"first"</span>)
+<pre><code>Error in eval(expr, envir, enclos): object 'log2_she_se' not found</code></pre>
+<p>Here are all of the estimated log ratios, along, with error bars for those that are statistically significantly different from zero.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># put the estimates in increasing order</span>
+r &lt;-<span class="st"> </span><span class="kw">rank</span>(log2_ratio, <span class="dt">ties.method =</span> <span class="st">"first"</span>)
 
-<span class="co"># significant cases</span>
-signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(log2_ratio) <span class="op">/</span><span class="st"> </span>log2_ratio_se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)
+<span class="co"># find the statistically significant cases</span>
+signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(log2_ratio) <span class="op">/</span><span class="st"> </span>log2_ratio_se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
+<pre><code>Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">i &lt;-<span class="st"> </span>signif
 
-i &lt;-<span class="st"> </span>signif
-
+<span class="co"># set up the plot</span>
 xlim &lt;-<span class="st"> </span>xlim &lt;-<span class="st"> </span><span class="kw">range</span>(r)
 ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
               (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
-              (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])
-
-<span class="kw">plot</span>(xlim, ylim, <span class="dt">type =</span> <span class="st">"n"</span>, <span class="dt">xlab =</span> <span class="st">"Rank"</span>,
-     <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(Log[<span class="dv">2</span>], <span class="st">" (She / He) Usage Rate"</span>)))
-<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col =</span> <span class="st">"gray"</span>, <span class="dt">lty =</span> <span class="dv">2</span>)
-<span class="kw">points</span>(r, log2_ratio, <span class="dt">col =</span> <span class="dv">2</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>)
-
+              (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
+<pre><code>Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(xlim, ylim, <span class="dt">type =</span> <span class="st">"n"</span>, <span class="dt">xlab =</span> <span class="st">"Rank"</span>,
+     <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(Log[<span class="dv">2</span>], <span class="st">" (She / He) Usage Rate"</span>)))</code></pre></div>
+<pre><code>Error in xy.coords(x, y, xlabel, ylabel, log): object 'ylim' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># horizontal line at zero</span>
+<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col =</span> <span class="st">"gray"</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</code></pre></div>
+<pre><code>Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): plot.new has not been called yet</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># standard error around interesting points</span>
 <span class="kw">segments</span>(r[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
-         r[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])
-<span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
-         (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i])
-<span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i],
+         r[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
+<pre><code>Error in r[i]: invalid subscript type 'special'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
+         (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
+<pre><code>Error in (r - 0.4)[i]: invalid subscript type 'special'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i],
          (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
-<div class="figure">
-<img src="corpus-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20"><p class="caption">plot of chunk unnamed-chunk-20</p>
+<pre><code>Error in (r - 0.4)[i]: invalid subscript type 'special'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># points at the estimates</span>
+<span class="kw">points</span>(r, log2_ratio, <span class="dt">col =</span> <span class="dv">2</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>)</code></pre></div>
+<pre><code>Error in plot.xy(xy.coords(x, y), type = type, ...): plot.new has not been called yet</code></pre>
+<p>Notice that many of the more extreme estimates are not statistically significant. One word with a large estimate not deemed statistically significant is the word “stopped”. Here are the counts for that word, along with the log ratio estimate and standard error:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"stopped"</span>,])</code></pre></div>
+<pre><code> he she 
+ 13   4 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"stopped"</span>]])</code></pre></div>
+<pre><code>[1] -2.083794</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"stopped"</span>]])</code></pre></div>
+<pre><code>Error in print(log2_ratio_se[["stopped"]]): object 'log2_ratio_se' not found</code></pre>
+<p>This is a word with a large imbalance, but only in a relatively small number of samples. Due to the lack of data for the word “instantly”, we deem this imbalance to not be statistically significant. Compare this to the word “felt”:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"felt"</span>,])</code></pre></div>
+<pre><code> he she 
+ 36 189 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"felt"</span>]])</code></pre></div>
+<pre><code>[1] 1.877398</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"felt"</span>]])</code></pre></div>
+<pre><code>Error in print(log2_ratio_se[["felt"]]): object 'log2_ratio_se' not found</code></pre>
+<p>This has an effect size estimate on the same order as “stopped”, but the estimate is much more reliable given the larger number of appearances of the word “felt”. We judge “felt” both to have a practically significant difference <em>and</em> a statistically significant difference.</p>
+<p>The word “was” exhibits one other extreme:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"was"</span>,])</code></pre></div>
+<pre><code>  he  she 
+ 891 1378 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"was"</span>]])</code></pre></div>
+<pre><code>[1] 0.1299613</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"was"</span>]])</code></pre></div>
+<pre><code>Error in print(log2_ratio_se[["was"]]): object 'log2_ratio_se' not found</code></pre>
+<p>This word has only a minor difference between “he” and “she”, but it shows up often enough for us to get a reliable estimate of the difference. The word “was” has a statistically significant difference between the genders, but probably not a practically significant difference.</p>
+<p>In the context of our application, a word is practically significance if the absolute value of its estimate is large. This difference is statistically significant if the estimate is large relative to its standard error. If we only care about Austen’s writing in these six novels, we may not care about statistical significance. If, however, we want to make a statement about Austen’s writing style in general, then we want to generalize beyond our data set, and we should only do so for words we can get reliable estimates for.</p>
 </div>
+<div id="results" class="section level2">
+<h2 class="hasAnchor">
+<a href="#results" class="anchor"></a>Results</h2>
+<p>Here are the estimates for the words with statistically significant gender imbalances.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># order by log ratio, then name</span>
 o &lt;-<span class="st"> </span><span class="kw">order</span>(log2_ratio, <span class="kw">names</span>(log2_ratio))
 est &lt;-<span class="st"> </span>log2_ratio[o]
-se &lt;-<span class="st"> </span>log2_ratio_se[o]
-
-<span class="co"># only keep significant cases</span>
-signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(est) <span class="op">/</span><span class="st"> </span>se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)
-est &lt;-<span class="st"> </span>est[signif]
-se &lt;-<span class="st"> </span>se[signif]
-
-<span class="co"># get the terms</span>
+se &lt;-<span class="st"> </span>log2_ratio_se[o]</code></pre></div>
+<pre><code>Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># only keep significant cases</span>
+signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(est) <span class="op">/</span><span class="st"> </span>se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
+<pre><code>Error in eval(expr, envir, enclos): object 'se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est &lt;-<span class="st"> </span>est[signif]</code></pre></div>
+<pre><code>Error in est[signif]: invalid subscript type 'special'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">se &lt;-<span class="st"> </span>se[signif]</code></pre></div>
+<pre><code>Error in eval(expr, envir, enclos): object 'se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the terms</span>
 term &lt;-<span class="st"> </span><span class="kw">names</span>(est)
 i &lt;-<span class="st"> </span><span class="kw">seq_along</span>(term)
 
-<span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span>)
-xlim &lt;-<span class="st"> </span><span class="kw">range</span>(est <span class="op">-</span><span class="st"> </span>se, est <span class="op">+</span><span class="st"> </span>se)
-ylim &lt;-<span class="st"> </span><span class="kw">range</span>(i)
+<span class="co"># set up the plot</span>
+<span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span>)
+xlim &lt;-<span class="st"> </span><span class="kw">range</span>(est <span class="op">-</span><span class="st"> </span>se, est <span class="op">+</span><span class="st"> </span>se)</code></pre></div>
+<pre><code>Error in eval(expr, envir, enclos): object 'se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ylim &lt;-<span class="st"> </span><span class="kw">range</span>(i)
 <span class="kw">plot</span>(xlim, ylim, <span class="dt">type =</span> <span class="st">"n"</span>,
      <span class="dt">xlab =</span> <span class="st">"Relative appearance after 'she' compared to 'he'"</span>,
      <span class="dt">ylab =</span> <span class="st">""</span>, <span class="dt">axes =</span> <span class="ot">FALSE</span>)
 
-<span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">at =</span> i, <span class="dt">labels =</span> term, <span class="dt">las =</span> <span class="dv">1</span>, <span class="dt">cex.axis =</span> <span class="fl">0.7</span>)
-<span class="kw">abline</span>(<span class="dt">h =</span> i, <span class="dt">lty =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">"gray"</span>)
-
+<span class="co"># x-axis</span>
 ticks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">3</span>, <span class="dv">6</span>)
 labels =<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">2</span> <span class="op">^</span><span class="st"> </span>ticks, <span class="st">"x"</span>)
 labels[ticks <span class="op">==</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> "Same"</span>
 <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> ticks, <span class="dt">labels =</span> labels)
 <span class="kw">abline</span>(<span class="dt">v =</span> ticks, <span class="dt">col =</span> <span class="st">"gray"</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>)
 
+<span class="co"># y-axis, with term labels</span>
+<span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">at =</span> i, <span class="dt">labels =</span> term, <span class="dt">las =</span> <span class="dv">1</span>)
+<span class="kw">abline</span>(<span class="dt">h =</span> i, <span class="dt">lty =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">"gray"</span>)
+
+<span class="co"># frame the plot</span>
 <span class="kw">box</span>()
 
+<span class="co"># standard errors</span>
 col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">4</span>)
-<span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i, est <span class="op">+</span><span class="st"> </span>se, i, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)
-<span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">-</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)
-<span class="kw">segments</span>(est <span class="op">+</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">+</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)
+<span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i, est <span class="op">+</span><span class="st"> </span>se, i, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)</code></pre></div>
+<pre><code>Error in segments(est - se, i, est + se, i, lwd = 1.5, col = col): object 'se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">-</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)</code></pre></div>
+<pre><code>Error in segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col): object 'se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>(est <span class="op">+</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">+</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)</code></pre></div>
+<pre><code>Error in segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col): object 'se' not found</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimates</span>
 <span class="kw">points</span>(est, i, <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="fl">0.75</span>, <span class="dt">col =</span> col)</code></pre></div>
 <div class="figure">
-<img src="corpus-unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21"><p class="caption">plot of chunk unnamed-chunk-21</p>
+<img src="gender-unnamed-chunk-24-1.png" alt="plot of chunk unnamed-chunk-24"><p class="caption">plot of chunk unnamed-chunk-24</p>
+</div>
+<p>Not all of these are practically significant: many show up because they are common words, and it is possible to get precise estimates of the gender imbalances.</p>
 </div>
 </div>
 </div>
@@ -317,7 +393,15 @@ col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#finding-gendered-words">Finding gendered words</a></li>
+<li>
+<a href="#finding-gendered-words">Finding gendered words</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#overview">Overview</a></li>
+      <li><a href="#gender-bigrams-in-austens-novels">Gender bigrams in Austen’s novels</a></li>
+      <li><a href="#gender-specific-usage-rates">Gender-specific usage rates</a></li>
+      <li><a href="#uncertainty-quantification">Uncertainty quantification</a></li>
+      <li><a href="#results">Results</a></li>
+      </ul>
+</li>
       </ul>
 </div>
       </div>
