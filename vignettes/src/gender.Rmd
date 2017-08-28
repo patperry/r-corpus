@@ -9,7 +9,7 @@ Finding gendered words
 
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(comment = "", fig.path = "corpus-", fig.retina = TRUE)
+knitr::opts_chunk$set(comment = "", fig.path = "gender-", fig.retina = TRUE)
 options(width = 100)
 ```
 
@@ -206,7 +206,7 @@ the standard error of the log ratio:
 log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
 ```
 
-```{r}
+```{r, fig.width = 12}
 r <- rank(log2_ratio, ties.method = "first")
 
 # significant cases
@@ -249,14 +249,14 @@ se <- se[signif]
 term <- names(est)
 i <- seq_along(term)
 
-par(mar = c(5, 5, 2, 2) + 0.1)
+par(mar = c(5, 6, 2, 2) + 0.1)
 xlim <- range(est - se, est + se)
 ylim <- range(i)
 plot(xlim, ylim, type = "n",
      xlab = "Relative appearance after 'she' compared to 'he'",
      ylab = "", axes = FALSE)
 
-axis(2, at = i, labels = term, las = 1, cex.axis = 0.7)
+axis(2, at = i, labels = term, las = 1)
 abline(h = i, lty = 3, col = "gray")
 
 ticks <- seq(-3, 6)

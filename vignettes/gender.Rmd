@@ -261,7 +261,7 @@ qqnorm(log2_ratio, col = 2)
 qqline(log2_ratio, col = 1, lty = 2)
 ```
 
-![plot of chunk unnamed-chunk-14](corpus-unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-14](gender-unnamed-chunk-14-1.png)
 
 This doesn't quite look like a normal, but the distribution is symmetric, and
 the tails are about as heavy as those of a normal. So, the z-score will be a
@@ -363,7 +363,7 @@ segments((r - 0.4)[i], (log2_ratio + log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio + log2_ratio_se)[i])
 ```
 
-![plot of chunk unnamed-chunk-20](corpus-unnamed-chunk-20-1.png)
+![plot of chunk unnamed-chunk-20](gender-unnamed-chunk-20-1.png)
 
 
 
@@ -382,14 +382,14 @@ se <- se[signif]
 term <- names(est)
 i <- seq_along(term)
 
-par(mar = c(5, 5, 2, 2) + 0.1)
+par(mar = c(5, 6, 2, 2) + 0.1)
 xlim <- range(est - se, est + se)
 ylim <- range(i)
 plot(xlim, ylim, type = "n",
      xlab = "Relative appearance after 'she' compared to 'he'",
      ylab = "", axes = FALSE)
 
-axis(2, at = i, labels = term, las = 1, cex.axis = 0.7)
+axis(2, at = i, labels = term, las = 1)
 abline(h = i, lty = 3, col = "gray")
 
 ticks <- seq(-3, 6)
@@ -407,7 +407,7 @@ segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col)
 points(est, i, pch = 16, cex = 0.75, col = col)
 ```
 
-![plot of chunk unnamed-chunk-21](corpus-unnamed-chunk-21-1.png)
+![plot of chunk unnamed-chunk-21](gender-unnamed-chunk-21-1.png)
 
 
 
