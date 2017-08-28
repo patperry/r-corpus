@@ -2,5 +2,6 @@
 *.o
 *.so
 .Rhistory
+/NEWS
 /README
 /dist/

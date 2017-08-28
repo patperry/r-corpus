@@ -6,6 +6,7 @@
 ^[.]travis[.]yml$
 ^CONDUCT[.]md$
 ^Makefile$
+^NEWS[.]md$
 ^README[.]md$
 ^TODO[.]md$
 ^appveyor[.]yml$

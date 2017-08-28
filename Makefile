@@ -7,6 +7,9 @@ all: $(CORPUS_LIB) $(BUILT_VIGNETTES)
 $(CORPUS_LIB):
 	$(RSCRIPT) -e 'devtools::compile_dll(".")'
 
+NEWS: NEWS.md
+	sed -e 's/^### //g; s/`//g' $< > $@
+
 README: README.md
 	sed -e '/^\[!\[/d' $< > $@
 
@@ -39,10 +42,10 @@ clean:
 cov:
 	$(RSCRIPT) -e 'covr::package_coverage(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
 
-dist: $(BUILT_VIGNETTES) README
+dist: $(BUILT_VIGNETTES) NEWS README
 	mkdir -p dist && cd dist && R CMD build ..
 
-doc: $(BUILT_VIGNETTES) README
+doc: $(BUILT_VIGNETTES) NEWS README
 
 install: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'devtools::install(".")'
