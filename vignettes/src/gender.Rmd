@@ -1,0 +1,282 @@
+<!--
+%\VignetteIndexEntry{Finding gendered words}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+-->
+
+Finding gendered words
+======================
+
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(comment = "", fig.path = "corpus-", fig.retina = TRUE)
+options(width = 100)
+```
+
+In this vignette, we will look for gender-associated words  We will do this
+by looking for words that follow the pronoun "she" more often than "he", or
+vice-versa. The vignette is based on Julia Silge's blog post,
+["Gender roles with text mining and n-grams"][silge-roles].
+
+
+```{r}
+library("corpus")
+
+# RColorBrewer::brewer.pal(6, "Set1")
+palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33"))
+
+set.seed(0) # ensure consistent runs
+```
+
+
+We will be studying gender in the context of Jane Austen's completed novels,
+downloaded from [Project Gutenberg][gutenberg].
+
+```{r}
+# Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")
+(austen <- gutenberg_corpus(c(161, 1342, 141, 158, 121, 105)))
+```
+
+For tokens, we will be using the lower-cased non-punctuation words
+```{r}
+text_filter(austen)$drop_punct <- TRUE
+```
+
+Specifically, we will look at the bigrams from these novels where the first
+type is a pronoun.
+
+```{r}
+pronouns <- c("he", "she")
+bigram_counts <- term_stats(austen, ngrams = 2, types = TRUE,
+                            subset = type1 %in% pronouns)
+print(bigram_counts)
+```
+
+Above, we can see the most common bigrams with gendered pronouns as their first
+types.
+
+
+Next, we rearrange the data  into tabular form, with one row for each term and
+one column for each pronoun:
+
+```{r}
+terms <-  with(bigram_counts,
+               tapply(count, list(type2, type1), identity, default = 0))
+head(terms)
+```
+
+It looks like some terms get emphasized in the text by underscores. We can
+investigate some of these:
+
+```{r}
+# inspect a random sample of the occurrences
+text_locate(austen, c("_did_", "_had", "_meant_"), random = TRUE)
+```
+
+Let's clean the terms by removing underscores, and recompute the counts:
+
+```{r}
+terms <-  with(bigram_counts,
+               tapply(count, list(gsub("_", "", type2), type1),
+                      sum, default = 0))
+head(terms)
+```
+
+Here, we changed the aggregation function from `identity()` to `sum()` to sum
+the counts over all types that are equal after removing underscores.
+
+
+We want to find terms that are associated with particular gendered pronouns.
+As an example, take term "loves": 
+
+```{r}
+term <- "loves"
+i <- match(term, rownames(terms))
+tab <- cbind(terms[i,], colSums(terms[-i,]))
+colnames(tab) <- c(term, paste0("\u00ac", term))
+print(tab)
+```
+
+When the first type in a bigram is "he", it is followed by "loves" in 5
+instances and another type in 6988 instances. Here are the relative rates of
+"loves", conditional on the first type in the bigram:
+
+```{r}
+(rates <- tab[,"loves"] / rowSums(tab))
+```
+
+The ratio of these rates is very close to one:
+
+```{r}
+rates[["she"]] / rates[["he"]]
+```
+
+The log (base-2) ratio of the rates is close to zero:
+```{r}
+log2(rates[["she"]]) - log2(rates[["he"]])
+```
+
+This log ratio is a good measure of the strength of association. When the
+value is close to zero, there is no meaningful association. For large absolute
+log ratios, we would say that there is a meaningful difference in usage
+between the genders.
+
+We compute the log ratios for all types. To avoid dividing by zero, and to
+smooth the estimates when the counts are small, we add 0.5 to the count when
+estimating the rate.
+
+Some terms only appear once in the corpus. The rate estimates for these terms
+will be unreliable, so we discard them.
+
+```{r}
+tot <- colSums(terms)
+common_terms <- terms[rowSums(terms) > 1,]
+he  <- (common_terms[,"he"] + 0.5) / (tot[["he"]] + 1)
+she <- ((common_terms[,"she"] + 0.5) / (tot[["she"]] + 1))
+log2_ratio <- log2(she) - log2(he)
+```
+
+
+Here are a histogram and normal probability plot of the estimates for the
+remaining terms.
+
+```{r fig.width = 12}
+par(mfrow = c(1, 2))
+hist(log2_ratio, breaks = "Scott", col = 2, border = "white")
+qqnorm(log2_ratio, col = 2)
+qqline(log2_ratio, col = 1, lty = 2)
+```
+
+This doesn't quite look like a normal, but the distribution is symmetric, and
+the tails are about as heavy as those of a normal. So, the z-score will be a
+reasonable measure of how typical or unusual each log rate is.
+
+```{r}
+z <- (log2_ratio - mean(log2_ratio)) / sd(log2_ratio)
+```
+
+Here are the words more than two standard deviations away from the mean log
+ratio:
+
+```{r}
+sort(log2_ratio[abs(z) > 2])
+```
+
+The terms "remembered", "hurried", and "seized" have more "she" usages; the
+terms "gravely", "believes", and "bowed" have more "he" usages.
+
+
+It's hard to know which of these differences are meaningful without
+quantifying the error associated with the estimates. Some words are common,
+and we have reliable estimates of the log ratios. Other words are rare, and
+the estimates are based on a small number of occurrences. In the rare case,
+the estimates of the log ratios will be unreliable.
+
+
+We need standard errors of our estimates. We can get these by starting with
+the proportion estimates `he` and `she`, and then applying the
+[delta method][delta-method].
+
+The `he` and `she` rates are proportions. We get their standard errors by
+using the usual formula for the standard error of a proportion, based on
+the Binomial variance formula:
+
+```{r}
+he_se <- sqrt(he * (1 - he) / tot[["he"]])
+she_se <- sqrt(he * (1 - he) / tot[["he"]])
+```
+
+To find the standard errors for the logarithms of these quantities, we use the
+delta method. We multiply the standard error by the absolute value of the 
+derivative of the logarithm function evaluated at the estimate:
+
+```{r}
+log2_he_se <- (1 / log(2)) * abs(1 / he) * he_se
+log2_she_se <- (1 / log(2)) * abs(1 / she) * she_se
+```
+
+These formulas from using a Taylor expansion of `log2` around the estimate.
+
+Finally, for the standard error of `log2_ratio`, we assume that the `log2_he`
+and `log2_she` estimates are approximately independent, so that the variance
+of their difference is the sum of their variances. This gives a formula for
+the standard error of the log ratio:
+
+```{r}
+log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
+```
+
+```{r}
+r <- rank(log2_ratio, ties.method = "first")
+
+# significant cases
+signif <- (abs(log2_ratio) / log2_ratio_se > 2)
+
+i <- signif
+
+xlim <- xlim <- range(r)
+ylim <- range(log2_ratio,
+              (log2_ratio - log2_ratio_se)[i],
+              (log2_ratio + log2_ratio_se)[i])
+
+plot(xlim, ylim, type = "n", xlab = "Rank",
+     ylab = expression(paste(Log[2], " (She / He) Usage Rate")))
+abline(h = 0, col = "gray", lty = 2)
+points(r, log2_ratio, col = 2, cex = 0.5)
+
+segments(r[i], (log2_ratio - log2_ratio_se)[i],
+         r[i], (log2_ratio + log2_ratio_se)[i])
+segments((r - 0.4)[i], (log2_ratio - log2_ratio_se)[i],
+         (r + 0.4)[i], (log2_ratio - log2_ratio_se)[i])
+segments((r - 0.4)[i], (log2_ratio + log2_ratio_se)[i],
+         (r + 0.4)[i], (log2_ratio + log2_ratio_se)[i])
+```
+
+
+```{r fig.width = 12}
+
+# order by log ratio, then name
+o <- order(log2_ratio, names(log2_ratio))
+est <- log2_ratio[o]
+se <- log2_ratio_se[o]
+
+# only keep significant cases
+signif <- (abs(est) / se > 2)
+est <- est[signif]
+se <- se[signif]
+
+# get the terms
+term <- names(est)
+i <- seq_along(term)
+
+par(mar = c(5, 5, 2, 2) + 0.1)
+xlim <- range(est - se, est + se)
+ylim <- range(i)
+plot(xlim, ylim, type = "n",
+     xlab = "Relative appearance after 'she' compared to 'he'",
+     ylab = "", axes = FALSE)
+
+axis(2, at = i, labels = term, las = 1, cex.axis = 0.7)
+abline(h = i, lty = 3, col = "gray")
+
+ticks <- seq(-3, 6)
+labels = paste0(2 ^ ticks, "x")
+labels[ticks == 0] <- "Same"
+axis(1, at = ticks, labels = labels)
+abline(v = ticks, col = "gray", lwd = 0.5)
+
+box()
+
+col <- ifelse(est > 0, 3, 4)
+segments(est - se, i, est + se, i, lwd = 1.5, col = col)
+segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col)
+segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col)
+points(est, i, pch = 16, cex = 0.75, col = col)
+```
+
+
+
+
+[delta-method]: https://en.wikipedia.org/wiki/Delta_method
+[gutenberg]: https://www.gutenberg.org/ "Project Gutenberg"
+[silge-roles]: https://juliasilge.com/blog/gender-pronouns/ "Gender roles with text mining and n-grams"

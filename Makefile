@@ -1,6 +1,6 @@
 RSCRIPT= Rscript --vanilla
 CORPUS_LIB= src/corpus.so
-BUILT_VIGNETTES= vignettes/chinese.Rmd vignettes/corpus.Rmd vignettes/unicode.Rmd
+BUILT_VIGNETTES= vignettes/chinese.Rmd vignettes/corpus.Rmd vignettes/gender.Rmd vignettes/unicode.Rmd
 
 all: $(CORPUS_LIB) $(BUILT_VIGNETTES)
 
@@ -17,6 +17,10 @@ vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
 vignettes/corpus.Rmd: vignettes/src/corpus.Rmd
 	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/corpus.Rmd")'
 	mv vignettes/corpus.md $@ && touch -r $< $@
+
+vignettes/gender.Rmd: vignettes/src/gender.Rmd
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/gender.Rmd")'
+	mv vignettes/gender.md $@ && touch -r $< $@
 
 vignettes/unicode.Rmd: vignettes/src/unicode.Rmd
 	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/unicode.Rmd")'
