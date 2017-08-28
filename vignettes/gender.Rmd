@@ -49,7 +49,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://www.gutenberg.org/dirs/
+Using mirror http://gutenberg.readingroo.ms/
 ```
 
 ```
@@ -271,7 +271,7 @@ qqnorm(log2_ratio, col = 2)
 qqline(log2_ratio, col = 1, lty = 2)
 ```
 
-![plot of chunk unnamed-chunk-14](gender-unnamed-chunk-14-1.png)
+![Rate Ratio Estimates](gender-estimates-1.png)
 
 This doesn't quite look like a normal, but the distribution is symmetric, and
 the tails are about as heavy as those of a normal. So, the z-score will be a
@@ -334,15 +334,8 @@ derivative of the logarithm function evaluated at the estimate:
 
 
 ```r
-log2_he_se <- abs((1 / (log(2) * he)) * he_se
+log2_he_se <- abs(1 / (log(2) * he)) * he_se
 log2_she_se <- abs(1 / (log(2) * she)) * she_se
-```
-
-```
-Error: <text>:2:1: unexpected symbol
-1: log2_he_se <- abs((1 / (log(2) * he)) * he_se
-2: log2_she_se
-   ^
 ```
 
 These formulas follow from using a Taylor expansion of `log2` around the
@@ -359,10 +352,6 @@ the standard error of the log ratio:
 log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
 ```
 
-```
-Error in eval(expr, envir, enclos): object 'log2_she_se' not found
-```
-
 Here are all of the estimated log ratios, along, with error bars for those
 that are statistically significantly different from zero.
 
@@ -373,13 +362,6 @@ r <- rank(log2_ratio, ties.method = "first")
 
 # find the statistically significant cases
 signif <- (abs(log2_ratio) / log2_ratio_se > 2)
-```
-
-```
-Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found
-```
-
-```r
 i <- signif
 
 # set up the plot
@@ -387,66 +369,25 @@ xlim <- xlim <- range(r)
 ylim <- range(log2_ratio,
               (log2_ratio - log2_ratio_se)[i],
               (log2_ratio + log2_ratio_se)[i])
-```
-
-```
-Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found
-```
-
-```r
 plot(xlim, ylim, type = "n", xlab = "Rank",
      ylab = expression(paste(Log[2], " (She / He) Usage Rate")))
-```
 
-```
-Error in xy.coords(x, y, xlabel, ylabel, log): object 'ylim' not found
-```
-
-```r
 # horizontal line at zero
 abline(h = 0, col = "gray", lty = 2)
-```
 
-```
-Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): plot.new has not been called yet
-```
-
-```r
 # standard error around interesting points
 segments(r[i], (log2_ratio - log2_ratio_se)[i],
          r[i], (log2_ratio + log2_ratio_se)[i])
-```
-
-```
-Error in r[i]: invalid subscript type 'special'
-```
-
-```r
 segments((r - 0.4)[i], (log2_ratio - log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio - log2_ratio_se)[i])
-```
-
-```
-Error in (r - 0.4)[i]: invalid subscript type 'special'
-```
-
-```r
 segments((r - 0.4)[i], (log2_ratio + log2_ratio_se)[i],
          (r + 0.4)[i], (log2_ratio + log2_ratio_se)[i])
-```
 
-```
-Error in (r - 0.4)[i]: invalid subscript type 'special'
-```
-
-```r
 # points at the estimates
 points(r, log2_ratio, col = 2, cex = 0.5)
 ```
 
-```
-Error in plot.xy(xy.coords(x, y), type = type, ...): plot.new has not been called yet
-```
+![Rate Ratio Estimates, with Error Bars](gender-estimates_se-1.png)
 
 Notice that many of the more extreme estimates are not statistically
 significant. One word with a large estimate not deemed statistically
@@ -476,7 +417,7 @@ print(log2_ratio_se[["stopped"]])
 ```
 
 ```
-Error in print(log2_ratio_se[["stopped"]]): object 'log2_ratio_se' not found
+[1] 1.708688
 ```
 
 This is a word with a large imbalance, but only in a relatively small number
@@ -507,7 +448,7 @@ print(log2_ratio_se[["felt"]])
 ```
 
 ```
-Error in print(log2_ratio_se[["felt"]]): object 'log2_ratio_se' not found
+[1] 0.2468545
 ```
 
 This has an effect size estimate on the same order as "stopped", but the
@@ -541,7 +482,7 @@ print(log2_ratio_se[["was"]])
 ```
 
 ```
-Error in print(log2_ratio_se[["was"]]): object 'log2_ratio_se' not found
+[1] 0.06114624
 ```
 
 This word has only a minor difference between "he" and "she", but it shows up
@@ -572,38 +513,12 @@ imbalances.
 o <- order(log2_ratio, names(log2_ratio))
 est <- log2_ratio[o]
 se <- log2_ratio_se[o]
-```
 
-```
-Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found
-```
-
-```r
 # only keep significant cases
 signif <- (abs(est) / se > 2)
-```
-
-```
-Error in eval(expr, envir, enclos): object 'se' not found
-```
-
-```r
 est <- est[signif]
-```
-
-```
-Error in est[signif]: invalid subscript type 'special'
-```
-
-```r
 se <- se[signif]
-```
 
-```
-Error in eval(expr, envir, enclos): object 'se' not found
-```
-
-```r
 # get the terms
 term <- names(est)
 i <- seq_along(term)
@@ -611,13 +526,6 @@ i <- seq_along(term)
 # set up the plot
 par(mar = c(5, 6, 2, 2) + 0.1)
 xlim <- range(est - se, est + se)
-```
-
-```
-Error in eval(expr, envir, enclos): object 'se' not found
-```
-
-```r
 ylim <- range(i)
 plot(xlim, ylim, type = "n",
      xlab = "Relative appearance after 'she' compared to 'he'",
@@ -640,34 +548,14 @@ box()
 # standard errors
 col <- ifelse(est > 0, 3, 4)
 segments(est - se, i, est + se, i, lwd = 1.5, col = col)
-```
-
-```
-Error in segments(est - se, i, est + se, i, lwd = 1.5, col = col): object 'se' not found
-```
-
-```r
 segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col)
-```
-
-```
-Error in segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col): object 'se' not found
-```
-
-```r
 segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col)
-```
 
-```
-Error in segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col): object 'se' not found
-```
-
-```r
 # estimates
 points(est, i, pch = 16, cex = 0.75, col = col)
 ```
 
-![plot of chunk unnamed-chunk-24](gender-unnamed-chunk-24-1.png)
+![Statistically Significant Gender Imbalances](gender-signif-1.png)
 
 Not all of these are practically significant: many show up because they are
 common words, and it is possible to get precise estimates of the gender

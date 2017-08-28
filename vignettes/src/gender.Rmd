@@ -150,7 +150,7 @@ log2_ratio <- log2(she) - log2(he)
 Here are a histogram and normal probability plot of the estimates for the
 remaining terms.
 
-```{r fig.width = 12}
+```{r estimates, fig.width = 12, fig.cap = "Rate Ratio Estimates"}
 par(mfrow = c(1, 2))
 hist(log2_ratio, breaks = "Scott", col = 2, border = "white")
 qqnorm(log2_ratio, col = 2)
@@ -205,7 +205,7 @@ delta method. We multiply the standard error by the absolute value of the
 derivative of the logarithm function evaluated at the estimate:
 
 ```{r}
-log2_he_se <- abs((1 / (log(2) * he)) * he_se
+log2_he_se <- abs(1 / (log(2) * he)) * he_se
 log2_she_se <- abs(1 / (log(2) * she)) * she_se
 ```
 
@@ -225,7 +225,7 @@ log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
 Here are all of the estimated log ratios, along, with error bars for those
 that are statistically significantly different from zero.
 
-```{r, fig.width = 12}
+```{r estimates_se, fig.width = 12, fig.cap = "Rate Ratio Estimates, with Error Bars"}
 # put the estimates in increasing order
 r <- rank(log2_ratio, ties.method = "first")
 
@@ -314,7 +314,7 @@ Here are the estimates for the words with statistically significant gender
 imbalances.
 
 
-```{r fig.width = 12}
+```{r signif, fig.width = 12, fig.cap = "Statistically Significant Gender Imbalances"}
 # order by log ratio, then name
 o <- order(log2_ratio, names(log2_ratio))
 est <- log2_ratio[o]

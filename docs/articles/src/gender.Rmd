@@ -205,7 +205,7 @@ delta method. We multiply the standard error by the absolute value of the
 derivative of the logarithm function evaluated at the estimate:
 
 ```{r}
-log2_he_se <- abs((1 / (log(2) * he)) * he_se
+log2_he_se <- abs(1 / (log(2) * he)) * he_se
 log2_she_se <- abs(1 / (log(2) * she)) * she_se
 ```
 

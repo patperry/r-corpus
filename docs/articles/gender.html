@@ -113,7 +113,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")</span>
 (austen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gutenberg_corpus.html">gutenberg_corpus</a></span>(<span class="kw">c</span>(<span class="dv">161</span>, <span class="dv">1342</span>, <span class="dv">141</span>, <span class="dv">158</span>, <span class="dv">121</span>, <span class="dv">105</span>)))</code></pre></div>
 <pre><code>Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL</code></pre>
-<pre><code>Using mirror http://www.gutenberg.org/dirs/</code></pre>
+<pre><code>Using mirror http://aleph.gutenberg.org/</code></pre>
 <pre><code>Converting text from declared encoding "ISO-8859-1" to UTF-8</code></pre>
 <pre><code>  title                 author      language text                                                   
 1 Sense and Sensibility Jane Austen English  SENSE AND SENSIBILITY\n\nby Jane Austen\n\n(1811)\n\n… 
@@ -254,50 +254,43 @@ remembered
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">he_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(he <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>he) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"he"</span>]])
 she_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(he <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>he) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"he"</span>]])</code></pre></div>
 <p>To find the standard errors for the logarithms of these quantities, we use the delta method. We multiply the standard error by the absolute value of the derivative of the logarithm function evaluated at the estimate:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_he_se &lt;-<span class="st"> </span><span class="kw">abs</span>((<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>he)) <span class="op">*</span><span class="st"> </span>he_se
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_he_se &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>he)) <span class="op">*</span><span class="st"> </span>he_se
 log2_she_se &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>she)) <span class="op">*</span><span class="st"> </span>she_se</code></pre></div>
-<pre><code>Error: &lt;text&gt;:2:1: unexpected symbol
-1: log2_he_se &lt;- abs((1 / (log(2) * he)) * he_se
-2: log2_she_se
-   ^</code></pre>
 <p>These formulas follow from using a Taylor expansion of <code>log2</code> around the estimate, using that the derivative of <code>log2(x)</code> is <code>1 / (log(2) * x)</code>.</p>
 <p>Finally, for the standard error of <code>log2_ratio</code>, we assume that the <code>log2_he</code> and <code>log2_she</code> estimates are approximately independent, so that the variance of their difference is the sum of their variances. This gives a formula for the standard error of the log ratio:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_ratio_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(log2_she_se<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>log2_he_se<span class="op">^</span><span class="dv">2</span>)</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'log2_she_se' not found</code></pre>
 <p>Here are all of the estimated log ratios, along, with error bars for those that are statistically significantly different from zero.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># put the estimates in increasing order</span>
 r &lt;-<span class="st"> </span><span class="kw">rank</span>(log2_ratio, <span class="dt">ties.method =</span> <span class="st">"first"</span>)
 
 <span class="co"># find the statistically significant cases</span>
-signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(log2_ratio) <span class="op">/</span><span class="st"> </span>log2_ratio_se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">i &lt;-<span class="st"> </span>signif
+signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(log2_ratio) <span class="op">/</span><span class="st"> </span>log2_ratio_se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)
+i &lt;-<span class="st"> </span>signif
 
 <span class="co"># set up the plot</span>
 xlim &lt;-<span class="st"> </span>xlim &lt;-<span class="st"> </span><span class="kw">range</span>(r)
 ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
               (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
-              (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(xlim, ylim, <span class="dt">type =</span> <span class="st">"n"</span>, <span class="dt">xlab =</span> <span class="st">"Rank"</span>,
-     <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(Log[<span class="dv">2</span>], <span class="st">" (She / He) Usage Rate"</span>)))</code></pre></div>
-<pre><code>Error in xy.coords(x, y, xlabel, ylabel, log): object 'ylim' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># horizontal line at zero</span>
-<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col =</span> <span class="st">"gray"</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</code></pre></div>
-<pre><code>Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): plot.new has not been called yet</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># standard error around interesting points</span>
+              (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])
+<span class="kw">plot</span>(xlim, ylim, <span class="dt">type =</span> <span class="st">"n"</span>, <span class="dt">xlab =</span> <span class="st">"Rank"</span>,
+     <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(Log[<span class="dv">2</span>], <span class="st">" (She / He) Usage Rate"</span>)))
+
+<span class="co"># horizontal line at zero</span>
+<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col =</span> <span class="st">"gray"</span>, <span class="dt">lty =</span> <span class="dv">2</span>)
+
+<span class="co"># standard error around interesting points</span>
 <span class="kw">segments</span>(r[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
-         r[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
-<pre><code>Error in r[i]: invalid subscript type 'special'</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
-         (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
-<pre><code>Error in (r - 0.4)[i]: invalid subscript type 'special'</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i],
-         (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])</code></pre></div>
-<pre><code>Error in (r - 0.4)[i]: invalid subscript type 'special'</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># points at the estimates</span>
+         r[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])
+<span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i],
+         (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">-</span><span class="st"> </span>log2_ratio_se)[i])
+<span class="kw">segments</span>((r <span class="op">-</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i],
+         (r <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span>)[i], (log2_ratio <span class="op">+</span><span class="st"> </span>log2_ratio_se)[i])
+
+<span class="co"># points at the estimates</span>
 <span class="kw">points</span>(r, log2_ratio, <span class="dt">col =</span> <span class="dv">2</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>)</code></pre></div>
-<pre><code>Error in plot.xy(xy.coords(x, y), type = type, ...): plot.new has not been called yet</code></pre>
+<div class="figure">
+<img src="gender-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20"><p class="caption">plot of chunk unnamed-chunk-20</p>
+</div>
 <p>Notice that many of the more extreme estimates are not statistically significant. One word with a large estimate not deemed statistically significant is the word “stopped”. Here are the counts for that word, along with the log ratio estimate and standard error:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"stopped"</span>,])</code></pre></div>
 <pre><code> he she 
@@ -305,7 +298,7 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"stopped"</span>]])</code></pre></div>
 <pre><code>[1] -2.083794</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"stopped"</span>]])</code></pre></div>
-<pre><code>Error in print(log2_ratio_se[["stopped"]]): object 'log2_ratio_se' not found</code></pre>
+<pre><code>[1] 1.708688</code></pre>
 <p>This is a word with a large imbalance, but only in a relatively small number of samples. Due to the lack of data for the word “instantly”, we deem this imbalance to not be statistically significant. Compare this to the word “felt”:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"felt"</span>,])</code></pre></div>
 <pre><code> he she 
@@ -313,7 +306,7 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"felt"</span>]])</code></pre></div>
 <pre><code>[1] 1.877398</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"felt"</span>]])</code></pre></div>
-<pre><code>Error in print(log2_ratio_se[["felt"]]): object 'log2_ratio_se' not found</code></pre>
+<pre><code>[1] 0.2468545</code></pre>
 <p>This has an effect size estimate on the same order as “stopped”, but the estimate is much more reliable given the larger number of appearances of the word “felt”. We judge “felt” both to have a practically significant difference <em>and</em> a statistically significant difference.</p>
 <p>The word “was” exhibits one other extreme:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"was"</span>,])</code></pre></div>
@@ -322,7 +315,7 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"was"</span>]])</code></pre></div>
 <pre><code>[1] 0.1299613</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"was"</span>]])</code></pre></div>
-<pre><code>Error in print(log2_ratio_se[["was"]]): object 'log2_ratio_se' not found</code></pre>
+<pre><code>[1] 0.06114624</code></pre>
 <p>This word has only a minor difference between “he” and “she”, but it shows up often enough for us to get a reliable estimate of the difference. The word “was” has a statistically significant difference between the genders, but probably not a practically significant difference.</p>
 <p>In the context of our application, a word is practically significance if the absolute value of its estimate is large. This difference is statistically significant if the estimate is large relative to its standard error. If we only care about Austen’s writing in these six novels, we may not care about statistical significance. If, however, we want to make a statement about Austen’s writing style in general, then we want to generalize beyond our data set, and we should only do so for words we can get reliable estimates for.</p>
 </div>
@@ -333,24 +326,21 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># order by log ratio, then name</span>
 o &lt;-<span class="st"> </span><span class="kw">order</span>(log2_ratio, <span class="kw">names</span>(log2_ratio))
 est &lt;-<span class="st"> </span>log2_ratio[o]
-se &lt;-<span class="st"> </span>log2_ratio_se[o]</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'log2_ratio_se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># only keep significant cases</span>
-signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(est) <span class="op">/</span><span class="st"> </span>se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est &lt;-<span class="st"> </span>est[signif]</code></pre></div>
-<pre><code>Error in est[signif]: invalid subscript type 'special'</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">se &lt;-<span class="st"> </span>se[signif]</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the terms</span>
+se &lt;-<span class="st"> </span>log2_ratio_se[o]
+
+<span class="co"># only keep significant cases</span>
+signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(est) <span class="op">/</span><span class="st"> </span>se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)
+est &lt;-<span class="st"> </span>est[signif]
+se &lt;-<span class="st"> </span>se[signif]
+
+<span class="co"># get the terms</span>
 term &lt;-<span class="st"> </span><span class="kw">names</span>(est)
 i &lt;-<span class="st"> </span><span class="kw">seq_along</span>(term)
 
 <span class="co"># set up the plot</span>
 <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span>)
-xlim &lt;-<span class="st"> </span><span class="kw">range</span>(est <span class="op">-</span><span class="st"> </span>se, est <span class="op">+</span><span class="st"> </span>se)</code></pre></div>
-<pre><code>Error in eval(expr, envir, enclos): object 'se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ylim &lt;-<span class="st"> </span><span class="kw">range</span>(i)
+xlim &lt;-<span class="st"> </span><span class="kw">range</span>(est <span class="op">-</span><span class="st"> </span>se, est <span class="op">+</span><span class="st"> </span>se)
+ylim &lt;-<span class="st"> </span><span class="kw">range</span>(i)
 <span class="kw">plot</span>(xlim, ylim, <span class="dt">type =</span> <span class="st">"n"</span>,
      <span class="dt">xlab =</span> <span class="st">"Relative appearance after 'she' compared to 'he'"</span>,
      <span class="dt">ylab =</span> <span class="st">""</span>, <span class="dt">axes =</span> <span class="ot">FALSE</span>)
@@ -371,13 +361,11 @@ labels[ticks <span class="op">==</span><span class="st"> </span><span class="dv"
 
 <span class="co"># standard errors</span>
 col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">4</span>)
-<span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i, est <span class="op">+</span><span class="st"> </span>se, i, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)</code></pre></div>
-<pre><code>Error in segments(est - se, i, est + se, i, lwd = 1.5, col = col): object 'se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">-</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)</code></pre></div>
-<pre><code>Error in segments(est - se, i - 0.2, est - se, i + 0.2, lwd = 1.5, col = col): object 'se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">segments</span>(est <span class="op">+</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">+</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)</code></pre></div>
-<pre><code>Error in segments(est + se, i - 0.2, est + se, i + 0.2, lwd = 1.5, col = col): object 'se' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimates</span>
+<span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i, est <span class="op">+</span><span class="st"> </span>se, i, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)
+<span class="kw">segments</span>(est <span class="op">-</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">-</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)
+<span class="kw">segments</span>(est <span class="op">+</span><span class="st"> </span>se, i <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, est <span class="op">+</span><span class="st"> </span>se, i <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> col)
+
+<span class="co"># estimates</span>
 <span class="kw">points</span>(est, i, <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="fl">0.75</span>, <span class="dt">col =</span> col)</code></pre></div>
 <div class="figure">
 <img src="gender-unnamed-chunk-24-1.png" alt="plot of chunk unnamed-chunk-24"><p class="caption">plot of chunk unnamed-chunk-24</p>
