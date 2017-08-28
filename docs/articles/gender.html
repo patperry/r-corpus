@@ -116,7 +116,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")</span>
 (austen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gutenberg_corpus.html">gutenberg_corpus</a></span>(<span class="kw">c</span>(<span class="dv">161</span>, <span class="dv">1342</span>, <span class="dv">141</span>, <span class="dv">158</span>, <span class="dv">121</span>, <span class="dv">105</span>)))</code></pre></div>
 <pre><code>Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL</code></pre>
-<pre><code>Using mirror http://eremita.di.uminho.pt/gutenberg/</code></pre>
+<pre><code>Using mirror http://aleph.gutenberg.org/</code></pre>
 <pre><code>Converting text from declared encoding "ISO-8859-1" to UTF-8</code></pre>
 <pre><code>  title                 author      language text                                                   
 1 Sense and Sensibility Jane Austen English  SENSE AND SENSIBILITY\n\nby Jane Austen\n\n(1811)\n\n… 
@@ -221,7 +221,7 @@ she     7   9875</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">log2</span>(rates[[<span class="st">"she"</span>]]) <span class="op">-</span><span class="st"> </span><span class="kw">log2</span>(rates[[<span class="st">"he"</span>]])</code></pre></div>
 <pre><code>[1] -0.01346472</code></pre>
 <p>This log ratio is a good measure of the strength of association. When the value is close to zero, there is no meaningful association. For large absolute log ratios, we would say that there is a meaningful difference in usage between the genders.</p>
-<p>We compute the log ratios for all types. To avoid dividing by zero, and to smooth the estimates when the counts are small, we add 0.5 to the count when estimating the rate.</p>
+<p>We compute the log ratios for all types. To avoid dividing by zero, and to smooth the estimates when the counts are small, we add 0.5 to the count when estimating the rate. (Many people smooth by adding 1, but I prefer 0.5 since that value has stronger theoretical justification.)</p>
 <p>Some terms only appear once in the corpus. The rate estimates for these terms will be unreliable, so we discard them.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tot &lt;-<span class="st"> </span><span class="kw">colSums</span>(terms)
 common_terms &lt;-<span class="st"> </span>terms[<span class="kw">rowSums</span>(terms) <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>,]
@@ -255,13 +255,13 @@ remembered
 <p>We need standard errors of our estimates. We can get these by starting with the proportion estimates <code>he</code> and <code>she</code>, and then applying the <a href="https://en.wikipedia.org/wiki/Delta_method">delta method</a>.</p>
 <p>The <code>he</code> and <code>she</code> rates are proportions. We get their standard errors by using the usual formula for the standard error of a proportion, based on the Binomial variance formula:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">he_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(he <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>he) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"he"</span>]])
-she_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(he <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>he) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"he"</span>]])</code></pre></div>
+she_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(she <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>she) <span class="op">/</span><span class="st"> </span>tot[[<span class="st">"she"</span>]])</code></pre></div>
 <p>To find the standard errors for the logarithms of these quantities, we use the delta method. We multiply the standard error by the absolute value of the derivative of the logarithm function evaluated at the estimate:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_he_se &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>he)) <span class="op">*</span><span class="st"> </span>he_se
 log2_she_se &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="kw">log</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>she)) <span class="op">*</span><span class="st"> </span>she_se</code></pre></div>
 <p>These formulas follow from using a Taylor expansion of <code>log2</code> around the estimate, using that the derivative of <code>log2(x)</code> is <code>1 / (log(2) * x)</code>.</p>
 <p>Finally, for the standard error of <code>log2_ratio</code>, we assume that the <code>log2_he</code> and <code>log2_she</code> estimates are approximately independent, so that the variance of their difference is the sum of their variances. This gives a formula for the standard error of the log ratio:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_ratio_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(log2_she_se<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>log2_he_se<span class="op">^</span><span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2_ratio_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(log2_he_se<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>log2_she_se<span class="op">^</span><span class="dv">2</span>)</code></pre></div>
 <p>Here are all of the estimated log ratios, along, with error bars for those that are statistically significantly different from zero.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># put the estimates in increasing order</span>
 r &lt;-<span class="st"> </span><span class="kw">rank</span>(log2_ratio, <span class="dt">ties.method =</span> <span class="st">"first"</span>)
@@ -294,22 +294,22 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <div class="figure">
 <img src="gender-estimates_se-1.png" alt="Rate Ratio Estimates, with Error Bars"><p class="caption">Rate Ratio Estimates, with Error Bars</p>
 </div>
-<p>Notice that many of the more extreme estimates are not statistically significant. One word with a large estimate not deemed statistically significant is the word “stopped”. Here are the counts for that word, along with the log ratio estimate and standard error:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"stopped"</span>,])</code></pre></div>
+<p>Notice that many of the more extreme estimates are not statistically significant. One word with a large estimate not deemed statistically significant is the word “expressed”. Here are the counts for that word, along with the log ratio estimate and standard error:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"expressed"</span>,])</code></pre></div>
 <pre><code> he she 
- 13   4 </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"stopped"</span>]])</code></pre></div>
-<pre><code>[1] -2.083794</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"stopped"</span>]])</code></pre></div>
-<pre><code>[1] 1.708688</code></pre>
-<p>This is a word with a large imbalance, but only in a relatively small number of samples. Due to the lack of data for the word “instantly”, we deem this imbalance to not be statistically significant. Compare this to the word “felt”:</p>
+  9   5 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"expressed"</span>]])</code></pre></div>
+<pre><code>[1] -1.287327</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"expressed"</span>]])</code></pre></div>
+<pre><code>[1] 0.7727118</code></pre>
+<p>This is a word with a large imbalance, but only in a relatively small number of samples. Due to the lack of data for the word “expressed”, we deem this imbalance to not be statistically significant. Compare this to the word “felt”:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"felt"</span>,])</code></pre></div>
 <pre><code> he she 
  36 189 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"felt"</span>]])</code></pre></div>
 <pre><code>[1] 1.877398</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"felt"</span>]])</code></pre></div>
-<pre><code>[1] 0.2468545</code></pre>
+<pre><code>[1] 0.2598236</code></pre>
 <p>This has an effect size estimate on the same order as “stopped”, but the estimate is much more reliable given the larger number of appearances of the word “felt”. We judge “felt” both to have a practically significant difference <em>and</em> a statistically significant difference.</p>
 <p>The word “was” exhibits one other extreme:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"was"</span>,])</code></pre></div>
@@ -318,23 +318,26 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"was"</span>]])</code></pre></div>
 <pre><code>[1] 0.1299613</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"was"</span>]])</code></pre></div>
-<pre><code>[1] 0.06114624</code></pre>
+<pre><code>[1] 0.05776495</code></pre>
 <p>This word has only a minor difference between “he” and “she”, but it shows up often enough for us to get a reliable estimate of the difference. The word “was” has a statistically significant difference between the genders, but probably not a practically significant difference.</p>
 <p>In the context of our application, a word is practically significance if the absolute value of its estimate is large. This difference is statistically significant if the estimate is large relative to its standard error. If we only care about Austen’s writing in these six novels, we may not care about statistical significance. If, however, we want to make a statement about Austen’s writing style in general, then we want to generalize beyond our data set, and we should only do so for words we can get reliable estimates for.</p>
 </div>
 <div id="results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#results" class="anchor"></a>Results</h2>
-<p>Here are the estimates for the words with statistically significant gender imbalances.</p>
+<p>Here are the estimates for the words with statistically significant gender imbalances, defined s having an estimated log ratio more than two standard errors away from zero.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># order by log ratio, then name</span>
 o &lt;-<span class="st"> </span><span class="kw">order</span>(log2_ratio, <span class="kw">names</span>(log2_ratio))
 est &lt;-<span class="st"> </span>log2_ratio[o]
 se &lt;-<span class="st"> </span>log2_ratio_se[o]
 
-<span class="co"># only keep significant cases</span>
+<span class="co"># only keep statistically significant cases</span>
 signif &lt;-<span class="st"> </span>(<span class="kw">abs</span>(est) <span class="op">/</span><span class="st"> </span>se <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)
 est &lt;-<span class="st"> </span>est[signif]
 se &lt;-<span class="st"> </span>se[signif]
+
+<span class="co"># find practically significant cases</span>
+pract &lt;-<span class="st"> </span><span class="kw">abs</span>(est) <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>
 
 <span class="co"># get the terms</span>
 term &lt;-<span class="st"> </span><span class="kw">names</span>(est)
@@ -373,7 +376,9 @@ col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class
 <div class="figure">
 <img src="gender-signif-1.png" alt="Statistically Significant Gender Imbalances"><p class="caption">Statistically Significant Gender Imbalances</p>
 </div>
-<p>Not all of these are practically significant. Words like “should”, “will”, and “was” show up because they are common, and it is possible to get precise estimates of their gender imbalances. Still, we can see many examples of words that have both statistically and practically meaningful gender imbalances, especially “she”-slanted words like “remembered”, “read”, “longed”, and “felt”. I suspect that many of these words have gender imbalances simply because the protagonists are female. The novels give us insights into the protagonists’ emotional states, but not into those of the supporting characters. It would be nice if we could get more balanced comparison by adjusting for the genders of the protagonists. Until we do that, it’s hard to know if there’s anything meaningful in these differences.</p>
+<p>Not all of these are practically significant. Words like “should”, “will”, and “was” show up because they are common, and it is possible to get precise estimates of their gender imbalances. Still, we can see many examples of words that have both statistically and practically meaningful gender imbalances, especially “she”-slanted words like “remembered”, “read”, “resolved”, and “felt”.</p>
+<p>In Silge’s original analysis, she used an ad-hoc filter of statistical significance, considering only words that appeared more than 10 times in the corpus. Her filter does a reasonable job of removing spurious results. Indeed, her list of the most gender-associated words mostly agrees with those reported here. There are, however, some notable differences. Silge’s list of “he” words does not include “begged”, but it does include “stopt”, “shook”, “expressed”, and “wants”. Similarly, Silge’s list of top “she” words includes some words that are excluded here: “longed”, “instantly”, “expected”, “ran” and “caught”.</p>
+<p>I suspect that many of the words here have gender imbalances simply because the protagonists are female. The novels give us insights into the protagonists’ emotional states, but not into those of the supporting characters. It would be nice if we could get more balanced comparison by adjusting for the genders of the protagonists. Until we do that, it’s hard to know if there’s anything meaningful in these differences.</p>
 </div>
 </div>
 </div>

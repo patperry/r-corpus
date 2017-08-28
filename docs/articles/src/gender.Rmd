@@ -134,7 +134,8 @@ between the genders.
 
 We compute the log ratios for all types. To avoid dividing by zero, and to
 smooth the estimates when the counts are small, we add 0.5 to the count when
-estimating the rate.
+estimating the rate. (Many people smooth by adding 1, but I prefer 0.5 since
+that value has stronger theoretical justification.)
 
 Some terms only appear once in the corpus. The rate estimates for these terms
 will be unreliable, so we discard them.
@@ -197,7 +198,7 @@ the Binomial variance formula:
 
 ```{r}
 he_se <- sqrt(he * (1 - he) / tot[["he"]])
-she_se <- sqrt(he * (1 - he) / tot[["he"]])
+she_se <- sqrt(she * (1 - she) / tot[["she"]])
 ```
 
 To find the standard errors for the logarithms of these quantities, we use the
@@ -219,7 +220,7 @@ of their difference is the sum of their variances. This gives a formula for
 the standard error of the log ratio:
 
 ```{r}
-log2_ratio_se <- sqrt(log2_she_se^2 + log2_he_se^2)
+log2_ratio_se <- sqrt(log2_he_se^2 + log2_she_se^2)
 ```
 
 Here are all of the estimated log ratios, along, with error bars for those
@@ -258,17 +259,17 @@ points(r, log2_ratio, col = 2, cex = 0.5)
 
 Notice that many of the more extreme estimates are not statistically
 significant. One word with a large estimate not deemed statistically
-significant is the word "stopped". Here are the counts for that word, along
+significant is the word "expressed". Here are the counts for that word, along
 with the log ratio estimate and standard error:
 
 ```{r}
-print(terms["stopped",])
-print(log2_ratio[["stopped"]])
-print(log2_ratio_se[["stopped"]])
+print(terms["expressed",])
+print(log2_ratio[["expressed"]])
+print(log2_ratio_se[["expressed"]])
 ```
 
 This is a word with a large imbalance, but only in a relatively small number
-of samples. Due to the lack of data for the word "instantly", we deem this
+of samples. Due to the lack of data for the word "expressed", we deem this
 imbalance to not be statistically significant. Compare this to the word
 "felt":
 
@@ -311,7 +312,8 @@ Results
 -------
 
 Here are the estimates for the words with statistically significant gender
-imbalances.
+imbalances, defined s having an estimated log ratio more than two standard
+errors away from zero.
 
 
 ```{r signif, fig.width = 12, fig.cap = "Statistically Significant Gender Imbalances"}
@@ -320,10 +322,13 @@ o <- order(log2_ratio, names(log2_ratio))
 est <- log2_ratio[o]
 se <- log2_ratio_se[o]
 
-# only keep significant cases
+# only keep statistically significant cases
 signif <- (abs(est) / se > 2)
 est <- est[signif]
 se <- se[signif]
+
+# find practically significant cases
+pract <- abs(est) > 1
 
 # get the terms
 term <- names(est)
@@ -365,9 +370,23 @@ Not all of these are practically significant. Words like "should", "will", and
 "was" show up because they are common, and it is possible to get precise
 estimates of their gender imbalances. Still, we can see many examples of words
 that have both statistically and practically meaningful gender imbalances,
-especially "she"-slanted words like "remembered", "read", "longed", and
-"felt". I suspect that many of these words have gender imbalances simply
-because the protagonists are female. The novels give us insights into the
+especially "she"-slanted words like "remembered", "read", "resolved", and
+"felt".
+
+
+In Silge's original analysis, she used an ad-hoc filter of statistical
+significance, considering only words that appeared more than 10 times in the
+corpus. Her filter does a reasonable job of removing spurious results.
+Indeed, her list of the most gender-associated words mostly agrees with those
+reported here. There are, however, some notable differences. Silge's list of
+"he" words does not include "begged", but it does include "stopt", "shook",
+"expressed", and "wants". Similarly, Silge's list of top "she" words
+includes some words that are excluded here: "longed", "instantly",
+"expected", "ran" and "caught".
+
+
+I suspect that many of the words here have gender imbalances simply because
+the protagonists are female. The novels give us insights into the
 protagonists' emotional states, but not into those of the supporting
 characters. It would be nice if we could get more balanced comparison by
 adjusting for the genders of the protagonists. Until we do that, it's hard to
