@@ -19,6 +19,8 @@
 ^data/sentiment_afinn/
 ^dist$
 ^docs$
+^man/figures/logo$
+^man/figures/logo/
 ^src/corpus/[.]git$
 ^src/corpus/[.]travis[.]yml$
 ^src/corpus/Makefile$

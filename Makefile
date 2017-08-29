@@ -11,7 +11,7 @@ NEWS: NEWS.md
 	sed -e 's/^### //g; s/`//g' $< > $@
 
 README: README.md
-	sed -e '/^\[!\[/d' $< > $@
+	sed -e '/Overview/,$$!d' $< > $@
 
 vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
 	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/chinese.Rmd")'

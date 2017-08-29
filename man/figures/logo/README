@@ -1,0 +1,14 @@
+
+The logo was created in Mac OS pages, then exported to TIFF. The script
+`logo.R` crops the TIFF and converts to PNG.
+
+--
+
+C drop capital is public domain, from http://www.reusableart.com/c-07.html
+
+"This and numerous other stock print foundry images were included in the book
+The Proverbs of Scotland from 1868. It was published by Alexander Hislop &
+Company."
+
+
+Font is Matthew Butterick's "Equity" (Caps A Regular, 96pt).

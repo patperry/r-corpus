@@ -1,21 +1,21 @@
-Corpus (R Package)
-==================
+<img alt="Corpus" src="man/figures/banner.png" style="margin-right:96px" align="left"/>
+======
+
 [![Build Status (Linux)][travis-badge]][travis]
 [![Build Status (Windows)][appveyor-badge]][appveyor]
 [![Coverage Status][codecov-badge]][codecov]
 [![CRAN Status][cran-badge]][cran]
 [![CRAN RStudio Mirror Downloads][cranlogs-badge]][cran]
-
-Text corpus analysis in R, with full support for Unicode.
-
+<br />
 
 Overview
 --------
 
-*Corpus* is an R text processing package that includes functions for
-reading data from newline-delimited JSON files, for normalizing and tokenizing
-text, for searching for term occurrences, and for computing term occurrence
-frequencies (including n-grams).
+*Corpus* is an R text processing package with full support for international
+text (Unicode). It includes functions for reading data from newline-delimited
+JSON files, for normalizing and tokenizing text, for searching for term
+occurrences, and for computing term occurrence frequencies (including
+n-grams).
 
 *Corpus* does not provide any language models, part-of-speech tagging,
 topic models, or word vectors.
@@ -218,7 +218,7 @@ This project is released with a [Contributor Code of Conduct][conduct],
 and if you choose to contribute, you must adhere to its terms.
 
 
-Acknownedgments
+Acknowledgments
 ---------------
 
 The API and feature set for *corpus* draw inspiration from
