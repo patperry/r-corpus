@@ -1,12 +1,11 @@
 <img alt="Corpus" src="man/figures/banner.png" style="margin-right:96px" align="left"/>
-======
 
 [![Build Status (Linux)][travis-badge]][travis]
 [![Build Status (Windows)][appveyor-badge]][appveyor]
 [![Coverage Status][codecov-badge]][codecov]
 [![CRAN Status][cran-badge]][cran]
 [![CRAN RStudio Mirror Downloads][cranlogs-badge]][cran]
-<br />
+
 
 Overview
 --------
