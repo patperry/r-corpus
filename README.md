@@ -1,4 +1,4 @@
-<img alt="Corpus" src="man/figures/banner.png" />
+<div><img alt="Corpus" src="man/figures/banner.png" /></div>
 
 [![Build Status (Linux)][travis-badge]][travis]
 [![Build Status (Windows)][appveyor-badge]][appveyor]
