@@ -141,7 +141,7 @@ as_corpus.corpus <- function(x, row.names = NULL, filter = NULL, ...)
     })
 
     if (is.null(row.names)) {
-        row.names <- quanteda::docnames(x)
+        row.names <- names(text)
         if (anyDuplicated(row.names)) {
             warning("renaming entries with duplicate docnames")
         }

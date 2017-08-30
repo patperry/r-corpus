@@ -23,10 +23,9 @@ as_text.default <- function(x, names = NULL, filter = NULL, ...)
     if (length(dim(x)) > 1) {
         stop("cannot convert multi-dimensional array to text")
     }
-    if (missing(names)) {
-        names <- names(x)
-    }
-    as_text.character(as.character(x), filter = filter, names = names, ...)
+
+    x <- structure(as.character(x), names = names(x))
+    as_text.character(x, names = names, filter = filter, ...)
 }
 
 
@@ -38,11 +37,16 @@ as_text.character <- function(x, names = NULL, filter = NULL, ...)
 
     with_rethrow({
         x <- as_utf8(x)
+        names <- as_names("names", names, length(x))
         filter <- as_filter("filter", filter)
     })
 
-    if (missing(names)) {
+    if (is.null(names)) {
         names <- names(x)
+        if (anyDuplicated(names)) {
+            warning("renaming entries with duplicate names")
+            names <- make.unique(names)
+        }
     }
 
     ans <- .Call(C_as_text_character, x, filter)
@@ -53,7 +57,10 @@ as_text.character <- function(x, names = NULL, filter = NULL, ...)
 
 as_text.corpus_json <- function(x, names = NULL, filter = NULL, ...)
 {
+    n <- if (length(dim(x)) == 2) nrow(x) else length(x)
+
     with_rethrow({
+        names <- as_names("names", names, n)
         filter <- as_filter("filter", filter)
     })
 
@@ -61,11 +68,11 @@ as_text.corpus_json <- function(x, names = NULL, filter = NULL, ...)
         if (!"text" %in% names(x)) {
             stop("no column named \"text\" in JSON object")
         }
-        ans <- as_text(x[["text"]], names = NULL, filter = filter)
+        ans <- as_text(x[["text"]], names = names, filter = filter)
     } else {
         ans <- .Call(C_as_text_json, x, filter)
+        names(ans) <- names
     }
-    names(ans) <- names
     ans
 }
 
@@ -76,13 +83,10 @@ as_text.corpus_text <- function(x, names = NULL, filter = NULL, ...)
         stop("argument is not a valid text object")
     }
 
-    if (missing(names)) {
-        names <- names(x)
-    }
-
-    if (missing(filter)) {
-        filter <- unclass(x)$filter
-    }
+    with_rethrow({
+        names <- as_names("names", names, length(x))
+        filter <- as_filter("filter", filter)
+    })
 
     attrs <- attributes(x)
     for (a in names(attrs)) {
@@ -91,8 +95,13 @@ as_text.corpus_text <- function(x, names = NULL, filter = NULL, ...)
         }
     }
     attr(x, "class") <- "corpus_text"
-    text_filter(x) <- filter
-    names(x) <- names
+
+    if (!is.null(names)) {
+        names(x) <- names
+    }
+    if (!is.null(filter)) {
+        text_filter(x) <- filter
+    }
 
     x
 }
@@ -103,8 +112,16 @@ as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
     if (!is.data.frame(x)) {
         stop("argument is not a valid data frame")
     }
+    if (!"text" %in% names(x)) {
+            stop("no column named \"text\" in data frame")
+    }
 
-    if (missing(names)) {
+    with_rethrow({
+        names <- as_names("names", names, nrow(x))
+        filter <- as_filter("filter", filter)
+    })
+
+    if (is.null(names)) {
         if (.row_names_info(x) <= 0) {
             names <- NULL
         } else {
@@ -112,12 +129,9 @@ as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
         }
     }
 
-    if (!"text" %in% names(x)) {
-            stop("no column named \"text\" in data frame")
-    }
-
     as_text(x[["text"]], names = names, filter = filter, ...)
 }
+
 
 # tm::Corpus
 as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
@@ -125,11 +139,6 @@ as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
     with_tm({
         x <- sapply(x, as.character)
     })
-
-    if (missing(names)) {
-        names <- make.unique(names(x))
-    }
-   
     as_text(x, names = names, filter = filter, ...)
 }
 
@@ -137,9 +146,6 @@ as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
 as_text.corpus <- function(x, names = NULL, filter = NULL, ...)
 {
     text <- quanteda::texts(x)
-    if (missing(names)) {
-        names <- quanteda::docnames(x)
-    }
     as_text(text, names = names, filter = filter, ...)
 }
 

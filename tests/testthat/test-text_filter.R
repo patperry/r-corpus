@@ -151,13 +151,13 @@ test_that("'as_text' propagates a non-NULL to filter to text data frame", {
 })
 
 
-test_that("'as_text' with NULL filter gives default filter", {
+test_that("'as_text' with NULL filter leaves it unchanged", {
     x <- as_text("hello")
     f0 <- text_filter(map_case = FALSE, map_quote = FALSE)
     text_filter(x) <- f0
 
     y <- as_text(x, filter = NULL)
-    expect_equal(text_filter(y), text_filter())
+    expect_equal(text_filter(y), f0)
 })
 
 
