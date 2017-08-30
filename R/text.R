@@ -25,7 +25,7 @@ as_text.default <- function(x, names = NULL, filter = NULL, ...)
     }
 
     x <- structure(as.character(x), names = names(x))
-    as_text.character(x, names = names, filter = filter, ...)
+    as_text(x, names = names, filter = filter, ...)
 }
 
 
@@ -37,8 +37,6 @@ as_text.character <- function(x, names = NULL, filter = NULL, ...)
 
     with_rethrow({
         x <- as_utf8(x)
-        names <- as_names("names", names, length(x))
-        filter <- as_filter("filter", filter)
     })
 
     if (is.null(names)) {
@@ -49,31 +47,22 @@ as_text.character <- function(x, names = NULL, filter = NULL, ...)
         }
     }
 
-    ans <- .Call(C_as_text_character, x, filter)
-    names(ans) <- names
-    ans
+    x <- .Call(C_as_text_character, x, NULL)
+    as_text(x, names = names, filter = filter, ...)
 }
 
 
 as_text.corpus_json <- function(x, names = NULL, filter = NULL, ...)
 {
-    n <- if (length(dim(x)) == 2) nrow(x) else length(x)
-
-    with_rethrow({
-        names <- as_names("names", names, n)
-        filter <- as_filter("filter", filter)
-    })
-
     if (length(dim(x)) == 2) {
         if (!"text" %in% names(x)) {
             stop("no column named \"text\" in JSON object")
         }
-        ans <- as_text(x[["text"]], names = names, filter = filter)
+        x <- x[["text"]]
     } else {
-        ans <- .Call(C_as_text_json, x, filter)
-        names(ans) <- names
+        x <- .Call(C_as_text_json, x, NULL)
     }
-    ans
+    as_text(x, names = names, filter = filter, ...)
 }
 
 
@@ -103,6 +92,19 @@ as_text.corpus_text <- function(x, names = NULL, filter = NULL, ...)
         text_filter(x) <- filter
     }
 
+    props <- list(...)
+    if (length(props) > 0) {
+        pnames <- names(props)
+        if (is.null(pnames) || any(pnames == "")) {
+            stop("unnamed arguments are not allowed")
+        }
+        f <- text_filter(x)
+        for (name in names(props)) {
+            f[[name]] <- props[[name]]
+        }
+        text_filter(x) <- f
+    }
+
     x
 }
 
@@ -116,20 +118,12 @@ as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
             stop("no column named \"text\" in data frame")
     }
 
-    with_rethrow({
-        names <- as_names("names", names, nrow(x))
-        filter <- as_filter("filter", filter)
-    })
-
-    if (is.null(names)) {
-        if (.row_names_info(x) <= 0) {
-            names <- NULL
-        } else {
-            names <- rownames(x)
-        }
+    text <- x[["text"]]
+    if (.row_names_info(x) > 0) {
+        names(text) <- row.names(x)
     }
 
-    as_text(x[["text"]], names = names, filter = filter, ...)
+    as_text(text, names = names, filter = filter, ...)
 }
 
 

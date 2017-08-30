@@ -107,3 +107,23 @@ test_that("conversion to and from character should work", {
     i <- c(5, 9, 2, 6, 3)
     expect_equal(as.character(c(text_x, text_y)[i]), c(x, y)[i])
 })
+
+
+test_that("'as_text' should be able to set filter properties", {
+    chr <- letters
+    txt <- as_text(chr)
+
+    expect_equal(text_filter(as_text(chr, stemmer = "english"))$stemmer,
+                 "english")
+    expect_equal(text_filter(as_text(txt, stemmer = "english"))$stemmer,
+                 "english")
+})
+
+
+test_that("'as_text' should error on unnamed properties", {
+    expect_error(as_text(letters, names = NULL, filter = NULL, 1),
+                 "unnamed arguments are not allowed")
+    expect_error(as_text(letters, names = NULL, filter = NULL,
+                         stemmer = "english", 1),
+                 "unnamed arguments are not allowed")
+})
