@@ -167,18 +167,20 @@ To install the latest development version of the package, run the following
 sequence of commands in R:
 
     local({
-        dir <- tempfile()
-        cmd <- paste("git clone --recursive",
-                     shQuote("https://github.com/patperry/r-corpus.git"),
-                     shQuote(dir))
-        system(cmd)
-        devtools::install(dir)
+        # download the sources
+        tmp <- tempfile()
+        system2("git", c("clone", "--recursive",
+                         shQuote("https://github.com/patperry/r-corpus.git"),
+                         shQuote(tmp)))
+
+        # install the package
+        devtools::install(tmp)
 
         # optional: run the tests
-        devtools::test(dir)
+        devtools::test(tmp)
 
         # optional: remove the temporary files
-        unlink(dir, recursive = TRUE)
+        unlink(tmp, recursive = TRUE)
     })
 
 Note that the package uses a git submodule, so you cannot use
