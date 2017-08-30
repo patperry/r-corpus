@@ -164,15 +164,18 @@ as_na_print <- function(name, value)
 }
 
 
-as_names <- function(name, value, n)
+as_names <- function(name, value, n, unique = TRUE)
 {
     value <- as_character_vector(name, value)
-    if (length(value) == 1) {
+    if (!unique && length(value) == 1) {
         value <- rep(value, n)
     }
     if (length(value) != n) {
         stop(sprintf("'%s' has wrong length (%d); must be %d",
                      name, length(value), n))
+    }
+    if (unique && anyDuplicated(value)) {
+        stop(stringf("'%s' contains duplicate values", name))
     }
     value
 }

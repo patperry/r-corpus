@@ -177,7 +177,7 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
             if (identical(row.names, FALSE)) {
                 row.names <- rep("", n)
             } else {
-                row.names <- as_names("row.names", row.names, n)
+                row.names <- as_names("row.names", row.names, n, unique = FALSE)
             }
         }
         max <- as_max_print("max", max)
