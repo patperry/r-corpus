@@ -29,8 +29,7 @@ as_corpus <- function(x, row.names = NULL, filter = NULL, ...)
 
 as_corpus.default <- function(x, row.names = NULL, filter = NULL, ...)
 {
-    x <- as.data.frame(x, row.names = NULL, optional = TRUE,
-                       stringsAsFactors = FALSE)
+    x <- as.data.frame(x, optional = TRUE, stringsAsFactors = FALSE)
     as_corpus.data.frame(x, row.names = row.names, filter = filter, ...)
 }
 
@@ -60,12 +59,8 @@ as_corpus.corpus_text <- function(x, row.names = NULL, filter = NULL, ...)
         stop("argument is not a valid text object")
     }
 
-    if (missing(row.names)) {
-        row.names <- names(x)
-    }
-
-    x <- data.frame(text = x, row.names = row.names)
-    as_corpus(x, filter = filter, ...)
+    x <- data.frame(text = x)
+    as_corpus(x, row.names = row.names, filter = filter, ...)
 }
 
 
@@ -79,9 +74,14 @@ as_corpus.data.frame <- function(x, row.names = NULL, filter = NULL, ...)
         stop("no column named \"text\" in data frame")
     }
 
+    with_rethrow({
+        row.names <- as_names("row.names", row.names, nrow(x))
+        filter <- as_filter("filter", filter)
+    })
+
     x[["text"]] <- as_text(x[["text"]], filter = filter)
 
-    if (!missing(row.names)) {
+    if (!is.null(row.names)) {
         row.names(x) <- row.names
     }
 
@@ -96,22 +96,35 @@ as_corpus.Corpus <- function(x, row.names = NULL, filter = NULL, ...)
     with_tm({
         x <- sapply(x, as.character)
     })
+
+    with_rethrow({
+        row.names <- as_names("row.names", row.names, length(x))
+        filter <- as_filter("filter", filter)
+    })
         
-    text <- as_text(x, names = NULL, filter = filter, ...)
-    if (missing(row.names)) {
-        row.names <- make.unique(names(x))
+    if (is.null(row.names)) {
+        row.names <- names(x)
+        if (anyDuplicated(row.names)) {
+            warning("renaming entries with duplicate names")
+        }
+        row.names <- make.unique(row.names)
     }
+
+    names(x) <- NULL
+    text <- as_text(x, filter = filter)
 
     if ("text" %in% names(meta)) {
         names <- names(meta)
         i <- match("text", names)
         nm <- make.unique(c("text", names))[[i + 1]]
-        warning(sprintf("changing meta-data column name from 'text' to '%s'", nm))
+        warning(sprintf("changing meta-data column name from 'text' to '%s'",
+                        nm))
         names(meta)[[i]] <- nm
     }
     meta[["text"]] <- text
+
     class(meta) <- c("corpus_frame", "data.frame")
-    rownames(meta) <- row.names
+    row.names(meta) <- row.names
 
     meta
 }
@@ -119,11 +132,24 @@ as_corpus.Corpus <- function(x, row.names = NULL, filter = NULL, ...)
 # quanteda::corpus
 as_corpus.corpus <- function(x, row.names = NULL, filter = NULL, ...)
 {
+    text <- quanteda::texts(x)
     meta <- quanteda::docvars(x)
-    text <- as_text(quanteda::texts(x), names = NULL, filter = filter, ...)
-    if (missing(row.names)) {
+
+    with_rethrow({
+        row.names <- as_names("row.names", row.names, length(x))
+        filter <- as_filter("filter", filter)
+    })
+
+    if (is.null(row.names)) {
         row.names <- quanteda::docnames(x)
+        if (anyDuplicated(row.names)) {
+            warning("renaming entries with duplicate docnames")
+        }
+        row.names <- make.unique(row.names)
     }
+
+    names(text) <- NULL
+    text <- as_text(text, filter = filter)
 
     if ("text" %in% names(meta)) {
         names <- names(meta)
@@ -132,10 +158,10 @@ as_corpus.corpus <- function(x, row.names = NULL, filter = NULL, ...)
         warning(sprintf("changing docvar name from 'text' to '%s'", nm))
         names(meta)[[i]] <- nm
     }
-
     meta[["text"]] <- text
+
     class(meta) <- c("corpus_frame", "data.frame")
-    rownames(meta) <- row.names
+    row.names(meta) <- row.names
     
     meta
 }

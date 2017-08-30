@@ -166,6 +166,10 @@ as_na_print <- function(name, value)
 
 as_names <- function(name, value, n, unique = TRUE)
 {
+    if (is.null(value)) {
+        return(NULL)
+    }
+
     value <- as_character_vector(name, value)
     if (!unique && length(value) == 1) {
         value <- rep(value, n)
