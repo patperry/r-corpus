@@ -12,24 +12,24 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-as_text <- function(x, names = NULL, filter = NULL, ...)
+as_text <- function(x, filter = NULL, ..., names = NULL)
 {
     UseMethod("as_text")
 }
 
 
-as_text.default <- function(x, names = NULL, filter = NULL, ...)
+as_text.default <- function(x, filter = NULL, ..., names = NULL)
 {
     if (length(dim(x)) > 1) {
         stop("cannot convert multi-dimensional array to text")
     }
 
     x <- structure(as.character(x), names = names(x))
-    as_text(x, names = names, filter = filter, ...)
+    as_text(x, filter = filter, ..., names = names)
 }
 
 
-as_text.character <- function(x, names = NULL, filter = NULL, ...)
+as_text.character <- function(x, filter = NULL, ..., names = NULL)
 {
     if (length(dim(x)) > 1) {
         stop("cannot convert multi-dimensional array to text")
@@ -48,11 +48,11 @@ as_text.character <- function(x, names = NULL, filter = NULL, ...)
     }
 
     x <- .Call(C_as_text_character, x, NULL)
-    as_text(x, names = names, filter = filter, ...)
+    as_text(x, filter = filter, ..., names = names)
 }
 
 
-as_text.corpus_json <- function(x, names = NULL, filter = NULL, ...)
+as_text.corpus_json <- function(x, filter = NULL, ..., names = NULL)
 {
     if (length(dim(x)) == 2) {
         if (!"text" %in% names(x)) {
@@ -62,19 +62,19 @@ as_text.corpus_json <- function(x, names = NULL, filter = NULL, ...)
     } else {
         x <- .Call(C_as_text_json, x, NULL)
     }
-    as_text(x, names = names, filter = filter, ...)
+    as_text(x, filter = filter, ..., names = names)
 }
 
 
-as_text.corpus_text <- function(x, names = NULL, filter = NULL, ...)
+as_text.corpus_text <- function(x, filter = NULL, ..., names = NULL)
 {
     if (!is_text(x)) {
         stop("argument is not a valid text object")
     }
 
     with_rethrow({
-        names <- as_names("names", names, length(x))
         filter <- as_filter("filter", filter)
+        names <- as_names("names", names, length(x))
     })
 
     attrs <- attributes(x)
@@ -109,7 +109,7 @@ as_text.corpus_text <- function(x, names = NULL, filter = NULL, ...)
 }
 
 
-as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
+as_text.data.frame <- function(x, filter = NULL, ..., names = NULL)
 {
     if (!is.data.frame(x)) {
         stop("argument is not a valid data frame")
@@ -123,24 +123,24 @@ as_text.data.frame <- function(x, names = NULL, filter = NULL, ...)
         names(text) <- row.names(x)
     }
 
-    as_text(text, names = names, filter = filter, ...)
+    as_text(text, filter = filter, ..., names = names)
 }
 
 
 # tm::Corpus
-as_text.Corpus <- function(x, names = NULL, filter = NULL, ...)
+as_text.Corpus <- function(x, filter = NULL, ..., names = NULL)
 {
     with_tm({
         x <- sapply(x, as.character)
     })
-    as_text(x, names = names, filter = filter, ...)
+    as_text(x, filter = filter, ..., names = names)
 }
 
 # quanteda::corpus
-as_text.corpus <- function(x, names = NULL, filter = NULL, ...)
+as_text.corpus <- function(x, filter = NULL, ..., names = NULL)
 {
     text <- quanteda::texts(x)
-    as_text(text, names = names, filter = filter, ...)
+    as_text(text, filter = filter, ..., names = names)
 }
 
 

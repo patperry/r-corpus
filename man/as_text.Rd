@@ -11,84 +11,89 @@
 \alias{is_text}
 \title{Text Vectors}
 \description{
-    Create or test for text objects.
+Create or test for text objects.
 }
 \usage{
-as_text(x, names = NULL, filter = NULL, ...)
+as_text(x, filter = NULL, ..., names = NULL)
 
 is_text(x)
 }
 \arguments{
-    \item{x}{object to be coerced or tested.}
+  \item{x}{object to be coerced or tested.}
 
-    \item{names}{character vector of names for the converted text.}
+  \item{filter}{if non-\code{NULL}, a text filter for the converted result.}
 
-    \item{filter}{text filter object for the converted text.}
+  \item{\dots}{text filter properties to set on the result.}
 
-    \item{\dots}{further arguments passed to or from other methods.}
+  \item{names}{if non-\code{NULL} character vector of names for
+    the converted result.}
 }
 \details{
-    The \code{corpus_text} type is a new data type provided by the
-    \code{corpus} package suitable for processing Unicode text. Text
-    vectors behave like character vectors (and can be converted to them
-    with the \code{as.character} function). They can be created using the
-    \code{\link{read_ndjson}} function or by converting another object
-    using the \code{as_text} function.
+The \code{corpus_text} type is a new data type provided by the \code{corpus}
+package suitable for processing international (Unicode) text. Text vectors
+behave like character vectors (and can be converted to them with the
+\code{as.character} function). They can be created using the
+\code{\link{read_ndjson}} function or by converting another object using the
+\code{as_text} function.
 
-    All text objects have a \code{\link{text_filter}} property specify
-    how to transform the text into tokens or segment it into sentences.
+All text objects have a \code{\link{text_filter}} property specify how to
+transform the text into tokens or segment it into sentences.
 
-    The default behavior for \code{as_text} is to proceed as follows:
-    \enumerate{
-        \item If \code{x} is a \code{character} vector, then we create
-            a new \code{text} vector from \code{x}.
+The default behavior for \code{as_text} is to proceed as follows:
+\enumerate{
+  \item If \code{x} is a \code{character} vector, then we create
+    a new \code{text} vector from \code{x}.
 
-        \item If \code{x} is a data frame, then we call \code{as_text}
-            on \code{x$text} if a column named \code{"text"} exists in
-            the data frame.  If the data frame does not have a column
-            named \code{"text"}, then we fail with an error message.
+   \item If \code{x} is a data frame, then we call \code{as_text}
+     on \code{x$text} if a column named \code{"text"} exists in
+     the data frame.  If the data frame does not have a column
+     named \code{"text"}, then we fail with an error message.
 
-        \item If \code{x} is a \code{corpus_text} object, then we drop all
-            attributes and we set the class to \code{"corpus_text"}.
+   \item If \code{x} is a \code{corpus_text} object, then we drop all
+     attributes and we set the class to \code{"corpus_text"}.
 
-        \item The default behavior for when none of the above conditions
-            are true is to call \code{as.character} on the object first,
-            preserving the names, and then and call \code{as_text} on
-            the returned character object.
-    }
+   \item The default behavior for when none of the above conditions
+     are true is to call \code{as.character} on the object first,
+     preserving the names, and then and call \code{as_text} on
+     the returned character object.
+}
 
-    In all cases, when the \code{names} is missing, we set the result
-    names to \code{names(x)} (or \code{rownames(x)} for a data frame
-    argument). When \code{names} is not missing, we set the result names
-    to this value.
+In all cases, when the \code{names} is \code{NULL}, we set the result
+names to \code{names(x)} (or \code{rownames(x)} for a data frame
+argument). When \code{names} is a character vector, we set the result names
+to this vector of names
 
-    Similarly, when \code{filter} is missing, we set the result text filter
-    to \code{text_filter(x)}. When \code{filter} is not missing, we set
-    the result text filter to this value.
+Similarly, when \code{filter} is \code{NULL}, we set the result text
+filter to \code{text_filter(x)}. When \code{filter} is non-\code{NULL}
+missing, we set the result text filter to this value. In either case,
+if there are additional names arguments, then we override the filter
+properties specified by the names of these arguments with the new values
+given.
 
-    Note that the special handling for the names of the object is different
-    from the other R conversion functions (\code{as.numeric},
-    \code{as.character}, etc.), which drop the names.
+Note that the special handling for the names of the object is different
+from the other R conversion functions (\code{as.numeric},
+\code{as.character}, etc.), which drop the names.
 
-    \code{as_text} is generic: you can write methods to handle specific
-    classes of objects.
+\code{as_text} is generic: you can write methods to handle specific
+classes of objects.
 }
 \value{
-    \code{as_text} attempts to coerce its argument to \code{text} type and
-        set its \code{names} and \code{text_filter} properties; it strips
-        all other attributes.
+\code{as_text} attempts to coerce its argument to \code{text} type and
+  set its \code{names} and \code{text_filter} properties; it strips
+  all other attributes.
 
-    \code{is_text} returns \code{TRUE} or \code{FALSE} depending on
-        whether its argument is of text type or not.
+\code{is_text} returns \code{TRUE} or \code{FALSE} depending on
+  whether its argument is of text type or not.
 }
 \seealso{
-    \code{\link{as_utf8}}, \code{\link{text_filter}},
-    \code{\link{read_ndjson}}.
+\code{\link{as_utf8}}, \code{\link{text_filter}}, \code{\link{read_ndjson}}.
 }
 \examples{
 as_text("hello, world!")
 as_text(c(a = "goodnight", b = "moon")) # keeps names
-as_text(c(a = "goodnight", b = "moon"), names = NULL) # drops names
+
+# set a filter property
+as_text(c(a = "goodnight", b = "moon"), stemmer = "english") 
 
 is_text("hello") # FALSE, "hello" is character, not text
 }

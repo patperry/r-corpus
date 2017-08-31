@@ -16,18 +16,18 @@
 \usage{
 corpus(..., row.names = NULL, filter = NULL)
 
-as_corpus(x, row.names = NULL, filter = NULL, ...)
+as_corpus(x, filter = NULL, ..., row.names = NULL)
 
 is_corpus(x)
 }
 \arguments{
     \item{\dots}{data frame columns for \code{corpus};
-        further arguments passed to or from other methods for
-        \code{as_corpus}.}
+        further arguments passed to \code{as_text} from \code{as_corpus}.}
 
     \item{row.names}{character vector of row names for the corpus object.}
 
-    \item{filter}{text filter object for the corpus object.}
+    \item{filter}{text filter object for the \code{"text"} column in the
+        corpus object.}
 
     \item{x}{object to be coerced or tested.}
 }
@@ -56,7 +56,9 @@ is_corpus(x)
         \code{c("corpus_frame", "data.frame")}.
 
     \code{as_corpus} attempts to coerce its argument to a corpus object,
-        setting the \code{row.names} and \code{text_filter} properties.
+        setting the \code{row.names} and calling \code{\link{as_text}}
+        on the \code{"text"} column with the \code{filter} and \code{\dots}
+        arguments.
 
     \code{is_corpus} returns \code{TRUE} or \code{FALSE} depending on
         whether its argument is a valid corpus object or not.

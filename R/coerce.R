@@ -179,7 +179,7 @@ as_names <- function(name, value, n, unique = TRUE)
                      name, length(value), n))
     }
     if (unique && anyDuplicated(value)) {
-        stop(stringf("'%s' contains duplicate values", name))
+        stop(sprintf("'%s' contains duplicate values", name))
     }
     value
 }
