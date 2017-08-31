@@ -236,12 +236,9 @@ as_nonnegative <- function(name, value)
     if (is.null(value)) {
         return(NULL)
     }
-    value <- as_integer_scalar(name, value)
+    value <- as_integer_scalar(name, value, nonnegative = TRUE)
     if (is.na(value)) {
         stop(sprintf("'%s' cannot be NA", name))
-    }
-    if (value < 0) {
-        stop(sprintf("'%s' must be non-negative", name))
     }
     value
 }
