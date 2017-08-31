@@ -335,10 +335,10 @@ test_that("'format' error for invalid logicals", {
 test_that("'format' error for invalid integers", {
     text <- as_text("")
     expect_error(format(text, chars = "3"),
-                 "'chars' must be an integer scalar",
+                 "'chars' must be integer-valued",
                  fixed = TRUE)
     expect_error(format(text, width = "3"),
-                 "'width' must be an integer scalar",
+                 "'width' must be integer-valued",
                  fixed = TRUE)
 })
 

@@ -124,17 +124,35 @@ as_group <- function(group, n)
 }
 
 
-as_integer_scalar <- function(name, value, null = NA_integer_)
+as_integer_scalar <- function(name, value, nonnegative = FALSE)
 {
     if (is.null(value)) {
-        return(null)
+        return(NULL)
+    }
+    value <- as_integer_vector(name, value, nonnegative)
+    if (length(value) != 1) {
+        stop(sprintf("'%s' must have length 1", name))
+    }
+    value
+}
+
+
+as_integer_vector <- function(name, value, nonnegative = FALSE)
+{
+    if (is.null(value)) {
+        return(NULL)
     }
 
-    if (!((is.numeric(value) || is.na(value)) && length(value) == 1)) {
-        stop(paste0("'", name, "' must be an integer scalar"))
+    if (!(is.numeric(value) || all(is.na(value)))) {
+        stop(sprintf("'%s' must be integer-valued", name))
     }
-    
-    as.integer(value)
+
+    value <- as.integer(value)
+    if (nonnegative && any(value < 0)) {
+        stop(sprintf("'%s' must be non-negative", name))
+    }
+
+    value
 }
 
 
