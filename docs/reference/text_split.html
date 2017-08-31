@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -111,9 +106,9 @@
     <p>Segment text into smaller units.</p>
     
 
-    <pre class="usage"><span class='fu'>text_split</span>(<span class='no'>x</span>, <span class='kw'>units</span> <span class='kw'>=</span> <span class='st'>"sentences"</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))
+    <pre class="usage"><span class='fu'>text_split</span>(<span class='no'>x</span>, <span class='kw'>units</span> <span class='kw'>=</span> <span class='st'>"sentences"</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
-<span class='fu'>text_nsentence</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))</pre>
+<span class='fu'>text_nsentence</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -125,17 +120,21 @@
     <tr>
       <th>units</th>
       <td><p>the block size units, either <code>"sentences"</code> or
-        <code>"tokens"</code>.</p></td>
+    <code>"tokens"</code>.</p></td>
     </tr>
     <tr>
       <th>size</th>
       <td><p>the block size, a positive integer giving the maximum
-        number of units per block.</p></td>
+    number of units per block.</p></td>
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>a text filter defining the token and sentence
-        boundaries.</p></td>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>additional properties to set on the text filter.</p></td>
     </tr>
     </table>
     

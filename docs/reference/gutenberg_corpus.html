@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -111,7 +106,7 @@
     <p>Get a corpus of texts from Project Gutenberg.</p>
     
 
-    <pre class="usage"><span class='fu'>gutenberg_corpus</span>(<span class='no'>ids</span>, <span class='kw'>mirror</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>gutenberg_corpus</span>(<span class='no'>ids</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>mirror</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -119,6 +114,10 @@
     <tr>
       <th>ids</th>
       <td><p>an integer vector of requested Gutenberg text IDs.</p></td>
+    </tr>
+    <tr>
+      <th>filter</th>
+      <td><p>a text filter to set on the corpus.</p></td>
     </tr>
     <tr>
       <th>mirror</th>

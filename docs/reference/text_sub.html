@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -111,7 +106,7 @@
     <p>Extract token subsequences from a set of texts.</p>
     
 
-    <pre class="usage"><span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>end</span> <span class='kw'>=</span> -<span class='fl'>1L</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))</pre>
+    <pre class="usage"><span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>end</span> <span class='kw'>=</span> -<span class='fl'>1L</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -123,18 +118,22 @@
     <tr>
       <th>start</th>
       <td><p>integer vector giving the starting positions of the
-        subsequences, or a two-column integer matrix giving the starting
-        and ending positions.</p></td>
+    subsequences, or a two-column integer matrix giving the starting
+    and ending positions.</p></td>
     </tr>
     <tr>
       <th>end</th>
       <td><p>integer vector giving the ending positions of the
-        subsequences; ignored if <code>start</code> is a two-column matrix.</p></td>
+    subsequences; ignored if <code>start</code> is a two-column matrix.</p></td>
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>filter specifying the transformation from text to
-        token sequence.</p></td>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>additional properties to set on the text filter.</p></td>
     </tr>
     </table>
     

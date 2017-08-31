@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -111,15 +106,15 @@
     <p>Look for instances of one or more terms in a set of texts.</p>
     
 
-    <pre class="usage"><span class='fu'>text_locate</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>), <span class='kw'>random</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+    <pre class="usage"><span class='fu'>text_locate</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>random</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
 
-<span class='fu'>text_count</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))
+<span class='fu'>text_count</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
-<span class='fu'>text_detect</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))
+<span class='fu'>text_detect</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
-<span class='fu'>text_match</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))
+<span class='fu'>text_match</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
-<span class='fu'>text_subset</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>))</pre>
+<span class='fu'>text_subset</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -134,12 +129,17 @@
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>a text filter defining the token boundaries.</p></td>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>random</th>
       <td><p>logical value indicating whether to return the matches in
-            random order.</p></td>
+    random order.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>additional properties to set on the text filter.</p></td>
     </tr>
     </table>
     

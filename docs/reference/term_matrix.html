@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -111,12 +106,12 @@
     <p>Tokenize a set of texts and compute a term frequency matrix or data frame.</p>
     
 
-    <pre class="usage"><span class='fu'>term_matrix</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>), <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>term_matrix</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
             <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+            <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
 
-<span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>), <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-           <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+           <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -127,34 +122,39 @@
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>a token filter specifying the tokenization rules.</p></td>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>weights</th>
       <td><p>a numeric vector the same length of <code>x</code> assigning
-        weights to each text, or <code>NULL</code> for unit weights.</p></td>
+    weights to each text, or <code>NULL</code> for unit weights.</p></td>
     </tr>
     <tr>
       <th>ngrams</th>
       <td><p>an integer vector of n-gram lengths to include, or
-        <code>NULL</code> to use the <code>select</code> argument to determine the
-        n-gram lengths.</p></td>
+    <code>NULL</code> to use the <code>select</code> argument to determine the
+    n-gram lengths.</p></td>
     </tr>
     <tr>
       <th>select</th>
       <td><p>a character vector of terms to count, or <code>NULL</code> to
-        count all terms that appear in <code>x</code>.</p></td>
+    count all terms that appear in <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>group</th>
       <td><p>if non-<code>NULL</code>, a factor, character string, or
-        integer vector the same length of <code>x</code> specifying the grouping
-        behavior.</p></td>
+    integer vector the same length of <code>x</code> specifying the grouping
+    behavior.</p></td>
     </tr>
     <tr>
       <th>transpose</th>
       <td><p>a logical value indicating whether to transpose the
-        result, putting terms as rows instead of columns.</p></td>
+    result, putting terms as rows instead of columns.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>additional properties to set on the text filter.</p></td>
     </tr>
     </table>
     

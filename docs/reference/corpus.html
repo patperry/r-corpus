@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -113,7 +108,7 @@
 
     <pre class="usage"><span class='fu'>corpus</span>(<span class='no'>...</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>as_corpus</span>(<span class='no'>x</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+<span class='fu'>as_corpus</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='fu'>is_corpus</span>(<span class='no'>x</span>)</pre>
     
@@ -123,8 +118,7 @@
     <tr>
       <th>&#8230;</th>
       <td><p>data frame columns for <code>corpus</code>;
-        further arguments passed to or from other methods for
-        <code>as_corpus</code>.</p></td>
+        further arguments passed to <code>as_text</code> from <code>as_corpus</code>.</p></td>
     </tr>
     <tr>
       <th>row.names</th>
@@ -132,7 +126,8 @@
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>text filter object for the corpus object.</p></td>
+      <td><p>text filter object for the <code>"text"</code> column in the
+        corpus object.</p></td>
     </tr>
     <tr>
       <th>x</th>
@@ -162,7 +157,9 @@
         of type <code>"corpus_text"</code>, and a class attribute set to
         <code>c("corpus_frame", "data.frame")</code>.</p>
 <p><code>as_corpus</code> attempts to coerce its argument to a corpus object,
-        setting the <code>row.names</code> and <code>text_filter</code> properties.</p>
+        setting the <code>row.names</code> and calling <code><a href='as_text.html'>as_text</a></code>
+        on the <code>"text"</code> column with the <code>filter</code> and <code>&#8230;</code>
+        arguments.</p>
 <p><code>is_corpus</code> returns <code>TRUE</code> or <code>FALSE</code> depending on
         whether its argument is a valid corpus object or not.</p>
     
@@ -223,10 +220,10 @@
 #&gt; ⋮  (30 rows total)</div><div class='input'>
 <span class='co'># convert a character vector:</span>
 <span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt;   text     
-#&gt; 1 goodnight
-#&gt; 2 moon     </div><div class='input'><span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>) <span class='co'># drops names</span></div><div class='output co'>#&gt;   text     
-#&gt; 1 goodnight
-#&gt; 2 moon     </div></pre>
+#&gt; a goodnight
+#&gt; b moon     </div><div class='input'><span class='fu'>as_corpus</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>) <span class='co'># drops names</span></div><div class='output co'>#&gt;   text     
+#&gt; a goodnight
+#&gt; b moon     </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

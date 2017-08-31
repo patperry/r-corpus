@@ -87,12 +87,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -111,10 +106,10 @@
     <p>Tokenize a set of texts and tabulate the term occurrence statistics.</p>
     
 
-    <pre class="usage"><span class='fu'>term_stats</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>), <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>term_stats</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>min_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
            <span class='kw'>min_support</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_support</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>types</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-           <span class='no'>subset</span>)</pre>
+           <span class='no'>subset</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -125,47 +120,52 @@
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>a token filter specifying the tokenization rules.</p></td>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>weights</th>
       <td><p>a numeric vector the same length of <code>x</code> assigning
-        weights to each text, or <code>NULL</code> for unit weights.</p></td>
+    weights to each text, or <code>NULL</code> for unit weights.</p></td>
     </tr>
     <tr>
       <th>ngrams</th>
       <td><p>an integer vector of n-gram lengths to include, or
-        <code>NULL</code> for length-1 n-grams only.</p></td>
+    <code>NULL</code> for length-1 n-grams only.</p></td>
     </tr>
     <tr>
       <th>min_count</th>
       <td><p>a numeric scalar giving the minimum term count to include
-        in the output, or <code>NULL</code> for no minimum count.</p></td>
+    in the output, or <code>NULL</code> for no minimum count.</p></td>
     </tr>
     <tr>
       <th>max_count</th>
       <td><p>a numeric scalar giving the maximum term count to include
-        in the output, or <code>NULL</code> for no maximum count.</p></td>
+    in the output, or <code>NULL</code> for no maximum count.</p></td>
     </tr>
     <tr>
       <th>min_support</th>
       <td><p>a numeric scalar giving the minimum term support to
-        include in the output, or <code>NULL</code> for no minimum support.</p></td>
+    include in the output, or <code>NULL</code> for no minimum support.</p></td>
     </tr>
     <tr>
       <th>max_support</th>
       <td><p>a numeric scalar giving the maximum term support to
-        include in the output, or <code>NULL</code> for no maximum support.</p></td>
+    include in the output, or <code>NULL</code> for no maximum support.</p></td>
     </tr>
     <tr>
       <th>types</th>
       <td><p>a logical value indicating whether to include columns for
-        the types that make up the terms.</p></td>
+    the types that make up the terms.</p></td>
     </tr>
     <tr>
       <th>subset</th>
       <td><p>logical expression indicating elements or rows to keep:
-          missing values are taken as false.</p></td>
+    missing values are taken as false.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>additional properties to set on the text filter.</p></td>
     </tr>
     </table>
     

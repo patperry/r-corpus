@@ -62,14 +62,7 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -281,7 +274,7 @@ ch24 Home Again                                  Aunt Em had just come out of th
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(data) &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p>The tokenizer allows for precise controlling over token dropping and token stemming. It also allows combining two or more words into a single token as in the following example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_tokens.html">text_tokens</a></span>(<span class="st">"I live in New York City, New York"</span>,
-            <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">combine =</span> <span class="kw">c</span>(<span class="st">"new york"</span>, <span class="st">"new york city"</span>)))</code></pre></div>
+            <span class="dt">combine =</span> <span class="kw">c</span>(<span class="st">"new york"</span>, <span class="st">"new york city"</span>))</code></pre></div>
 <pre><code>[[1]]
 [1] "i"             "live"          "in"            "new york city" ","             "new york"     </code></pre>
 <p>This example using the optional second argument to <code>text_tokens</code> to override the first argument’s default text filter. Here, instances of “new york” and “new york city” get replaced by single tokens, with the longest match taking precedence. See the documentation for <code>text_tokens</code> describes the full tokenization process.</p>
@@ -580,7 +573,7 @@ outlier &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="k
 5 ch14 …s the Monkey King finished his story  Dorothy looked  down and saw the\ngreen, shining wall…
 6 ch16 …rmly he went back to his friends.\n\n Dorothy looked  at him curiously.  His head was quite…</code></pre>
 <p>Note that we match against the type of the token, not the raw token itself, so we are able to detect capitalized “Dorothy”. This is especially useful when we want to search for a stemmed token. Here are all instances of tokens that stem to “scream”:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_locate.html">text_locate</a></span>(data, <span class="st">"scream"</span>, <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">stemmer =</span> <span class="st">"english"</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_locate.html">text_locate</a></span>(data, <span class="st">"scream"</span>, <span class="dt">stemmer =</span> <span class="st">"english"</span>)</code></pre></div>
 <pre><code>  text                  before                   instance                   after                   
 1 ch01 … by the child's laughter that she would   scream  \nand press her hand upon her heart whene…
 2 ch01 …close at hand.\n\n"Quick, Dorothy!" she  screamed .  "Run for the cellar!"\n\nToto jumped o…

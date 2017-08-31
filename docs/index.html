@@ -62,14 +62,7 @@
   <a href="news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/patperry/r-corpus">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -179,18 +172,20 @@
 <a href="#building-from-source" class="anchor"></a>Building from source</h2>
 <p>To install the latest development version of the package, run the following sequence of commands in R:</p>
 <div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="kw">local</span>({
-    dir &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
-    cmd &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">"git clone --recursive"</span>,
-                 <span class="kw">shQuote</span>(<span class="st">"https://github.com/patperry/r-corpus.git"</span>),
-                 <span class="kw">shQuote</span>(dir))
-    <span class="kw">system</span>(cmd)
-    devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>(dir)
+    <span class="co"># download the sources</span>
+    tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
+    <span class="kw">system2</span>(<span class="st">"git"</span>, <span class="kw">c</span>(<span class="st">"clone"</span>, <span class="st">"--recursive"</span>,
+                     <span class="kw">shQuote</span>(<span class="st">"https://github.com/patperry/r-corpus.git"</span>),
+                     <span class="kw">shQuote</span>(tmp)))
+
+    <span class="co"># install the package</span>
+    devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>(tmp)
 
     <span class="co"># optional: run the tests</span>
-    devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/test">test</a></span>(dir)
+    devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/test">test</a></span>(tmp)
 
     <span class="co"># optional: remove the temporary files</span>
-    <span class="kw">unlink</span>(dir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)
+    <span class="kw">unlink</span>(tmp, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)
 })</code></pre></div>
 <p>Note that the package uses a git submodule, so you cannot use <code><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">devtools::install_github</a></code> to install it.</p>
 <p>To obtain the source code, clone the repository and the submodules:</p>
@@ -228,8 +223,6 @@ git submodule update <span class="op">--</span>init</code></pre></div>
     <h2>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cran.r-project.org/package=corpus">https://​cran.r-project.org/​package=corpus</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/patperry/r-corpus">https://​github.com/​patperry/​r-corpus</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/patperry/r-corpus/issues">https://​github.com/​patperry/​r-corpus/​issues</a>
 </li>
