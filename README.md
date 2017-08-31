@@ -255,7 +255,7 @@ License
 [quanteda]: http://quanteda.io/ "Quanteda"
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries "Unicode Text Segmentation, Sentence Boundaries"
 [stringr]: http://stringr.tidyverse.org/ "Stringr"
-[tidytext]: http://tidytextmining.com/
+[tidytext]: http://juliasilge.github.io/tidytext/ "Tidytext"
 [travis]: https://travis-ci.org/patperry/r-corpus "Continuous Integration (Linux)"
 [travis-badge]: https://api.travis-ci.org/patperry/r-corpus.svg?branch=master "Continuous Integration (Linux)"
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries "Unicode Text Segmentation, Word Boundaries"
