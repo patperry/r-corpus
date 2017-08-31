@@ -747,10 +747,6 @@ SEXP utf8_encode(SEXP sx, SEXP sdisplay, SEXP sutf8)
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
-
-#define Win32
-#include <R_ext/RStartup.h>
-extern UImode CharacterMode;
 extern unsigned int localeCP;
 
 const char *translate_utf8(SEXP x)
@@ -783,9 +779,10 @@ const char *translate_utf8(SEXP x)
 		cp = localeCP;
 		if (cp == 0) {
 			// Failed determining code page from locale. Use native
-			// code page: ConsoleCP for terminal, ACP otherwise
-			// (see https://go-review.googlesource.com/c/27575/ )
-			cp = (CharacterMode == RTerm) ?  GetConsoleCP() : GetACP();
+			// code page, which R interprets to be the ANSI Code Page
+			// **not GetConsoleCP(), even if CharacterMode == RTerm**.
+			// See src/extra/win_iconv.c; name_to_codepage().
+			cp = GetACP();
 		}
 	}
 
