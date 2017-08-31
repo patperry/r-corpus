@@ -12,9 +12,14 @@ corpus 0.9.1.9000
   * Add `...` arguments to all text functions, for overriding individual
     `text_filter()` properties.
 
+  * Add `sentiment_afinn`, the AFINN sentiment lexicon.
+
 ### MINOR IMPROVEMENTS
 
   * Switch `as_utf8()` default argument to `normalize = FALSE`.
+
+  * Re-order `as_text()` and `as_corpus()` arguments; make both accept `...`
+    arguments to override individual text filter properities.
 
 ### BUG FIXES
 
