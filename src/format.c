@@ -648,10 +648,14 @@ SEXP utf8_format(SEXP sx, SEXP strim, SEXP schars, SEXP sjustify, SEXP swidth,
 		trim = 1;
 	}
 
-	PROTECT(swidth = coerceVector(swidth, INTSXP)); nprot++;
-	width_max = INTEGER(swidth)[0];
-	if (width_max == NA_INTEGER || width_max < 0) {
+	if (swidth == R_NilValue) {
 		width_max = 0;
+	} else {
+		PROTECT(swidth = coerceVector(swidth, INTSXP)); nprot++;
+		width_max = INTEGER(swidth)[0];
+		if (width_max == NA_INTEGER || width_max < 0) {
+			width_max = 0;
+		}
 	}
 
 	PROTECT(sna_encode = coerceVector(sna_encode, LGLSXP)); nprot++;
