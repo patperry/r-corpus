@@ -240,7 +240,7 @@ Text filter with the following options:
 	stemmer: NULL
 	stem_dropped: FALSE
 	stem_except: NULL
-	combine:  chr [1:146] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." ...
+	combine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." ...
 	drop_letter: FALSE
 	drop_number: FALSE
 	drop_punct: FALSE
@@ -248,7 +248,7 @@ Text filter with the following options:
 	drop: NULL
 	drop_except: NULL
 	sent_crlf: FALSE
-	sent_suppress:  chr [1:146] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
+	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```
 
 We can change the text filter properties:

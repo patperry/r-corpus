@@ -21,6 +21,8 @@ corpus 0.9.1.9000
   * Re-order `as_text()` and `as_corpus()` arguments; make both accept `...`
     arguments to override individual text filter properities.
 
+  * Add missing single-letter initials to English abbreviation list.
+
 ### BUG FIXES
 
   * Fix bug in `utf8_normalize()` when the input contains a backslash (`\`).
