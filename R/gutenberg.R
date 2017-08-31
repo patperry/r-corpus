@@ -170,6 +170,10 @@ gutenberg_parse <- function(lines, verbose = TRUE)
 gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
 {
     id <- as.integer(id)[[1]]
+    if (is.na(id)) {
+        return(list(title = NA_character_, author = NA_character_,
+                    language = NA_character_, text = NA_character_))
+    }
 
     if (is.null(mirror)) {
         mirror <- gutenberg_get_mirror(verbose = verbose)
@@ -226,6 +230,12 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
 
 gutenberg_corpus <- function(ids, mirror = NULL, verbose = TRUE, ...)
 {
+    with_rethrow({
+        ids <- as_integer_vector("ids", ids)
+        mirror <- as_character_scalar("mirror", mirror)
+        verbose <- as_option("verbose", verbose)
+    })
+
     rows <- lapply(ids, gutenberg_download, mirror = mirror, verbose = verbose)
 
     args <- rows

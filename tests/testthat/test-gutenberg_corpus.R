@@ -11,3 +11,12 @@ test_that("'gutenberg_corpus' can download Jules Verne in French", {
     expect_equal(data$language, "French")
     expect_equal(nchar(as.character(data$text)), 421335)
 })
+
+
+test_that("'gutenberg_corpus' can handle NA", {
+    data <- gutenberg_corpus(NA)
+    expect_equal(data, corpus(title = NA_character_,
+                              author = NA_character_,
+                              language = NA_character_,
+                              text = NA_character_))
+})
