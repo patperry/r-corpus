@@ -13,37 +13,37 @@
 #  limitations under the License.
 
 
-text_tokens <- function(x, filter = text_filter(x))
+text_tokens <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
     .Call(C_text_tokens, x)
 }
 
 
-text_ntoken <- function(x, filter = text_filter(x))
+text_ntoken <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
     .Call(C_text_ntoken, x)
 }
 
 
-text_length <- function(x, filter = text_filter(x))
+text_length <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
     .Call(C_text_length, x)
 }
 
 
-text_sub <- function(x, start = 1L, end = -1L, filter = text_filter(x))
+text_sub <- function(x, start = 1L, end = -1L, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
     n <- length(x)
 

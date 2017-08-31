@@ -7,21 +7,23 @@
     Segment text into smaller units.
 }
 \usage{
-text_split(x, units = "sentences", size = 1, filter = text_filter(x))
+text_split(x, units = "sentences", size = 1, filter = NULL, ...)
 
-text_nsentence(x, filter = text_filter(x))
+text_nsentence(x, filter = NULL, ...)
 }
 \arguments{
-    \item{x}{a text or character vector.}
+\item{x}{a text or character vector.}
 
-    \item{units}{the block size units, either \code{"sentences"} or
-        \code{"tokens"}.}
+\item{units}{the block size units, either \code{"sentences"} or
+    \code{"tokens"}.}
 
-    \item{size}{the block size, a positive integer giving the maximum
-        number of units per block.}
+\item{size}{the block size, a positive integer giving the maximum
+    number of units per block.}
 
-    \item{filter}{a text filter defining the token and sentence
-        boundaries.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
+
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{text_split} splits text into roughly evenly-sized blocks,

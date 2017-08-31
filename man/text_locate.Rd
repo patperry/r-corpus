@@ -9,25 +9,28 @@
     Look for instances of one or more terms in a set of texts.
 }
 \usage{
-text_locate(x, terms, filter = text_filter(x), random = FALSE)
+text_locate(x, terms, filter = NULL, random = FALSE, ...)
 
-text_count(x, terms, filter = text_filter(x))
+text_count(x, terms, filter = NULL, ...)
 
-text_detect(x, terms, filter = text_filter(x))
+text_detect(x, terms, filter = NULL, ...)
 
-text_match(x, terms, filter = text_filter(x))
+text_match(x, terms, filter = NULL, ...)
 
-text_subset(x, terms, filter = text_filter(x))
+text_subset(x, terms, filter = NULL, ...)
 }
 \arguments{
-    \item{x}{a text or character vector.}
+\item{x}{a text or character vector.}
 
-    \item{terms}{a character vector of search terms.}
+\item{terms}{a character vector of search terms.}
 
-    \item{filter}{a text filter defining the token boundaries.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
 
-    \item{random}{logical value indicating whether to return the matches in
-            random order.}
+\item{random}{logical value indicating whether to return the matches in
+    random order.}
+
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{text_locate} finds all instances of the search terms in the
@@ -69,7 +72,7 @@ text_subset(x, terms, filter = text_filter(x))
     passed-in \code{filter} argument.
 }
 \seealso{
-    \code{\link{term_stats}}, \code{\link{term_frame}}.
+\code{\link{term_stats}}, \code{\link{term_frame}}.
 }
 \examples{
 text <- c("Rose is a rose is a rose is a rose.",

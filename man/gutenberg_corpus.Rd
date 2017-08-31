@@ -5,10 +5,12 @@
 Get a corpus of texts from Project Gutenberg.
 }
 \usage{
-gutenberg_corpus(ids, mirror = NULL, verbose = TRUE, ...)
+gutenberg_corpus(ids, filter = NULL, mirror = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{ids}{an integer vector of requested Gutenberg text IDs.}
+
+\item{filter}{a text filter to set on the corpus.}
 
 \item{mirror}{a character string URL for the Gutenberg mirror to use,
     or NULL to determine automatically.}

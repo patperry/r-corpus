@@ -13,10 +13,10 @@
 #  limitations under the License.
 
 
-text_nsentence <- function(x, filter = text_filter(x))
+text_nsentence <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
     .Call(C_text_nsentence, x)
 }

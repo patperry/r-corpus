@@ -13,13 +13,13 @@
 #  limitations under the License.
 
 
-term_stats <- function(x, filter = text_filter(x), weights = NULL,
+term_stats <- function(x, filter = NULL, weights = NULL,
                        ngrams = NULL, min_count = NULL, max_count = NULL,
                        min_support = NULL, max_support = NULL, types = FALSE,
-                       subset)
+                       subset, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
         weights <- as_weights(weights, length(x))
         ngrams <- as_ngrams(ngrams)
         min_count <- as_double_scalar("min_count", min_count, TRUE)
@@ -53,10 +53,10 @@ term_stats <- function(x, filter = text_filter(x), weights = NULL,
 }
 
 
-term_matrix_raw <- function(x, filter = text_filter(x), weights = NULL,
-                            ngrams = NULL, select = NULL, group = NULL)
+term_matrix_raw <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
+                            select = NULL, group = NULL, ...)
 {
-    x <- as_text(x, filter = filter)
+    x <- as_text(x, filter, ...)
     weights <- as_weights(weights, length(x))
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)
@@ -85,12 +85,11 @@ term_matrix_raw <- function(x, filter = text_filter(x), weights = NULL,
 }
 
 
-term_matrix <- function(x, filter = text_filter(x), weights = NULL,
-                        ngrams = NULL, select = NULL, group = NULL,
-                        transpose = FALSE)
+term_matrix <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
+                        select = NULL, group = NULL, transpose = FALSE, ...)
 {
     with_rethrow({
-        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
+        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group, ...)
         transpose <- as_option("transpose", transpose)
     })
 
@@ -111,11 +110,11 @@ term_matrix <- function(x, filter = text_filter(x), weights = NULL,
 }
 
 
-term_frame <- function(x, filter = text_filter(x), weights = NULL,
-                       ngrams = NULL, select = NULL, group = NULL)
+term_frame <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
+                       select = NULL, group = NULL, ...)
 {
     with_rethrow({
-        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
+        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group, ...)
     })
 
     row_names <- mat$row_names

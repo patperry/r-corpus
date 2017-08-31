@@ -6,34 +6,37 @@
     Tokenize a set of texts and compute a term frequency matrix or data frame.
 }
 \usage{
-term_matrix(x, filter = text_filter(x), weights = NULL,
+term_matrix(x, filter = NULL, weights = NULL,
             ngrams = NULL, select = NULL, group = NULL,
-            transpose = FALSE)
+            transpose = FALSE, ...)
 
-term_frame(x, filter = text_filter(x), weights = NULL,
-           ngrams = NULL, select = NULL, group = NULL)
+term_frame(x, filter = NULL, weights = NULL,
+           ngrams = NULL, select = NULL, group = NULL, ...)
 }
 \arguments{
-    \item{x}{a text vector to tokenize.}
+\item{x}{a text vector to tokenize.}
 
-    \item{filter}{a token filter specifying the tokenization rules.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
 
-    \item{weights}{a numeric vector the same length of \code{x} assigning
-        weights to each text, or \code{NULL} for unit weights.}
+\item{weights}{a numeric vector the same length of \code{x} assigning
+    weights to each text, or \code{NULL} for unit weights.}
 
-    \item{ngrams}{an integer vector of n-gram lengths to include, or
-        \code{NULL} to use the \code{select} argument to determine the
-        n-gram lengths.}
+\item{ngrams}{an integer vector of n-gram lengths to include, or
+    \code{NULL} to use the \code{select} argument to determine the
+    n-gram lengths.}
 
-    \item{select}{a character vector of terms to count, or \code{NULL} to
-        count all terms that appear in \code{x}.}
+\item{select}{a character vector of terms to count, or \code{NULL} to
+    count all terms that appear in \code{x}.}
 
-    \item{group}{if non-\code{NULL}, a factor, character string, or
-        integer vector the same length of \code{x} specifying the grouping
-        behavior.}
+\item{group}{if non-\code{NULL}, a factor, character string, or
+    integer vector the same length of \code{x} specifying the grouping
+    behavior.}
 
-    \item{transpose}{a logical value indicating whether to transpose the
-        result, putting terms as rows instead of columns.}
+\item{transpose}{a logical value indicating whether to transpose the
+    result, putting terms as rows instead of columns.}
+
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{term_matrix} tokenizes a set of texts and computes the occurrence

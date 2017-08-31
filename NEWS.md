@@ -9,6 +9,9 @@ corpus 0.9.1.9000
 
   * Add `gutenberg_corpus()` for downloading a corpus from Project Gutenberg.
 
+  * Add `...` arguments to all text functions, for overriding individual
+    `text_filter()` properties.
+
 ### MINOR IMPROVEMENTS
 
   * Switch `as_utf8()` default argument to `normalize = FALSE`.

@@ -13,40 +13,40 @@
 #  limitations under the License.
 
 
-text_count <- function(x, terms, filter = text_filter(x))
+text_count <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
     })
     .Call(C_text_count, x, terms)
 }
 
 
-text_detect <- function(x, terms, filter = text_filter(x))
+text_detect <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
     })
     .Call(C_text_detect, x, terms)
 }
 
 
-text_subset <- function(x, terms, filter = text_filter(x))
+text_subset <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
     i <- text_detect(x, terms)
     x[i]
 }
 
 
-text_match <- function(x, terms, filter = text_filter(x))
+text_match <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
 
     if (!(is.null(terms) || is.character(terms))) {
@@ -77,10 +77,10 @@ text_match <- function(x, terms, filter = text_filter(x))
 }
 
 
-text_locate <- function(x, terms, filter = text_filter(x), random = FALSE)
+text_locate <- function(x, terms, filter = NULL, random = FALSE, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
         random <- as_option("random", random)
     })

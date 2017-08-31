@@ -169,7 +169,7 @@ in the following example:
 
 ```{r}
 text_tokens("I live in New York City, New York",
-            filter = text_filter(combine = c("new york", "new york city")))
+            combine = c("new york", "new york city"))
 ```
 
 This example using the optional second argument to `text_tokens` to override
@@ -376,7 +376,7 @@ want to search for a stemmed token. Here are all instances of tokens that
 stem to "scream":
 
 ```{r}
-text_locate(data, "scream", filter = text_filter(stemmer = "english"))
+text_locate(data, "scream", stemmer = "english")
 ```
 
 If we would like, we can search for multiple phrases at the same time:

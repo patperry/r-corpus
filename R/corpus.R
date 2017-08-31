@@ -77,7 +77,7 @@ as_corpus.data.frame <- function(x, filter = NULL, ..., row.names = NULL)
         row.names <- as_names("row.names", row.names, nrow(x))
     })
 
-    x[["text"]] <- as_text(x[["text"]], filter = filter, ...)
+    x[["text"]] <- as_text(x[["text"]], filter, ...)
 
     if (!is.null(row.names)) {
         row.names(x) <- row.names

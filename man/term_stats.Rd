@@ -5,39 +5,42 @@
     Tokenize a set of texts and tabulate the term occurrence statistics.
 }
 \usage{
-term_stats(x, filter = text_filter(x), weights = NULL,
+term_stats(x, filter = NULL, weights = NULL,
            ngrams = NULL, min_count = NULL, max_count = NULL,
            min_support = NULL, max_support = NULL, types = FALSE,
-           subset)
+           subset, ...)
 }
 \arguments{
-    \item{x}{a text vector to tokenize.}
+\item{x}{a text vector to tokenize.}
 
-    \item{filter}{a token filter specifying the tokenization rules.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
 
-    \item{weights}{a numeric vector the same length of \code{x} assigning
-        weights to each text, or \code{NULL} for unit weights.}
+\item{weights}{a numeric vector the same length of \code{x} assigning
+    weights to each text, or \code{NULL} for unit weights.}
 
-    \item{ngrams}{an integer vector of n-gram lengths to include, or
-        \code{NULL} for length-1 n-grams only.}
+\item{ngrams}{an integer vector of n-gram lengths to include, or
+    \code{NULL} for length-1 n-grams only.}
 
-    \item{min_count}{a numeric scalar giving the minimum term count to include
-        in the output, or \code{NULL} for no minimum count.}
+\item{min_count}{a numeric scalar giving the minimum term count to include
+    in the output, or \code{NULL} for no minimum count.}
 
-    \item{max_count}{a numeric scalar giving the maximum term count to include
-        in the output, or \code{NULL} for no maximum count.}
+\item{max_count}{a numeric scalar giving the maximum term count to include
+    in the output, or \code{NULL} for no maximum count.}
 
-    \item{min_support}{a numeric scalar giving the minimum term support to
-        include in the output, or \code{NULL} for no minimum support.}
+\item{min_support}{a numeric scalar giving the minimum term support to
+    include in the output, or \code{NULL} for no minimum support.}
 
-    \item{max_support}{a numeric scalar giving the maximum term support to
-        include in the output, or \code{NULL} for no maximum support.}
+\item{max_support}{a numeric scalar giving the maximum term support to
+    include in the output, or \code{NULL} for no maximum support.}
 
-    \item{types}{a logical value indicating whether to include columns for
-        the types that make up the terms.}
+\item{types}{a logical value indicating whether to include columns for
+    the types that make up the terms.}
 
-    \item{subset}{logical expression indicating elements or rows to keep:
-          missing values are taken as false.}
+\item{subset}{logical expression indicating elements or rows to keep:
+    missing values are taken as false.}
+
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{term_stats} tokenizes a set of texts and computes the occurrence

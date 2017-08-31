@@ -6,18 +6,20 @@
     Get or measure the set of types (unique token values).
 }
 \usage{
-text_types(x, filter = text_filter(x), collapse = FALSE)
+text_types(x, filter = NULL, collapse = FALSE, ...)
 
-text_ntype(x, filter = text_filter(x), collapse = FALSE)
+text_ntype(x, filter = NULL, collapse = FALSE, ...)
 }
 \arguments{
-    \item{x}{a text or character vector.}
+\item{x}{a text or character vector.}
 
-    \item{filter}{a text filter defining the token boundaries and
-        normalization.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
 
-    \item{collapse}{a logical value indicating whether to collapse the
-        aggregation over all rows of the input.}
+\item{collapse}{a logical value indicating whether to collapse the
+    aggregation over all rows of the input.}
+
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{text_ntype} counts the number of unique types in each text;

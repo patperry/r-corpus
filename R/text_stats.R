@@ -13,10 +13,10 @@
 #  limitations under the License.
 
 
-text_stats <- function(x, filter = text_filter(x))
+text_stats <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter = filter)
+        x <- as_text(x, filter, ...)
     })
 
     ans <- data.frame(tokens = text_ntoken(x),

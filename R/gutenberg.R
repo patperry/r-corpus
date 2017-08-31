@@ -228,10 +228,12 @@ gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
 }
 
 
-gutenberg_corpus <- function(ids, mirror = NULL, verbose = TRUE, ...)
+gutenberg_corpus <- function(ids, filter = NULL, mirror = NULL,
+                             verbose = TRUE, ...)
 {
     with_rethrow({
         ids <- as_integer_vector("ids", ids)
+        filter <- as_filter("filter", filter)
         mirror <- as_character_scalar("mirror", mirror)
         verbose <- as_option("verbose", verbose)
     })
@@ -244,5 +246,5 @@ gutenberg_corpus <- function(ids, mirror = NULL, verbose = TRUE, ...)
     data <- do.call(rbind.data.frame, args)
 
     rownames(data) <- names(rows)
-    as_corpus(data, ...)
+    as_corpus(data, filter, ...)
 }

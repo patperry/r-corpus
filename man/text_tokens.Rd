@@ -8,17 +8,19 @@
    a particular \sQuote{type}.
 }
 \usage{
-text_tokens(x, filter = text_filter(x))
+text_tokens(x, filter = NULL, ...)
 
-text_ntoken(x, filter = text_filter(x))
+text_ntoken(x, filter = NULL, ...)
 
-text_length(x, filter = text_filter(x))
+text_length(x, filter = NULL, ...)
 }
 \arguments{
-    \item{x}{object to be tokenized.}
+\item{x}{object to be tokenized.}
 
-    \item{filter}{filter specifying the transformation from text to
-        token sequence.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
+
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{text_tokens} splits texts into token sequences. Each token is an

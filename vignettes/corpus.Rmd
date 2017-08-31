@@ -298,7 +298,7 @@ in the following example:
 
 ```r
 text_tokens("I live in New York City, New York",
-            filter = text_filter(combine = c("new york", "new york city")))
+            combine = c("new york", "new york city"))
 ```
 
 ```
@@ -784,7 +784,7 @@ stem to "scream":
 
 
 ```r
-text_locate(data, "scream", filter = text_filter(stemmer = "english"))
+text_locate(data, "scream", stemmer = "english")
 ```
 
 ```

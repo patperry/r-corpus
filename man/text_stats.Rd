@@ -5,13 +5,15 @@
     Report descriptive statistics for a set of texts.
 }
 \usage{
-text_stats(x, filter = text_filter(x))
+text_stats(x, filter = NULL, ...)
 }
 \arguments{
-    \item{x}{a text corpus.}
+\item{x}{a text corpus.}
 
-    \item{filter}{a text filter specifying the tokenization rules.}
+\item{filter}{if non-\code{NULL}, a text filter to to use instead of
+    the default text filter for \code{x}.}
 
+\item{\dots}{additional properties to set on the text filter.}
 }
 \details{
     \code{text_stats} reports descriptive statistics for a set of texts:
