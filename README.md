@@ -219,12 +219,6 @@ This project is released with a [Contributor Code of Conduct][conduct],
 and if you choose to contribute, you must adhere to its terms.
 
 
-License
--------
-
-*Corpus* is released under the [Apache Licence, Version 2.0][apache].
-
-
 Acknowledgments
 ---------------
 
@@ -232,6 +226,12 @@ The API and feature set for *corpus* draw inspiration from
 [*quanteda*][quanteda], developed by Ken Benoit and collaborators;
 [*stringr*][stringr], developed by Hadley Wickham;
 [*tidytext*][tidytext], developed by Julia Silge and David Robinson.
+
+
+License
+-------
+
+*Corpus* is released under the [Apache Licence, Version 2.0][apache].
 
 
 [apache]: https://www.apache.org/licenses/LICENSE-2.0.html "Apache License, Version 2.0"
