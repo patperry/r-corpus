@@ -49,7 +49,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://aleph.gutenberg.org/
+Using mirror http://www.gutenberg.org/dirs/
 ```
 
 ```

@@ -184,9 +184,42 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
 print.corpus_text_locate <- function(x, rows = 20L, print.gap = NULL,
                                      display = TRUE, ...)
 {
-    fmt <- format.corpus_text_locate(x, print.gap = print.gap,
+    if (!is.data.frame(x)) {
+        stop("argument is not a data frame")
+    }
+    n <- nrow(x)
+
+    with_rethrow({
+        rows <- as_rows("rows", rows)
+        print.gap <- as_print_gap("print_gap", print.gap)
+        display <- as_option("display", display)
+    })
+
+    if (is.null(rows) || rows < 0) {
+        rows <- .Machine$integer.max
+    }
+
+    trunc <- (!is.null(rows) && n > rows)
+    if (trunc) {
+        xsub <- x[seq_len(rows), , drop = FALSE]
+    } else {
+        xsub <- x
+    }
+
+    fmt <- format.corpus_text_locate(xsub, print.gap = print.gap,
                                      display = display, ...)
-    print.corpus_frame(fmt, rows = rows, chars = .Machine$integer.max,
-                       print.gap = print.gap)
+    print.corpus_frame(fmt, rows = .Machine$integer.max,
+                       chars = .Machine$integer.max, print.gap = print.gap)
+    if (trunc) {
+        name_width <- max(0, utf8_width(rownames(fmt)))
+
+        ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", ".", "\u22ee")
+        ellipsis <- substr(ellipsis, 1, name_width)
+        gap <- if (is.null(print.gap)) 1 else print.gap
+
+        space <- format(ellipsis, width = name_width + gap)
+        cat(sprintf("%s(%d rows total)\n", space, n))
+    }
+
     invisible(x)
 }
