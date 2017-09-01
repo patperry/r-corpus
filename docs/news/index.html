@@ -114,13 +114,16 @@
 <li><p>Add support for tm <code>Corpus</code> and quanteda <code>corpus</code> objects; all functions expecting text (<code><a href="../reference/text_tokens.html">text_tokens()</a></code>, <code><a href="../reference/term_matrix.html">term_matrix()</a></code>, etc.) should work seamlessly on these objects.</p></li>
 <li><p>Add <code><a href="../reference/gutenberg_corpus.html">gutenberg_corpus()</a></code> for downloading a corpus from Project Gutenberg.</p></li>
 <li><p>Add <code>...</code> arguments to all text functions, for overriding individual <code><a href="../reference/text_filter.html">text_filter()</a></code> properties.</p></li>
+<li><p>Add <code>sentiment_afinn</code>, the AFINN sentiment lexicon.</p></li>
 </ul>
 </div>
 <div id="minor-improvements" class="section level3">
 <h3 class="hasAnchor">
 <a href="#minor-improvements" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
-<li>Switch <code><a href="../reference/utf8.html">as_utf8()</a></code> default argument to <code>normalize = FALSE</code>.</li>
+<li><p>Switch <code><a href="../reference/utf8.html">as_utf8()</a></code> default argument to <code>normalize = FALSE</code>.</p></li>
+<li><p>Re-order <code><a href="../reference/as_text.html">as_text()</a></code> and <code><a href="../reference/corpus.html">as_corpus()</a></code> arguments; make both accept <code>...</code> arguments to override individual text filter properities.</p></li>
+<li><p>Add missing single-letter initials to English abbreviation list.</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level3">
