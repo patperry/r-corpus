@@ -130,7 +130,7 @@ as_text.data.frame <- function(x, filter = NULL, ..., names = NULL)
 # tm::Corpus
 as_text.Corpus <- function(x, filter = NULL, ..., names = NULL)
 {
-    with_tm({
+    with_package("tm", {
         x <- sapply(x, as.character)
     })
     as_text(x, filter = filter, ..., names = names)
@@ -139,7 +139,9 @@ as_text.Corpus <- function(x, filter = NULL, ..., names = NULL)
 # quanteda::corpus
 as_text.corpus <- function(x, filter = NULL, ..., names = NULL)
 {
-    text <- quanteda::texts(x)
+    with_package("quanteda", {
+        text <- quanteda::texts(x)
+    })
     as_text(text, filter = filter, ..., names = names)
 }
 

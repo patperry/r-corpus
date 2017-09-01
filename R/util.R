@@ -35,21 +35,15 @@ with_rethrow <- function(expr)
 }
 
 
-with_tm <- function(expr)
+with_package <- function(package, expr)
 {
-    unload <- FALSE
-    if (!isNamespaceLoaded("tm")) {
-        if (!requireNamespace("tm", quietly = TRUE)) {
-            stop("Failed attaching namespace for package 'tm'")
+    if (!isNamespaceLoaded(package)) {
+        if (!requireNamespace(package, quietly = TRUE)) {
+            stop(sprintf("Failed attaching name space for package '%s'",
+                         package))
         }
-        unload <- TRUE
     }
 
     force(expr)
-
-    if (unload) {
-        unloadNamespace("tm")
-    }
-
     expr
 }

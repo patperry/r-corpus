@@ -115,7 +115,7 @@ corpus_with_meta <- function(text, meta, filter = NULL, ..., row.names = NULL)
 # tm::Corpus
 as_corpus.Corpus <- function(x, filter = NULL, ..., row.names = NULL)
 {
-    with_tm({
+    with_package("tm", {
         text <- sapply(x, as.character)
     })
     meta <- as.data.frame(x$dmeta)
@@ -126,8 +126,10 @@ as_corpus.Corpus <- function(x, filter = NULL, ..., row.names = NULL)
 # quanteda::corpus
 as_corpus.corpus <- function(x, filter = NULL, ..., row.names = NULL)
 {
-    text <- quanteda::texts(x)
-    meta <- quanteda::docvars(x)
+    with_package("quanteda", {
+        text <- quanteda::texts(x)
+        meta <- quanteda::docvars(x)
+    })
     corpus_with_meta(text, meta, filter = filter, ..., row.names = row.names)
 }
 
