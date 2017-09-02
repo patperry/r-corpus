@@ -27,4 +27,4 @@
 ^src/corpus/data$
 ^vignettes/gender[.]Rmd
 ^vignettes/gender-.*png
-^vignettes/src$
+^vignettes/.*[.]in$

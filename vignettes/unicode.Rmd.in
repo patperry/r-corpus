@@ -1,15 +1,14 @@
-<!--
-%\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-
-Unicode: Emoji, accents, and international text
-===============================================
+---
+title: "Unicode: Emoji, accents, and international text"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(comment = "", fig.path = "unicode-",
-                      fig.retina = TRUE)
+knitr::opts_chunk$set(comment = "", fig.path = "unicode-", fig.retina = TRUE)
 options(width = 116)
 ```
 

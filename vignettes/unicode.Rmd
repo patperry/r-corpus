@@ -1,11 +1,11 @@
-<!--
-%\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-
-Unicode: Emoji, accents, and international text
-===============================================
+---
+title: "Unicode: Emoji, accents, and international text"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 
 

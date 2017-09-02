@@ -1,11 +1,11 @@
-<!--
-%\VignetteIndexEntry{Introduction to corpus}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-
-Introduction to *corpus*
-========================
+---
+title: "Introduction to corpus"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to corpus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 
 

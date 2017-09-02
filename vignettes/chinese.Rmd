@@ -1,11 +1,11 @@
-<!--
-%\VignetteIndexEntry{Chinese text handling}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-
-Chinese text handling
-=====================
+---
+title: "Chinese text handling"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Chinese text handling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 
 

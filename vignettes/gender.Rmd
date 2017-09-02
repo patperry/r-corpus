@@ -1,11 +1,11 @@
-<!--
-%\VignetteIndexEntry{Finding gendered words}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-
-Finding gendered words
-======================
+---
+title: "Finding gendered words"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Finding gendered words}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 
 
@@ -49,7 +49,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://www.gutenberg.org/dirs/
+Using mirror http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg/
 ```
 
 ```

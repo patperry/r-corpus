@@ -13,21 +13,21 @@ NEWS: NEWS.md
 README: README.md
 	sed -e '/Overview/,$$!d' $< > $@
 
-vignettes/chinese.Rmd: vignettes/src/chinese.Rmd
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/chinese.Rmd")'
-	mv vignettes/chinese.md $@ && touch -r $< $@
+vignettes/chinese.Rmd: vignettes/chinese.Rmd.in
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("chinese.Rmd.in")'
+	mv vignettes/chinese.Rmd.txt $@
 
-vignettes/corpus.Rmd: vignettes/src/corpus.Rmd
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/corpus.Rmd")'
-	mv vignettes/corpus.md $@ && touch -r $< $@
+vignettes/corpus.Rmd: vignettes/corpus.Rmd.in
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("corpus.Rmd.in")'
+	mv vignettes/corpus.Rmd.txt $@
 
-vignettes/gender.Rmd: vignettes/src/gender.Rmd
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/gender.Rmd")'
-	mv vignettes/gender.md $@ && touch -r $< $@
+vignettes/gender.Rmd: vignettes/gender.Rmd.in
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("gender.Rmd.in")'
+	mv vignettes/gender.Rmd.txt $@
 
-vignettes/unicode.Rmd: vignettes/src/unicode.Rmd
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("src/unicode.Rmd")'
-	mv vignettes/unicode.md $@ && touch -r $< $@
+vignettes/unicode.Rmd: vignettes/unicode.Rmd.in
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("unicode.Rmd.in")'
+	mv vignettes/unicode.Rmd.txt $@
 
 bench:
 	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'

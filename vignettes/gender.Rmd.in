@@ -1,11 +1,11 @@
-<!--
-%\VignetteIndexEntry{Finding gendered words}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-
-Finding gendered words
-======================
+---
+title: "Finding gendered words"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Finding gendered words}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(comment = "", fig.path = "gender-")
