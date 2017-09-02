@@ -9,6 +9,8 @@ vignette: >
 
 
 
+## Overview
+
 This vignette shows how to work with Chinese language materials using the
 corpus package.  It's based on Haiyan Wang's [rOpenSci demo](https://github.com/ropensci/textworkshop17/tree/master/demos/chineseDemo)
 and assumes you have `httr`, `stringi`, and `wordcloud` installed.
