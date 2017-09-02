@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> • corpus</title>
+<title>Unicode: Emoji, accents, and international text • corpus</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -74,21 +74,13 @@
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
-      <h1></h1>
+      <h1>Unicode: Emoji, accents, and international text</h1>
             
           </div>
 
     
     
 <div class="contents">
-<!--
-%\VignetteIndexEntry{Unicode: Emoji, accents, and international text}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-<div id="unicode-emoji-accents-and-international-text" class="section level1">
-<h1 class="hasAnchor">
-<a href="#unicode-emoji-accents-and-international-text" class="anchor"></a>Unicode: Emoji, accents, and international text</h1>
 <div id="character-encoding" class="section level2">
 <h2 class="hasAnchor">
 <a href="#character-encoding" class="anchor"></a>Character encoding</h2>
@@ -277,7 +269,6 @@ lines2[<span class="dv">15252</span>]</code></pre></div>
 <p>Text comes in a variety of encodings, and you cannot analyze a text without first knowing its encoding. Many functions for reading in text assume that it is encoded in UTF-8, but this assumption sometimes fails to hold. If you get an error message reporting that your UTF-8 text is invalid, use <code>utf8_valid</code> to find the offending texts. Try printing the data to the console before and after using <code>iconv</code> to convert between character encodings. You can use <code>utf8_print</code> to print UTF-8 characters that R refuses to display, including emoji characters. For reading in exotic file formats like PDF or Word, try the <a href="https://github.com/kbenoit/readtext#readtext">readtext</a> package.</p>
 </div>
 </div>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -285,15 +276,11 @@ lines2[<span class="dv">15252</span>]</code></pre></div>
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#unicode-emoji-accents-and-international-text">Unicode: Emoji, accents, and international text</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#character-encoding">Character encoding</a></li>
       <li><a href="#utf-8">UTF-8</a></li>
       <li><a href="#translating-to-utf-8">Translating to UTF-8</a></li>
       <li><a href="#the-readtext-package">The <em>readtext</em> package</a></li>
       <li><a href="#summary">Summary</a></li>
-      </ul>
-</li>
       </ul>
 </div>
       </div>

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> • corpus</title>
+<title>Finding gendered words • corpus</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -74,21 +74,13 @@
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
-      <h1></h1>
+      <h1>Finding gendered words</h1>
             
           </div>
 
     
     
 <div class="contents">
-<!--
-%\VignetteIndexEntry{Finding gendered words}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-<div id="finding-gendered-words" class="section level1">
-<h1 class="hasAnchor">
-<a href="#finding-gendered-words" class="anchor"></a>Finding gendered words</h1>
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
@@ -109,7 +101,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")</span>
 (austen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gutenberg_corpus.html">gutenberg_corpus</a></span>(<span class="kw">c</span>(<span class="dv">161</span>, <span class="dv">1342</span>, <span class="dv">141</span>, <span class="dv">158</span>, <span class="dv">121</span>, <span class="dv">105</span>)))</code></pre></div>
 <pre><code>Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL</code></pre>
-<pre><code>Using mirror http://www.gutenberg.org/dirs/</code></pre>
+<pre><code>Using mirror http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg/</code></pre>
 <pre><code>Converting text from declared encoding "ISO-8859-1" to UTF-8</code></pre>
 <pre><code>  title                 author      language text                                                   
 1 Sense and Sensibility Jane Austen English  SENSE AND SENSIBILITY\n\nby Jane Austen\n\n(1811)\n\n… 
@@ -374,7 +366,6 @@ col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class
 <p>I suspect that many of the words here have gender imbalances simply because the protagonists are female. The novels give us insights into the protagonists’ emotional states, but not into those of the supporting characters. It would be nice if we could get more balanced comparison by adjusting for the genders of the protagonists. Until we do that, it’s hard to know if there’s anything meaningful in these differences.</p>
 </div>
 </div>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -382,15 +373,11 @@ col &lt;-<span class="st"> </span><span class="kw">ifelse</span>(est <span class
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#finding-gendered-words">Finding gendered words</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#overview">Overview</a></li>
       <li><a href="#gender-bigrams-in-austens-novels">Gender bigrams in Austen’s novels</a></li>
       <li><a href="#gender-specific-usage-rates">Gender-specific usage rates</a></li>
       <li><a href="#uncertainty-quantification">Uncertainty quantification</a></li>
       <li><a href="#results">Results</a></li>
-      </ul>
-</li>
       </ul>
 </div>
       </div>

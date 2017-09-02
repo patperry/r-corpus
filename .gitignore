@@ -5,3 +5,4 @@
 /NEWS
 /README
 /dist/
+/docs/articles/*.Rmd.in

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> • corpus</title>
+<title>Chinese text handling • corpus</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -74,21 +74,13 @@
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
-      <h1></h1>
+      <h1>Chinese text handling</h1>
             
           </div>
 
     
     
 <div class="contents">
-<!--
-%\VignetteIndexEntry{Chinese text handling}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
--->
-<div id="chinese-text-handling" class="section level1">
-<h1 class="hasAnchor">
-<a href="#chinese-text-handling" class="anchor"></a>Chinese text handling</h1>
 <p>This vignette shows how to work with Chinese language materials using the corpus package. It’s based on Haiyan Wang’s <a href="https://github.com/ropensci/textworkshop17/tree/master/demos/chineseDemo">rOpenSci demo</a> and assumes you have <code>httr</code>, <code>stringi</code>, and <code>wordcloud</code> installed.</p>
 <p>We’ll start by loading the package and setting a seed to ensure reproducible results</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"corpus"</span>)
@@ -262,7 +254,6 @@ subset &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text
 <p><em>Note: the alignment looks bad here because the Chinese characters have widths between 1 and 2 spaces each. The spacing in the table is set assuming that Chinese characters take exactly 2 spaces each. If you know how to set the font to make the widths agree, please contact me.</em></p>
 </div>
 </div>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -270,16 +261,12 @@ subset &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#chinese-text-handling">Chinese text handling</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#documents-and-stopwords">Documents and stopwords</a></li>
       <li><a href="#tokenization">Tokenization</a></li>
       <li><a href="#document-statistics">Document statistics</a></li>
       <li><a href="#visualization">Visualization</a></li>
       <li><a href="#co-occurrences">Co-occurrences</a></li>
       <li><a href="#keyword-in-context">Keyword in context</a></li>
-      </ul>
-</li>
       </ul>
 </div>
       </div>
