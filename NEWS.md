@@ -23,6 +23,9 @@ corpus 0.9.1.9000
 
   * Add missing single-letter initials to English abbreviation list.
 
+  * Adaptively increase buffer size for `read_ndjson()` so that large
+    files can be read quickly.
+
 ### BUG FIXES
 
   * Fix bug in `utf8_normalize()` when the input contains a backslash (`\`).
