@@ -52,6 +52,7 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = NULL)
                 break
             }
             buffer <- c(buffer, chunk)
+            size <- min(2 * 1024^3, 2 * size)
         }
 
         ans <- .Call(C_read_ndjson, buffer)
