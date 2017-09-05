@@ -15,7 +15,7 @@
 
 with_rethrow <- function(expr)
 {
-    parentcall <- sys.call(1)
+    parentcall <- sys.call(-1)
     eval(envir = parent.frame(),
         withCallingHandlers(expr,
             error = function(e, call = parentcall) {
