@@ -1,0 +1,224 @@
+---
+title: "Text data in Corpus and other packages"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Text data in Corpus and other packages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Text data type
+--------------
+
+The *corpus* package does not define a special corpus object, but it does
+define a new data type, `corpus_text`, for storing a collection of texts. You
+can create values of this type using the `as_text()` or `as_corpus()`
+function.
+
+Take, for example, the following sample text, created as an R character
+vector.
+
+```{r}
+# raw text for the first two paragraphs of _The Tale of Peter Rabbit_,
+# by Beatrix Potter
+raw <- c(
+    para1 =
+        paste("Once upon a time there were four little Rabbits,",
+	          "and their names were: Flopsy, Mopsy, Cottontail, and Peter.",
+	          "They lived with their Mother in a sandbank,",
+              "underneath the root of a very big fir tree.",
+              sep = "\n"),
+    para2 =
+        paste("'Now, my dears,' said old Mrs. Rabbit one morning,",
+              "'you may go into the fields or down the lane,",
+              "but don't go into Mr. McGregor's garden --",
+              "your Father had an accident there;",
+              "he was put in a pie by Mrs. McGregor.'",
+              sep = "\n"))
+```
+
+We can convert the text to a `corpus_text` object using the `as_text()`
+function:
+
+```{r}
+text <- as_text(raw)
+```
+
+Alternatively, we can convert it to a data frame with a column named `"text"`
+of type `corpus_text` using the `as_corpus()` function:
+
+```{r}
+data <- as_corpus(raw)
+```
+
+Both `as_corpus()` and `as_text()` are generic; they work on character
+vectors, data frames, *tm* `Corpus` objects, and *quanteda* `corpus` objects.
+Whenever you call a *corpus* function expecting text, that function
+calls `as_text()` on its input. We will see some examples of converting *tm*
+and *quanteda* objects below.
+
+
+The `corpus_text` type behaves like an R character vector in most respects,
+but using this type enables some new behavior.
+
+
+Text filter
+-----------
+
+Each `corpus_text` object has a `text_filter` property that can be get or set
+using the `text_filter()` generic function. This property allows us to specify
+the preprocessing decisions that define the text normalization, token, and
+sentence boundaries.
+
+
+
+Valid UTF-8
+-----------
+
+All `corpus_text` objects contain valid UTF-8 data. It is impossible to create
+a `corpus_text` object with invalid UTF-8:
+
+```{r}
+# the input is encoded in Latin-1, but declared as UTF-8
+x <- "fa\xE7ile"
+Encoding(x) <- "UTF-8"
+as_text(x) ## fails
+
+as_text(iconv(x, "Latin1", "UTF-8")) ## succeeds
+```
+
+
+Unique names
+------------
+
+All `corpus_text` objects have unique names. When you coerce an object
+with duplicate names to `corpus_text`, the duplicates get renamed with a
+wanring:
+
+```{r}
+x <- as_text(c(a = "hello", b = "world", a = "repeated name")) # fails
+names(x)
+```
+
+Setting repeated names fails:
+
+```{r}
+# fails, duplicate names
+names(x) <- c("a", "b", "a")
+```
+
+You can set the `names` to `NULL` if you don't want them:
+```{r}
+names(x) <- NULL
+print(names(x))
+```
+
+
+Reference memory-mapped data 
+----------------------------
+
+`corpus_text` objects can manage collections of texts that do not fit
+into memory, through the memory-map interface provided by
+`read_ndjson()`. When dealing with such objects, internally the
+`corpus_text` object just stores an offset into the file containing the
+text, not the text itself.
+
+
+Reference substrings of other objects
+-------------------------------------
+
+`corpus_text` objects can reference substrings of other R character
+objects, without copying the parent object. This allows functions like
+`text_split()` and `text_locate()` to quickly split a text into smaller
+segments without allocating new character strings.
+
+```{r}
+# segment text into chunks of at most 10 tokens
+(chunks <- text_split(text, "tokens", 10))
+
+# segmenting does not allocate new objects for the segments
+unclass(chunks$text) # inspect text internals
+```
+
+
+Better printing
+---------------
+
+Printing `corpus_text` objects truncates the output at the end of the line.
+
+```{r}
+# print a character object
+print(raw)
+
+# print a corpus_text object
+print(text)
+```
+
+
+Conversion to character
+-----------------------
+
+The one disadvantage of using a `corpus_text` object instead of an R character
+vector is that many functions from other packages that expect R character
+vectors will not work on `corpus_text`. To get around this, you can call
+`as.character` on a `corpus_text` object to convert it to an R character
+vector.
+
+```{r}
+# some R methods coerce their inputs to character; 'message' is one example
+message(as_text("hello world"))
+
+# others do not;
+cat(as_text("hello world"), "\n") # fails
+
+# we must call 'as.character' on the inputs
+cat(as.character(as_text("hello world")), "\n")
+```
+
+
+Interface with *quanteda*
+-------------------------
+
+All *corpus* functions expecting text work on *quanteda* corpus objects:
+```{r}
+uk2010immigCorpus <- 
+    quanteda::corpus(quanteda::data_char_ukimmig2010,
+           docvars = data.frame(party = names(quanteda::data_char_ukimmig2010)),
+           metacorpus = list(notes = "Immigration-related sections of 2010 UK party manifestos"))
+print(uk2010immigCorpus)
+
+# search for terms in a quanteda corpus that stem to "immigr":
+text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
+```
+
+You can convert a *quanteda* corpus to a data frame using `as_corpus()`, or
+extract its text using `as_text()`:
+
+```{r}
+# convert to corpus_text:
+print(as_text(uk2010immigCorpus))
+
+# convert to data frame:
+print(as_corpus(uk2010immigCorpus))
+```
+
+
+Interface with *tm*
+-------------------
+
+All *corpus* functions expecting text also work on *tm* Corpus objects:
+```{r}
+data("crude", package = "tm")
+
+# get the top terms in a tm corpus:
+term_stats(crude, drop_punct = TRUE, drop = stopwords("english"))
+```
+
+The `as_corpus()` and `as_text()` functions also work on *tm* Corpus objects:
+```{r}
+# convert to corpus_text
+print(as_text(crude))
+
+# convert to data frame
+print(as_corpus(crude))
+```

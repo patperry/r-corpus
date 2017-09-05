@@ -1,6 +1,8 @@
 RSCRIPT= Rscript --vanilla
 CORPUS_LIB= src/corpus.so
-BUILT_VIGNETTES= vignettes/chinese.Rmd vignettes/corpus.Rmd vignettes/gender.Rmd vignettes/unicode.Rmd
+BUILT_VIGNETTES= \
+	vignettes/chinese.Rmd vignettes/corpus.Rmd vignettes/gender.Rmd \
+	vignettes/textdata.Rmd vignettes/unicode.Rmd
 
 all: $(CORPUS_LIB) $(BUILT_VIGNETTES)
 
@@ -13,21 +15,8 @@ NEWS: NEWS.md
 README: README.md
 	sed -e '/Overview/,$$!d' $< > $@
 
-vignettes/chinese.Rmd: vignettes/chinese.Rmd.in
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("chinese.Rmd.in")'
-	mv vignettes/chinese.Rmd.txt $@
-
-vignettes/corpus.Rmd: vignettes/corpus.Rmd.in
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("corpus.Rmd.in")'
-	mv vignettes/corpus.Rmd.txt $@
-
-vignettes/gender.Rmd: vignettes/gender.Rmd.in
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("gender.Rmd.in")'
-	mv vignettes/gender.Rmd.txt $@
-
-vignettes/unicode.Rmd: vignettes/unicode.Rmd.in
-	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit("unicode.Rmd.in")'
-	mv vignettes/unicode.Rmd.txt $@
+vignettes/%.Rmd: vignettes/%.Rmd.in
+	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit(basename("$<"), basename("$@"))'
 
 bench:
 	$(RSCRIPT) -e 'devtools::load_all("."); source("bench/bench.R")'
@@ -50,7 +39,7 @@ doc: $(BUILT_VIGNETTES) NEWS README
 install: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'devtools::install(".")'
 
-site:
+site: $(BUILT_VIGNETTES)
 	$(RSCRIPT) -e 'pkgdown::build_site(".")'
 
 .PHONY: all bench check clean con dist doc install site
