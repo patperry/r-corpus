@@ -14,7 +14,7 @@ To split text into sentences or token blocks, use \code{\link{text_split}}.
 To specify preprocessing behavior for transforming a text into a
 token sequence, use \code{\link{text_filter}}. To tokenize text
 or compute term frequencies, use \code{\link{text_tokens}},
-\code{\link{term_counts}}, \code{\link{term_matrix}} or
+\code{\link{term_stats}}, \code{\link{term_matrix}} or
 \code{\link{term_frame}}. To search for or count specific terms,
 use \code{\link{text_locate}}, \code{\link{text_count}}, or
 \code{\link{text_detect}}.

@@ -68,10 +68,6 @@ export(utf8_valid)
 export(utf8_width)
 
 
-## Deprecated
-export(term_counts)
-
-
 ## New S3 methods
 S3method(as_corpus, character)
 S3method(as_corpus, Corpus)

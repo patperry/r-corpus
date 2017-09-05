@@ -36,6 +36,10 @@ corpus 0.9.1.9000
   * Work around R Windows bug in converting native to UTF-8; described at
     https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329 .
 
+### DEPRECATED AND DEFUNCT
+
+  * Remove deprecated `term_counts()` function; use `term_stats()` instead.
+
 
 corpus 0.9.1 (2017-08-20)
 =========================
