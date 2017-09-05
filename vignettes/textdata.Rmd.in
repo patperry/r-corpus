@@ -59,7 +59,7 @@ and *quanteda* objects below.
 
 
 The `corpus_text` type behaves like an R character vector in most respects,
-but using this type enables some new behavior.
+but using this type enables some new features.
 
 
 Text filter
@@ -70,6 +70,20 @@ using the `text_filter()` generic function. This property allows us to specify
 the preprocessing decisions that define the text normalization, token, and
 sentence boundaries.
 
+```{r}
+# get the text filter
+print(text_filter(text))
+
+# set a new text filter
+text_filter(text) <- text_filter(drop_punct = TRUE,
+                                 drop = stopwords("english"))
+
+# update a text filter property
+text_filter(text)$drop_punct <- TRUE
+
+# switch to the default text filter
+text_filter(text) <- NULL
+```
 
 
 Valid UTF-8
@@ -123,6 +137,25 @@ into memory, through the memory-map interface provided by
 `corpus_text` object just stores an offset into the file containing the
 text, not the text itself.
 
+```{r}
+# store some sample data in a newline-delimited JSON file
+tmp <- tempfile()
+writeLines(c('{"text": "A sample text", "metadata": 7 }',
+             '{"text": "Another text."}',
+             '{"text": "A third text.", "metadata": -100}'),
+           tmp)
+
+# memory-map the "text" field
+data <- read_ndjson(tmp, text = "text", mmap = TRUE)
+
+# display the internal representation of the resulting 'corpus_text' object
+unclass(data$text)
+```
+
+Above, the `handle` component of the text object is a memory-mapped view of
+the file. The `table` component stores the row numbers for the data, along
+with the start and stop indices of the text.
+
 
 Reference substrings of other objects
 -------------------------------------
@@ -140,11 +173,15 @@ segments without allocating new character strings.
 unclass(chunks$text) # inspect text internals
 ```
 
+The call to `text_split()` did not allocate any new character objects; the
+result uses the same sources, but with different start and stop indices.
+
 
 Better printing
 ---------------
 
-Printing `corpus_text` objects truncates the output at the end of the line.
+Printing `corpus_text` objects truncates the output at the end of the line
+instead of printing the entire contents.
 
 ```{r}
 # print a character object
@@ -152,6 +189,14 @@ print(raw)
 
 # print a corpus_text object
 print(text)
+```
+
+If you'd like to print the entire contents, you can convert the text to
+character and then print:
+
+```{r}
+# print entire contents
+print(as.character(text))
 ```
 
 
@@ -185,7 +230,6 @@ uk2010immigCorpus <-
     quanteda::corpus(quanteda::data_char_ukimmig2010,
            docvars = data.frame(party = names(quanteda::data_char_ukimmig2010)),
            metacorpus = list(notes = "Immigration-related sections of 2010 UK party manifestos"))
-print(uk2010immigCorpus)
 
 # search for terms in a quanteda corpus that stem to "immigr":
 text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
