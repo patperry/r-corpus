@@ -7,6 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+
 Text data type
 --------------
 
@@ -80,23 +82,23 @@ print(text_filter(text))
 ```
 
 ```
-## Text filter with the following options:
-## 
-## 	map_case: TRUE
-## 	map_quote: TRUE
-## 	remove_ignorable: TRUE
-## 	stemmer: NULL
-## 	stem_dropped: FALSE
-## 	stem_except: NULL
-## 	combine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...
-## 	drop_letter: FALSE
-## 	drop_number: FALSE
-## 	drop_punct: FALSE
-## 	drop_symbol: FALSE
-## 	drop: NULL
-## 	drop_except: NULL
-## 	sent_crlf: FALSE
-## 	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." ...
+Text filter with the following options:
+
+	map_case: TRUE
+	map_quote: TRUE
+	remove_ignorable: TRUE
+	stemmer: NULL
+	stem_dropped: FALSE
+	stem_except: NULL
+	combine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." ...
+	drop_letter: FALSE
+	drop_number: FALSE
+	drop_punct: FALSE
+	drop_symbol: FALSE
+	drop: NULL
+	drop_except: NULL
+	sent_crlf: FALSE
+	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```
 
 ```r
@@ -127,7 +129,7 @@ as_text(x) ## fails
 ```
 
 ```
-## Error in as_text.character(x): argument entry 1 is marked as "UTF-8" but contains an invalid byte in position 3 (\xe7)
+Error in as_text.character(x): argument entry 1 is marked as "UTF-8" but contains an invalid byte in position 3 (\xe7)
 ```
 
 ```r
@@ -135,7 +137,7 @@ as_text(iconv(x, "Latin1", "UTF-8")) ## succeeds
 ```
 
 ```
-## [1] "façile"
+[1] "façile"
 ```
 
 
@@ -152,8 +154,8 @@ x <- as_text(c(a = "hello", b = "world", a = "repeated name")) # fails
 ```
 
 ```
-## Warning in as_text.character(c(a = "hello", b = "world", a = "repeated
-## name")): renaming entries with duplicate names
+Warning in as_text.character(c(a = "hello", b = "world", a = "repeated name")): renaming entries
+with duplicate names
 ```
 
 ```r
@@ -161,7 +163,7 @@ names(x)
 ```
 
 ```
-## [1] "a"   "b"   "a.1"
+[1] "a"   "b"   "a.1"
 ```
 
 Setting repeated names fails:
@@ -173,7 +175,7 @@ names(x) <- c("a", "b", "a")
 ```
 
 ```
-## Error in `names<-.corpus_text`(`*tmp*`, value = c("a", "b", "a")): duplicate 'names' are not allowed
+Error in `names<-.corpus_text`(`*tmp*`, value = c("a", "b", "a")): duplicate 'names' are not allowed
 ```
 
 You can set the `names` to `NULL` if you don't want them:
@@ -184,7 +186,7 @@ print(names(x))
 ```
 
 ```
-## NULL
+NULL
 ```
 
 
@@ -214,25 +216,25 @@ unclass(data$text)
 ```
 
 ```
-## $handle
-## <pointer: 0x7f8193b57bc0>
-## 
-## $sources
-## $sources[[1]]
-## JSON data set with 3 rows of type text
-## 
-## 
-## $table
-##   source row start stop
-## 1      1   1     1   13
-## 2      1   2     1   13
-## 3      1   3     1   13
-## 
-## $names
-## NULL
-## 
-## $filter
-## NULL
+$handle
+<pointer: 0x7fea798d4720>
+
+$sources
+$sources[[1]]
+JSON data set with 3 rows of type text
+
+
+$table
+  source row start stop
+1      1   1     1   13
+2      1   2     1   13
+3      1   3     1   13
+
+$names
+NULL
+
+$filter
+NULL
 ```
 
 Above, the `handle` component of the text object is a memory-mapped view of
@@ -255,18 +257,18 @@ segments without allocating new character strings.
 ```
 
 ```
-##    parent index text                                           
-## 1  para1      1 Once upon a time there were four little Rabbits
-## 2  para1      2 ,\nand their names were: Flopsy, Mopsy         
-## 3  para1      3 , Cottontail, and Peter.\nThey lived with      
-## 4  para1      4 their Mother in a sandbank,\nunderneath the    
-## 5  para1      5 root of a very big fir tree.                   
-## 6  para2      1 'Now, my dears,' said old                      
-## 7  para2      2 Mrs. Rabbit one morning,\n'you may go          
-## 8  para2      3 into the fields or down the lane,\nbut         
-## 9  para2      4 don't go into Mr. McGregor's garden --\nyour   
-## 10 para2      5 Father had an accident there;\nhe was put      
-## 11 para2      6 in a pie by Mrs. McGregor.'
+   parent index text                                           
+1  para1      1 Once upon a time there were four little Rabbits
+2  para1      2 ,\nand their names were: Flopsy, Mopsy         
+3  para1      3 , Cottontail, and Peter.\nThey lived with      
+4  para1      4 their Mother in a sandbank,\nunderneath the    
+5  para1      5 root of a very big fir tree.                   
+6  para2      1 'Now, my dears,' said old                      
+7  para2      2 Mrs. Rabbit one morning,\n'you may go          
+8  para2      3 into the fields or down the lane,\nbut         
+9  para2      4 don't go into Mr. McGregor's garden --\nyour   
+10 para2      5 Father had an accident there;\nhe was put      
+11 para2      6 in a pie by Mrs. McGregor.'                    
 ```
 
 ```r
@@ -275,36 +277,36 @@ unclass(chunks$text) # inspect text internals
 ```
 
 ```
-## $handle
-## <pointer: 0x7f81939d0360>
-## 
-## $sources
-## $sources[[1]]
-##                                                                                                                                                                                                                       para1 
-##                   "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cottontail, and Peter.\nThey lived with their Mother in a sandbank,\nunderneath the root of a very big fir tree." 
-##                                                                                                                                                                                                                       para2 
-## "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the lane,\nbut don't go into Mr. McGregor's garden --\nyour Father had an accident there;\nhe was put in a pie by Mrs. McGregor.'" 
-## 
-## 
-## $table
-##    source row start stop
-## 1       1   1     1   47
-## 2       1   1    48   84
-## 3       1   1    85  125
-## 4       1   1   126  168
-## 5       1   1   169  196
-## 6       1   2     1   26
-## 7       1   2    27   63
-## 8       1   2    64  101
-## 9       1   2   102  145
-## 10      1   2   146  186
-## 11      1   2   187  213
-## 
-## $names
-## NULL
-## 
-## $filter
-## NULL
+$handle
+<pointer: 0x7fea798f0bf0>
+
+$sources
+$sources[[1]]
+                                                                                                                                                                                                                      para1 
+                  "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cottontail, and Peter.\nThey lived with their Mother in a sandbank,\nunderneath the root of a very big fir tree." 
+                                                                                                                                                                                                                      para2 
+"'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the lane,\nbut don't go into Mr. McGregor's garden --\nyour Father had an accident there;\nhe was put in a pie by Mrs. McGregor.'" 
+
+
+$table
+   source row start stop
+1       1   1     1   47
+2       1   1    48   84
+3       1   1    85  125
+4       1   1   126  168
+5       1   1   169  196
+6       1   2     1   26
+7       1   2    27   63
+8       1   2    64  101
+9       1   2   102  145
+10      1   2   146  186
+11      1   2   187  213
+
+$names
+NULL
+
+$filter
+NULL
 ```
 
 The call to `text_split()` did not allocate any new character objects; the
@@ -324,10 +326,10 @@ print(raw)
 ```
 
 ```
-##                                                                                                                                                                                                                       para1 
-##                   "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cottontail, and Peter.\nThey lived with their Mother in a sandbank,\nunderneath the root of a very big fir tree." 
-##                                                                                                                                                                                                                       para2 
-## "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the lane,\nbut don't go into Mr. McGregor's garden --\nyour Father had an accident there;\nhe was put in a pie by Mrs. McGregor.'"
+                                                                                                                                                                                                                      para1 
+                  "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cottontail, and Peter.\nThey lived with their Mother in a sandbank,\nunderneath the root of a very big fir tree." 
+                                                                                                                                                                                                                      para2 
+"'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the lane,\nbut don't go into Mr. McGregor's garden --\nyour Father had an accident there;\nhe was put in a pie by Mrs. McGregor.'" 
 ```
 
 ```r
@@ -336,8 +338,8 @@ print(text)
 ```
 
 ```
-## para1 "Once upon a time there were four little Rabbits,\nand their names …"
-## para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go in…"
+para1 "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cott…"
+para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the…"
 ```
 
 If you'd like to print the entire contents, you can convert the text to
@@ -350,8 +352,8 @@ print(as.character(text))
 ```
 
 ```
-## [1] "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cottontail, and Peter.\nThey lived with their Mother in a sandbank,\nunderneath the root of a very big fir tree."                  
-## [2] "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the lane,\nbut don't go into Mr. McGregor's garden --\nyour Father had an accident there;\nhe was put in a pie by Mrs. McGregor.'"
+[1] "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cottontail, and Peter.\nThey lived with their Mother in a sandbank,\nunderneath the root of a very big fir tree."                  
+[2] "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the lane,\nbut don't go into Mr. McGregor's garden --\nyour Father had an accident there;\nhe was put in a pie by Mrs. McGregor.'"
 ```
 
 
@@ -371,7 +373,7 @@ message(as_text("hello world"))
 ```
 
 ```
-## hello world
+hello world
 ```
 
 ```r
@@ -380,7 +382,7 @@ cat(as_text("hello world"), "\n") # fails
 ```
 
 ```
-## Error in cat(as_text("hello world"), "\n"): argument 1 (type 'list') cannot be handled by 'cat'
+Error in cat(as_text("hello world"), "\n"): argument 1 (type 'list') cannot be handled by 'cat'
 ```
 
 ```r
@@ -389,7 +391,7 @@ cat(as.character(as_text("hello world")), "\n")
 ```
 
 ```
-## hello world
+hello world 
 ```
 
 
@@ -409,28 +411,28 @@ text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
 ```
 
 ```
-##    text           before             instance              after           
-## 1  BNP                              IMMIGRATION : AN UNPARALLELED CRISIS W…
-## 2  BNP  …N SOLVE. \n\n- At current  immigration  and birth rates, indigeno…
-## 3  BNP  …ude a halt to all further  immigration , the deportation of all i…
-## 4  BNP  …eportation of all illegal  immigrants  , a halt to the "asylum" s…
-## 5  BNP  …tain, regardless of their  immigration  status.\n\n- The BNP will…
-## 6  BNP  …at they orchestrated mass  immigration  to change forcibly Britai…
-## 7  BNP  …rave peril, threatened by  immigration  and multiculturalism. In …
-## 8  BNP  … (ONS), legal Third World  immigrants   made up 14.7 percent (7.5…
-## 9  BNP  …cond and third generation   immigrant   mothers. Figures released…
-## 10 BNP  …figures are added in, the   immigrant   birth rate is estimated t…
-## 11 BNP  … The majority of the 'new  immigrants  ' are not from Eastern Eur…
-## 12 BNP  …rding to the ONS figures,  immigrants   from Eastern Europe had 2…
-## 13 BNP  …tially, and given current  immigration  and birth rates, will utt…
-## 14 BNP  …Disastrous Effect of Mass  Immigration  on British Society\n\nThe…
-## 15 BNP  …it is 'racist' to discuss  immigration  and population density.\n…
-## 16 BNP  …0,000-500,000 Third World  immigrants   each year is an issue tha…
-## 17 BNP  …\nA Case Study: Crime and  Immigration \n\nImmigration has had a …
-## 18 BNP  … Crime and Immigration\n\n Immigration  has had a dramatic effect…
-## 19 BNP  …volving ethnic groups.\n\n Immigration  Has Harmed British Jobs\n…
-## 20 BNP  …than in 1997.\n\nOverall,  immigrants   have taken up more than 1…
-## ⋮  (87 rows total)
+   text                 before                   instance                    after                  
+1  BNP                                          IMMIGRATION : AN UNPARALLELED CRISIS WHICH ONLY THE…
+2  BNP  …Y THE BNP CAN SOLVE. \n\n- At current  immigration  and birth rates, indigenous British pe…
+3  BNP  …ps will include a halt to all further  immigration , the deportation of all illegal immigr…
+4  BNP  …ation, the deportation of all illegal  immigrants  , a halt to the "asylum" swindle and th…
+5  BNP  …rimes in Britain, regardless of their  immigration  status.\n\n- The BNP will review all c…
+6  BNP  …admission that they orchestrated mass  immigration  to change forcibly Britain's demograph…
+7  BNP  …ence is in grave peril, threatened by  immigration  and multiculturalism. In the absence o…
+8  BNP  …l Statistics (ONS), legal Third World  immigrants   made up 14.7 percent (7.5 million) of …
+9  BNP  …births to second and third generation   immigrant   mothers. Figures released by the ONS i…
+10 BNP  … When these figures are added in, the   immigrant   birth rate is estimated to be around 5…
+11 BNP  … Wales.\n\n- The majority of the 'new  immigrants  ' are not from Eastern Europe, as is of…
+12 BNP  …laimed. According to the ONS figures,  immigrants   from Eastern Europe had 25,000 childre…
+13 BNP  …mber exponentially, and given current  immigration  and birth rates, will utterly overwhel…
+14 BNP  …ars.\n\nThe Disastrous Effect of Mass  Immigration  on British Society\n\nThere is no esca…
+15 BNP  …ewhere that it is 'racist' to discuss  immigration  and population density.\n\nThe word 'r…
+16 BNP  …f between 300,000-500,000 Third World  immigrants   each year is an issue that all three o…
+17 BNP  …and so on.\n\nA Case Study: Crime and  Immigration \n\nImmigration has had a dramatic effe…
+18 BNP  … Case Study: Crime and Immigration\n\n Immigration  has had a dramatic effect on Britain's…
+19 BNP  …tionately involving ethnic groups.\n\n Immigration  Has Harmed British Jobs\n\nThe concept…
+20 BNP  …ons working than in 1997.\n\nOverall,  immigrants   have taken up more than 1.64 million o…
+⋮  (87 rows total)
 ```
 
 You can convert a *quanteda* corpus to a data frame using `as_corpus()`, or
@@ -443,15 +445,15 @@ print(as_text(uk2010immigCorpus))
 ```
 
 ```
-## BNP          "IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN …"
-## Coalition    "IMMIGRATION. \n\nThe Government believes that immigration h…"
-## Conservative "Attract the brightest and best to our country.\n\nImmigrati…"
-## Greens       "Immigration.\n\nMigration is a fact of life.  People have a…"
-## Labour       "Crime and immigration\n\nThe challenge for Britain\n\nWe wi…"
-## LibDem       "firm but fair immigration system\n\nBritain has always been…"
-## PC           "As a welcoming nation, Plaid Cymru recognises the invaluabl…"
-## SNP          "And we will argue for Scotland to take responsibility for i…"
-## UKIP         "Immigration & Asylum.\n\nAs a member of the EU, Britain has…"
+BNP          "IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- At current i…"
+Coalition    "IMMIGRATION. \n\nThe Government believes that immigration has enriched our culture a…"
+Conservative "Attract the brightest and best to our country.\n\nImmigration has enriched our natio…"
+Greens       "Immigration.\n\nMigration is a fact of life.  People have always moved from one coun…"
+Labour       "Crime and immigration\n\nThe challenge for Britain\n\nWe will control immigration wi…"
+LibDem       "firm but fair immigration system\n\nBritain has always been an open, welcoming count…"
+PC           "As a welcoming nation, Plaid Cymru recognises the invaluable contribution that migra…"
+SNP          "And we will argue for Scotland to take responsibility for immigration so that we can…"
+UKIP         "Immigration & Asylum.\n\nAs a member of the EU, Britain has lost control of her bord…"
 ```
 
 ```r
@@ -460,16 +462,16 @@ print(as_corpus(uk2010immigCorpus))
 ```
 
 ```
-##              party        text                                             
-## BNP          BNP          IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY T…
-## Coalition    Coalition    IMMIGRATION. \n\nThe Government believes that im…
-## Conservative Conservative Attract the brightest and best to our country.\n…
-## Greens       Greens       Immigration.\n\nMigration is a fact of life.  Pe…
-## Labour       Labour       Crime and immigration\n\nThe challenge for Brita…
-## LibDem       LibDem       firm but fair immigration system\n\nBritain has …
-## PC           PC           As a welcoming nation, Plaid Cymru recognises th…
-## SNP          SNP          And we will argue for Scotland to take responsib…
-## UKIP         UKIP         Immigration & Asylum.\n\nAs a member of the EU, …
+             party        text                                                                      
+BNP          BNP          IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- A…
+Coalition    Coalition    IMMIGRATION. \n\nThe Government believes that immigration has enriched ou…
+Conservative Conservative Attract the brightest and best to our country.\n\nImmigration has enriche…
+Greens       Greens       Immigration.\n\nMigration is a fact of life.  People have always moved fr…
+Labour       Labour       Crime and immigration\n\nThe challenge for Britain\n\nWe will control imm…
+LibDem       LibDem       firm but fair immigration system\n\nBritain has always been an open, welc…
+PC           PC           As a welcoming nation, Plaid Cymru recognises the invaluable contribution…
+SNP          SNP          And we will argue for Scotland to take responsibility for immigration so …
+UKIP         UKIP         Immigration & Asylum.\n\nAs a member of the EU, Britain has lost control …
 ```
 
 
@@ -486,28 +488,28 @@ term_stats(crude, drop_punct = TRUE, drop = stopwords("english"))
 ```
 
 ```
-##    term      count support
-## 1  oil          85      20
-## 2  said         73      20
-## 3  reuter       20      20
-## 4  prices       48      15
-## 5  last         24      12
-## 6  one          17      12
-## 7  dlrs         23      11
-## 8  opec         44      10
-## 9  barrel       15      10
-## 10 mln          31       9
-## 11 crude        21       9
-## 12 new          14       9
-## 13 pct          14       9
-## 14 price        13       9
-## 15 also          9       9
-## 16 petroleum     9       9
-## 17 market       20       8
-## 18 barrels      11       8
-## 19 industry     10       8
-## 20 world        10       8
-## ⋮  (1042 rows total)
+   term      count support
+1  oil          85      20
+2  said         73      20
+3  reuter       20      20
+4  prices       48      15
+5  last         24      12
+6  one          17      12
+7  dlrs         23      11
+8  opec         44      10
+9  barrel       15      10
+10 mln          31       9
+11 crude        21       9
+12 new          14       9
+13 pct          14       9
+14 price        13       9
+15 also          9       9
+16 petroleum     9       9
+17 market       20       8
+18 barrels      11       8
+19 industry     10       8
+20 world        10       8
+⋮  (1042 rows total)
 ```
 
 The `as_corpus()` and `as_text()` functions also work on *tm* Corpus objects:
@@ -518,26 +520,26 @@ print(as_text(crude))
 ```
 
 ```
-## 127 "Diamond Shamrock Corp said that\neffective today it had cut its cont…"
-## 144 "OPEC may be forced to meet before a\nscheduled June session to readd…"
-## 191 "Texaco Canada said it lowered the\ncontract price it will pay for cr…"
-## 194 "Marathon Petroleum Co said it reduced\nthe contract price it will pa…"
-## 211 "Houston Oil Trust said that independent\npetroleum engineers complet…"
-## 236 "Kuwait\"s Oil Minister, in remarks\npublished today, said there were…"
-## 237 "Indonesia appears to be nearing a\npolitical crossroads over measure…"
-## 242 "Saudi riyal interbank deposits were\nsteady at yesterday's higher le…"
-## 246 "The Gulf oil state of Qatar, recovering\nslightly from last year's d…"
-## 248 "Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's co…"
-## 273 "Saudi crude oil output last month fell\nto an average of 3.5 mln bar…"
-## 349 "Deputy oil ministers from six Gulf\nArab states will meet in Bahrain…"
-## 352 "Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's co…"
-## 353 "Kuwait's oil minister said in a newspaper\ninterview that there were…"
-## 368 "The port of Philadelphia was closed\nwhen a Cypriot oil tanker, Seap…"
-## 489 "A study group said the United States\nshould increase its strategic …"
-## 502 "A study group said the United States\nshould increase its strategic …"
-## 543 "Unocal Corp's Union Oil Co said it\nlowered its posted prices for cr…"
-## 704 "The New York Mercantile Exchange set\nApril one for the debut of a n…"
-## 708 "Argentine crude oil production was\ndown 10.8 pct in January 1987 to…"
+127 "Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crude oil…"
+144 "OPEC may be forced to meet before a\nscheduled June session to readdress its production cutti…"
+191 "Texaco Canada said it lowered the\ncontract price it will pay for crude oil 64 Canadian cts a…"
+194 "Marathon Petroleum Co said it reduced\nthe contract price it will pay for all grades of crude…"
+211 "Houston Oil Trust said that independent\npetroleum engineers completed an annual study that e…"
+236 "Kuwait\"s Oil Minister, in remarks\npublished today, said there were no plans for an emergenc…"
+237 "Indonesia appears to be nearing a\npolitical crossroads over measures to deregulate its prote…"
+242 "Saudi riyal interbank deposits were\nsteady at yesterday's higher levels in a quiet market.\n…"
+246 "The Gulf oil state of Qatar, recovering\nslightly from last year's decline in world oil price…"
+248 "Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last December…"
+273 "Saudi crude oil output last month fell\nto an average of 3.5 mln barrels per day (bpd) from 3…"
+349 "Deputy oil ministers from six Gulf\nArab states will meet in Bahrain today to discuss coordin…"
+352 "Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last December…"
+353 "Kuwait's oil minister said in a newspaper\ninterview that there were no plans for an emergenc…"
+368 "The port of Philadelphia was closed\nwhen a Cypriot oil tanker, Seapride II, ran aground afte…"
+489 "A study group said the United States\nshould increase its strategic petroleum reserve to one …"
+502 "A study group said the United States\nshould increase its strategic petroleum reserve to one …"
+543 "Unocal Corp's Union Oil Co said it\nlowered its posted prices for crude oil one to 1.50 dlrs …"
+704 "The New York Mercantile Exchange set\nApril one for the debut of a new procedure in the energ…"
+708 "Argentine crude oil production was\ndown 10.8 pct in January 1987 to 12.32 mln barrels, from …"
 ```
 
 ```r
@@ -546,25 +548,25 @@ print(as_corpus(crude))
 ```
 
 ```
-##     text                                                                   
-## 127 Diamond Shamrock Corp said that\neffective today it had cut its contra…
-## 144 OPEC may be forced to meet before a\nscheduled June session to readdre…
-## 191 Texaco Canada said it lowered the\ncontract price it will pay for crud…
-## 194 Marathon Petroleum Co said it reduced\nthe contract price it will pay …
-## 211 Houston Oil Trust said that independent\npetroleum engineers completed…
-## 236 Kuwait"s Oil Minister, in remarks\npublished today, said there were no…
-## 237 Indonesia appears to be nearing a\npolitical crossroads over measures …
-## 242 Saudi riyal interbank deposits were\nsteady at yesterday's higher leve…
-## 246 The Gulf oil state of Qatar, recovering\nslightly from last year's dec…
-## 248 Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's comm…
-## 273 Saudi crude oil output last month fell\nto an average of 3.5 mln barre…
-## 349 Deputy oil ministers from six Gulf\nArab states will meet in Bahrain t…
-## 352 Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's comm…
-## 353 Kuwait's oil minister said in a newspaper\ninterview that there were n…
-## 368 The port of Philadelphia was closed\nwhen a Cypriot oil tanker, Seapri…
-## 489 A study group said the United States\nshould increase its strategic pe…
-## 502 A study group said the United States\nshould increase its strategic pe…
-## 543 Unocal Corp's Union Oil Co said it\nlowered its posted prices for crud…
-## 704 The New York Mercantile Exchange set\nApril one for the debut of a new…
-## 708 Argentine crude oil production was\ndown 10.8 pct in January 1987 to 1…
+    text                                                                                            
+127 Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crude oil b…
+144 OPEC may be forced to meet before a\nscheduled June session to readdress its production cutting…
+191 Texaco Canada said it lowered the\ncontract price it will pay for crude oil 64 Canadian cts a\n…
+194 Marathon Petroleum Co said it reduced\nthe contract price it will pay for all grades of crude o…
+211 Houston Oil Trust said that independent\npetroleum engineers completed an annual study that est…
+236 Kuwait"s Oil Minister, in remarks\npublished today, said there were no plans for an emergency O…
+237 Indonesia appears to be nearing a\npolitical crossroads over measures to deregulate its protect…
+242 Saudi riyal interbank deposits were\nsteady at yesterday's higher levels in a quiet market.\n  …
+246 The Gulf oil state of Qatar, recovering\nslightly from last year's decline in world oil prices,…
+248 Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last December's…
+273 Saudi crude oil output last month fell\nto an average of 3.5 mln barrels per day (bpd) from 3.8…
+349 Deputy oil ministers from six Gulf\nArab states will meet in Bahrain today to discuss coordinat…
+352 Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last December's…
+353 Kuwait's oil minister said in a newspaper\ninterview that there were no plans for an emergency …
+368 The port of Philadelphia was closed\nwhen a Cypriot oil tanker, Seapride II, ran aground after… 
+489 A study group said the United States\nshould increase its strategic petroleum reserve to one ml…
+502 A study group said the United States\nshould increase its strategic petroleum reserve to one ml…
+543 Unocal Corp's Union Oil Co said it\nlowered its posted prices for crude oil one to 1.50 dlrs a… 
+704 The New York Mercantile Exchange set\nApril one for the debut of a new procedure in the energy… 
+708 Argentine crude oil production was\ndown 10.8 pct in January 1987 to 12.32 mln barrels, from 13…
 ```

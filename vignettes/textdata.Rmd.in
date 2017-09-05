@@ -7,6 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(comment = "", fig.path = "textdata-")
+options(width = 100)
+```
+
 Text data type
 --------------
 
