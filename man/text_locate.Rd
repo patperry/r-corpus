@@ -72,7 +72,7 @@ text_subset(x, terms, filter = NULL, ...)
     passed-in \code{filter} argument.
 }
 \seealso{
-\code{\link{term_stats}}, \code{\link{term_frame}}.
+\code{\link{term_stats}}, \code{\link{term_matrix}}.
 }
 \examples{
 text <- c("Rose is a rose is a rose is a rose.",

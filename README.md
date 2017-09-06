@@ -151,13 +151,9 @@ that matches the term after tokenization.
  + `term_matrix()` for computing a term frequency matrix or its transpose
    (a "document-by-term matrix" or "term-by-document" matrix).
  
- + `term_frame()` for computing a data frame with one row for each non-zero
-   entry of the term matrix, with columns `"text"`, `"term"`, and
-   `"count"`.
-
-All three functions allow weighting the texts.  Both `term_matrix()` and
-`term_frame()` allow selecting a specific term set, and they allow you
-to specifying a grouping factor to aggregate over.
+All three functions allow weighting the texts.  The `term_matrix()` function
+allows you to select a specific term set, and also allow you to aggregate
+over a specified a grouping factor.
 
 
 Building from source
