@@ -4,6 +4,7 @@ useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 
 ## Imports
 importFrom(Matrix, sparseMatrix)
+importFrom(methods, as)
 importFrom(utils, download.file)
 importFrom(utils, str)
 
@@ -34,7 +35,6 @@ export(format.corpus_frame)
 export(print.corpus_frame)
 export(read_ndjson)
 export(stopwords)
-export(term_frame)
 export(term_matrix)
 export(term_stats)
 export(text_count)
@@ -66,6 +66,10 @@ export(utf8_normalize)
 export(utf8_print)
 export(utf8_valid)
 export(utf8_width)
+
+
+## Deprecated
+export(term_frame)
 
 
 ## New S3 methods

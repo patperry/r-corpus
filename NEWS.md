@@ -38,6 +38,10 @@ corpus 0.9.1.9000
 
 ### DEPRECATED AND DEFUNCT
 
+  * Deprecate `term_frame()` function since I don't think anyone needs it and
+    I might need the name for something else.  If you need this function,
+    please file an issue at https://github.com/patperry/r-corpus/issues .
+
   * Remove deprecated `term_counts()` function; use `term_stats()` instead.
 
 

@@ -108,37 +108,3 @@ term_matrix <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
     Matrix::sparseMatrix(i = i, j = j, x = mat$count, dims = dims,
                          dimnames = dimnames, index1 = FALSE, check = FALSE)
 }
-
-
-term_frame <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
-                       select = NULL, group = NULL, ...)
-{
-    with_rethrow({
-        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group, ...)
-    })
-
-    row_names <- mat$row_names
-    if (is.null(row_names)) {
-        row_names <- as.character(seq_len(mat$nrow))
-    }
-
-    row <- structure(as.integer(mat$i + 1L), class = "factor",
-                     levels = row_names)
-    term <- structure(as.integer(mat$j + 1L), class = "factor",
-                      levels = mat$col_names)
-    term <- as.character(term)
-    count <- mat$count
-
-    if (is.null(group)) {
-        ans <- data.frame(text = row, term, count, stringsAsFactors = FALSE)
-    } else {
-        ans <- data.frame(group = row, term, count, stringsAsFactors = FALSE)
-    }
-
-    # order by term, then text
-    o <- order(term, row)
-    ans <- ans[o,]
-    row.names(ans) <- NULL
-    class(ans) <- c("corpus_frame", "data.frame")
-    ans
-}
