@@ -122,7 +122,53 @@
 <span class="pkg">corpus</span> only, and may be defunct as soon as the next release.</p>
     
 
-        
+    <pre class="usage"><span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>a text vector to tokenize.</p></td>
+    </tr>
+    <tr>
+      <th>filter</th>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>weights</th>
+      <td><p>a numeric vector the same length of <code>x</code> assigning
+    weights to each text, or <code>NULL</code> for unit weights.</p></td>
+    </tr>
+    <tr>
+      <th>ngrams</th>
+      <td><p>an integer vector of n-gram lengths to include, or
+    <code>NULL</code> to use the <code>select</code> argument to determine the
+    n-gram lengths.</p></td>
+    </tr>
+    <tr>
+      <th>select</th>
+      <td><p>a character vector of terms to count, or <code>NULL</code> to
+    count all terms that appear in <code>x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>group</th>
+      <td><p>if non-<code>NULL</code>, a factor, character string, or
+    integer vector the same length of <code>x</code> specifying the grouping
+    behavior.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>additional properties to set on the text filter.</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This function is deprecated; use <code><a href='term_matrix.html'>term_matrix</a></code> instead.</p>
+    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p><code>Deprecated</code></p>
@@ -132,7 +178,10 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#details">Details</a></li>
+
       <li><a href="#see-also">See also</a></li>
           </ul>
 

@@ -155,7 +155,8 @@
 <h3 class="hasAnchor">
 <a href="#deprecated-and-defunct" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
-<li>Remove deprecated <code>term_counts()</code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</li>
+<li><p>Deprecate <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code> function since I don’t think anyone needs it and I might need the name for something else. If you need this function, please file an issue at <a href="https://github.com/patperry/r-corpus/issues" class="uri">https://github.com/patperry/r-corpus/issues</a> .</p></li>
+<li><p>Remove deprecated <code>term_counts()</code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</p></li>
 </ul>
 </div>
 </div>
@@ -260,7 +261,7 @@
 <li><p>Added new class <code>corpus_frame</code> to support better printing of data frame objects: left-align text data, truncate output to screen width, display emoji on Mac OS. Use this class for all data frame return values.</p></li>
 <li><p>Added a “unicode” vignette.</p></li>
 <li><p>Converted the “chinese” demo to a vignette. Thanks to Will Lowe for contributing.</p></li>
-<li><p>Make <code><a href="../reference/text_split.html">text_split()</a></code> and <code><a href="../reference/term_matrix.html">term_frame()</a></code> return parent text as a factor.</p></li>
+<li><p>Make <code><a href="../reference/text_split.html">text_split()</a></code> and <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code> return parent text as a factor.</p></li>
 <li><p>Remove <code>stringsAsFactors</code> option from <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code>; deserialize all JSON string fields as character by default.</p></li>
 <li><p><code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> de-serializes zero-length arrays as <code>integer()</code>, <code>logical()</code>, etc. instead of as <code>NULL</code>.</p></li>
 <li><p>Allow user interrupts (control-C) in all long-running C computations.</p></li>
@@ -292,7 +293,7 @@
 <li><p>Add <code><a href="../reference/text_locate.html">text_count()</a></code> and <code><a href="../reference/text_locate.html">text_detect()</a></code> for counting term occurrences or checking for a term’s existence in a text.</p></li>
 <li><p>Add <code><a href="../reference/text_types.html">text_types()</a></code> and <code><a href="../reference/text_types.html">text_ntype()</a></code> for returning the unique types in a text, or counting types.</p></li>
 <li><p>Add <code><a href="../reference/text_split.html">text_nsentence()</a></code> for counting sentences.</p></li>
-<li><p>Add <code><a href="../reference/term_matrix.html">term_frame()</a></code>, reporting term frequencies as a data frame with columns <code>"text"</code>, <code>"term"</code>, and <code>"count"</code>.</p></li>
+<li><p>Add <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code>, reporting term frequencies as a data frame with columns <code>"text"</code>, <code>"term"</code>, and <code>"count"</code>.</p></li>
 </ul>
 </div>
 <div id="minor-improvements-3" class="section level3">

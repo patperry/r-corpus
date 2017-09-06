@@ -718,30 +718,6 @@ i &lt;-<span class="st"> </span><span class="kw">seq_along</span>(rate)
 <pre><code>[1]   24 2878</code></pre>
 <p>This function returns a sparse matrix object from the <em>Matrix</em> package. In the default usage, the rows of the matrix correspond to texts, and the columns correspond to terms. For a “term-by-document” matrix, you can use the <code>transpose</code> option:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">xt &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_matrix.html">term_matrix</a></span>(data, <span class="dt">transpose =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<p>Alternatively, to get a data frame of the (text, term, count) tripples, use ther <code>term_frame</code> function:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(xf &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_matrix.html">term_frame</a></span>(data))</code></pre></div>
-<pre><code>   text term count
-1  ch01 a       28
-2  ch02 a       46
-3  ch03 a       50
-4  ch04 a       29
-5  ch05 a       44
-6  ch06 a       37
-7  ch07 a       40
-8  ch08 a       23
-9  ch09 a       29
-10 ch10 a       46
-11 ch11 a       87
-12 ch12 a       57
-13 ch13 a       16
-14 ch14 a       29
-15 ch15 a       75
-16 ch16 a       22
-17 ch17 a       27
-18 ch18 a       15
-19 ch19 a       18
-20 ch20 a       25
-⋮  (11399 rows total)</code></pre>
 <p>You can include n-grams in the result if you would like:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_matrix.html">term_matrix</a></span>(data, <span class="dt">ngrams =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="co"># 1-, 2-, and 3-grams</span></code></pre></div>
 <p>Or, you can specify the columns to include in the matrix</p>
