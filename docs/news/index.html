@@ -34,6 +34,18 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-4636081-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
@@ -139,6 +151,13 @@
 <li><p>Work around R Windows bug in converting native to UTF-8; described at <a href="https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329" class="uri">https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329</a> .</p></li>
 </ul>
 </div>
+<div id="deprecated-and-defunct" class="section level3">
+<h3 class="hasAnchor">
+<a href="#deprecated-and-defunct" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<ul>
+<li>Remove deprecated <code>term_counts()</code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</li>
+</ul>
+</div>
 </div>
     <div id="corpus-0-9-1-2017-08-20" class="section level1">
 <h1 class="hasAnchor">
@@ -153,9 +172,9 @@
 <li><p>Fix memory leak in <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct" class="section level3">
+<div id="deprecated-and-defunct-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-1" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Rename <code>wnaffect</code> to <code>affect_wordnet</code>.</li>
 </ul>
@@ -206,11 +225,11 @@
 <li><p>Fixed rchk, UBSAN warnings.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-1" class="section level3">
+<div id="deprecated-and-defunct-2" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-1" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-2" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
-<li><p>Renamed <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> to <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
+<li><p>Renamed <code>term_counts()</code> to <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
 <li><p>Removed deprecated functions <code>token_filter()</code> and <code>sentence_filter()</code>.</p></li>
 <li><p>Removed <code>term</code> column from <code><a href="../reference/text_locate.html">text_locate()</a></code> output.</p></li>
 <li><p>Removed <code>map_compat</code> option from <code>ext_filter()</code>; use <code><a href="../reference/utf8.html">utf8_normalize()</a></code> instead if you need to apply compatibility maps.</p></li>
@@ -237,7 +256,7 @@
 <a href="#minor-improvements-2" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
 <li><p>Handle @mentions, #hashtags, and URLs in word tokenizer.</p></li>
-<li><p><code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> now reports the <code>support</code> for each term (the number of texts containing the term), and has options for restricting output by the minimum and maximum support.</p></li>
+<li><p><code>term_counts()</code> now reports the <code>support</code> for each term (the number of texts containing the term), and has options for restricting output by the minimum and maximum support.</p></li>
 <li><p>Added new class <code>corpus_frame</code> to support better printing of data frame objects: left-align text data, truncate output to screen width, display emoji on Mac OS. Use this class for all data frame return values.</p></li>
 <li><p>Added a “unicode” vignette.</p></li>
 <li><p>Converted the “chinese” demo to a vignette. Thanks to Will Lowe for contributing.</p></li>
@@ -247,9 +266,9 @@
 <li><p>Allow user interrupts (control-C) in all long-running C computations.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-2" class="section level3">
+<div id="deprecated-and-defunct-3" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-2" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-3" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Deprecate <code>token_filter()</code> and <code>sentence_filter()</code>.</li>
 </ul>
@@ -286,12 +305,12 @@
 <li><p>Set <code>combine = abbreviations("english")</code> by default.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-3" class="section level3">
+<div id="deprecated-and-defunct-4" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-3" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-4" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>tokens()</code> to <code><a href="../reference/text_tokens.html">text_tokens()</a></code> for consistency; add <code><a href="../reference/text_tokens.html">text_ntoken()</a></code>.</p></li>
-<li><p>Rename <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> <code>min</code> and <code>max</code> arguments to <code>min_count</code> and <code>max_count</code>.</p></li>
+<li><p>Rename <code>term_counts()</code> <code>min</code> and <code>max</code> arguments to <code>min_count</code> and <code>max_count</code>.</p></li>
 </ul>
 </div>
 <div id="bug-fixes-4" class="section level3">
@@ -309,7 +328,7 @@
 <h3 class="hasAnchor">
 <a href="#new-features-4" class="anchor"></a>NEW FEATURES</h3>
 <ul>
-<li><p>Add <code>ngrams</code> options for <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> and <code><a href="../reference/term_matrix.html">term_matrix()</a></code>.</p></li>
+<li><p>Add <code>ngrams</code> options for <code>term_counts()</code> and <code><a href="../reference/term_matrix.html">term_matrix()</a></code>.</p></li>
 <li><p>Add sentence break suppressions (special handling for abbreviations); the default behavior for <code><a href="../reference/text_split.html">text_split(, "sentences")</a></code> is to use a set of English abbreviations as suppressions.</p></li>
 <li><p>Add option to treat CR and LF like spaces when determining sentence boundaries; this is now the default.</p></li>
 </ul>
@@ -318,16 +337,16 @@
 <h3 class="hasAnchor">
 <a href="#minor-improvements-4" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
-<li><p>Add <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> <code>min</code> and <code>max</code> options for excluding terms with counts below or above specified limits.</p></li>
-<li><p>Add <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> <code>limit</code> option to limit the number of reported terms.</p></li>
-<li><p>Add <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> <code>types</code> option for reporting the types that make up a term.</p></li>
+<li><p>Add <code>term_counts()</code> <code>min</code> and <code>max</code> options for excluding terms with counts below or above specified limits.</p></li>
+<li><p>Add <code>term_counts()</code> <code>limit</code> option to limit the number of reported terms.</p></li>
+<li><p>Add <code>term_counts()</code> <code>types</code> option for reporting the types that make up a term.</p></li>
 <li><p><code>Add abbreviations()</code> function with abbreviation lists for English, French, German, Italian, Portuguese, and Russian (from the Unicode Common Locale Data Repository).</p></li>
 <li><p>Add more refined control over <code>token_filter()</code> drop cateogries: merged <code>"kana"</code>, and <code>"ideo"</code> into <code>"letter"</code>; split off <code>"punct"</code>, <code>"mark"</code>, and <code>"other"</code> from <code>"symbol"</code>.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-4" class="section level3">
+<div id="deprecated-and-defunct-5" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-4" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-5" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code><a href="../reference/text_filter.html">text_filter()</a></code> to <code>token_filter()</code>.</p></li>
 <li><p>Remove <code>select</code> argument from <code>token_filter()</code>, but add <code>select</code> to <code><a href="../reference/term_matrix.html">term_matrix()</a></code> arguments.</p></li>
@@ -340,9 +359,9 @@
     <div id="corpus-0-5-1-2017-05-25" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-5-1-2017-05-25" class="anchor"></a>corpus 0.5.1 (2017-05-25)</h1>
-<div id="deprecated-and-defunct-5" class="section level3">
+<div id="deprecated-and-defunct-6" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-5" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-6" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>"text"</code> class to <code>"corpus_text"</code> to avoid name classes with grid. Thanks to Jeroen Ooms for reporting: <a href="https://github.com/patperry/corpus/issues/1" class="uri">https://github.com/patperry/corpus/issues/1</a></p></li>
 <li><p>Rename <code>"jsondata"</code> to <code>"corpus_json"</code> for consistency.</p></li>
@@ -363,7 +382,7 @@
 <h3 class="hasAnchor">
 <a href="#new-features-5" class="anchor"></a>NEW FEATURES</h3>
 <ul>
-<li><p>Add <code><a href="../reference/corpus-deprecated.html">term_counts()</a></code> function to tabulate term frequencies.</p></li>
+<li><p>Add <code>term_counts()</code> function to tabulate term frequencies.</p></li>
 <li><p>Add <code><a href="../reference/term_matrix.html">term_matrix()</a></code> function to compute a term frequency matrix.</p></li>
 <li><p>Add <code><a href="../reference/text_filter.html">text_filter()</a></code> option (<code>stem_except</code>) to exempt specific terms from stemming.</p></li>
 <li><p>Add <code><a href="../reference/text_filter.html">text_filter()</a></code> option (<code>drop</code>) to drop specific terms, along with option (<code>drop_except</code>) to exempt specific terms from dropping.</p></li>
@@ -379,9 +398,9 @@
 <li><p>Make <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> decode JSON strings as character or factor (according to whether <code>stringsAsFactors</code> is <code>TRUE</code>) except for fields named <code>"text"</code>, which get decoded as text objects.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-6" class="section level3">
+<div id="deprecated-and-defunct-7" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-6" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-7" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Rename <code><a href="../reference/text_filter.html">text_filter()</a></code> options <code>fold_case</code>, <code>fold_dash</code>, <code>fold_quote</code> to <code>map_case</code>, <code>map_dash</code>, <code>map_quote</code>.</li>
 </ul>
@@ -411,9 +430,9 @@
 <li>Fix internal function namespace clashes on Linux and other similar platforms.</li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-7" class="section level3">
+<div id="deprecated-and-defunct-8" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-7" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-8" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Rename <code><a href="../reference/text_filter.html">text_filter()</a></code> option <code>drop_empty</code> to <code>ignore_empty</code>.</li>
 </ul>
@@ -438,9 +457,9 @@
 <li><p>Make <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> return a data frame by default, not a <code>"jsondata"</code> object.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-8" class="section level3">
+<div id="deprecated-and-defunct-9" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-8" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-9" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>as.text()</code>/<code>is.text()</code> to <code><a href="../reference/as_text.html">as_text()</a></code>/<code><a href="../reference/as_text.html">is_text()</a></code>; make <code><a href="../reference/as_text.html">as_text()</a></code> retain names, work on S3 objects.</p></li>
 <li><p>Rename <code>read_json()</code> to <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> to not clash with jsonlite.</p></li>

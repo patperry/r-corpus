@@ -4,6 +4,7 @@
 ^[.]Rprofile$
 ^[.]git
 ^[.]travis[.]yml$
+^_pkgdown[.]yml$
 ^CONDUCT[.]md$
 ^Makefile$
 ^NEWS[.]md$
@@ -28,3 +29,4 @@
 ^vignettes/gender[.]Rmd
 ^vignettes/gender-.*png
 ^vignettes/.*[.]in$
+^_pkgdown\.yml$

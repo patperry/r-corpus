@@ -34,6 +34,18 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-4636081-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
@@ -118,7 +130,7 @@ To split text into sentences or token blocks, use <code><a href='text_split.html
 To specify preprocessing behavior for transforming a text into a
 token sequence, use <code><a href='text_filter.html'>text_filter</a></code>. To tokenize text
 or compute term frequencies, use <code><a href='text_tokens.html'>text_tokens</a></code>,
-<code><a href='corpus-deprecated.html'>term_counts</a></code>, <code><a href='term_matrix.html'>term_matrix</a></code> or
+<code><a href='term_stats.html'>term_stats</a></code>, <code><a href='term_matrix.html'>term_matrix</a></code> or
 <code><a href='term_matrix.html'>term_frame</a></code>. To search for or count specific terms,
 use <code><a href='text_locate.html'>text_locate</a></code>, <code><a href='text_locate.html'>text_count</a></code>, or
 <code><a href='text_locate.html'>text_detect</a></code>.</p>

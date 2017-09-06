@@ -34,6 +34,18 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-4636081-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
@@ -107,66 +119,10 @@
 
     
     <p>These functions are provided for compatibility with older versions of
-  <span class="pkg">corpus</span> only, and may be defunct as soon as the next release.</p>
+<span class="pkg">corpus</span> only, and may be defunct as soon as the next release.</p>
     
 
-    <pre class="usage"><span class='fu'>term_counts</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='no'>x</span>), <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>min_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>min_support</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_support</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>types</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p>a text vector to tokenize.</p></td>
-    </tr>
-    <tr>
-      <th>filter</th>
-      <td><p>a token filter specifying the tokenization rules.</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>a numeric vector the same length of <code>x</code> assigning
-        weights to each text, or <code>NULL</code> for unit weights.</p></td>
-    </tr>
-    <tr>
-      <th>ngrams</th>
-      <td><p>an integer vector of n-gram lengths to include, or
-        <code>NULL</code> for length-1 n-grams only.</p></td>
-    </tr>
-    <tr>
-      <th>min_count</th>
-      <td><p>a numeric scalar giving the minimum term count to include
-        in the output, or <code>NULL</code> for no minimum count.</p></td>
-    </tr>
-    <tr>
-      <th>max_count</th>
-      <td><p>a numeric scalar giving the maximum term count to include
-        in the output, or <code>NULL</code> for no maximum count.</p></td>
-    </tr>
-    <tr>
-      <th>min_support</th>
-      <td><p>a numeric scalar giving the minimum term support to
-        include in the output, or <code>NULL</code> for no minimum support.</p></td>
-    </tr>
-    <tr>
-      <th>max_support</th>
-      <td><p>a numeric scalar giving the maximum term support to
-        include in the output, or <code>NULL</code> for no maximum support.</p></td>
-    </tr>
-    <tr>
-      <th>types</th>
-      <td><p>a logical value indicating whether to include columns for
-        the types that make up the terms.</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The <code>term_counts</code> function is deprecated, renamed to
-    <code><a href='term_stats.html'>term_stats</a></code>.</p>
-    
+        
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p><code>Deprecated</code></p>
@@ -176,10 +132,7 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#details">Details</a></li>
-
       <li><a href="#see-also">See also</a></li>
           </ul>
 
