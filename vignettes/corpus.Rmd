@@ -1022,39 +1022,6 @@ correspond to terms. For a "term-by-document" matrix, you can use the
 xt <- term_matrix(data, transpose = TRUE)
 ```
 
-Alternatively, to get a data frame of the (text, term, count) tripples, use
-ther `term_frame` function:
-
-
-```r
-(xf <- term_frame(data))
-```
-
-```
-   text term count
-1  ch01 a       28
-2  ch02 a       46
-3  ch03 a       50
-4  ch04 a       29
-5  ch05 a       44
-6  ch06 a       37
-7  ch07 a       40
-8  ch08 a       23
-9  ch09 a       29
-10 ch10 a       46
-11 ch11 a       87
-12 ch12 a       57
-13 ch13 a       16
-14 ch14 a       29
-15 ch15 a       75
-16 ch16 a       22
-17 ch17 a       27
-18 ch18 a       15
-19 ch19 a       18
-20 ch20 a       25
-⋮  (11399 rows total)
-```
-
 You can include n-grams in the result if you would like:
 
 ```r

@@ -483,13 +483,6 @@ correspond to terms. For a "term-by-document" matrix, you can use the
 xt <- term_matrix(data, transpose = TRUE)
 ```
 
-Alternatively, to get a data frame of the (text, term, count) tripples, use
-ther `term_frame` function:
-
-```{r}
-(xf <- term_frame(data))
-```
-
 You can include n-grams in the result if you would like:
 ```{r}
 x3 <- term_matrix(data, ngrams = 1:3) # 1-, 2-, and 3-grams
