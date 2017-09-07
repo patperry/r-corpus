@@ -1016,7 +1016,6 @@ SEXP simplify_json(SEXP sdata)
 				goto out;
 			}
 		}
-			
 		ans = as_character_json(sdata);
 		break;
 
