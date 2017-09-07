@@ -146,7 +146,7 @@ Unique names
 
 All `corpus_text` objects have unique names. When you coerce an object
 with duplicate names to `corpus_text`, the duplicates get renamed with a
-wanring:
+warning:
 
 
 ```r
@@ -217,7 +217,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7fea798d4720>
+<pointer: 0x7fc0d018cff0>
 
 $sources
 $sources[[1]]
@@ -278,7 +278,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7fea798f0bf0>
+<pointer: 0x7fc0cbd92e80>
 
 $sources
 $sources[[1]]

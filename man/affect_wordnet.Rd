@@ -27,7 +27,7 @@
 \source{\url{http://wndomains.fbk.eu/wnaffect.html}}
 \references{
     Strapparava, C and Valitutti A. (2004).
-    Wordnet-affect: an affective extension of WordNet.
+    WordNet-Affect: an affective extension of WordNet.
     \emph{Proceedings of the 4th International Conference on Language
         Resources and Evaluation}
     1083--1086.

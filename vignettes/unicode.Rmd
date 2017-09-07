@@ -52,7 +52,7 @@ arguments which, if left unspecified default to assuming that text is encoded
 in your operating system's native encoding. To ensure consistent behavior
 across all platforms (Mac, Windows, and Linux), you should set this option
 explicitly. Here, we set `encoding = "UTF-8"`. This is a reasonable default,
-but it is not awlays appropriate. In general, you should determine the
+but it is not always appropriate. In general, you should determine the
 appropriate `encoding` value by looking at the file. Unfortunately, the file
 extension `".txt"` is not informative, and could correspond to any encoding.
 However, if we read the first few lines of the file, we see the following:
@@ -112,7 +112,7 @@ lines[!utf8_valid(lines)]
 ```
 [1] "the command of her beauty, and her \xa320,000, any one who could satisfy the"
 ```
-So, there aren't any other invalid lines.
+So, there are no other invalid lines.
 
 The offending byte in line 15252 is displayed as `\xa3`, an escape code
 for hexadecimal value 0xa3, decimal value 163. To understand why this
@@ -343,7 +343,7 @@ printing UTF-8 characters:
     characters).
 
 *Corpus* does not provide a method to translate from another encoding to
-UTF-8 as the `iconv()` function from base R already serves this purpuse.
+UTF-8 as the `iconv()` function from base R already serves this purpose.
 
 
 Translating to UTF-8

@@ -317,7 +317,7 @@ Texts as sequences
 ------------------
 
 The mental model of the *corpus* package is that a text is s sequence of
-tokens, some of which are droped (`NA`). Every object has a `text_filter()`
+tokens, some of which are dropped (`NA`). Every object has a `text_filter()`
 property defining its token boundaries. The default token filter transforms
 the text to Unicode composed normal form (NFC), applies Unicode case folding,
 and maps curly quotes to straight quotes. Text objects, created with `as_text`
@@ -987,7 +987,7 @@ plot(i, rate, type = "l", xlab = "Segment",
 points(i, rate, pch = 16, cex = 0.5, col = 2)
 ```
 
-!['witch' Occurences](corpus-witch-occurences-1.png)
+!['witch' Occurences](corpus-witch-occurrences-1.png)
 
 We can see Dorothy's house landing on the Wicked Witch of the East in the and
 the subsequent fallout in the beginning of the novel. Around segment 40, we
@@ -1000,7 +1000,7 @@ Term frequency matrix
 ---------------------
 
 Many downstream text analysis tasks require tabulating a matrix of text-term
-occurence counts. We can get such a matrix using the `term_matrix` function:
+occurrence counts. We can get such a matrix using the `term_matrix` function:
 
 
 ```r
@@ -1373,7 +1373,7 @@ logical      22      45
 "Woodman" appears within 25 tokens of "heart" in in 45 of the 67 contexts
 where the latter word appears.
 
-The decision of whether to include or exclude "heart" is a difficult judgement
+The decision of whether to include or exclude "heart" is a difficult judgment
 call. Most of the time it appears, it describes an object, not an emotion.
 Still, that object does have an emotional association.  I'm deciding to
 include "heart", but this is not a clear-cut decision.
@@ -1421,7 +1421,7 @@ affect <- subset(affect, !term %in% c("down", "great", "like", "yellow", "near",
 
 Now that we have a lexicon, our plan is to segment the text into smaller
 chunks and then compute the emotion occurrence rates in each chunk, broken
-down by category ("Positive", "Negative", or "Ambigous").
+down by category ("Positive", "Negative", or "Ambiguous").
 
 To facilitate the rate computations, we will form a term-by-emotion rate for
 the lexicon:
@@ -1446,7 +1446,7 @@ term         Positive Negative Ambiguous
 Here, `term_scores` is a matrix with entry *(i,j)* indicating the number of
 times that term *i* appeared in the affect lexicon with emotion *j*.
 
-We re-classify any term appearing in two or more categories as ambigous:
+We re-classify any term appearing in two or more categories as ambiguous:
 
 
 ```r
@@ -1509,8 +1509,8 @@ x <- term_matrix(chunks, select = rownames(term_scores))
 text_scores <- x %*% term_scores
 ```
 
-For the occurence rates, we divide the counts by the segment sizes. We then
-multiply by 1000 so that rates are given as occurences per 1000 tokens.
+For the occurrence rates, we divide the counts by the segment sizes. We then
+multiply by 1000 so that rates are given as occurrences per 1000 tokens.
 
 
 ```r
@@ -1539,7 +1539,7 @@ measured rates.
 ### Plotting the results
 
 We plot the four rate curves as time series. Our main focus is on the total
-emotion usage. For this curve, we also put a horizonal dashed line at its
+emotion usage. For this curve, we also put a horizontal dashed line at its
 mean, and we indicating the "interesting" segments, those that appear more
 than two standard deviations away from the main, by putting error bars on
 these points.

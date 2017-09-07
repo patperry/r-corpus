@@ -112,7 +112,7 @@ Unique names
 
 All `corpus_text` objects have unique names. When you coerce an object
 with duplicate names to `corpus_text`, the duplicates get renamed with a
-wanring:
+warning:
 
 ```{r}
 x <- as_text(c(a = "hello", b = "world", a = "repeated name")) # fails

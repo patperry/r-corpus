@@ -76,7 +76,7 @@ text_filter(x) <- value
         \code{NULL}; see \sQuote{Combining words}.}
 
     \item{drop_letter}{a logical value indicating whether to replace
-        \code{"letter"} tokens (cased letters, kana, idoegraphic, letter-like
+        \code{"letter"} tokens (cased letters, kana, ideographic, letter-like
         numeric characters and other letters) with \code{NA}.}
 
     \item{drop_number}{a logical value indicating whether to replace
