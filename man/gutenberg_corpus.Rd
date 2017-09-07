@@ -1,6 +1,6 @@
 \name{gutenberg_corpus}
 \alias{gutenberg_corpus}
-\title{Project Gutenberg Works Corpus}
+\title{Project Gutenberg Corpora}
 \description{
 Get a corpus of texts from Project Gutenberg.
 }

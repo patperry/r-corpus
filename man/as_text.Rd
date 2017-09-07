@@ -9,7 +9,7 @@
 \alias{as_text.default}
 \alias{corpus_text}
 \alias{is_text}
-\title{Text Vectors}
+\title{Text Objects}
 \description{
 Create or test for text objects.
 }

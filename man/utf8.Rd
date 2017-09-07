@@ -1,5 +1,5 @@
 \name{utf8}
-\title{UTF-8 Text Handling}
+\title{UTF-8 Character Handling}
 \alias{utf8}
 \alias{as_utf8}
 \alias{utf8_encode}

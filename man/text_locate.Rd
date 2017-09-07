@@ -4,7 +4,7 @@
 \alias{text_locate}
 \alias{text_match}
 \alias{text_subset}
-\title{Searching for terms in text.}
+\title{Searching for Terms}
 \description{
     Look for instances of one or more terms in a set of texts.
 }

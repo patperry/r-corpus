@@ -1,6 +1,6 @@
 \name{term_stats}
 \alias{term_stats}
-\title{Term Stats}
+\title{Term Statistics}
 \description{
     Tokenize a set of texts and tabulate the term occurrence statistics.
 }
