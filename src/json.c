@@ -979,7 +979,7 @@ SEXP as_list_json(SEXP sdata)
 
 SEXP simplify_json(SEXP sdata)
 {
-	SEXP ans;
+	SEXP ans, spath, sfield, stext;
 	const struct json *d = as_json(sdata);
 	int overflow;
 
@@ -1007,6 +1007,16 @@ SEXP simplify_json(SEXP sdata)
 		break;
 
 	case CORPUS_DATATYPE_TEXT:
+		spath = getListElement(sdata, "field");
+		if (spath != R_NilValue && XLENGTH(spath) > 0) {
+			sfield = STRING_ELT(spath, XLENGTH(spath) - 1);
+			stext = getListElement(sdata, "text");
+			if (in_string_set(stext, sfield)) {
+				ans = as_text_json(sdata, R_NilValue);
+				goto out;
+			}
+		}
+			
 		ans = as_character_json(sdata);
 		break;
 
@@ -1019,5 +1029,6 @@ SEXP simplify_json(SEXP sdata)
 		break;
 	}
 
+out:
 	return ans;
 }
