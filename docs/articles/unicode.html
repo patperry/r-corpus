@@ -108,7 +108,7 @@ tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
 con &lt;-<span class="st"> </span><span class="kw">unz</span>(tmp, <span class="st">"141.txt"</span>, <span class="dt">encoding =</span> <span class="st">"UTF-8"</span>)
 lines &lt;-<span class="st"> </span><span class="kw">readLines</span>(con)
 <span class="kw">close</span>(con)</code></pre></div>
-<p>The <code>unz</code> function and other similar file connection functions have <code>encoding</code> arguments which, if left unspecified default to assuming that text is encoded in your operating system’s native encoding. To ensure consistent behavior across all platforms (Mac, Windows, and Linux), you should set this option explicitly. Here, we set <code>encoding = "UTF-8"</code>. This is a reasonable default, but it is not awlays appropriate. In general, you should determine the appropriate <code>encoding</code> value by looking at the file. Unfortunately, the file extension <code>".txt"</code> is not informative, and could correspond to any encoding. However, if we read the first few lines of the file, we see the following:</p>
+<p>The <code>unz</code> function and other similar file connection functions have <code>encoding</code> arguments which, if left unspecified default to assuming that text is encoded in your operating system’s native encoding. To ensure consistent behavior across all platforms (Mac, Windows, and Linux), you should set this option explicitly. Here, we set <code>encoding = "UTF-8"</code>. This is a reasonable default, but it is not always appropriate. In general, you should determine the appropriate <code>encoding</code> value by looking at the file. Unfortunately, the file extension <code>".txt"</code> is not informative, and could correspond to any encoding. However, if we read the first few lines of the file, we see the following:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lines[<span class="dv">11</span><span class="op">:</span><span class="dv">20</span>]</code></pre></div>
 <pre><code> [1] "Author: Jane Austen"                                         
  [2] ""                                                            
@@ -131,7 +131,7 @@ lines &lt;-<span class="st"> </span><span class="kw">readLines</span>(con)
 <p>We might wonder if there are other lines with invalid data. We can find all such lines using the <code>utf8_valid</code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lines[<span class="op">!</span><span class="kw"><a href="../reference/utf8.html">utf8_valid</a></span>(lines)]</code></pre></div>
 <pre><code>[1] "the command of her beauty, and her \xa320,000, any one who could satisfy the"</code></pre>
-<p>So, there aren’t any other invalid lines.</p>
+<p>So, there are no other invalid lines.</p>
 <p>The offending byte in line 15252 is displayed as <code>\xa3</code>, an escape code for hexadecimal value 0xa3, decimal value 163. To understand why this is invalid, we need to learn more about UTF-8 encoding.</p>
 </div>
 <div id="utf-8" class="section level2">
@@ -227,7 +227,7 @@ f ð      ñ      ò      ó      ô      õ      ö      ÷      ø      ù    
 <li><p><code><a href="../reference/utf8.html">utf8_print()</a></code> prints UTF-8 character data to the screen;</p></li>
 <li><p><code><a href="../reference/utf8.html">utf8_width()</a></code> measures the display with of UTF-8 character strings (many emoji and East Asian characters are twice as wide as other characters).</p></li>
 </ul>
-<p><em>Corpus</em> does not provide a method to translate from another encoding to UTF-8 as the <code>iconv()</code> function from base R already serves this purpuse.</p>
+<p><em>Corpus</em> does not provide a method to translate from another encoding to UTF-8 as the <code>iconv()</code> function from base R already serves this purpose.</p>
 </div>
 </div>
 <div id="translating-to-utf-8" class="section level2">

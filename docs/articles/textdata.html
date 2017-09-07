@@ -169,7 +169,7 @@ x &lt;-<span class="st"> "fa</span><span class="ch">\xE7</span><span class="st">
 <div id="unique-names" class="section level2">
 <h2 class="hasAnchor">
 <a href="#unique-names" class="anchor"></a>Unique names</h2>
-<p>All <code>corpus_text</code> objects have unique names. When you coerce an object with duplicate names to <code>corpus_text</code>, the duplicates get renamed with a wanring:</p>
+<p>All <code>corpus_text</code> objects have unique names. When you coerce an object with duplicate names to <code>corpus_text</code>, the duplicates get renamed with a warning:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_text.html">as_text</a></span>(<span class="kw">c</span>(<span class="dt">a =</span> <span class="st">"hello"</span>, <span class="dt">b =</span> <span class="st">"world"</span>, <span class="dt">a =</span> <span class="st">"repeated name"</span>)) <span class="co"># fails</span></code></pre></div>
 <pre><code>Warning in as_text.character(c(a = "hello", b = "world", a = "repeated name")): renaming entries
 with duplicate names</code></pre>
@@ -201,7 +201,7 @@ data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_n
 <span class="co"># display the internal representation of the resulting 'corpus_text' object</span>
 <span class="kw">unclass</span>(data<span class="op">$</span>text)</code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fea798d4720&gt;
+&lt;pointer: 0x7fc0d018cff0&gt;
 
 $sources
 $sources[[1]]
@@ -242,7 +242,7 @@ NULL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># segmenting does not allocate new objects for the segments</span>
 <span class="kw">unclass</span>(chunks<span class="op">$</span>text) <span class="co"># inspect text internals</span></code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fea798f0bf0&gt;
+&lt;pointer: 0x7fc0cbd92e80&gt;
 
 $sources
 $sources[[1]]

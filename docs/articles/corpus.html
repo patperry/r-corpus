@@ -285,7 +285,7 @@ ch24 Home Again                                  Aunt Em had just come out of th
 <div id="texts-as-sequences" class="section level2">
 <h2 class="hasAnchor">
 <a href="#texts-as-sequences" class="anchor"></a>Texts as sequences</h2>
-<p>The mental model of the <em>corpus</em> package is that a text is s sequence of tokens, some of which are droped (<code>NA</code>). Every object has a <code><a href="../reference/text_filter.html">text_filter()</a></code> property defining its token boundaries. The default token filter transforms the text to Unicode composed normal form (NFC), applies Unicode case folding, and maps curly quotes to straight quotes. Text objects, created with <code>as_text</code> or <code>as_corpus</code> can have custom text filters. You cannot set the text filter for a character vector. However, all <em>corpus</em> text functions accept a <code>filter</code> argument to override the input object’s text filter (this is demonstrated in the “New York City” example in the previous section).</p>
+<p>The mental model of the <em>corpus</em> package is that a text is s sequence of tokens, some of which are dropped (<code>NA</code>). Every object has a <code><a href="../reference/text_filter.html">text_filter()</a></code> property defining its token boundaries. The default token filter transforms the text to Unicode composed normal form (NFC), applies Unicode case folding, and maps curly quotes to straight quotes. Text objects, created with <code>as_text</code> or <code>as_corpus</code> can have custom text filters. You cannot set the text filter for a character vector. However, all <em>corpus</em> text functions accept a <code>filter</code> argument to override the input object’s text filter (this is demonstrated in the “New York City” example in the previous section).</p>
 <p>To find out the length of a text, as measured in dropped and non-dropped tokens, use the <code>text_length</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_tokens.html">text_tokens</a></span>(<span class="st">"One, two, three!"</span>, <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <pre><code>[[1]]
@@ -704,7 +704,7 @@ i &lt;-<span class="st"> </span><span class="kw">seq_along</span>(rate)
      <span class="dt">main =</span> <span class="kw">paste</span>(<span class="kw">dQuote</span>(<span class="st">"witch"</span>), <span class="st">"Occurrences"</span>), <span class="dt">col =</span> <span class="dv">2</span>)
 <span class="kw">points</span>(i, rate, <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>, <span class="dt">col =</span> <span class="dv">2</span>)</code></pre></div>
 <div class="figure">
-<img src="corpus-witch-occurences-1.png" alt="witch Occurences"><p class="caption">‘witch’ Occurences</p>
+<img src="corpus-witch-occurrences-1.png" alt="witch Occurences"><p class="caption">‘witch’ Occurences</p>
 </div>
 <p>We can see Dorothy’s house landing on the Wicked Witch of the East in the and the subsequent fallout in the beginning of the novel. Around segment 40, we see the events surrounding Dorothy’s battle with the Wicked Witch of the West. At the end of the novel, we see the Good Witch of the South appearing to help Dorothy get home.</p>
 </div>
@@ -712,7 +712,7 @@ i &lt;-<span class="st"> </span><span class="kw">seq_along</span>(rate)
 <div id="term-frequency-matrix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#term-frequency-matrix" class="anchor"></a>Term frequency matrix</h2>
-<p>Many downstream text analysis tasks require tabulating a matrix of text-term occurence counts. We can get such a matrix using the <code>term_matrix</code> function:</p>
+<p>Many downstream text analysis tasks require tabulating a matrix of text-term occurrence counts. We can get such a matrix using the <code>term_matrix</code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_matrix.html">term_matrix</a></span>(data)
 <span class="kw">dim</span>(x)</code></pre></div>
 <pre><code>[1]   24 2878</code></pre>
@@ -956,7 +956,7 @@ after &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_
 <pre><code>   Mode   FALSE    TRUE 
 logical      22      45 </code></pre>
 <p>“Woodman” appears within 25 tokens of “heart” in in 45 of the 67 contexts where the latter word appears.</p>
-<p>The decision of whether to include or exclude “heart” is a difficult judgement call. Most of the time it appears, it describes an object, not an emotion. Still, that object does have an emotional association. I’m deciding to include “heart”, but this is not a clear-cut decision.</p>
+<p>The decision of whether to include or exclude “heart” is a difficult judgment call. Most of the time it appears, it describes an object, not an emotion. Still, that object does have an emotional association. I’m deciding to include “heart”, but this is not a clear-cut decision.</p>
 <p>We can also inspect the first token after each appearance of “yellow”:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(<span class="kw"><a href="../reference/text_sub.html">text_sub</a></span>(<span class="kw"><a href="../reference/text_locate.html">text_locate</a></span>(data, <span class="st">"yellow"</span>)<span class="op">$</span>after, <span class="dv">1</span>, <span class="dv">1</span>))</code></pre></div>
 <pre><code>   term     count support
@@ -980,7 +980,7 @@ logical      22      45 </code></pre>
 <div id="term-emotion-matrix" class="section level3">
 <h3 class="hasAnchor">
 <a href="#term-emotion-matrix" class="anchor"></a>Term emotion matrix</h3>
-<p>Now that we have a lexicon, our plan is to segment the text into smaller chunks and then compute the emotion occurrence rates in each chunk, broken down by category (“Positive”, “Negative”, or “Ambigous”).</p>
+<p>Now that we have a lexicon, our plan is to segment the text into smaller chunks and then compute the emotion occurrence rates in each chunk, broken down by category (“Positive”, “Negative”, or “Ambiguous”).</p>
 <p>To facilitate the rate computations, we will form a term-by-emotion rate for the lexicon:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">term_scores &lt;-<span class="st"> </span><span class="kw">with</span>(affect, <span class="kw">unclass</span>(<span class="kw">table</span>(term, emotion)))
 <span class="kw">head</span>(term_scores)</code></pre></div>
@@ -993,7 +993,7 @@ term         Positive Negative Ambiguous
   abhor             0        1         0
   abhorrence        0        1         0</code></pre>
 <p>Here, <code>term_scores</code> is a matrix with entry <em>(i,j)</em> indicating the number of times that term <em>i</em> appeared in the affect lexicon with emotion <em>j</em>.</p>
-<p>We re-classify any term appearing in two or more categories as ambigous:</p>
+<p>We re-classify any term appearing in two or more categories as ambiguous:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ncat &lt;-<span class="st"> </span><span class="kw">rowSums</span>(term_scores <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)
 term_scores[ncat <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="kw">c</span>(<span class="st">"Positive"</span>, <span class="st">"Negative"</span>, <span class="st">"Ambiguous"</span>)] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>)</code></pre></div>
 <p>At this point, every term is in one category, but the score for the term could be 2, 3, or more, depending on the number of sub-categories the term appeared in. We replace these larger values with one.</p>
@@ -1018,7 +1018,7 @@ term_scores[ncat <span class="op">&gt;</span><span class="st"> </span><span clas
 <p>For the count of each emotion category in each segment, we form a text-by-term matrix of counts, and then multiply this by the term-by-emotion score matrix.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_matrix.html">term_matrix</a></span>(chunks, <span class="dt">select =</span> <span class="kw">rownames</span>(term_scores))
 text_scores &lt;-<span class="st"> </span>x <span class="op">%*%</span><span class="st"> </span>term_scores</code></pre></div>
-<p>For the occurence rates, we divide the counts by the segment sizes. We then multiply by 1000 so that rates are given as occurences per 1000 tokens.</p>
+<p>For the occurrence rates, we divide the counts by the segment sizes. We then multiply by 1000 so that rates are given as occurrences per 1000 tokens.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute the rates per 1000 tokens</span>
 unit &lt;-<span class="st"> </span><span class="dv">1000</span>
 rate &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">pos =</span> text_scores[, <span class="st">"Positive"</span>] <span class="op">/</span><span class="st"> </span>n <span class="op">*</span><span class="st"> </span>unit,
@@ -1033,7 +1033,7 @@ se &lt;-<span class="st"> </span><span class="kw">lapply</span>(rate, <span clas
 <div id="plotting-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#plotting-the-results" class="anchor"></a>Plotting the results</h3>
-<p>We plot the four rate curves as time series. Our main focus is on the total emotion usage. For this curve, we also put a horizonal dashed line at its mean, and we indicating the “interesting” segments, those that appear more than two standard deviations away from the main, by putting error bars on these points.</p>
+<p>We plot the four rate curves as time series. Our main focus is on the total emotion usage. For this curve, we also put a horizontal dashed line at its mean, and we indicating the “interesting” segments, those that appear more than two standard deviations away from the main, by putting error bars on these points.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set up segment IDs</span>
 i &lt;-<span class="st"> </span><span class="kw">seq_len</span>(<span class="kw">nrow</span>(chunks))
 
