@@ -53,33 +53,42 @@ Usage
 
 ### Data input
 
-Read text data into R or convert an existing character vector to type
-`corpus_text` using one of the following functions:
+*Corpus* does not have a special "corpus" object. It uses data frames. It
+does, however, have a special object for storing text, `corpus_text`, for the
+`"text"` column of a data frame.
+
+Read text data into R or convert an existing corpus using one of the following
+functions:
 
  + `read_ndjson()` reads data in newline-delimited JSON format, optionally
    memory-mapping to enable processing large corpora that do not fit into
    RAM;
 
- + `as_text()` converts an R object to a text object of type `corpus_text`.
+ + `corpus()` creates a new corpus: a data frame with a column named
+   `"text"` of type `corpus_text`;
 
-All *corpus* functions expecting text accept both vector and data frame
-arguments. When the input argument is a data frame, *corpus* extracts the
-texts from the column named `"text"`.  You can construct a data frame in
-the expected format from other R object using the `corpus()` or
-`as_corpus()` functions.
+ + `as_corpus()` converts a character vector, data frame, or corpus
+   object from another package (*quanteda*, *readtext*, or *tm*) to
+   a data frame with a column named `"text"` of type `corpus_text`;
+
+ + `as_text()` extracts the texts from a corpus object.
+
+All *corpus* functions expecting text accept a variety of formats, including
+*quanteda* and *tm* corpus objects. These functions call `as_text()` on their
+inputs, then process the resulting `corpus_text` object.
 
 
 ### Preprocessing
 
-Specify preprocessing decisions using the following function:
+You specify all preprocessing and text normalization (case folding, stemming,
+stop word removal, etc.) using a *text filter*:
 
  + `text_filter()` gets or sets a text filter specifying token
    preprocessing and sentence boundaries.
 
-When you use the *corpus* library, you specify all text preprocessing
-decisions (normalization, stemming, stop word removal, etc.) as part of
-a `corpus_text_filter` object. Every `corpus_text` object has a
-corresponding text filter.
+Every `corpus_text` object has a text filter. You can get or set this filter
+using the `text_filter()` function, or you can override the filter or specific
+properties using the `filter` or `...` arguments of functions expecting text.
 
 
 ### Tokenizing text
@@ -97,19 +106,24 @@ use the following functions:
  + `text_ntype()` counts the number of unique types.
 
 The default text filter case folds the text, removes Unicode default ignorable
-characters like zero-width spaces, applies character compatibility maps and
-converts to Unicode normalized composed form ([NFKC][nfkc]), and combines
-English abbreviations like `"Ms."` into single tokens (for other words,
-trailing punctuation gets split off). For token boundaries, *corpus* uses the
-word boundaries defined by [Unicode Standard Annex #29, Section 4][wordbreak],
-with special rules for handling `@mentions`, `#hashtags`, and URLs.
+characters like zero-width spaces, and converts to Unicode normalized composed
+form ([NFC][nfc]), and combines English abbreviations like `"Ms."` into single
+tokens (for other words, trailing punctuation gets split off). For token
+boundaries, *corpus* uses the word boundaries defined by [Unicode Standard
+Annex #29, Section 4][wordbreak], with special rules for handling hyphens,
+`@mentions`, `#hashtags`, and URLs.
 
 
 ### Segmenting text
 
 *Corpus* can break text into sentences or token blocks:
 
- + `text_split()` segments text into sentences or blocks of tokens.
+ + `text_split()` segments text into sentences or blocks of tokens;
+
+ + `text_sub()` extracts subsequences of tokens;
+
+ + `text_length()` gets the number of dropped and non-dropped tokens in
+   a set of texts;
 
  + `text_nsentence()` counts the number of sentences in a set of texts.
 
@@ -128,12 +142,14 @@ mentioned above.
 one or more types:
 
  + `text_locate()` reports all instances of tokens matching the search terms,
-   along with contexts before and after the term instances.
+   along with contexts before and after the term instances;
 
- + `text_count()` counts the number of matches in each of a set of texts.
+ + `text_count()` counts the number of matches in each of a set of texts;
 
  + `text_detect()` indicates whether each text contains at least one of
-   the search terms.
+   the search terms;
+
+ + `text_subset()` gets the subset of texts containing a term.
 
 Notably, each of these functions accepts a `corpus_token_filter` argument.
 If this filter specifies a particular stemming behavior, then you search with
@@ -154,6 +170,14 @@ that matches the term after tokenization.
 All three functions allow weighting the texts.  The `term_matrix()` function
 allows you to select a specific term set, and also allow you to aggregate
 over a specified a grouping factor.
+
+
+### UTF-8 Handling
+
+*Corpus* has functions for translating, validating, normalizing, and printing
+UTF-8 encoded character data. These functions are useful for working around
+[several][windows-enc2utf8] [bugs][emoji-print] in R's handling of UTF-8 data.
+The [Unicdode vignette][unicode-vignette] describes these functions in detail.
 
 
 Building from source
@@ -245,13 +269,16 @@ License
 [cran]: https://cran.r-project.org/package=corpus "CRAN Page"
 [cran-badge]: http://www.r-pkg.org/badges/version/corpus "CRAN Page"
 [cranlogs-badge]: http://cranlogs.r-pkg.org/badges/corpus "CRAN Downloads"
+[emoji-print]: https://twitter.com/ptrckprry/status/887732831161425920 "MacOS Emoji Printing"
 [issues]: https://github.com/patperry/r-corpus/issues "Issues"
 [ndjson]: http://ndjson.org/ "Newline-Delimited JSON"
-[nfkc]: http://unicode.org/reports/tr15/ "Unicode Normalization Forms"
+[nfc]: http://unicode.org/reports/tr15/ "Unicode Normalization Forms"
 [quanteda]: http://quanteda.io/ "Quanteda"
 [sentbreak]: http://unicode.org/reports/tr29/#Sentence_Boundaries "Unicode Text Segmentation, Sentence Boundaries"
 [stringr]: http://stringr.tidyverse.org/ "Stringr"
 [tidytext]: http://juliasilge.github.io/tidytext/ "Tidytext"
 [travis]: https://travis-ci.org/patperry/r-corpus "Continuous Integration (Linux)"
 [travis-badge]: https://api.travis-ci.org/patperry/r-corpus.svg?branch=master "Continuous Integration (Linux)"
+[unicode-vignette]: http://corpustext.com/articles/unicode.html "Unicode: Emoji, accents, and international text"
+[windows-enc2utf8]: https://twitter.com/ptrckprry/status/901494853758054401 "Windows enc2utf8 Bug"
 [wordbreak]: http://unicode.org/reports/tr29/#Word_Boundaries "Unicode Text Segmentation, Word Boundaries"

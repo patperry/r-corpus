@@ -117,22 +117,25 @@
 <div id="data-input" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-input" class="anchor"></a>Data input</h3>
-<p>Read text data into R or convert an existing character vector to type <code>corpus_text</code> using one of the following functions:</p>
+<p><em>Corpus</em> does not have a special “corpus” object. It uses data frames. It does, however, have a special object for storing text, <code>corpus_text</code>, for the <code>"text"</code> column of a data frame.</p>
+<p>Read text data into R or convert an existing corpus using one of the following functions:</p>
 <ul>
 <li><p><code><a href="reference/read_ndjson.html">read_ndjson()</a></code> reads data in newline-delimited JSON format, optionally memory-mapping to enable processing large corpora that do not fit into RAM;</p></li>
-<li><p><code><a href="reference/as_text.html">as_text()</a></code> converts an R object to a text object of type <code>corpus_text</code>.</p></li>
+<li><p><code><a href="reference/corpus.html">corpus()</a></code> creates a new corpus: a data frame with a column named <code>"text"</code> of type <code>corpus_text</code>;</p></li>
+<li><p><code><a href="reference/corpus.html">as_corpus()</a></code> converts a character vector, data frame, or corpus object from another package (<em>quanteda</em>, <em>readtext</em>, or <em>tm</em>) to a data frame with a column named <code>"text"</code> of type <code>corpus_text</code>;</p></li>
+<li><p><code><a href="reference/as_text.html">as_text()</a></code> extracts the texts from a corpus object.</p></li>
 </ul>
-<p>All <em>corpus</em> functions expecting text accept both vector and data frame arguments. When the input argument is a data frame, <em>corpus</em> extracts the texts from the column named <code>"text"</code>. You can construct a data frame in the expected format from other R object using the <code><a href="reference/corpus.html">corpus()</a></code> or <code><a href="reference/corpus.html">as_corpus()</a></code> functions.</p>
+<p>All <em>corpus</em> functions expecting text accept a variety of formats, including <em>quanteda</em> and <em>tm</em> corpus objects. These functions call <code><a href="reference/as_text.html">as_text()</a></code> on their inputs, then process the resulting <code>corpus_text</code> object.</p>
 </div>
 <div id="preprocessing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#preprocessing" class="anchor"></a>Preprocessing</h3>
-<p>Specify preprocessing decisions using the following function:</p>
+<p>You specify all preprocessing and text normalization (case folding, stemming, stop word removal, etc.) using a <em>text filter</em>:</p>
 <ul>
 <li>
 <code><a href="reference/text_filter.html">text_filter()</a></code> gets or sets a text filter specifying token preprocessing and sentence boundaries.</li>
 </ul>
-<p>When you use the <em>corpus</em> library, you specify all text preprocessing decisions (normalization, stemming, stop word removal, etc.) as part of a <code>corpus_text_filter</code> object. Every <code>corpus_text</code> object has a corresponding text filter.</p>
+<p>Every <code>corpus_text</code> object has a text filter. You can get or set this filter using the <code><a href="reference/text_filter.html">text_filter()</a></code> function, or you can override the filter or specific properties using the <code>filter</code> or <code>...</code> arguments of functions expecting text.</p>
 </div>
 <div id="tokenizing-text" class="section level3">
 <h3 class="hasAnchor">
@@ -144,14 +147,16 @@
 <li><p><code><a href="reference/text_types.html">text_types()</a></code> computes the unique types in a set of texts.</p></li>
 <li><p><code><a href="reference/text_types.html">text_ntype()</a></code> counts the number of unique types.</p></li>
 </ul>
-<p>The default text filter case folds the text, removes Unicode default ignorable characters like zero-width spaces, applies character compatibility maps and converts to Unicode normalized composed form (<a href="http://unicode.org/reports/tr15/" title="Unicode Normalization Forms">NFKC</a>), and combines English abbreviations like <code>"Ms."</code> into single tokens (for other words, trailing punctuation gets split off). For token boundaries, <em>corpus</em> uses the word boundaries defined by <a href="http://unicode.org/reports/tr29/#Word_Boundaries" title="Unicode Text Segmentation, Word Boundaries">Unicode Standard Annex #29, Section 4</a>, with special rules for handling <code>@mentions</code>, <code>#hashtags</code>, and URLs.</p>
+<p>The default text filter case folds the text, removes Unicode default ignorable characters like zero-width spaces, and converts to Unicode normalized composed form (<a href="http://unicode.org/reports/tr15/" title="Unicode Normalization Forms">NFC</a>), and combines English abbreviations like <code>"Ms."</code> into single tokens (for other words, trailing punctuation gets split off). For token boundaries, <em>corpus</em> uses the word boundaries defined by <a href="http://unicode.org/reports/tr29/#Word_Boundaries" title="Unicode Text Segmentation, Word Boundaries">Unicode Standard Annex #29, Section 4</a>, with special rules for handling hyphens, <code>@mentions</code>, <code>#hashtags</code>, and URLs.</p>
 </div>
 <div id="segmenting-text" class="section level3">
 <h3 class="hasAnchor">
 <a href="#segmenting-text" class="anchor"></a>Segmenting text</h3>
 <p><em>Corpus</em> can break text into sentences or token blocks:</p>
 <ul>
-<li><p><code><a href="reference/text_split.html">text_split()</a></code> segments text into sentences or blocks of tokens.</p></li>
+<li><p><code><a href="reference/text_split.html">text_split()</a></code> segments text into sentences or blocks of tokens;</p></li>
+<li><p><code><a href="reference/text_sub.html">text_sub()</a></code> extracts subsequences of tokens;</p></li>
+<li><p><code><a href="reference/text_tokens.html">text_length()</a></code> gets the number of dropped and non-dropped tokens in a set of texts;</p></li>
 <li><p><code><a href="reference/text_split.html">text_nsentence()</a></code> counts the number of sentences in a set of texts.</p></li>
 </ul>
 <p>For sentence boundaries, <em>corpus</em> uses a tailored version of the boundaries defined in <a href="http://unicode.org/reports/tr29/#Sentence_Boundaries" title="Unicode Text Segmentation, Sentence Boundaries">Unicode Standard Annex #29, Section 5</a>. Specifically, when finding sentence boundaries, by default <em>corpus</em> treats carriage return and new line like spaces, and <em>corpus</em> suppresses sentence breaks after English abbreviations. You can override this behavior by using a different <code>corpus_text_filter</code> constructed using the <code><a href="reference/text_filter.html">text_filter()</a></code> function mentioned above.</p>
@@ -161,9 +166,10 @@
 <a href="#searching-for-terms" class="anchor"></a>Searching for terms</h3>
 <p><em>Corpus</em> can search text for particular “terms” each of which is a sequence of one or more types:</p>
 <ul>
-<li><p><code><a href="reference/text_locate.html">text_locate()</a></code> reports all instances of tokens matching the search terms, along with contexts before and after the term instances.</p></li>
-<li><p><code><a href="reference/text_locate.html">text_count()</a></code> counts the number of matches in each of a set of texts.</p></li>
-<li><p><code><a href="reference/text_locate.html">text_detect()</a></code> indicates whether each text contains at least one of the search terms.</p></li>
+<li><p><code><a href="reference/text_locate.html">text_locate()</a></code> reports all instances of tokens matching the search terms, along with contexts before and after the term instances;</p></li>
+<li><p><code><a href="reference/text_locate.html">text_count()</a></code> counts the number of matches in each of a set of texts;</p></li>
+<li><p><code><a href="reference/text_locate.html">text_detect()</a></code> indicates whether each text contains at least one of the search terms;</p></li>
+<li><p><code><a href="reference/text_locate.html">text_subset()</a></code> gets the subset of texts containing a term.</p></li>
 </ul>
 <p>Notably, each of these functions accepts a <code>corpus_token_filter</code> argument. If this filter specifies a particular stemming behavior, then you search with the stemmed type, and the search results will show the raw (unstemmed) text that matches the term after tokenization.</p>
 </div>
@@ -176,6 +182,11 @@
 <li><p><code><a href="reference/term_matrix.html">term_matrix()</a></code> for computing a term frequency matrix or its transpose (a “document-by-term matrix” or “term-by-document” matrix).</p></li>
 </ul>
 <p>All three functions allow weighting the texts. The <code><a href="reference/term_matrix.html">term_matrix()</a></code> function allows you to select a specific term set, and also allow you to aggregate over a specified a grouping factor.</p>
+</div>
+<div id="utf-8-handling" class="section level3">
+<h3 class="hasAnchor">
+<a href="#utf-8-handling" class="anchor"></a>UTF-8 Handling</h3>
+<p><em>Corpus</em> has functions for translating, validating, normalizing, and printing UTF-8 encoded character data. These functions are useful for working around <a href="https://twitter.com/ptrckprry/status/901494853758054401" title="Windows enc2utf8 Bug">several</a> <a href="https://twitter.com/ptrckprry/status/887732831161425920" title="MacOS Emoji Printing">bugs</a> in R’s handling of UTF-8 data. The <a href="http://corpustext.com/articles/unicode.html" title="Unicode: Emoji, accents, and international text">Unicdode vignette</a> describes these functions in detail.</p>
 </div>
 </div>
 <div id="building-from-source" class="section level2">
