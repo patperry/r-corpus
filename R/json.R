@@ -26,7 +26,7 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = NULL)
             stop("'file' must be a character string when 'mmap' is TRUE")
         }
 
-        ans <- .Call(C_mmap_ndjson, file)
+        ans <- .Call(C_mmap_ndjson, file, text)
 
     } else {
         # open the file in binary mode
@@ -55,14 +55,14 @@ read_ndjson <- function(file, mmap = FALSE, simplify = TRUE, text = NULL)
             size <- min(.Machine$integer.max, 2 * size)
         }
 
-        ans <- .Call(C_read_ndjson, buffer)
+        ans <- .Call(C_read_ndjson, buffer, text)
     }
 
     if (simplify) {
         if (length(dim(ans)) == 2) {
             ans <- as.data.frame(ans, text = text)
         } else {
-            ans <- .Call(C_simplify_json, ans, text)
+            ans <- .Call(C_simplify_json, ans)
         }
     }
     ans
@@ -161,7 +161,7 @@ print.corpus_json <- function(x, ...)
     }
 
     ans <- .Call(C_subscript_json, x, i)
-    ans <- .Call(C_simplify_json, ans, NULL)
+    ans <- .Call(C_simplify_json, ans)
     ans
 }
 
@@ -228,7 +228,7 @@ print.corpus_json <- function(x, ...)
 
     ans <- .Call(C_subset_json, x, i, j)
     if (drop && !is.null(dim(ans)) && length(ans) == 1) {
-        ans <- .Call(C_simplify_json, ans, NULL)
+        ans <- .Call(C_simplify_json, ans)
     }
     ans
 }
@@ -256,7 +256,7 @@ as.data.frame.corpus_json <- function(x, row.names = NULL, ...,
 
     if (is.null(dim(x))) {
         n <- length(x)
-        l <- list(.Call(C_simplify_json, x, text))
+        l <- list(.Call(C_simplify_json, x))
         names(l) <- deparse(substitute(x), width.cutoff = 500L)
     } else {
         n <- nrow(x)
@@ -321,10 +321,7 @@ as.double.corpus_json <- function(x, ...)
 }
 
 
-as.list.corpus_json <- function(x, text = NULL, ...)
+as.list.corpus_json <- function(x, ...)
 {
-    with_rethrow({
-        text <- as_character_vector("text", text)
-    })
-    .Call(C_as_list_json, x, text)
+    .Call(C_as_list_json, x)
 }

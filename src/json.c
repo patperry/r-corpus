@@ -87,7 +87,7 @@ static void *malloc_nonnull(size_t size)
 }
 
 
-SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
+SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows, SEXP stext)
 {
 	SEXP ans = R_NilValue, sclass, shandle, snames;
 	struct json *obj = NULL;
@@ -108,17 +108,19 @@ SEXP alloc_json(SEXP sbuffer, SEXP sfield, SEXP srows)
 	R_SetExternalPtrAddr(shandle, obj);
 	obj = NULL;
 
-	PROTECT(ans = allocVector(VECSXP, 4)); nprot++;
+	PROTECT(ans = allocVector(VECSXP, 5)); nprot++;
 	SET_VECTOR_ELT(ans, 0, shandle);
 	SET_VECTOR_ELT(ans, 1, sbuffer);
 	SET_VECTOR_ELT(ans, 2, sfield);
 	SET_VECTOR_ELT(ans, 3, srows);
+	SET_VECTOR_ELT(ans, 4, stext);
 
-	PROTECT(snames = allocVector(STRSXP, 4)); nprot++;
+	PROTECT(snames = allocVector(STRSXP, 5)); nprot++;
 	SET_STRING_ELT(snames, 0, mkChar("handle"));
 	SET_STRING_ELT(snames, 1, mkChar("buffer"));
 	SET_STRING_ELT(snames, 2, mkChar("field"));
 	SET_STRING_ELT(snames, 3, mkChar("rows"));
+	SET_STRING_ELT(snames, 4, mkChar("text"));
 	setAttrib(ans, R_NamesSymbol, snames);
 
 	PROTECT(sclass = allocVector(STRSXP, 1)); nprot++;
@@ -152,7 +154,7 @@ out:
 
 static void json_load(SEXP sdata)
 {
-	SEXP shandle, sparent_handle, sbuffer, sfield, sfield_path,
+	SEXP shandle, sparent_handle, sbuffer, sfield, stext, sfield_path,
 	     srows, sparent, sparent2;
 	struct json *obj, *parent;
 	struct corpus_filebuf *buf;
@@ -173,7 +175,8 @@ static void json_load(SEXP sdata)
 	R_RegisterCFinalizerEx(shandle, free_json, TRUE);
 
 	sbuffer = getListElement(sdata, "buffer");
-	PROTECT(sparent = alloc_json(sbuffer, R_NilValue, R_NilValue));
+	stext = getListElement(sdata, "text");
+	PROTECT(sparent = alloc_json(sbuffer, R_NilValue, R_NilValue, stext));
 	sparent_handle = getListElement(sparent, "handle");
 	parent = R_ExternalPtrAddr(sparent_handle);
 
@@ -473,7 +476,7 @@ SEXP subscript_json(SEXP sdata, SEXP si)
 
 SEXP subrows_json(SEXP sdata, SEXP si)
 {
-	SEXP ans, shandle, sbuffer, sfield, srows, srows2;
+	SEXP ans, shandle, sbuffer, sfield, srows, stext, srows2;
 	const struct json *obj = as_json(sdata);
 	struct json *obj2;
 	const struct corpus_data *src;
@@ -493,11 +496,12 @@ SEXP subrows_json(SEXP sdata, SEXP si)
 	sbuffer = getListElement(sdata, "buffer");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
+	stext = getListElement(sdata, "text");
 
 	PROTECT(srows2 = allocVector(REALSXP, n));
 	irows = REAL(srows2);
 
-	PROTECT(ans = alloc_json(sbuffer, sfield, srows2));
+	PROTECT(ans = alloc_json(sbuffer, sfield, srows2, stext));
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -541,7 +545,7 @@ out:
 
 SEXP subfield_json(SEXP sdata, SEXP sname)
 {
-	SEXP ans, sbuffer, sfield, sfield2, shandle, srows;
+	SEXP ans, sbuffer, sfield, sfield2, shandle, srows, stext;
 	const struct json *obj = as_json(sdata);
 	struct corpus_text name;
 	struct corpus_data field;
@@ -570,6 +574,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	sbuffer = getListElement(sdata, "buffer");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
+	stext = getListElement(sdata, "text");
 
 	if (sfield == R_NilValue) {
 		m = 0;
@@ -584,7 +589,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	}
 	SET_STRING_ELT(sfield2, m, sname);
 
-	PROTECT(ans = alloc_json(sbuffer, sfield2, srows)); nprot++;
+	PROTECT(ans = alloc_json(sbuffer, sfield2, srows, stext)); nprot++;
 	shandle = getListElement(ans, "handle");
 	obj2 = R_ExternalPtrAddr(shandle);
 
@@ -824,9 +829,9 @@ static int in_string_set(SEXP strs, SEXP item)
 }
 
 
-static SEXP as_list_json_record(SEXP sdata, SEXP stext)
+static SEXP as_list_json_record(SEXP sdata)
 {
-	SEXP ans, ans_j, names, sbuffer, sfield, sfield2, srows,
+	SEXP ans, ans_j, names, sbuffer, sfield, sfield2, srows, stext,
 	     shandle, sname;
 	const struct json *d = as_json(sdata);
 	struct json *d_j;
@@ -847,6 +852,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 	sbuffer = getListElement(sdata, "buffer");
 	sfield = getListElement(sdata, "field");
 	srows = getListElement(sdata, "rows");
+	stext = getListElement(sdata, "text");
 	PROTECT(names = names_json(sdata));
 
 	PROTECT(ans = allocVector(VECSXP, r->nfield));
@@ -869,7 +875,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 			SET_STRING_ELT(sfield2, k, STRING_ELT(sfield, k));
 		}
 		SET_STRING_ELT(sfield2, m, sname);
-		ans_j = alloc_json(sbuffer, sfield2, srows);
+		ans_j = alloc_json(sbuffer, sfield2, srows, stext);
 		SET_VECTOR_ELT(ans, j, ans_j);
 		UNPROTECT(1); // sfield2 protected by ans_j, protected by ans
 
@@ -916,7 +922,7 @@ static SEXP as_list_json_record(SEXP sdata, SEXP stext)
 				&& in_string_set(stext, STRING_ELT(names, j))) {
 			ans_j = as_text_json(ans_j, R_NilValue);
 		} else {
-			ans_j = simplify_json(ans_j, stext);
+			ans_j = simplify_json(ans_j);
 		}
 		SET_VECTOR_ELT(ans, j, ans_j);
 	}
@@ -931,7 +937,7 @@ out:
 }
 
 
-SEXP as_list_json(SEXP sdata, SEXP stext)
+SEXP as_list_json(SEXP sdata)
 {
 	SEXP ans, val;
 	const struct json *d = as_json(sdata);
@@ -940,7 +946,7 @@ SEXP as_list_json(SEXP sdata, SEXP stext)
 	R_xlen_t i, n = d->nrow;
 
 	if (d->kind == CORPUS_DATATYPE_RECORD) {
-		return as_list_json_record(sdata, stext);
+		return as_list_json_record(sdata);
 	}
 
 	PROTECT(ans = allocVector(VECSXP, n));
@@ -971,7 +977,7 @@ SEXP as_list_json(SEXP sdata, SEXP stext)
 }
 
 
-SEXP simplify_json(SEXP sdata, SEXP stext)
+SEXP simplify_json(SEXP sdata)
 {
 	SEXP ans;
 	const struct json *d = as_json(sdata);
@@ -1009,7 +1015,7 @@ SEXP simplify_json(SEXP sdata, SEXP stext)
 		break;
 
 	default:
-		ans = as_list_json(sdata, stext);
+		ans = as_list_json(sdata);
 		break;
 	}
 

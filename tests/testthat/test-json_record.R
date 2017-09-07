@@ -147,6 +147,17 @@ test_that("converting to text throws error if no column named 'text'", {
 })
 
 
+test_that("decoding text or character as requested works", {
+    file <- tempfile()
+    writeLines('{ "a": "foo", "b": "bar", "c": "baz", "d": "boo" }', file)
+    ds <- read_ndjson(file, text = c("b", "c"))
+    expect_equal(ds$a, "foo")
+    expect_equal(ds$b, as_text("bar"))
+    expect_equal(ds$c, as_text("baz"))
+    expect_equal(ds$d, "boo")
+})
+
+
 test_that("invalid operations don't work", {
     lines <- c('{ "a": 1, "b": true }',
                '{ "b": false, "nested": { "c": 100, "d": false }}',

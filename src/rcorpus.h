@@ -176,14 +176,14 @@ SEXP logging_off(void);
 SEXP logging_on(void);
 
 /* data set */
-SEXP alloc_json(SEXP buffer, SEXP field, SEXP rows);
+SEXP alloc_json(SEXP buffer, SEXP field, SEXP rows, SEXP text);
 int is_json(SEXP data);
 struct json *as_json(SEXP data);
 
 SEXP as_integer_json(SEXP data);
 SEXP as_double_json(SEXP data);
 SEXP as_factor_json(SEXP data);
-SEXP as_list_json(SEXP data, SEXP text);
+SEXP as_list_json(SEXP data);
 SEXP as_logical_json(SEXP data);
 SEXP as_character_json(SEXP data);
 SEXP as_text_json(SEXP data, SEXP filter);
@@ -191,7 +191,7 @@ SEXP dim_json(SEXP data);
 SEXP length_json(SEXP data);
 SEXP names_json(SEXP data);
 SEXP print_json(SEXP data);
-SEXP simplify_json(SEXP data, SEXP text);
+SEXP simplify_json(SEXP data);
 SEXP subscript_json(SEXP data, SEXP i);
 SEXP subset_json(SEXP data, SEXP i, SEXP j);
 
@@ -276,8 +276,8 @@ SEXP utf8_valid(SEXP x);
 SEXP utf8_width(SEXP x, SEXP quote, SEXP utf8);
 
 /* json values */
-SEXP mmap_ndjson(SEXP file);
-SEXP read_ndjson(SEXP buffer);
+SEXP mmap_ndjson(SEXP file, SEXP text);
+SEXP read_ndjson(SEXP buffer, SEXP text);
 
 /* internal utility functions */
 double *as_weights(SEXP sweights, R_xlen_t n);

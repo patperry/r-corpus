@@ -18,12 +18,12 @@
 #include "rcorpus.h"
 
 
-SEXP mmap_ndjson(SEXP sfile)
+SEXP mmap_ndjson(SEXP sfile, SEXP stext)
 {
 	SEXP ans, sbuf;
 
 	PROTECT(sbuf = alloc_filebuf(sfile));
-	PROTECT(ans = alloc_json(sbuf, R_NilValue, R_NilValue));
+	PROTECT(ans = alloc_json(sbuf, R_NilValue, R_NilValue, stext));
 	as_json(ans); // force data load
 	UNPROTECT(2);
 
@@ -31,13 +31,13 @@ SEXP mmap_ndjson(SEXP sfile)
 }
 
 
-SEXP read_ndjson(SEXP sbuffer)
+SEXP read_ndjson(SEXP sbuffer, SEXP stext)
 {
 	SEXP ans;
 
 	assert(TYPEOF(sbuffer) == RAWSXP);
 
-	PROTECT(ans = alloc_json(sbuffer, R_NilValue, R_NilValue));
+	PROTECT(ans = alloc_json(sbuffer, R_NilValue, R_NilValue, stext));
 	as_json(ans); // force data load
 	UNPROTECT(1);
 
