@@ -122,7 +122,11 @@
 <span class="pkg">corpus</span> only, and may be defunct as soon as the next release.</p>
     
 
-    <pre class="usage"><span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>as_text</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='fu'>is_text</span>(<span class='no'>x</span>)
+
+<span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
             <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
@@ -136,6 +140,15 @@
       <th>filter</th>
       <td><p>if non-<code>NULL</code>, a text filter to to use instead of
     the default text filter for <code>x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>&#8230;</th>
+      <td><p>text filter properties to set on the result.</p></td>
+    </tr>
+    <tr>
+      <th>names</th>
+      <td><p>if non-<code>NULL</code> character vector of names for
+    the converted result.</p></td>
     </tr>
     <tr>
       <th>weights</th>
@@ -167,7 +180,8 @@
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function is deprecated; use <code><a href='term_matrix.html'>term_matrix</a></code> instead.</p>
+    <p>These functions are deprecated; use <code><a href='corpus_text.html'>as_corpus_text</a></code>,
+<code><a href='corpus_text.html'>is_corpus_text</a></code>, or <code><a href='term_matrix.html'>term_matrix</a></code> instead.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

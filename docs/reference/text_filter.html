@@ -271,7 +271,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='as_text.html'>as_text</a></code>, <code><a href='text_tokens.html'>text_tokens</a></code>,
+    <p><code><a href='corpus_text.html'>as_corpus_text</a></code>, <code><a href='text_tokens.html'>text_tokens</a></code>,
     <code><a href='text_split.html'>text_split</a></code>, <code><a href='abbreviations.html'>abbreviations</a></code>,
     <code><a href='stopwords.html'>stopwords</a></code>.</p>
     
@@ -299,7 +299,7 @@
 <span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))
 
 <span class='co'># set the text filter property</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_text.html'>as_text</a></span>(<span class='fu'>c</span>(<span class='st'>"Marnie the Dog is #1 on the internet."</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='corpus_text.html'>as_corpus_text</a></span>(<span class='fu'>c</span>(<span class='st'>"Marnie the Dog is #1 on the internet."</span>))
 <span class='fu'>text_filter</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>f</span>
 <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>) <span class='co'># by default, uses x's text_filter to tokenize</span></div><div class='output co'>#&gt; [[1]]
 #&gt;  [1] "Marnie"   NA         "Dog"      NA         "#"        "1"       

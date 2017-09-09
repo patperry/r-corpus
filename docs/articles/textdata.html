@@ -96,7 +96,7 @@
 <div id="text-data-type" class="section level2">
 <h2 class="hasAnchor">
 <a href="#text-data-type" class="anchor"></a>Text data type</h2>
-<p>The <em>corpus</em> package does not define a special corpus object, but it does define a new data type, <code>corpus_text</code>, for storing a collection of texts. You can create values of this type using the <code><a href="../reference/as_text.html">as_text()</a></code> or <code><a href="../reference/corpus.html">as_corpus()</a></code> function.</p>
+<p>The <em>corpus</em> package does not define a special corpus object, but it does define a new data type, <code>corpus_text</code>, for storing a collection of texts. You can create values of this type using the <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> or <code><a href="../reference/corpus.html">as_corpus()</a></code> function.</p>
 <p>Take, for example, the following sample text, created as an R character vector.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># raw text for the first two paragraphs of _The Tale of Peter Rabbit_,</span>
 <span class="co"># by Beatrix Potter</span>
@@ -114,11 +114,11 @@ raw &lt;-<span class="st"> </span><span class="kw">c</span>(
               <span class="st">"your Father had an accident there;"</span>,
               <span class="st">"he was put in a pie by Mrs. McGregor.'"</span>,
               <span class="dt">sep =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>))</code></pre></div>
-<p>We can convert the text to a <code>corpus_text</code> object using the <code><a href="../reference/as_text.html">as_text()</a></code> function:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">text &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_text.html">as_text</a></span>(raw)</code></pre></div>
+<p>We can convert the text to a <code>corpus_text</code> object using the <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">text &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(raw)</code></pre></div>
 <p>Alternatively, we can convert it to a data frame with a column named <code>"text"</code> of type <code>corpus_text</code> using the <code><a href="../reference/corpus.html">as_corpus()</a></code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus.html">as_corpus</a></span>(raw)</code></pre></div>
-<p>Both <code><a href="../reference/corpus.html">as_corpus()</a></code> and <code><a href="../reference/as_text.html">as_text()</a></code> are generic; they work on character vectors, data frames, <em>tm</em> <code>Corpus</code> objects, and <em>quanteda</em> <code>corpus</code> objects. Whenever you call a <em>corpus</em> function expecting text, that function calls <code><a href="../reference/as_text.html">as_text()</a></code> on its input. We will see some examples of converting <em>tm</em> and <em>quanteda</em> objects below.</p>
+<p>Both <code><a href="../reference/corpus.html">as_corpus()</a></code> and <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> are generic; they work on character vectors, data frames, <em>tm</em> <code>Corpus</code> objects, and <em>quanteda</em> <code>corpus</code> objects. Whenever you call a <em>corpus</em> function expecting text, that function calls <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> on its input. We will see some examples of converting <em>tm</em> and <em>quanteda</em> objects below.</p>
 <p>The <code>corpus_text</code> type behaves like an R character vector in most respects, but using this type enables some new features.</p>
 </div>
 <div id="text-filter" class="section level2">
@@ -161,18 +161,18 @@ raw &lt;-<span class="st"> </span><span class="kw">c</span>(
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the input is encoded in Latin-1, but declared as UTF-8</span>
 x &lt;-<span class="st"> "fa</span><span class="ch">\xE7</span><span class="st">ile"</span>
 <span class="kw">Encoding</span>(x) &lt;-<span class="st"> "UTF-8"</span>
-<span class="kw"><a href="../reference/as_text.html">as_text</a></span>(x) ## fails</code></pre></div>
-<pre><code>Error in as_text.character(x): argument entry 1 is marked as "UTF-8" but contains an invalid byte in position 3 (\xe7)</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/as_text.html">as_text</a></span>(<span class="kw">iconv</span>(x, <span class="st">"Latin1"</span>, <span class="st">"UTF-8"</span>)) ## succeeds</code></pre></div>
+<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(x) ## fails</code></pre></div>
+<pre><code>Error in as_corpus_text.character(x): argument entry 1 is marked as "UTF-8" but contains an invalid byte in position 3 (\xe7)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(<span class="kw">iconv</span>(x, <span class="st">"Latin1"</span>, <span class="st">"UTF-8"</span>)) ## succeeds</code></pre></div>
 <pre><code>[1] "façile"</code></pre>
 </div>
 <div id="unique-names" class="section level2">
 <h2 class="hasAnchor">
 <a href="#unique-names" class="anchor"></a>Unique names</h2>
 <p>All <code>corpus_text</code> objects have unique names. When you coerce an object with duplicate names to <code>corpus_text</code>, the duplicates get renamed with a warning:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_text.html">as_text</a></span>(<span class="kw">c</span>(<span class="dt">a =</span> <span class="st">"hello"</span>, <span class="dt">b =</span> <span class="st">"world"</span>, <span class="dt">a =</span> <span class="st">"repeated name"</span>)) <span class="co"># fails</span></code></pre></div>
-<pre><code>Warning in as_text.character(c(a = "hello", b = "world", a = "repeated name")): renaming entries
-with duplicate names</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(<span class="kw">c</span>(<span class="dt">a =</span> <span class="st">"hello"</span>, <span class="dt">b =</span> <span class="st">"world"</span>, <span class="dt">a =</span> <span class="st">"repeated name"</span>)) <span class="co"># fails</span></code></pre></div>
+<pre><code>Warning in as_corpus_text.character(c(a = "hello", b = "world", a = "repeated name")): renaming
+entries with duplicate names</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(x)</code></pre></div>
 <pre><code>[1] "a"   "b"   "a.1"</code></pre>
 <p>Setting repeated names fails:</p>
@@ -201,7 +201,7 @@ data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_n
 <span class="co"># display the internal representation of the resulting 'corpus_text' object</span>
 <span class="kw">unclass</span>(data<span class="op">$</span>text)</code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fc0d018cff0&gt;
+&lt;pointer: 0x7f8eeb3159d0&gt;
 
 $sources
 $sources[[1]]
@@ -242,7 +242,7 @@ NULL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># segmenting does not allocate new objects for the segments</span>
 <span class="kw">unclass</span>(chunks<span class="op">$</span>text) <span class="co"># inspect text internals</span></code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fc0cbd92e80&gt;
+&lt;pointer: 0x7f8eeb177400&gt;
 
 $sources
 $sources[[1]]
@@ -298,13 +298,13 @@ para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the 
 <a href="#conversion-to-character" class="anchor"></a>Conversion to character</h2>
 <p>The one disadvantage of using a <code>corpus_text</code> object instead of an R character vector is that many functions from other packages that expect R character vectors will not work on <code>corpus_text</code>. To get around this, you can call <code>as.character</code> on a <code>corpus_text</code> object to convert it to an R character vector.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># some R methods coerce their inputs to character; 'message' is one example</span>
-<span class="kw">message</span>(<span class="kw"><a href="../reference/as_text.html">as_text</a></span>(<span class="st">"hello world"</span>))</code></pre></div>
+<span class="kw">message</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(<span class="st">"hello world"</span>))</code></pre></div>
 <pre><code>hello world</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># others do not;</span>
-<span class="kw">cat</span>(<span class="kw"><a href="../reference/as_text.html">as_text</a></span>(<span class="st">"hello world"</span>), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>) <span class="co"># fails</span></code></pre></div>
-<pre><code>Error in cat(as_text("hello world"), "\n"): argument 1 (type 'list') cannot be handled by 'cat'</code></pre>
+<span class="kw">cat</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(<span class="st">"hello world"</span>), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>) <span class="co"># fails</span></code></pre></div>
+<pre><code>Error in cat(as_corpus_text("hello world"), "\n"): argument 1 (type 'list') cannot be handled by 'cat'</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># we must call 'as.character' on the inputs</span>
-<span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw"><a href="../reference/as_text.html">as_text</a></span>(<span class="st">"hello world"</span>)), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</code></pre></div>
+<span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(<span class="st">"hello world"</span>)), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</code></pre></div>
 <pre><code>hello world </code></pre>
 </div>
 <div id="interface-with-quanteda" class="section level2">
@@ -341,9 +341,9 @@ para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the 
 19 BNP  …tionately involving ethnic groups.\n\n Immigration  Has Harmed British Jobs\n\nThe concept…
 20 BNP  …ons working than in 1997.\n\nOverall,  immigrants   have taken up more than 1.64 million o…
 ⋮  (87 rows total)</code></pre>
-<p>You can convert a <em>quanteda</em> corpus to a data frame using <code><a href="../reference/corpus.html">as_corpus()</a></code>, or extract its text using <code><a href="../reference/as_text.html">as_text()</a></code>:</p>
+<p>You can convert a <em>quanteda</em> corpus to a data frame using <code><a href="../reference/corpus.html">as_corpus()</a></code>, or extract its text using <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert to corpus_text:</span>
-<span class="kw">print</span>(<span class="kw"><a href="../reference/as_text.html">as_text</a></span>(uk2010immigCorpus))</code></pre></div>
+<span class="kw">print</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(uk2010immigCorpus))</code></pre></div>
 <pre><code>BNP          "IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- At current i…"
 Coalition    "IMMIGRATION. \n\nThe Government believes that immigration has enriched our culture a…"
 Conservative "Attract the brightest and best to our country.\n\nImmigration has enriched our natio…"
@@ -397,9 +397,9 @@ UKIP         UKIP         Immigration &amp; Asylum.\n\nAs a member of the EU, Br
 19 industry     10       8
 20 world        10       8
 ⋮  (1042 rows total)</code></pre>
-<p>The <code><a href="../reference/corpus.html">as_corpus()</a></code> and <code><a href="../reference/as_text.html">as_text()</a></code> functions also work on <em>tm</em> Corpus objects:</p>
+<p>The <code><a href="../reference/corpus.html">as_corpus()</a></code> and <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> functions also work on <em>tm</em> Corpus objects:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert to corpus_text</span>
-<span class="kw">print</span>(<span class="kw"><a href="../reference/as_text.html">as_text</a></span>(crude))</code></pre></div>
+<span class="kw">print</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(crude))</code></pre></div>
 <pre><code>127 "Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crude oil…"
 144 "OPEC may be forced to meet before a\nscheduled June session to readdress its production cutti…"
 191 "Texaco Canada said it lowered the\ncontract price it will pay for crude oil 64 Canadian cts a…"

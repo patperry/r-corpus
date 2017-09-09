@@ -129,7 +129,7 @@ text &lt;-<span class="st"> </span><span class="kw">sapply</span>(urls, <span cl
 dict &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">c</span>(toks, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)) <span class="co"># unique words</span>
 text2 &lt;-<span class="st"> </span><span class="kw">sapply</span>(toks, paste, <span class="dt">collapse =</span> <span class="st">"\u200b"</span>)</code></pre></div>
 <p>and put the input text in a data frame for convenient analysis</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> names, <span class="dt">text =</span> <span class="kw"><a href="../reference/as_text.html">as_text</a></span>(text2),
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> names, <span class="dt">text =</span> <span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(text2),
                    <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <p>We then specify a token filter to determine what is counted by other corpus functions. Here we set <code>combine = dict</code> so that multi-word tokens get treated as single entities</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>, <span class="dt">drop =</span> stop_words, <span class="dt">combine =</span> dict)

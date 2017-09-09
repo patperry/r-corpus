@@ -123,9 +123,9 @@
 <li><p><code><a href="reference/read_ndjson.html">read_ndjson()</a></code> reads data in newline-delimited JSON format, optionally memory-mapping to enable processing large corpora that do not fit into RAM;</p></li>
 <li><p><code><a href="reference/corpus.html">corpus()</a></code> creates a new corpus: a data frame with a column named <code>"text"</code> of type <code>corpus_text</code>;</p></li>
 <li><p><code><a href="reference/corpus.html">as_corpus()</a></code> converts a character vector, data frame, or corpus object from another package (<em>quanteda</em>, <em>readtext</em>, or <em>tm</em>) to a data frame with a column named <code>"text"</code> of type <code>corpus_text</code>;</p></li>
-<li><p><code><a href="reference/as_text.html">as_text()</a></code> extracts the texts from a corpus object.</p></li>
+<li><p><code><a href="reference/corpus-deprecated.html">as_text()</a></code> extracts the texts from a corpus object.</p></li>
 </ul>
-<p>All <em>corpus</em> functions expecting text accept a variety of formats, including <em>quanteda</em> and <em>tm</em> corpus objects. These functions call <code><a href="reference/as_text.html">as_text()</a></code> on their inputs, then process the resulting <code>corpus_text</code> object.</p>
+<p>All <em>corpus</em> functions expecting text accept a variety of formats, including <em>quanteda</em> and <em>tm</em> corpus objects. These functions call <code><a href="reference/corpus-deprecated.html">as_text()</a></code> on their inputs, then process the resulting <code>corpus_text</code> object.</p>
 </div>
 <div id="preprocessing" class="section level3">
 <h3 class="hasAnchor">
