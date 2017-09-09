@@ -128,9 +128,8 @@ text &lt;-<span class="st"> </span><span class="kw">sapply</span>(urls, <span cl
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">toks &lt;-<span class="st"> </span>stringi<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stringi/topics/stri_split_boundaries">stri_split_boundaries</a></span>(text, <span class="dt">type =</span> <span class="st">"word"</span>)
 dict &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">c</span>(toks, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)) <span class="co"># unique words</span>
 text2 &lt;-<span class="st"> </span><span class="kw">sapply</span>(toks, paste, <span class="dt">collapse =</span> <span class="st">"\u200b"</span>)</code></pre></div>
-<p>and put the input text in a data frame for convenient analysis</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> names, <span class="dt">text =</span> <span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(text2),
-                   <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p>and put the input text in a corpus data frame for convenient analysis</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus_frame.html">corpus_frame</a></span>(<span class="dt">name =</span> names, <span class="dt">text =</span> text2)</code></pre></div>
 <p>We then specify a token filter to determine what is counted by other corpus functions. Here we set <code>combine = dict</code> so that multi-word tokens get treated as single entities</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>, <span class="dt">drop =</span> stop_words, <span class="dt">combine =</span> dict)
 (<span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(data) &lt;-<span class="st"> </span>f) <span class="co"># set the text column's filter</span></code></pre></div>
@@ -156,17 +155,29 @@ text2 &lt;-<span class="st"> </span><span class="kw">sapply</span>(toks, paste, 
 <h2 class="hasAnchor">
 <a href="#document-statistics" class="anchor"></a>Document statistics</h2>
 <p>We can now compute type, token, and sentence counts</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">data.frame</span>(<span class="dt">text =</span> data<span class="op">$</span>name,
-                <span class="dt">types =</span> <span class="kw"><a href="../reference/text_types.html">text_ntype</a></span>(data),
-                <span class="dt">tokens =</span> <span class="kw"><a href="../reference/text_tokens.html">text_ntoken</a></span>(data),
-                <span class="dt">sentences =</span> <span class="kw"><a href="../reference/text_split.html">text_nsentence</a></span>(data)))</code></pre></div>
-<pre><code>                     text types tokens sentences
-1 1954政府工作报告_周恩来  2023   8694       453
-2 1955政府工作报告_李富春  2780  21079       981
-3 1956政府工作报告_李先念  1342   9079       495
-4 1957政府工作报告_周恩来  2334  13009       704
-5 1958政府工作报告_薄一波  1973   9347       412
-6 1959政府工作报告_周恩来  2263  11640       577</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_stats.html">text_stats</a></span>(data)</code></pre></div>
+<pre><code>   tokens types sentences
+1    8694  2023       453
+2   21079  2780       981
+3    9079  1342       495
+4   13009  2334       704
+5    9347  1973       412
+6   11640  2263       577
+7    3889  1128       164
+8    7303  1697       387
+9    2020   839       125
+10  11935  2744       659
+11  10652  2412       505
+12   5634  1300       342
+13  12464  2588       671
+14  11867  2478       585
+15   9018  2267       487
+16   7187  1976       413
+17   5714  1519       292
+18  10540  2149       481
+19   8694  1895       405
+20  11830  2429       653
+⋮  (49 rows total)</code></pre>
 <p>and examine term frequencies</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(stats &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(data))</code></pre></div>
 <pre><code>   term count support
