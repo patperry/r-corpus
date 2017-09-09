@@ -12,57 +12,57 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-corpus <- function(..., row.names = NULL, filter = NULL)
+corpus_frame <- function(..., row.names = NULL, filter = NULL)
 {
     x <- data.frame(..., row.names = NULL, check.rows = FALSE,
                     check.names = TRUE, fix.empty.names = TRUE,
                     stringsAsFactors = FALSE)
-    as_corpus(x, filter = filter, row.names = row.names)
+    as_corpus_frame(x, filter = filter, row.names = row.names)
 }
 
 
-as_corpus <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame <- function(x, filter = NULL, ..., row.names = NULL)
 {
-    UseMethod("as_corpus")
+    UseMethod("as_corpus_frame")
 }
 
 
-as_corpus.default <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.default <- function(x, filter = NULL, ..., row.names = NULL)
 {
     x <- as.data.frame(x, optional = TRUE, stringsAsFactors = FALSE)
-    as_corpus(x, filter = filter, ..., row.names = row.names)
+    as_corpus_frame(x, filter = filter, ..., row.names = row.names)
 }
 
 
-as_corpus.character <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.character <- function(x, filter = NULL, ..., row.names = NULL)
 {
     x <- as_corpus_text(x)
-    as_corpus(x, filter = filter, ..., row.names = row.names)
+    as_corpus_frame(x, filter = filter, ..., row.names = row.names)
 }
 
 
-as_corpus.corpus_json <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.corpus_json <- function(x, filter = NULL, ..., row.names = NULL)
 {
     if (length(dim(x)) == 2) {
         x <- as.data.frame(x, text = "text", stringsAsFactors = FALSE)
     } else {
         x <- as_corpus_text(x)
     }
-    as_corpus(x, filter = filter, ..., row.names = row.names)
+    as_corpus_frame(x, filter = filter, ..., row.names = row.names)
 }
 
 
-as_corpus.corpus_text <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.corpus_text <- function(x, filter = NULL, ..., row.names = NULL)
 {
     if (!is_corpus_text(x)) {
         stop("argument is not a valid text object")
     }
     x <- data.frame(text = x)
-    as_corpus(x, filter = filter, ..., row.names = row.names)
+    as_corpus_frame(x, filter = filter, ..., row.names = row.names)
 }
 
 
-as_corpus.data.frame <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.data.frame <- function(x, filter = NULL, ..., row.names = NULL)
 {
     if (!is.data.frame(x)) {
         stop("argument is not a valid data frame")
@@ -109,11 +109,11 @@ corpus_with_meta <- function(text, meta, filter = NULL, ..., row.names = NULL)
     meta[["text"]] <- text
     row.names(meta) <- names
 
-    as_corpus(meta, filter = filter, ..., row.names = row.names)
+    as_corpus_frame(meta, filter = filter, ..., row.names = row.names)
 }
 
 # tm::Corpus
-as_corpus.Corpus <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.Corpus <- function(x, filter = NULL, ..., row.names = NULL)
 {
     with_package("tm", {
         text <- sapply(x, as.character)
@@ -124,7 +124,7 @@ as_corpus.Corpus <- function(x, filter = NULL, ..., row.names = NULL)
 }
 
 # quanteda::corpus
-as_corpus.corpus <- function(x, filter = NULL, ..., row.names = NULL)
+as_corpus_frame.corpus <- function(x, filter = NULL, ..., row.names = NULL)
 {
     with_package("quanteda", {
         text <- quanteda::texts(x)
@@ -134,7 +134,7 @@ as_corpus.corpus <- function(x, filter = NULL, ..., row.names = NULL)
 }
 
 
-is_corpus <- function(x)
+is_corpus_frame <- function(x)
 {
     if (!is.data.frame(x)) {
         return(FALSE)

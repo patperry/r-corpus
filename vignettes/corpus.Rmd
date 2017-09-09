@@ -92,30 +92,31 @@ Corpus object
 -------------
 
 Now that we have obtained our raw data, we put everything together into a
-corpus object, constructed via the `corpus` function:
+corpus data frame object, constructed via the `corpus_frame()` function:
 
 
 ```r
-data <- corpus(title, text)
+data <- corpus_frame(title, text)
 
 # set the row names; not necessary but makes results easier to read
 rownames(data) <- sprintf("ch%02d", seq_along(chapter))
 ```
 
-The `corpus` function behaves similarly to the `data.frame` function, but
-expects one of the columns to be named `"text"`. Note that we do not need
-to specify `stringsAsFactors = FALSE` when creating a corpus object.
-As an alternative to using the `corpus` function, we can construct a data
-frame using some other method (e.g., `read.csv` or `read_ndjson`) and use
-the `as_corpus` function.
+The `corpus_frame()` function behaves similarly to the `data.frame` function,
+but expects one of the columns to be named `"text"`. Note that we do not need
+to specify `stringsAsFactors = FALSE` when creating a corpus data frame
+object.  As an alternative to using the `corpus_frame()` function, we can
+construct a data frame using some other method (e.g., `read.csv` or
+`read_ndjson`) and use the `as_corpus_frame()` function.
 
 
-A corpus object is just a data frame with a column named "text" of type
-`"corpus_text"`. When using the *corpus* library, it is not strictly necessary
-to use corpus objects as inputs; most functions will accept with character
-vectors and ordinary data frames. Using a corpus object gives better
-printing behavior and allows setting a `text_filter` attribute to override
-the default text preprocessing.
+A corpus data frame object is just a data frame with a column named "text" of
+type `"corpus_text"`. When using the *corpus* library, it is not strictly
+necessary to use corpus data frame objects as inputs; most functions will
+accept with character vectors, ordinary data frames, *quanteda* corpus
+objects, and *tm* Corpus objects.. Using a native corpus object gives better
+printing behavior and allows setting a `text_filter` attribute to override the
+default text preprocessing.
 
 
 ```r

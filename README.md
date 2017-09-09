@@ -64,18 +64,18 @@ functions:
    memory-mapping to enable processing large corpora that do not fit into
    RAM;
 
- + `corpus()` creates a new corpus: a data frame with a column named
-   `"text"` of type `corpus_text`;
+ + `corpus_frame()` creates a new corpus data frame: a data frame with
+   a column named `"text"` of type `corpus_text`;
 
- + `as_corpus()` converts a character vector, data frame, or corpus
+ + `as_corpus_frame()` converts a character vector, data frame, or corpus
    object from another package (*quanteda*, *readtext*, or *tm*) to
    a data frame with a column named `"text"` of type `corpus_text`;
 
- + `as_text()` extracts the texts from a corpus object.
+ + `as_corpus_text()` extracts the texts from a corpus object.
 
 All *corpus* functions expecting text accept a variety of formats, including
-*quanteda* and *tm* corpus objects. These functions call `as_text()` on their
-inputs, then process the resulting `corpus_text` object.
+*quanteda* and *tm* corpus objects. These functions call `as_corpus_text()`
+on their inputs, then process the resulting `corpus_text` object.
 
 
 ### Preprocessing

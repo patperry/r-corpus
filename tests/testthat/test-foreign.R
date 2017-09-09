@@ -30,12 +30,13 @@ test_that("'as_corpus_text' and 'as_corpus' work on tm VCorpus", {
                        class = c("VCorpus", "Corpus"))
 
     text <- as_corpus_text(crude)
-    expect_equal(text, as_corpus_text(c("127" = "Diamond Shamrock Corp said that...",
-                                 "144" = "OPEC may be forced to meet...",
-                                 "191" = "Texaco Canada said it lowered...")))
+    expect_equal(text,
+                 as_corpus_text(c("127" = "Diamond Shamrock Corp said that...",
+                                  "144" = "OPEC may be forced to meet...",
+                                  "191" = "Texaco Canada said it lowered...")))
 
-    data <- as_corpus(crude)
-    expect_equal(data, as_corpus(text))
+    data <- as_corpus_frame(crude)
+    expect_equal(data, as_corpus_frame(text))
 })
 
 
@@ -52,5 +53,5 @@ test_that("'as_corpus_text' and 'as_corpus' work on quanteda corpus", {
     quanteda::docnames(qdata) <- rownames(data)
 
     expect_equal(as_corpus_text(qdata), as_corpus_text(data))
-    expect_equal(as_corpus(data), as_corpus(qdata))
+    expect_equal(as_corpus_frame(data), as_corpus_frame(qdata))
 })

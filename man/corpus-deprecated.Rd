@@ -1,6 +1,9 @@
 \name{corpus-deprecated}
 \alias{corpus-deprecated}
+\alias{as_corpus}
 \alias{as_text}
+\alias{corpus}
+\alias{is_corpus}
 \alias{is_text}
 \alias{term_frame}
 \title{Deprecated Functions in Package \pkg{corpus}}
@@ -9,43 +12,43 @@ These functions are provided for compatibility with older versions of
 \pkg{corpus} only, and may be defunct as soon as the next release.
 }
 \usage{
+corpus(..., row.names = NULL, filter = NULL)
+
+as_corpus(x, filter = NULL, ..., row.names = NULL)
+
 as_text(x, filter = NULL, ..., names = NULL)
+
+is_corpus(x)
 
 is_text(x)
 
 term_frame(x, filter = NULL, weights = NULL,
-            ngrams = NULL, select = NULL, group = NULL, ...)
+           ngrams = NULL, select = NULL, group = NULL, ...)
 }
 \arguments{
-\item{x}{a text vector to tokenize.}
+\item{x}{Deprecated.}
 
-\item{filter}{if non-\code{NULL}, a text filter to to use instead of
-    the default text filter for \code{x}.}
+\item{filter}{Deprecated.}
 
-\item{\dots}{text filter properties to set on the result.}
+\item{group}{Deprecated.}
 
-\item{names}{if non-\code{NULL} character vector of names for
-    the converted result.}
+\item{names}{Deprecated.}
 
-\item{weights}{a numeric vector the same length of \code{x} assigning
-    weights to each text, or \code{NULL} for unit weights.}
+\item{ngrams}{Deprecated.}
 
-\item{ngrams}{an integer vector of n-gram lengths to include, or
-    \code{NULL} to use the \code{select} argument to determine the
-    n-gram lengths.}
+\item{row.names}{Deprecated.}
 
-\item{select}{a character vector of terms to count, or \code{NULL} to
-    count all terms that appear in \code{x}.}
+\item{select}{Deprecated.}
 
-\item{group}{if non-\code{NULL}, a factor, character string, or
-    integer vector the same length of \code{x} specifying the grouping
-    behavior.}
+\item{weights}{Deprecated.}
 
-\item{\dots}{additional properties to set on the text filter.}
+\item{\dots}{Deprecated.}
 }
 \details{
-These functions are deprecated; use \code{\link{as_corpus_text}},
-\code{\link{is_corpus_text}}, or \code{\link{term_matrix}} instead.
+These functions are deprecated; use \code{\link{corpus_frame}},
+\code{\link{as_corpus_frame}}, \code{\link{as_corpus_text}},
+\code{\link{is_corpus_frame}}, \code{\link{is_corpus_text}},
+or \code{\link{term_matrix}} instead.
 }
 \seealso{
 \code{\link{Deprecated}}

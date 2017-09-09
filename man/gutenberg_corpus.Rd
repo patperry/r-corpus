@@ -34,7 +34,7 @@ A corpus (data frame) with three columns: \code{"title"}, \code{"author"},
 and \code{"text"}.
 }
 \seealso{
-\code{\link{corpus}}.
+\code{\link{corpus_frame}}.
 }
 \examples{
 # get the texts of George Eliot's novels

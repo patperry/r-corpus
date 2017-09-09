@@ -321,10 +321,11 @@ test_that("'print.corpus_frame' can wrap 4 columns", {
     options(width = 80)
     on.exit(options(width = oldwidth), add = TRUE)
 
-    x <- corpus(title = "The Declaration of Independence of The United States of America",
-                author = "Founding Fathers",
-                language = "English",
-                text = "The Declaration of Independence of The United States of America\n\n\nWhen in the course of human events")
+    x <- corpus_frame(
+        title = "The Declaration of Independence of The United States of America",
+        author = "Founding Fathers",
+        language = "English",
+        text = "The Declaration of Independence of The United States of America\n\n\nWhen in the course of human events")
 
     lines <- c(
 '  title                                                          ',

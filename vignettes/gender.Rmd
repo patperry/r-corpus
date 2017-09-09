@@ -49,7 +49,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://mirrors.xmission.com/gutenberg/
+Using mirror http://mirror.csclub.uwaterloo.ca/gutenberg/
 ```
 
 ```

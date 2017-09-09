@@ -38,6 +38,10 @@ corpus 0.9.1.9000
 
 ### DEPRECATED AND DEFUNCT
 
+  * Renamed `corpus`, `as_corpus()` and `is_corpus()` to `corpus_frame`,
+    `as_corpus_frame()` and `is_corpus_frame()` to avoid name clashes with
+    other packages.
+
   * Renamed `as_text()` and `is_text()` to `as_corpus_text()` and
     `is_corpus_text()` to avoid name clashes with other packages.
 

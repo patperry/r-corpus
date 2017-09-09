@@ -14,8 +14,8 @@ Text data type
 
 The *corpus* package does not define a special corpus object, but it does
 define a new data type, `corpus_text`, for storing a collection of texts. You
-can create values of this type using the `as_corpus_text()` or `as_corpus()`
-function.
+can create values of this type using the `as_corpus_text()` or
+`as_corpus_frame()` function.
 
 Take, for example, the following sample text, created as an R character
 vector.
@@ -49,18 +49,18 @@ text <- as_corpus_text(raw)
 ```
 
 Alternatively, we can convert it to a data frame with a column named `"text"`
-of type `corpus_text` using the `as_corpus()` function:
+of type `corpus_text` using the `as_corpus_frame()` function:
 
 
 ```r
-data <- as_corpus(raw)
+data <- as_corpus_frame(raw)
 ```
 
-Both `as_corpus()` and `as_corpus_text()` are generic; they work on character
-vectors, data frames, *tm* `Corpus` objects, and *quanteda* `corpus` objects.
-Whenever you call a *corpus* function expecting text, that function calls
-`as_corpus_text()` on its input. We will see some examples of converting *tm*
-and *quanteda* objects below.
+Both `as_corpus_frame()` and `as_corpus_text()` are generic; they work on
+character vectors, data frames, *tm* `Corpus` objects, and *quanteda* `corpus`
+objects.  Whenever you call a *corpus* function expecting text, that function
+calls `as_corpus_text()` on its input. We will see some examples of converting
+*tm* and *quanteda* objects below.
 
 
 The `corpus_text` type behaves like an R character vector in most respects,
@@ -217,7 +217,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7f8eeb3159d0>
+<pointer: 0x7fcd201295d0>
 
 $sources
 $sources[[1]]
@@ -278,7 +278,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7f8eeb177400>
+<pointer: 0x7fcd2003fde0>
 
 $sources
 $sources[[1]]
@@ -435,8 +435,8 @@ text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
 ⋮  (87 rows total)
 ```
 
-You can convert a *quanteda* corpus to a data frame using `as_corpus()`, or
-extract its text using `as_corpus_text()`:
+You can convert a *quanteda* corpus to a data frame using `as_corpus_frame()`,
+or extract its text using `as_corpus_text()`:
 
 
 ```r
@@ -458,7 +458,7 @@ UKIP         "Immigration & Asylum.\n\nAs a member of the EU, Britain has lost c
 
 ```r
 # convert to data frame:
-print(as_corpus(uk2010immigCorpus))
+print(as_corpus_frame(uk2010immigCorpus))
 ```
 
 ```
@@ -512,7 +512,9 @@ term_stats(crude, drop_punct = TRUE, drop = stopwords("english"))
 ⋮  (1042 rows total)
 ```
 
-The `as_corpus()` and `as_corpus_text()` functions also work on *tm* Corpus objects:
+The `as_corpus_frame()` and `as_corpus_text()` functions also work on *tm*
+Corpus objects:
+
 
 ```r
 # convert to corpus_text
@@ -544,7 +546,7 @@ print(as_corpus_text(crude))
 
 ```r
 # convert to data frame
-print(as_corpus(crude))
+print(as_corpus_frame(crude))
 ```
 
 ```

@@ -246,5 +246,5 @@ gutenberg_corpus <- function(ids, filter = NULL, mirror = NULL,
     data <- do.call(rbind.data.frame, args)
 
     rownames(data) <- names(rows)
-    as_corpus(data, filter, ...)
+    as_corpus_frame(data, filter, ...)
 }
