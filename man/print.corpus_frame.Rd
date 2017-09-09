@@ -7,14 +7,12 @@ Printing and formatting corpus data frames.
 }
 \usage{
 \method{print}{corpus_frame}(x, rows = 20L, chars = NULL, digits = NULL,
-                   quote = FALSE, na.print = NULL,
-                   print.gap = NULL, right = FALSE,
-                   row.names = TRUE, max = NULL,
-                   display = TRUE, ...)
+      quote = FALSE, na.print = NULL, print.gap = NULL,right = FALSE,
+      row.names = TRUE, max = NULL, display = TRUE, ...)
 
 \method{format}{corpus_frame}(x, chars = NULL, justify = "left",
-                    na.encode = TRUE, quote = FALSE,
-                    na.print = NULL, print.gap = NULL, ...)
+       na.encode = TRUE, quote = FALSE, na.print = NULL,
+       print.gap = NULL, ...)
 }
 \arguments{
     \item{x}{data frame object to print or format.}
