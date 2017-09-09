@@ -122,66 +122,66 @@
 <span class="pkg">corpus</span> only, and may be defunct as soon as the next release.</p>
     
 
-    <pre class="usage"><span class='fu'>as_text</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+    <pre class="usage"><span class='fu'>corpus</span>(<span class='no'>...</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='fu'>as_corpus</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='fu'>as_text</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='fu'>is_corpus</span>(<span class='no'>x</span>)
 
 <span class='fu'>is_text</span>(<span class='no'>x</span>)
 
 <span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+           <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>a text vector to tokenize.</p></td>
+      <td><p>Deprecated.</p></td>
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
-    the default text filter for <code>x</code>.</p></td>
-    </tr>
-    <tr>
-      <th>&#8230;</th>
-      <td><p>text filter properties to set on the result.</p></td>
-    </tr>
-    <tr>
-      <th>names</th>
-      <td><p>if non-<code>NULL</code> character vector of names for
-    the converted result.</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>a numeric vector the same length of <code>x</code> assigning
-    weights to each text, or <code>NULL</code> for unit weights.</p></td>
-    </tr>
-    <tr>
-      <th>ngrams</th>
-      <td><p>an integer vector of n-gram lengths to include, or
-    <code>NULL</code> to use the <code>select</code> argument to determine the
-    n-gram lengths.</p></td>
-    </tr>
-    <tr>
-      <th>select</th>
-      <td><p>a character vector of terms to count, or <code>NULL</code> to
-    count all terms that appear in <code>x</code>.</p></td>
+      <td><p>Deprecated.</p></td>
     </tr>
     <tr>
       <th>group</th>
-      <td><p>if non-<code>NULL</code>, a factor, character string, or
-    integer vector the same length of <code>x</code> specifying the grouping
-    behavior.</p></td>
+      <td><p>Deprecated.</p></td>
+    </tr>
+    <tr>
+      <th>names</th>
+      <td><p>Deprecated.</p></td>
+    </tr>
+    <tr>
+      <th>ngrams</th>
+      <td><p>Deprecated.</p></td>
+    </tr>
+    <tr>
+      <th>row.names</th>
+      <td><p>Deprecated.</p></td>
+    </tr>
+    <tr>
+      <th>select</th>
+      <td><p>Deprecated.</p></td>
+    </tr>
+    <tr>
+      <th>weights</th>
+      <td><p>Deprecated.</p></td>
     </tr>
     <tr>
       <th>&#8230;</th>
-      <td><p>additional properties to set on the text filter.</p></td>
+      <td><p>Deprecated.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>These functions are deprecated; use <code><a href='corpus_text.html'>as_corpus_text</a></code>,
-<code><a href='corpus_text.html'>is_corpus_text</a></code>, or <code><a href='term_matrix.html'>term_matrix</a></code> instead.</p>
+    <p>These functions are deprecated; use <code><a href='corpus_frame.html'>corpus_frame</a></code>,
+<code><a href='corpus_frame.html'>as_corpus_frame</a></code>, <code><a href='corpus_text.html'>as_corpus_text</a></code>,
+<code><a href='corpus_frame.html'>is_corpus_frame</a></code>, <code><a href='corpus_text.html'>is_corpus_text</a></code>,
+or <code><a href='term_matrix.html'>term_matrix</a></code> instead.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

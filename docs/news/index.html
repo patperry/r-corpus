@@ -137,7 +137,7 @@
 <a href="#minor-improvements" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
 <li><p>Switch <code><a href="../reference/utf8.html">as_utf8()</a></code> default argument to <code>normalize = FALSE</code>.</p></li>
-<li><p>Re-order <code><a href="../reference/corpus-deprecated.html">as_text()</a></code> and <code><a href="../reference/corpus.html">as_corpus()</a></code> arguments; make both accept <code>...</code> arguments to override individual text filter properities.</p></li>
+<li><p>Re-order <code><a href="../reference/corpus-deprecated.html">as_text()</a></code> and <code><a href="../reference/corpus-deprecated.html">as_corpus()</a></code> arguments; make both accept <code>...</code> arguments to override individual text filter properities.</p></li>
 <li><p>Add missing single-letter initials to English abbreviation list.</p></li>
 <li><p>Adaptively increase buffer size for <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> so that large files can be read quickly.</p></li>
 </ul>
@@ -155,6 +155,7 @@
 <h3 class="hasAnchor">
 <a href="#deprecated-and-defunct" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
+<li><p>Renamed <code>corpus</code>, <code><a href="../reference/corpus-deprecated.html">as_corpus()</a></code> and <code><a href="../reference/corpus-deprecated.html">is_corpus()</a></code> to <code>corpus_frame</code>, <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> and <code><a href="../reference/corpus_frame.html">is_corpus_frame()</a></code> to avoid name clashes with other packages.</p></li>
 <li><p>Renamed <code><a href="../reference/corpus-deprecated.html">as_text()</a></code> and <code><a href="../reference/corpus-deprecated.html">is_text()</a></code> to <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> and <code><a href="../reference/corpus_text.html">is_corpus_text()</a></code> to avoid name clashes with other packages.</p></li>
 <li><p>Deprecate <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code> function since I don’t think anyone needs it and I might need the name for something else. If you need this function, please file an issue at <a href="https://github.com/patperry/r-corpus/issues" class="uri">https://github.com/patperry/r-corpus/issues</a> .</p></li>
 <li><p>Remove deprecated <code>term_counts()</code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</p></li>
@@ -189,7 +190,7 @@
 <h3 class="hasAnchor">
 <a href="#new-features-1" class="anchor"></a>NEW FEATURES</h3>
 <ul>
-<li><p>Add <code><a href="../reference/corpus.html">corpus()</a></code>, <code><a href="../reference/corpus.html">as_corpus()</a></code>, <code><a href="../reference/corpus.html">is_corpus()</a></code> functions.</p></li>
+<li><p>Add <code><a href="../reference/corpus-deprecated.html">corpus()</a></code>, <code><a href="../reference/corpus-deprecated.html">as_corpus()</a></code>, <code><a href="../reference/corpus-deprecated.html">is_corpus()</a></code> functions.</p></li>
 <li><p>Make <code><a href="../reference/text_split.html">text_split()</a></code> split into evenly-sized blocks, with the ‘size’ argument specifying the maximum block size.</p></li>
 <li><p>Added <code><a href="../reference/text_stats.html">text_stats()</a></code> function.</p></li>
 <li><p>Added <code><a href="../reference/text_locate.html">text_match()</a></code> function to return matching terms as a factor.</p></li>

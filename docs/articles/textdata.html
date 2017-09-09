@@ -96,7 +96,7 @@
 <div id="text-data-type" class="section level2">
 <h2 class="hasAnchor">
 <a href="#text-data-type" class="anchor"></a>Text data type</h2>
-<p>The <em>corpus</em> package does not define a special corpus object, but it does define a new data type, <code>corpus_text</code>, for storing a collection of texts. You can create values of this type using the <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> or <code><a href="../reference/corpus.html">as_corpus()</a></code> function.</p>
+<p>The <em>corpus</em> package does not define a special corpus object, but it does define a new data type, <code>corpus_text</code>, for storing a collection of texts. You can create values of this type using the <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> or <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> function.</p>
 <p>Take, for example, the following sample text, created as an R character vector.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># raw text for the first two paragraphs of _The Tale of Peter Rabbit_,</span>
 <span class="co"># by Beatrix Potter</span>
@@ -116,9 +116,9 @@ raw &lt;-<span class="st"> </span><span class="kw">c</span>(
               <span class="dt">sep =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>))</code></pre></div>
 <p>We can convert the text to a <code>corpus_text</code> object using the <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">text &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(raw)</code></pre></div>
-<p>Alternatively, we can convert it to a data frame with a column named <code>"text"</code> of type <code>corpus_text</code> using the <code><a href="../reference/corpus.html">as_corpus()</a></code> function:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus.html">as_corpus</a></span>(raw)</code></pre></div>
-<p>Both <code><a href="../reference/corpus.html">as_corpus()</a></code> and <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> are generic; they work on character vectors, data frames, <em>tm</em> <code>Corpus</code> objects, and <em>quanteda</em> <code>corpus</code> objects. Whenever you call a <em>corpus</em> function expecting text, that function calls <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> on its input. We will see some examples of converting <em>tm</em> and <em>quanteda</em> objects below.</p>
+<p>Alternatively, we can convert it to a data frame with a column named <code>"text"</code> of type <code>corpus_text</code> using the <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/corpus_frame.html">as_corpus_frame</a></span>(raw)</code></pre></div>
+<p>Both <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> and <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> are generic; they work on character vectors, data frames, <em>tm</em> <code>Corpus</code> objects, and <em>quanteda</em> <code>corpus</code> objects. Whenever you call a <em>corpus</em> function expecting text, that function calls <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> on its input. We will see some examples of converting <em>tm</em> and <em>quanteda</em> objects below.</p>
 <p>The <code>corpus_text</code> type behaves like an R character vector in most respects, but using this type enables some new features.</p>
 </div>
 <div id="text-filter" class="section level2">
@@ -201,7 +201,7 @@ data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_n
 <span class="co"># display the internal representation of the resulting 'corpus_text' object</span>
 <span class="kw">unclass</span>(data<span class="op">$</span>text)</code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7f8eeb3159d0&gt;
+&lt;pointer: 0x7fcd201295d0&gt;
 
 $sources
 $sources[[1]]
@@ -242,7 +242,7 @@ NULL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># segmenting does not allocate new objects for the segments</span>
 <span class="kw">unclass</span>(chunks<span class="op">$</span>text) <span class="co"># inspect text internals</span></code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7f8eeb177400&gt;
+&lt;pointer: 0x7fcd2003fde0&gt;
 
 $sources
 $sources[[1]]
@@ -341,7 +341,7 @@ para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the 
 19 BNP  …tionately involving ethnic groups.\n\n Immigration  Has Harmed British Jobs\n\nThe concept…
 20 BNP  …ons working than in 1997.\n\nOverall,  immigrants   have taken up more than 1.64 million o…
 ⋮  (87 rows total)</code></pre>
-<p>You can convert a <em>quanteda</em> corpus to a data frame using <code><a href="../reference/corpus.html">as_corpus()</a></code>, or extract its text using <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code>:</p>
+<p>You can convert a <em>quanteda</em> corpus to a data frame using <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code>, or extract its text using <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert to corpus_text:</span>
 <span class="kw">print</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(uk2010immigCorpus))</code></pre></div>
 <pre><code>BNP          "IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- At current i…"
@@ -354,7 +354,7 @@ PC           "As a welcoming nation, Plaid Cymru recognises the invaluable contr
 SNP          "And we will argue for Scotland to take responsibility for immigration so that we can…"
 UKIP         "Immigration &amp; Asylum.\n\nAs a member of the EU, Britain has lost control of her bord…"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert to data frame:</span>
-<span class="kw">print</span>(<span class="kw"><a href="../reference/corpus.html">as_corpus</a></span>(uk2010immigCorpus))</code></pre></div>
+<span class="kw">print</span>(<span class="kw"><a href="../reference/corpus_frame.html">as_corpus_frame</a></span>(uk2010immigCorpus))</code></pre></div>
 <pre><code>             party        text                                                                      
 BNP          BNP          IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- A…
 Coalition    Coalition    IMMIGRATION. \n\nThe Government believes that immigration has enriched ou…
@@ -397,7 +397,7 @@ UKIP         UKIP         Immigration &amp; Asylum.\n\nAs a member of the EU, Br
 19 industry     10       8
 20 world        10       8
 ⋮  (1042 rows total)</code></pre>
-<p>The <code><a href="../reference/corpus.html">as_corpus()</a></code> and <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> functions also work on <em>tm</em> Corpus objects:</p>
+<p>The <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> and <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> functions also work on <em>tm</em> Corpus objects:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert to corpus_text</span>
 <span class="kw">print</span>(<span class="kw"><a href="../reference/corpus_text.html">as_corpus_text</a></span>(crude))</code></pre></div>
 <pre><code>127 "Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crude oil…"
@@ -421,7 +421,7 @@ UKIP         UKIP         Immigration &amp; Asylum.\n\nAs a member of the EU, Br
 704 "The New York Mercantile Exchange set\nApril one for the debut of a new procedure in the energ…"
 708 "Argentine crude oil production was\ndown 10.8 pct in January 1987 to 12.32 mln barrels, from …"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert to data frame</span>
-<span class="kw">print</span>(<span class="kw"><a href="../reference/corpus.html">as_corpus</a></span>(crude))</code></pre></div>
+<span class="kw">print</span>(<span class="kw"><a href="../reference/corpus_frame.html">as_corpus_frame</a></span>(crude))</code></pre></div>
 <pre><code>    text                                                                                            
 127 Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crude oil b…
 144 OPEC may be forced to meet before a\nscheduled June session to readdress its production cutting…
