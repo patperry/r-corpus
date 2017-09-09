@@ -110,11 +110,11 @@ test_that("'text_locate' can give instance contexts", {
     expected <- data.frame(
         text = structure(c(1, 1, 1, 1, 2, 3), levels = as.character(1:3),
                          class = "factor"),
-        before = as_text(c("", "Rose is a ", "Rose is a rose is a ",
+        before = as_corpus_text(c("", "Rose is a ", "Rose is a rose is a ",
                    "Rose is a rose is a rose is a ", "A ",
                    "Snow White and ")),
-        instance = as_text(c("Rose", "rose", "rose", "rose", "rose", "Rose")),
-        after = as_text(c(" is a rose is a rose is a rose.",
+        instance = as_corpus_text(c("Rose", "rose", "rose", "rose", "rose", "Rose")),
+        after = as_corpus_text(c(" is a rose is a rose is a rose.",
                           " is a rose is a rose.", " is a rose.", ".",
                           " by any other name would smell as sweet.",
                           " Red")),
@@ -136,9 +136,9 @@ test_that("'text_locate' can use a custom filter", {
     expected <- data.frame(
         text = structure(c(1, 3), levels = as.character(1:3),
                          class = "factor"),
-        before = as_text(c("", "Snow White and "), filter = f),
-        instance = as_text(c("Rose", "Rose"), filter = f),
-        after = as_text(c(" is a rose is a rose is a rose.", " Red"),
+        before = as_corpus_text(c("", "Snow White and "), filter = f),
+        instance = as_corpus_text(c("Rose", "Rose"), filter = f),
+        after = as_corpus_text(c(" is a rose is a rose is a rose.", " Red"),
                         filter = f),
         row.names = NULL,
         stringsAsFactors = FALSE)

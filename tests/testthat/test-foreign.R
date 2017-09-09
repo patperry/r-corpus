@@ -1,6 +1,6 @@
 context("foreign")
 
-test_that("'as_text' and 'as_corpus' work on tm VCorpus", {
+test_that("'as_corpus_text' and 'as_corpus' work on tm VCorpus", {
     content <- list(
         `reut-00001.xml` =
             structure(
@@ -29,8 +29,8 @@ test_that("'as_text' and 'as_corpus' work on tm VCorpus", {
     crude <- structure(list(content = content, meta = meta, dmeta = dmeta),
                        class = c("VCorpus", "Corpus"))
 
-    text <- as_text(crude)
-    expect_equal(text, as_text(c("127" = "Diamond Shamrock Corp said that...",
+    text <- as_corpus_text(crude)
+    expect_equal(text, as_corpus_text(c("127" = "Diamond Shamrock Corp said that...",
                                  "144" = "OPEC may be forced to meet...",
                                  "191" = "Texaco Canada said it lowered...")))
 
@@ -39,7 +39,7 @@ test_that("'as_text' and 'as_corpus' work on tm VCorpus", {
 })
 
 
-test_that("'as_text' and 'as_corpus' work on quanteda corpus", {
+test_that("'as_corpus_text' and 'as_corpus' work on quanteda corpus", {
     data <- data.frame(filename = c("reut-00001.xml",
                                     "reut-00002.xml",
                                     "reut-00004.xml"),
@@ -51,6 +51,6 @@ test_that("'as_text' and 'as_corpus' work on quanteda corpus", {
     qdata <- quanteda::corpus(data)
     quanteda::docnames(qdata) <- rownames(data)
 
-    expect_equal(as_text(qdata), as_text(data))
+    expect_equal(as_corpus_text(qdata), as_corpus_text(data))
     expect_equal(as_corpus(data), as_corpus(qdata))
 })

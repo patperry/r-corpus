@@ -3,7 +3,7 @@ context("utf8_format")
 
 test_that("'format' can handle short text", {
     raw <- c(NA, "", "a", "foo", "short text")
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
 
     expect_equal(format(text, justify = "none", na.print = "NA"),
@@ -41,7 +41,7 @@ test_that("'format' can handle long text in Unicode locale", {
                 "\u6027", "\u2026\u6027", "\u2026?")
     Encoding(rshort) <- "UTF-8"
 
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
     names(short) <- names(text)
     names(rshort) <- names(text)
@@ -79,7 +79,7 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
                 "s\u2026", "\u2026", "\u2026", "\u2026")
     rshort <- c(NA, "", "a", "\u2026", "\u2026b", "\u2026o", "\u2026d",
                 "\u2026t", "\u2026", "\u2026", "\u2026?")
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
     names(short) <- names(text)
     names(rshort) <- names(text)
@@ -119,7 +119,7 @@ test_that("'format' can handle long text in C locale", {
     rshort <- c("\\u6027", "?\\u6027", "\\n\\u6027", "...\\n\\u6027",
                  "...\\u6027", "\\u6027?", "\\u6027\\n", "...?\\n",
                   "...\\u0001")
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
     names(short) <- names(text)
     names(rshort) <- names(text)
@@ -154,7 +154,7 @@ test_that("'format' can handle high code points in C locale", {
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     raw <- c(intToUtf8(0x00010000), intToUtf8(0x0010ffff))
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
     fmt <- raw
 
@@ -174,7 +174,7 @@ test_that("'format' can handle high code points in Unicode locale", {
     left  <- c(paste0(intToUtf8(0x00010000), "         "), intToUtf8(0x010ffff))
     right <- c(paste0("         ", intToUtf8(0x00010000)), intToUtf8(0x010ffff))
 
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
     names(left) <- names(text)
     names(right) <- names(text)
@@ -188,7 +188,7 @@ test_that("'format' can handle high code points in Unicode locale", {
 
 test_that("'format' can handle ignorable code points", {
     raw <- "\u200B"
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
 
     ctype <- switch_ctype("C")
@@ -216,7 +216,7 @@ test_that("'format' can handle ignorable code points", {
 
 test_that("'format' can handle marks", {
     raw <- "\u1e0d\u0307"
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -243,7 +243,7 @@ test_that("'format' can handle marks", {
 
 test_that("'format' can handle UTF-8 'Other' codes", {
     raw <- "\u2072" # unassigned
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
 
     ctype <- switch_ctype("C")
@@ -268,7 +268,7 @@ test_that("'format' can handle UTF-8 'Other' codes", {
 
 
 test_that("'format' can handle zero, or NULL chars", {
-    text <- as_text("foo")
+    text <- as_corpus_text("foo")
 
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
@@ -290,7 +290,7 @@ test_that("'format' can handle zero, or NULL chars", {
 
 
 test_that("'format' can skip NA", {
-    text <- as_text(NA)
+    text <- as_corpus_text(NA)
     expect_equal(as.character(format(text, na.encode = FALSE)), NA_character_)
     expect_equal(as.character(utf8_format(NA_character_, na.encode = FALSE)),
                  NA_character_)
@@ -299,7 +299,7 @@ test_that("'format' can skip NA", {
 
 test_that("'format' can set minimum width", {
     raw <- c("a", "ab", "abc")
-    text <- as_text(raw)
+    text <- as_corpus_text(raw)
     names(raw) <- names(text)
 
     expect_equal(format(text, justify = "none", width = 5),
@@ -314,7 +314,7 @@ test_that("'format' can set minimum width", {
 
 
 test_that("'format' error for invalid justify", {
-    text <- as_text("")
+    text <- as_corpus_text("")
     expect_error(format(text, justify = "wild"),
                  paste("'justify' must be one of",
                        paste(dQuote(c("left", "right", "centre", "none")),
@@ -324,7 +324,7 @@ test_that("'format' error for invalid justify", {
 
 
 test_that("'format' error for invalid logicals", {
-    text <- as_text("")
+    text <- as_corpus_text("")
     expect_error(format(text, trim = NA), "'trim' must be TRUE or FALSE",
                  fixed = TRUE)
     expect_error(format(text, na.encode = NA),
@@ -333,7 +333,7 @@ test_that("'format' error for invalid logicals", {
 
 
 test_that("'format' error for invalid integers", {
-    text <- as_text("")
+    text <- as_corpus_text("")
     expect_error(format(text, chars = "3"),
                  "'chars' must be integer-valued",
                  fixed = TRUE)

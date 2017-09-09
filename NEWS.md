@@ -38,6 +38,9 @@ corpus 0.9.1.9000
 
 ### DEPRECATED AND DEFUNCT
 
+  * Renamed `as_text()` and `is_text()` to `as_corpus_text()` and
+    `is_corpus_text()` to avoid name clashes with other packages.
+
   * Deprecate `term_frame()` function since I don't think anyone needs it and
     I might need the name for something else.  If you need this function,
     please file an issue at https://github.com/patperry/r-corpus/issues .

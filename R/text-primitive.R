@@ -15,7 +15,7 @@
 
 `[.corpus_text` <- function(x, i)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("invalid text object")
     }
 
@@ -48,15 +48,15 @@
 
 `[<-.corpus_text` <- function(x, i, value)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("invalid text object")
     }
 
-    if (!is_text(value)) {
+    if (!is_corpus_text(value)) {
         with_rethrow({
             value <- as_character_vector("value", value)
         })
-        value <- as_text(value)
+        value <- as_corpus_text(value)
     }
 
     n <- length(x)
@@ -95,7 +95,7 @@
 
 `[[.corpus_text` <- function(x, i, exact = TRUE)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("invalid text object")
     }
 
@@ -110,7 +110,7 @@
 
 `[[<-.corpus_text` <- function(x, i, value)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("invalid text object")
     }
 
@@ -213,13 +213,13 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
     # handle recursive part, turning arguments into list of text vectors
     for (i in seq_along(args)) {
         elt <- args[[i]]
-        if (is_text(elt)) {
+        if (is_corpus_text(elt)) {
             # pass
         } else if (recursive && (is.list(elt) || is.pairlist(elt))) {
             elt <- structure(as.list(elt), names = names(elt))
             args[[i]] <- c_corpus_text_list(elt, recursive, use.names)
         } else {
-            args[[i]] <- as_text(elt)
+            args[[i]] <- as_corpus_text(elt)
         }
 
         # take text filter from first arg
@@ -350,7 +350,7 @@ length.corpus_text <- function(x)
 
 names.corpus_text <- function(x)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("invalid text object")
     }
     unclass(x)$names
@@ -358,7 +358,7 @@ names.corpus_text <- function(x)
 
 `names<-.corpus_text` <- function(x, value)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("invalid text object")
     }
 
@@ -390,7 +390,7 @@ rep.corpus_text <- function(x, ...)
     if (!is.null(names(y))) {
         names(y) <- make.unique(names(y))
     }
-    as_text(y, filter = text_filter(x))
+    as_corpus_text(y, filter = text_filter(x))
 }
 
 xtfrm.corpus_text <- function(x)

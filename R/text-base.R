@@ -45,7 +45,7 @@ Ops.corpus_text <- function(e1, e2)
 
 all.equal.corpus_text <- function(target, current, ...)
 {
-    if (!is_text(current)) {
+    if (!is_corpus_text(current)) {
         return(c(paste("Modes: text,", mode(current)),
                  paste("target is text, current is", mode(current))))
     }
@@ -157,7 +157,7 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
                                ...)
 {
     with_rethrow({
-        x <- as_text(x)
+        x <- as_corpus_text(x)
         trim <- as_option("trim", trim)
         chars <- as_chars("chars", chars)
         justify <- as_justify("justify", justify)
@@ -206,7 +206,7 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
         return(invisible(NULL))
     }
 
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("argument is not a text vector")
     }
 

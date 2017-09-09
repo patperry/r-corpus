@@ -153,7 +153,7 @@ utf8_width(x, encode = TRUE, quote = FALSE)
     \code{dimnames} as \code{x}.
 }
 \seealso{
-    \code{\link{as_text}}, \code{\link{iconv}}.
+    \code{\link{as_corpus_text}}, \code{\link{iconv}}.
 }
 \examples{
 # the second element is encoded in latin-1, but declared as UTF-8

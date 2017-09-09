@@ -16,7 +16,7 @@
 text_stats <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
 
     ans <- data.frame(tokens = text_ntoken(x),

@@ -2,13 +2,13 @@ context("text")
 
 
 test_that("`as.data.frame` should work", {
-    x <- as_text(c(a="1", b="2", c="foo", d="bar"))
+    x <- as_corpus_text(c(a="1", b="2", c="foo", d="bar"))
     d <- as.data.frame(x)
 
     expect_equal(nrow(d), length(x))
     expect_equal(names(d), "x")
     expect_equal(rownames(d), names(x))
-    expect_equal(d[["x"]], as_text(c("1", "2", "foo", "bar"))) # drop names
+    expect_equal(d[["x"]], as_corpus_text(c("1", "2", "foo", "bar"))) # drop names
 })
 
 
@@ -24,7 +24,7 @@ test_that("serialization of character should work", {
 	       "your Father had an accident there;",
 	       "he was put in a pie by Mrs. McGregor.'")
 
-    text <- c(as_text(x), as_text(y))
+    text <- c(as_corpus_text(x), as_corpus_text(y))
 
     file <- tempfile()
     saveRDS(text, file)
@@ -48,7 +48,7 @@ test_that("serialization of JSON field should work", {
     file <- tempfile()
     writeLines(paste0('{"text": "', x, '"}'), file)
     ds <- read_ndjson(file, mmap = TRUE, text = "text")
-    text <- as_text(ds)
+    text <- as_corpus_text(ds)
 
     file2 <- tempfile()
     saveRDS(text, file2)
@@ -72,7 +72,7 @@ test_that("serialization of JSON text should work", {
     file <- tempfile()
     writeLines(paste0('"', x, '"'), file)
     ds <- read_ndjson(file, mmap = TRUE, simplify = FALSE)
-    text <- as_text(ds)
+    text <- as_corpus_text(ds)
 
     file2 <- tempfile()
     saveRDS(text, file2)
@@ -94,8 +94,8 @@ test_that("conversion to and from character should work", {
            NA_character_,
 	       "he was put in a pie by Mrs. McGregor.'")
 
-    text_x <- as_text(x)
-    text_y <- as_text(y)
+    text_x <- as_corpus_text(x)
+    text_y <- as_corpus_text(y)
 
     expect_equal(as.character(text_x), x)
     expect_equal(as.character(text_y), y)
@@ -109,21 +109,21 @@ test_that("conversion to and from character should work", {
 })
 
 
-test_that("'as_text' should be able to set filter properties", {
+test_that("'as_corpus_text' should be able to set filter properties", {
     chr <- letters
-    txt <- as_text(chr)
+    txt <- as_corpus_text(chr)
 
-    expect_equal(text_filter(as_text(chr, stemmer = "english"))$stemmer,
+    expect_equal(text_filter(as_corpus_text(chr, stemmer = "english"))$stemmer,
                  "english")
-    expect_equal(text_filter(as_text(txt, stemmer = "english"))$stemmer,
+    expect_equal(text_filter(as_corpus_text(txt, stemmer = "english"))$stemmer,
                  "english")
 })
 
 
-test_that("'as_text' should error on unnamed properties", {
-    expect_error(as_text(letters, names = NULL, filter = NULL, 1),
+test_that("'as_corpus_text' should error on unnamed properties", {
+    expect_error(as_corpus_text(letters, names = NULL, filter = NULL, 1),
                  "unnamed arguments are not allowed")
-    expect_error(as_text(letters, names = NULL, filter = NULL,
+    expect_error(as_corpus_text(letters, names = NULL, filter = NULL,
                          stemmer = "english", 1),
                  "unnamed arguments are not allowed")
 })

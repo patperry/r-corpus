@@ -36,7 +36,7 @@ as_corpus.default <- function(x, filter = NULL, ..., row.names = NULL)
 
 as_corpus.character <- function(x, filter = NULL, ..., row.names = NULL)
 {
-    x <- as_text(x)
+    x <- as_corpus_text(x)
     as_corpus(x, filter = filter, ..., row.names = row.names)
 }
 
@@ -46,7 +46,7 @@ as_corpus.corpus_json <- function(x, filter = NULL, ..., row.names = NULL)
     if (length(dim(x)) == 2) {
         x <- as.data.frame(x, text = "text", stringsAsFactors = FALSE)
     } else {
-        x <- as_text(x)
+        x <- as_corpus_text(x)
     }
     as_corpus(x, filter = filter, ..., row.names = row.names)
 }
@@ -54,7 +54,7 @@ as_corpus.corpus_json <- function(x, filter = NULL, ..., row.names = NULL)
 
 as_corpus.corpus_text <- function(x, filter = NULL, ..., row.names = NULL)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("argument is not a valid text object")
     }
     x <- data.frame(text = x)
@@ -77,7 +77,7 @@ as_corpus.data.frame <- function(x, filter = NULL, ..., row.names = NULL)
         row.names <- as_names("row.names", row.names, nrow(x))
     })
 
-    x[["text"]] <- as_text(x[["text"]], filter, ...)
+    x[["text"]] <- as_corpus_text(x[["text"]], filter, ...)
 
     if (!is.null(row.names)) {
         row.names(x) <- row.names
@@ -142,7 +142,7 @@ is_corpus <- function(x)
     if (!"text" %in% names(x)) {
         return(FALSE)
     }
-    if (!is_text(x[["text"]])) {
+    if (!is_corpus_text(x[["text"]])) {
         return(FALSE)
     }
     TRUE

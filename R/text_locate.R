@@ -16,7 +16,7 @@
 text_count <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
     })
     .Call(C_text_count, x, terms)
@@ -26,7 +26,7 @@ text_count <- function(x, terms, filter = NULL, ...)
 text_detect <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
     })
     .Call(C_text_detect, x, terms)
@@ -36,7 +36,7 @@ text_detect <- function(x, terms, filter = NULL, ...)
 text_subset <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
     i <- text_detect(x, terms)
     x[i]
@@ -46,7 +46,7 @@ text_subset <- function(x, terms, filter = NULL, ...)
 text_match <- function(x, terms, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
 
     if (!(is.null(terms) || is.character(terms))) {
@@ -80,7 +80,7 @@ text_match <- function(x, terms, filter = NULL, ...)
 text_locate <- function(x, terms, filter = NULL, random = FALSE, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
         random <- as_option("random", random)
     })
@@ -126,14 +126,14 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
             w = utf8_width(nm)
             j <- justify
             if (nm == "text") {
-                # use as_text to format an integer text id like
+                # use as_corpus_text to format an integer text id like
                 # a character label
-                rval[[i]] <- format(as_text(x[[i]]), width = 4,
+                rval[[i]] <- format(as_corpus_text(x[[i]]), width = 4,
                                     chars = charmax, display = display,
                                     justify = j)
             } else if (nm == "instance") {
                 j <- "centre"
-                rval[[i]] <- format(as_text(x[[i]]), width = 8,
+                rval[[i]] <- format(as_corpus_text(x[[i]]), width = 8,
                                     chars = charmax, display = display,
                                     justify = j)
             } else {
@@ -146,7 +146,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
         }
     }
 
-    row_names <- format(as_text(rownames(x)), width = 0, chars = charmax,
+    row_names <- format(as_corpus_text(rownames(x)), width = 0, chars = charmax,
                         display = display, jusitfy = "left")
     colwidths <- c(colwidths, max(0, utf8_width(row_names)))
 

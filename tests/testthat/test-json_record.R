@@ -100,7 +100,7 @@ test_that("deserializing as text works", {
     writeLines('{"a": "hello", "b": "world"}', file)
     ds <- read_ndjson(file, text = "b")
     expect_equal(ds$a, "hello")
-    expect_equal(ds$b, as_text("world"))
+    expect_equal(ds$b, as_corpus_text("world"))
 })
 
 
@@ -126,7 +126,7 @@ test_that("converting to text works", {
     file <- tempfile()
     writeLines('{ "a": "foo", "text": "hello" }', file)
     ds <- read_ndjson(file, simplify = FALSE)
-    expect_equal(as_text(ds), as_text("hello"))
+    expect_equal(as_corpus_text(ds), as_corpus_text("hello"))
 })
 
 
@@ -134,7 +134,7 @@ test_that("converting to text fails if no column named text", {
     file <- tempfile()
     writeLines('{ "a": "foo", "b": "hello" }', file)
     ds <- read_ndjson(file, simplify = FALSE)
-    expect_error(as_text(ds), "no column named \"text\" in JSON object",
+    expect_error(as_corpus_text(ds), "no column named \"text\" in JSON object",
                  fixed = TRUE)
 })
 
@@ -143,7 +143,7 @@ test_that("converting to text throws error if no column named 'text'", {
     file <- tempfile()
     writeLines('{ "a": "foo", "b": "hello" }', file)
     ds <- read_ndjson(file, simplify = FALSE)
-    expect_error(as_text(ds), 'no column named "text"')
+    expect_error(as_corpus_text(ds), 'no column named "text"')
 })
 
 
@@ -152,8 +152,8 @@ test_that("decoding text or character as requested works", {
     writeLines('{ "a": "foo", "b": "bar", "c": "baz", "d": "boo" }', file)
     ds <- read_ndjson(file, text = c("b", "c"))
     expect_equal(ds$a, "foo")
-    expect_equal(ds$b, as_text("bar"))
-    expect_equal(ds$c, as_text("baz"))
+    expect_equal(ds$b, as_corpus_text("bar"))
+    expect_equal(ds$c, as_corpus_text("baz"))
     expect_equal(ds$d, "boo")
 })
 
@@ -163,8 +163,8 @@ test_that("decoding text or character as requested works not simplifying", {
     writeLines('{ "a": "foo", "b": "bar", "c": "baz", "d": "boo" }', file)
     ds <- read_ndjson(file, text = c("b", "c"), simplify = FALSE)
     expect_equal(ds$a, "foo")
-    expect_equal(ds$b, as_text("bar"))
-    expect_equal(ds$c, as_text("baz"))
+    expect_equal(ds$b, as_corpus_text("bar"))
+    expect_equal(ds$c, as_corpus_text("baz"))
     expect_equal(ds$d, "boo")
 })
 

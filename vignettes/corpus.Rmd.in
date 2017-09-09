@@ -186,11 +186,11 @@ The mental model of the *corpus* package is that a text is s sequence of
 tokens, some of which are dropped (`NA`). Every object has a `text_filter()`
 property defining its token boundaries. The default token filter transforms
 the text to Unicode composed normal form (NFC), applies Unicode case folding,
-and maps curly quotes to straight quotes. Text objects, created with `as_text`
-or `as_corpus` can have custom text filters. You cannot set the text filter
-for a character vector. However, all *corpus* text functions accept a `filter`
-argument to override the input object's text filter (this is demonstrated in
-the "New York City" example in the previous section).
+and maps curly quotes to straight quotes. Text objects, created with
+`as_corpus_text` or `as_corpus` can have custom text filters. You cannot set
+the text filter for a character vector. However, all *corpus* text functions
+accept a `filter` argument to override the input object's text filter (this is
+demonstrated in the "New York City" example in the previous section).
 
 
 To find out the length of a text, as measured in dropped and non-dropped

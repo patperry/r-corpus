@@ -39,8 +39,8 @@ text_sub(x, start = 1L, end = -1L, filter = NULL, ...)
     \code{\link{text_tokens}}, \code{\link{text_length}}.
 }
 \examples{
-x <- as_text(c("A man, a plan.", "A \"canal\"?", "Panama!"),
-             filter = text_filter(drop_punct = TRUE))
+x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!"),
+                    filter = text_filter(drop_punct = TRUE))
 
 # entire text
 text_sub(x, 1, -1)

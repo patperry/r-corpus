@@ -119,7 +119,7 @@ text_filter(x) <- value
     column of type \code{"corpus_text"}.
 }
 \seealso{
-    \code{\link{as_text}}, \code{\link{text_tokens}},
+    \code{\link{as_corpus_text}}, \code{\link{text_tokens}},
     \code{\link{text_split}}, \code{\link{abbreviations}},
     \code{\link{stopwords}}.
 }
@@ -131,7 +131,7 @@ text_filter()
 f <- text_filter(map_case = FALSE, drop = stopwords("english"))
 
 # set the text filter property
-x <- as_text(c("Marnie the Dog is #1 on the internet."))
+x <- as_corpus_text(c("Marnie the Dog is #1 on the internet."))
 text_filter(x) <- f
 text_tokens(x) # by default, uses x's text_filter to tokenize
 

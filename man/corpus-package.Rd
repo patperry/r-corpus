@@ -9,7 +9,8 @@ Text corpus analysis functions
 }
 \details{
 This package contains functions for text corpus analysis. To create a text
-object, use the \code{\link{read_ndjson}} or \code{\link{as_text}} function.
+object, use the \code{\link{read_ndjson}} or \code{\link{as_corpus_text}}
+function.
 To split text into sentences or token blocks, use \code{\link{text_split}}.
 To specify preprocessing behavior for transforming a text into a
 token sequence, use \code{\link{text_filter}}. To tokenize text

@@ -78,7 +78,7 @@ text_nsentence(x, filter = NULL, ...)
 
     \enumerate{
         \item The \code{parent} column is a factor. The levels of this
-          factor are the names of \code{as_text(x)}. Calling
+          factor are the names of \code{as_corpus_text(x)}. Calling
           \code{as.integer} on the parent column gives the indices of
           the parent texts for the parent text for each sentence.
 

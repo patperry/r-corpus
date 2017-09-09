@@ -28,7 +28,7 @@ as_character_scalar <- function(name, value, utf8 = TRUE)
 
 as_character_vector <- function(name, value, utf8 = TRUE)
 {
-    if (!(is.null(value) || is.character(value) || is_text(value)
+    if (!(is.null(value) || is.character(value) || is_corpus_text(value)
           || all(is.na(value)))) {
         stop(paste0("'", name, "' must be text, a character vector, or NULL"))
     }

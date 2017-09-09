@@ -74,7 +74,7 @@ test_that("reading text works", {
     expect_equal(length(ds), length(x))
     expect_equal(dim(ds), NULL)
     expect_equal(names(ds), NULL)
-    expect_equal(as_text(ds), as_text(x))
+    expect_equal(as_corpus_text(ds), as_corpus_text(x))
     expect_equal(as.character(ds), x)
 })
 

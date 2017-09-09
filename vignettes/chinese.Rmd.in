@@ -63,7 +63,7 @@ text2 <- sapply(toks, paste, collapse = "\u200b")
 ```
 and put the input text in a data frame for convenient analysis
 ```{r}
-data <- data.frame(name = names, text = as_text(text2),
+data <- data.frame(name = names, text = as_corpus_text(text2),
                    stringsAsFactors = FALSE)
 ```
 

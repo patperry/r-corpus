@@ -28,7 +28,7 @@ test_that("'text_tokens' normalizes tokens by default", {
 
 
 test_that("'text_tokens' propagates names if its argument has them", {
-    text <- as_text(c(a="First sentence.", b="Second sentence!"))
+    text <- as_corpus_text(c(a="First sentence.", b="Second sentence!"))
     ctext <- c(a="First sentence.", b="Second sentence!")
 
     toks <- text_tokens(text)

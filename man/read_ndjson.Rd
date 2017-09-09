@@ -84,7 +84,7 @@ read_ndjson(file, mmap = FALSE, simplify = TRUE, text = NULL)
     the result is a \code{corpus_json} object.
 }
 \seealso{
-    \code{\link{as_text}}, \code{\link{as_utf8}}.
+    \code{\link{as_corpus_text}}, \code{\link{as_utf8}}.
 }
 \examples{
 # Memory mapping

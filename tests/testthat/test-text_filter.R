@@ -23,7 +23,7 @@ test_that("'text_filter' has the right defaults", {
 
 test_that("'text_filter' has the same defaults for all objects", {
     x <- c("hello", "world", "how", "are", "you?")
-    y <- as_text(x)
+    y <- as_corpus_text(x)
     z <- data.frame(text = x)
     w <- data.frame(text = y)
     expect_equal(text_filter(x), text_filter())
@@ -34,7 +34,7 @@ test_that("'text_filter' has the same defaults for all objects", {
 
 
 test_that("'text_filter' can be assigned to text", {
-    x <- as_text("hello")
+    x <- as_corpus_text("hello")
     f0 <- text_filter(x)
     d <- data.frame(text = x)
     f <- text_filter(map_case = FALSE)
@@ -45,7 +45,7 @@ test_that("'text_filter' can be assigned to text", {
 
 
 test_that("'text_filter' can be assigned to data frame with \"text\" column", {
-    x <- as_text("hello")
+    x <- as_corpus_text("hello")
     f0 <- text_filter(x)
     d <- data.frame(text = x)
     f <- text_filter(map_case = FALSE)
@@ -56,7 +56,7 @@ test_that("'text_filter' can be assigned to data frame with \"text\" column", {
 
 
 test_that("'text_filter' fails without data frame with \"text\" column", {
-    x <- as_text("hello")
+    x <- as_corpus_text("hello")
     d <- data.frame(not_text = x)
     f <- text_filter(map_case = FALSE)
     expect_error(text_filter(d), "no column named \"text\" in data frame")
@@ -93,7 +93,7 @@ test_that("passing unnamed arguments is not allowed", {
     expect_error(text_filter(NULL, TRUE),
                  "unnamed arguments are not allowed")
 
-    x <- as_text("hello")
+    x <- as_corpus_text("hello")
     expect_error(text_filter(x, TRUE),
                  "unnamed arguments are not allowed")
 })
@@ -105,65 +105,65 @@ test_that("giving invalid text to text_filter.corpus_text is not allowed", {
 })
 
 
-test_that("'as_text' propagates a non-NULL filter argument to character", {
+test_that("'as_corpus_text' propagates a non-NULL filter argument to character", {
     x <- "hello"
     f <- text_filter(map_case = FALSE)
-    x1 <- as_text("hello", filter = f)
-    x2 <- as_text("hello")
-    x3 <- as_text("world", filter = f)
+    x1 <- as_corpus_text("hello", filter = f)
+    x2 <- as_corpus_text("hello")
+    x3 <- as_corpus_text("world", filter = f)
     expect_false(isTRUE(all.equal(x1, x2)))
     expect_false(isTRUE(all.equal(x1, x3)))
     expect_equal(text_filter(x1), f)
 })
 
 
-test_that("'as_text' propagates a non-NULL to text filter to text", {
-    x <- as_text("hello")
+test_that("'as_corpus_text' propagates a non-NULL to text filter to text", {
+    x <- as_corpus_text("hello")
     f0 <- text_filter(map_case = FALSE, map_quote = FALSE)
     text_filter(x) <- f0
     expect_equal(text_filter(x), f0)
 
     f1 <- text_filter(map_case = TRUE, map_quote = FALSE)
-    y <- as_text(x, filter = f1)
+    y <- as_corpus_text(x, filter = f1)
     expect_equal(text_filter(y), f1)
 })
 
 
-test_that("'as_text' propagates a non-NULL to text filter to data frame", {
+test_that("'as_corpus_text' propagates a non-NULL to text filter to data frame", {
     d <- data.frame(text = "hello")
     f0 <- text_filter(d)
 
     f <- text_filter(map_case = FALSE)
-    x <- as_text(d, filter = f)
+    x <- as_corpus_text(d, filter = f)
     expect_equal(text_filter(d), f0)
     expect_equal(text_filter(x), f)
 })
 
 
-test_that("'as_text' propagates a non-NULL to filter to text data frame", {
-    d <- data.frame(text = as_text("hello"))
+test_that("'as_corpus_text' propagates a non-NULL to filter to text data frame", {
+    d <- data.frame(text = as_corpus_text("hello"))
     f0 <- text_filter(d)
 
     f <- text_filter(map_case = FALSE)
-    x <- as_text(d, filter = f)
+    x <- as_corpus_text(d, filter = f)
     expect_equal(text_filter(d), f0)
     expect_equal(text_filter(x), f)
 })
 
 
-test_that("'as_text' with NULL filter leaves it unchanged", {
-    x <- as_text("hello")
+test_that("'as_corpus_text' with NULL filter leaves it unchanged", {
+    x <- as_corpus_text("hello")
     f0 <- text_filter(map_case = FALSE, map_quote = FALSE)
     text_filter(x) <- f0
 
-    y <- as_text(x, filter = NULL)
+    y <- as_corpus_text(x, filter = NULL)
     expect_equal(text_filter(y), f0)
 })
 
 
 test_that("'text_filter' clears the old filter", {
-    x <- as_text("wicked")
-    y <- as_text(x, filter = text_filter(stemmer = "english"))
+    x <- as_corpus_text("wicked")
+    y <- as_corpus_text(x, filter = text_filter(stemmer = "english"))
 
     toks1 <- text_tokens(y)
     expect_equal(text_tokens(y), list("wick"))

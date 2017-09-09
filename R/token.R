@@ -16,7 +16,7 @@
 text_tokens <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
     .Call(C_text_tokens, x)
 }
@@ -25,7 +25,7 @@ text_tokens <- function(x, filter = NULL, ...)
 text_ntoken <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
     .Call(C_text_ntoken, x)
 }
@@ -34,7 +34,7 @@ text_ntoken <- function(x, filter = NULL, ...)
 text_length <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
     .Call(C_text_length, x)
 }
@@ -43,7 +43,7 @@ text_length <- function(x, filter = NULL, ...)
 text_sub <- function(x, start = 1L, end = -1L, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
     n <- length(x)
 

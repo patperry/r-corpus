@@ -16,7 +16,7 @@
 text_nsentence <- function(x, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
     })
     .Call(C_text_nsentence, x)
 }

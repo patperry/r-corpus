@@ -68,7 +68,7 @@ term_matrix(x, filter = NULL, weights = NULL,
     row for each entry of the term matrix, and columns \code{"text"},
     \code{"term"}, and \code{"count"} giving the text ID, term, and count.
     The \code{"term"} column is a character vector.  The \code{"text"}
-    column is a factor with levels equal to \code{names(as_text(x))};
+    column is a factor with levels equal to \code{names(as_corpus_text(x))};
     calling \code{as.integer} on the \code{"text"} column converts from
     the factor values to the integer row index in the term matrix.
 }

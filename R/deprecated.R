@@ -46,3 +46,16 @@ term_frame <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
     class(ans) <- c("corpus_frame", "data.frame")
     ans
 }
+
+as_text <- function(x, filter = NULL, ..., names = NULL)
+{
+    .Deprecated("as_corpus_text")
+    as_corpus_text(x, filter = filter, ..., names = names)
+}
+
+
+is_text <- function(x)
+{
+    .Deprecated("is_corpus_text")
+    is_corpus_text(x)
+}

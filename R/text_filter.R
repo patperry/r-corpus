@@ -77,7 +77,7 @@ text_filter.data.frame <- function(x = NULL, ...)
 
 text_filter.corpus_text <- function(x = NULL, ...)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("argument is not a valid text object")
     }
 
@@ -128,7 +128,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
 
 `text_filter<-.corpus_text` <- function(x, value)
 {
-    if (!is_text(x)) {
+    if (!is_corpus_text(x)) {
         stop("argument is not a valid text object")
     }
 

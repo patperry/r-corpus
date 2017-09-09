@@ -97,7 +97,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                 na.encode = na.encode, quote = quote,
                                 na.print = na.print,
                                 print.gap = print.gap, ...)
-            char <- is_text(elt)
+            char <- is_corpus_text(elt)
         }
 
         if (char) {

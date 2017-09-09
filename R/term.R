@@ -19,7 +19,7 @@ term_stats <- function(x, filter = NULL, weights = NULL,
                        subset, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         weights <- as_weights(weights, length(x))
         ngrams <- as_ngrams(ngrams)
         min_count <- as_double_scalar("min_count", min_count, TRUE)
@@ -56,7 +56,7 @@ term_stats <- function(x, filter = NULL, weights = NULL,
 term_matrix_raw <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
                             select = NULL, group = NULL, ...)
 {
-    x <- as_text(x, filter, ...)
+    x <- as_corpus_text(x, filter, ...)
     weights <- as_weights(weights, length(x))
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)

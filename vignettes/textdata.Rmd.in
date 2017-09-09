@@ -17,7 +17,7 @@ Text data type
 
 The *corpus* package does not define a special corpus object, but it does
 define a new data type, `corpus_text`, for storing a collection of texts. You
-can create values of this type using the `as_text()` or `as_corpus()`
+can create values of this type using the `as_corpus_text()` or `as_corpus()`
 function.
 
 Take, for example, the following sample text, created as an R character
@@ -42,11 +42,11 @@ raw <- c(
               sep = "\n"))
 ```
 
-We can convert the text to a `corpus_text` object using the `as_text()`
+We can convert the text to a `corpus_text` object using the `as_corpus_text()`
 function:
 
 ```{r}
-text <- as_text(raw)
+text <- as_corpus_text(raw)
 ```
 
 Alternatively, we can convert it to a data frame with a column named `"text"`
@@ -56,10 +56,10 @@ of type `corpus_text` using the `as_corpus()` function:
 data <- as_corpus(raw)
 ```
 
-Both `as_corpus()` and `as_text()` are generic; they work on character
+Both `as_corpus()` and `as_corpus_text()` are generic; they work on character
 vectors, data frames, *tm* `Corpus` objects, and *quanteda* `corpus` objects.
-Whenever you call a *corpus* function expecting text, that function
-calls `as_text()` on its input. We will see some examples of converting *tm*
+Whenever you call a *corpus* function expecting text, that function calls
+`as_corpus_text()` on its input. We will see some examples of converting *tm*
 and *quanteda* objects below.
 
 
@@ -101,9 +101,9 @@ a `corpus_text` object with invalid UTF-8:
 # the input is encoded in Latin-1, but declared as UTF-8
 x <- "fa\xE7ile"
 Encoding(x) <- "UTF-8"
-as_text(x) ## fails
+as_corpus_text(x) ## fails
 
-as_text(iconv(x, "Latin1", "UTF-8")) ## succeeds
+as_corpus_text(iconv(x, "Latin1", "UTF-8")) ## succeeds
 ```
 
 
@@ -115,7 +115,7 @@ with duplicate names to `corpus_text`, the duplicates get renamed with a
 warning:
 
 ```{r}
-x <- as_text(c(a = "hello", b = "world", a = "repeated name")) # fails
+x <- as_corpus_text(c(a = "hello", b = "world", a = "repeated name")) # fails
 names(x)
 ```
 
@@ -216,13 +216,13 @@ vector.
 
 ```{r}
 # some R methods coerce their inputs to character; 'message' is one example
-message(as_text("hello world"))
+message(as_corpus_text("hello world"))
 
 # others do not;
-cat(as_text("hello world"), "\n") # fails
+cat(as_corpus_text("hello world"), "\n") # fails
 
 # we must call 'as.character' on the inputs
-cat(as.character(as_text("hello world")), "\n")
+cat(as.character(as_corpus_text("hello world")), "\n")
 ```
 
 
@@ -241,11 +241,11 @@ text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
 ```
 
 You can convert a *quanteda* corpus to a data frame using `as_corpus()`, or
-extract its text using `as_text()`:
+extract its text using `as_corpus_text()`:
 
 ```{r}
 # convert to corpus_text:
-print(as_text(uk2010immigCorpus))
+print(as_corpus_text(uk2010immigCorpus))
 
 # convert to data frame:
 print(as_corpus(uk2010immigCorpus))
@@ -263,10 +263,10 @@ data("crude", package = "tm")
 term_stats(crude, drop_punct = TRUE, drop = stopwords("english"))
 ```
 
-The `as_corpus()` and `as_text()` functions also work on *tm* Corpus objects:
+The `as_corpus()` and `as_corpus_text()` functions also work on *tm* Corpus objects:
 ```{r}
 # convert to corpus_text
-print(as_text(crude))
+print(as_corpus_text(crude))
 
 # convert to data frame
 print(as_corpus(crude))

@@ -16,7 +16,7 @@
 text_split <- function(x, units = "sentences", size = 1, filter = NULL, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         units <- as_enum("units", units, choices = c("sentences", "tokens"))
         size <- as_size(size)
     })

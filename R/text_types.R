@@ -16,7 +16,7 @@
 text_ntype <- function(x, filter = NULL, collapse = FALSE, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         collapse <- as_option("collapse", collapse)
     })
     .Call(C_text_ntype, x, collapse)
@@ -26,7 +26,7 @@ text_ntype <- function(x, filter = NULL, collapse = FALSE, ...)
 text_types <- function(x, filter = NULL, collapse = FALSE, ...)
 {
     with_rethrow({
-        x <- as_text(x, filter, ...)
+        x <- as_corpus_text(x, filter, ...)
         collapse <- as_option("collapse", collapse)
     })
     typs <- .Call(C_text_types, x, collapse)
