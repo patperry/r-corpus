@@ -61,10 +61,9 @@ toks <- stringi::stri_split_boundaries(text, type = "word")
 dict <- unique(c(toks, recursive = TRUE)) # unique words
 text2 <- sapply(toks, paste, collapse = "\u200b")
 ```
-and put the input text in a data frame for convenient analysis
+and put the input text in a corpus data frame for convenient analysis
 ```{r}
-data <- data.frame(name = names, text = as_corpus_text(text2),
-                   stringsAsFactors = FALSE)
+data <- corpus_frame(name = names, text = text2)
 ```
 
 We then specify a token filter to determine what is counted by other corpus
@@ -79,10 +78,7 @@ f <- text_filter(drop_punct = TRUE, drop = stop_words, combine = dict)
 
 We can now compute type, token, and sentence counts
 ```{r}
-head(data.frame(text = data$name,
-                types = text_ntype(data),
-                tokens = text_ntoken(data),
-                sentences = text_nsentence(data)))
+text_stats(data)
 ```
 and examine term frequencies
 ```{r}
