@@ -3,6 +3,8 @@ corpus 0.9.1.9000
 
 ### NEW FEATURES
 
+  * New package website, http://corpustext.com
+
   * Add support for tm `Corpus` and quanteda `corpus` objects; all functions
     expecting text (`text_tokens()`, `term_matrix()`, etc.) should work
     seamlessly on these objects.
@@ -18,8 +20,8 @@ corpus 0.9.1.9000
 
   * Switch `as_utf8()` default argument to `normalize = FALSE`.
 
-  * Re-order `as_text()` and `as_corpus()` arguments; make both accept `...`
-    arguments to override individual text filter properities.
+  * Re-order `as_corpus_text()` and `as_corpus_frame()` arguments; make
+    both accept `...` arguments to override individual text filter properities.
 
   * Add missing single-letter initials to English abbreviation list.
 
