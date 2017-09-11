@@ -374,6 +374,9 @@ test_that("'as_corpus_frame' works on JSON record", {
 
 
 test_that("'as_corpus_frame' errors on invalid inputs", {
+    expect_error(as_corpus_frame.corpus_text("hello"),
+                 "argument is not a valid text object")
+
     expect_error(as_corpus_frame.data.frame(list(text = "hello")),
                  "argument is not a valid data frame")
 
