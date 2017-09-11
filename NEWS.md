@@ -38,6 +38,8 @@ corpus 0.9.1.9000
   * Work around R Windows bug in converting native to UTF-8; described at
     https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329 .
 
+  * Make logical operations on text vectors keep names if arguments have them.
+
 ### DEPRECATED AND DEFUNCT
 
   * Renamed `corpus()`, `as_corpus()` and `is_corpus()` to `corpus_frame()`,
