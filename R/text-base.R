@@ -30,15 +30,15 @@ Summary.corpus_text <- function(..., na.rm = FALSE)
 Ops.corpus_text <- function(e1, e2)
 {
     if (nargs() == 1)
-        stop(gettextf("unary %s not defined for text objects",
+        stop(gettextf("unary %s is not defined for text objects",
             .Generic), domain = NA)
     boolean <- switch(.Generic, `<` = , `>` = , `==` = , `!=` = ,
         `<=` = , `>=` = TRUE, FALSE)
     if (!boolean)
-        stop(gettextf("%s not defined for text objects",
+        stop(gettextf("%s is not defined for text objects",
             .Generic), domain = NA)
-    e1 <- as.character(e1)
-    e2 <- as.character(e2)
+    e1 <- structure(as.character(e1), names = names(e1))
+    e2 <- structure(as.character(e2), names = names(e2))
     NextMethod(.Generic)
 }
 
@@ -128,7 +128,7 @@ as.data.frame.corpus_text <- function(x, row.names = NULL,
 
 as.matrix.corpus_text <- function(x, ...)
 {
-    stop("'as.matrix' is invalid for text objects")
+    stop("'as.matrix' is not defined for text objects")
 }
 
 
@@ -146,7 +146,7 @@ as.vector.corpus_text <- function(x, mode = "any")
 
 cbind.corpus_text <- function(..., deparse.level = 1)
 {
-    stop("'cbind' is invalid for text objects")
+    stop("'cbind' is not defined for text objects")
 }
 
 
@@ -276,13 +276,13 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
 
 rbind.corpus_text <- function(..., deparse.level = 1)
 {
-    stop("'rbind' is invalid for text objects")
+    stop("'rbind' is not defined for text objects")
 }
 
 
 solve.corpus_text <- function(a, b, ...)
 {
-    stop("'solve' is invalid for text objects")
+    stop("'solve' is not defined for text objects")
 }
 
 
@@ -296,5 +296,5 @@ summary.corpus_text <- function(object, ...)
 
 t.corpus_text <- function(x)
 {
-    stop("'t' is invalid for text objects")
+    stop("'t' is not defined for text objects")
 }
