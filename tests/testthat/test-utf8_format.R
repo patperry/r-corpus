@@ -316,7 +316,7 @@ test_that("'format' can set minimum width", {
 test_that("'format' error for invalid justify", {
     text <- as_corpus_text("")
     expect_error(format(text, justify = "wild"),
-                 paste("'justify' must be one of",
+                 paste("'justify' must be one of the following:",
                        paste(dQuote(c("left", "right", "centre", "none")),
                              collapse = ", ")),
                  fixed = TRUE)

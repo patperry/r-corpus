@@ -49,12 +49,12 @@ as_double_scalar <- function(name, value, allow_null = FALSE)
         if (allow_null) {
             return(NULL)
         } else {
-            stop(sprintf("'%s' cannot be NULL"))
+            stop(sprintf("'%s' cannot be NULL", name))
         }
     }
 
     if (length(value) != 1) {
-        stop(sprintf("'%s' must have length 1"))
+        stop(sprintf("'%s' must have length 1", name))
     }
 
     if (!(is.numeric(value) && !is.nan(value) && !is.na(value))) {
@@ -69,13 +69,13 @@ as_double_scalar <- function(name, value, allow_null = FALSE)
 as_enum <- function(name, value, choices)
 {
     if (!(is.character(value) && length(value) == 1 && !is.na(value))) {
-        stop(paste0("'", name, "' must be a character string"))
+        stop(sprintf("'%s' must be a character string", name))
     }
 
     i <- pmatch(value, choices, nomatch = 0)
     if (all(i == 0)) {
-        stop(paste0("'", name, "' must be one of ",
-             paste(dQuote(choices), collapse = ", ")))
+        stop(sprintf("'%s' must be one of the following: ", name),
+             paste(dQuote(choices), collapse = ", "))
     }
     i <- i[i > 0]
     choices[[i]]
@@ -214,20 +214,19 @@ as_ngrams <- function(ngrams)
     }
 
     if (anyNA(ngrams) || !all(is.finite(ngrams) & ngrams >= 1)) {
-        stop("'ngrams' vector must contain positive integer values")
+        stop("'ngrams' entries must be positive integer values")
     }
 
     if (any(ngrams >= 128)) {
-        stop(sprintf("'ngrams' entries must be below 128"))
+        stop("'ngrams' entries must be below 128")
     }
 
     if (length(ngrams) == 0) {
-        stop("'ngrams' vector cannot have length 0")
+        stop("'ngrams' argument cannot have length 0")
     }
 
-    ngrams <- unique(sort(ngrams))
-
-    as.integer(ngrams)
+    ngrams <- sort(unique(as.integer(ngrams)))
+    ngrams
 }
 
 
@@ -298,19 +297,7 @@ as_stemmer <- function(stemmer)
         return(NULL)
     }
 
-    if (anyNA(stemmer) || length(stemmer) != 1 || !is.character(stemmer)) {
-        stop("'stemmer' argument must be a character string or NULL")
-    }
-
-    stemmer <- as.character(stemmer)
-
-    if (!stemmer %in% stemmers) {
-        stop(paste0("invalid 'stemmer' argument (\"", stemmer, "\");",
-                    " must be NA or one of the following: ",
-                    paste0('"', stemmers, '"', collapse=", ")))
-    }
-
-    stemmer
+    as_enum("stemmer", stemmer, stemmers)
 }
 
 
@@ -323,11 +310,11 @@ as_weights <- function(weights, n)
             stop(paste0("'weights' argument has wrong length (",
                         length(weights), ", must be ", n, ")"))
         }
-        if (anyNA(weights)) {
-            stop("'weights' argument contains a missing value");
-        }
         if (any(is.nan(weights))) {
             stop("'weights' argument contains a NaN value");
+        }
+        if (anyNA(weights)) {
+            stop("'weights' argument contains a missing value");
         }
         if (any(is.infinite(weights))) {
             stop("'weights' argument contains an infinite value");
