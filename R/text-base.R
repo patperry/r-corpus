@@ -250,7 +250,7 @@ summary.corpus_text <- function(object, ...)
     ntok <- text_ntoken(object)
     ntype <- text_ntype(object, collapse = TRUE)
 
-    value <- summary(ntok)
+    value <- summary(ntok, ...)
     names(value) <- paste(names(value), "Toks.")
     value <- c(value, Types = ntype)
     value
