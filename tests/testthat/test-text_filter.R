@@ -248,7 +248,11 @@ test_that("invalid operations send errors", {
 test_that("text filter printing works", {
     oldwidth <- options()$width
     options(width = 80)
-    on.exit(options(width = oldwidth))
+    on.exit(options(width = oldwidth), add = TRUE)
+
+    oldcollate <- Sys.getlocale("LC_COLLATE")
+    Sys.setlocale("LC_COLLATE", "C")
+    on.exit(Sys.setlocale("LC_COLLATE", oldcollate), add = TRUE)
 
     f <- text_filter()
 expected <- c(
@@ -260,7 +264,7 @@ expected <- c(
 '\tstemmer: NULL',
 '\tstem_dropped: FALSE',
 '\tstem_except: NULL',
-'\tcombine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." ...',
+'\tcombine:  chr [1:155] "A." "A.D." "A.M." "A.S." "AA." "AB." "AD." ...',
 '\tdrop_letter: FALSE',
 '\tdrop_number: FALSE',
 '\tdrop_punct: FALSE',
@@ -268,7 +272,7 @@ expected <- c(
 '\tdrop: NULL',
 '\tdrop_except: NULL',
 '\tsent_crlf: FALSE',
-'\tsent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
+'\tsent_suppress:  chr [1:155] "A." "A.D." "A.M." "A.S." "AA." "AB." ...')
 
     actual <- strsplit(capture_output(print(f)), "\n")[[1]]
     expect_equal(actual, expected)
