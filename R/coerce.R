@@ -98,7 +98,7 @@ as_filter <- function(name, filter)
     unknown <- !(keys %in% props)
     if (any(unknown)) {
         key <- keys[unknown][1]
-        stop(sprintf("unrecognized text filter property: \"%s\"", key))
+        stop(sprintf("unrecognized text filter property: '%s'", key))
     }
 
     ans <- structure(list(), class = "corpus_text_filter")

@@ -164,7 +164,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     } else if (name == "stemmer") {
         value <- as_stemmer(value)
     } else {
-        stop(sprintf("unrecognized text filter property: \"%s\"", name))
+        stop(sprintf("unrecognized text filter property: '%s'", name))
     }
 
     y <- unclass(x)
@@ -183,22 +183,20 @@ text_filter.corpus_text <- function(x = NULL, ...)
 
 `[[<-.corpus_text_filter` <- function(x, i, value)
 {
-    cl <- class(x)[1]
-    clname <- gsub("_", " ", gsub("^corpus_", "", cl))
-
-    if (length(i) > 1) {
-        stop(paste0("no such ", clname, " property"))
+    if (length(i) != 1) {
+        stop("no such text filter property")
     }
     if (!is.character(i)) {
+        i <- as.integer(i)
+        if (is.na(i) || i < 1 || i > length(x)) {
+            stop("no such text filter property")
+        }
         name <- names(x)[[i]]
     } else {
         name <- i
     }
-    if (is.na(name)) {
-        stop(paste0("no such ", clname, " property ('", i, "')"))
-    }
 
-    do.call(paste0("$<-.", cl), list(x, name, value))
+    `$<-.corpus_text_filter`(x, name, value)
 }
 
 
@@ -208,7 +206,12 @@ text_filter.corpus_text <- function(x = NULL, ...)
         stop("NAs are not allowed in subscripted assignments")
     }
     if (!is.character(i)) {
-        i <- names(x)[i]
+        with_rethrow({
+            i <- names(x)[i]
+        })
+        if (anyNA(i)) {
+            stop("no such text filter property")
+        }
     }
 
     if (length(value) == 1) {
@@ -220,9 +223,7 @@ text_filter.corpus_text <- function(x = NULL, ...)
     for (j in seq_along(i)) {
         key <- i[[j]]
         val <- value[[j]]
-        if (!is.na(key)) {
-            x[[key]] <- val
-        }
+        x[[key]] <- val
     }
 
     x

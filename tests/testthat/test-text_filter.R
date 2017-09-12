@@ -80,11 +80,11 @@ test_that("'text_filter' cannot be assigned to character", {
 test_that("setting an unrecognized property gives an error", {
     f <- text_filter()
     expect_error(f$foo <- "bar",
-                 "unrecognized text filter property: \"foo\"",
+                 "unrecognized text filter property: 'foo'",
                  fixed = TRUE)
 
     expect_error(text_filter(foo = "bar"),
-                 "unrecognized text filter property: \"foo\"",
+                 "unrecognized text filter property: 'foo'",
                  fixed = TRUE)
 })
 
@@ -170,4 +170,106 @@ test_that("'text_filter' clears the old filter", {
 
     toks2 <- text_tokens(x)
     expect_equal(toks2, list("wicked"))
+})
+
+
+test_that("'text_filter' can override properties", {
+    x <- as_corpus_text("hello", remove_ignorable = FALSE)
+    f <- text_filter(x, map_case = FALSE, stemmer = "english")
+    f2 <- text_filter(remove_ignorable = FALSE, map_case = FALSE,
+                      stemmer = "english")
+    expect_equal(f, f2)
+})
+
+
+test_that("'text_filter<-' rejects invalid inputs", {
+    x <- "hello"
+    expect_error(`text_filter<-.corpus_text`(x, text_filter()),
+                 "argument is not a valid text object")
+})
+
+
+test_that("'text_filter<-' setting NULL works", {
+    x <- as_corpus_text("hello")
+    f <- text_filter(x)
+    text_filter(x) <- NULL
+    f2 <- text_filter(x)
+    expect_equal(f, f2)
+})
+
+
+test_that("setting invalid text_filter properties fails", {
+    f <- text_filter()
+    expect_error(f$map_ca <- TRUE,
+                 "unrecognized text filter property: 'map_ca'")
+
+    expect_error(f[[c(1,1)]] <- TRUE, "no such text filter property")
+    expect_error(f[[0]] <- TRUE, "no such text filter property")
+    expect_error(f[[length(f) + 1]] <- TRUE, "no such text filter property")
+    expect_error(f[[NA]] <- TRUE, "no such text filter property")
+})
+
+
+test_that("setting numeric properties succeeds", {
+    f <- text_filter()
+    i <- match("combine", names(f))
+    f[[i]] <- "new york city"
+    expect_equal(f$combine, "new york city")
+})
+
+
+test_that("setting multiple properties works", {
+    f <- text_filter()
+
+    f[c("map_case", "map_quote")] <- FALSE
+    expect_equal(f, text_filter(map_case = FALSE, map_quote = FALSE))
+
+    f[c("map_case", "remove_ignorable", "map_quote")] <- c(FALSE, FALSE, TRUE)
+    expect_equal(f, text_filter(map_case = FALSE, map_quote = TRUE,
+                                remove_ignorable = FALSE))
+})
+
+
+test_that("invalid operations send errors", {
+    f <- text_filter()
+    expect_error(f[c(NA, "map_case", NA)] <- FALSE,
+                 "NAs are not allowed in subscripted assignments")
+    expect_error(f[c(-1, 2)] <- FALSE,
+                 "only 0's may be mixed with negative subscripts")
+    expect_error(f[100] <- "hello",
+                 "no such text filter property")
+    expect_error(f["map_case"] <- c(TRUE, FALSE),
+                 "number of items to replace differs from the replacement length")
+    expect_error(f[c("map_case", "map_case", "map_quote")] <- c(TRUE, FALSE),
+                 "number of items to replace differs from the replacement length")
+})
+
+
+test_that("text filter printing works", {
+    oldwidth <- options()$width
+    options(width = 80)
+    on.exit(options(width = oldwidth))
+
+    f <- text_filter()
+expected <- c(
+'Text filter with the following options:',
+'',
+'\tmap_case: TRUE',
+'\tmap_quote: TRUE',
+'\tremove_ignorable: TRUE',
+'\tstemmer: NULL',
+'\tstem_dropped: FALSE',
+'\tstem_except: NULL',
+'\tcombine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." ...',
+'\tdrop_letter: FALSE',
+'\tdrop_number: FALSE',
+'\tdrop_punct: FALSE',
+'\tdrop_symbol: FALSE',
+'\tdrop: NULL',
+'\tdrop_except: NULL',
+'\tsent_crlf: FALSE',
+'\tsent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
+
+    actual <- strsplit(capture_output(print(f)), "\n")[[1]]
+    expect_equal(actual, expected)
 })
