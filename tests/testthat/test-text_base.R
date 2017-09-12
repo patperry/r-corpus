@@ -28,3 +28,13 @@ test_that("character comparisons should preserve names", {
     y <- c(c = "3", d = "4")
     expect_equal(as_corpus_text(x) < as_corpus_text(y), x < y)
 })
+
+
+test_that("as.vector works", {
+    x <- as_corpus_text(letters)
+    names(x) <- LETTERS
+
+    expect_equal(as.vector(x), as.character(x))
+    expect_equal(as.vector(x, mode = "list"),
+                 as.vector(as.character(x), mode = "list"))
+})

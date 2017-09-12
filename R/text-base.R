@@ -135,12 +135,9 @@ as.matrix.corpus_text <- function(x, ...)
 as.vector.corpus_text <- function(x, mode = "any")
 {
     if (mode == "any") {
-        names(x) <- NULL
-        ans <- x
-    } else {
-        ans <- as.vector(as.character(x), mode = mode)
+        mode <- "character"
     }
-    ans
+    as.vector(as.character(x), mode = mode)
 }
 
 
