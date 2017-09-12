@@ -57,3 +57,8 @@ test_that("'print.text' errors for invalid inputs", {
     expect_error(print(x, na.print = NA), "'na.print' cannot be NA")
     expect_error(print(x, print.gap = 1025), "'print.gap' must be less than or equal to 1024")
 })
+
+
+test_that("'format.text' works for empty", {
+    expect_equal(format(as_corpus_text(character())), character())
+})

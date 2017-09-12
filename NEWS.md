@@ -28,6 +28,9 @@ corpus 0.9.1.9000
   * Adaptively increase buffer size for `read_ndjson()` so that large
     files can be read quickly.
 
+  * Make `summary()` on a `corpus_text` object report statistics for the
+    number of tokens and types.
+
 ### BUG FIXES
 
   * Fix bug in `utf8_normalize()` when the input contains a backslash (`\`).

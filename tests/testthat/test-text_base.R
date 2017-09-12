@@ -96,3 +96,15 @@ test_that("as.data.frame works", {
     expect_equal(as.data.frame(text),
                  data.frame(text))
 })
+
+
+test_that("'summary' works", {
+    text <- as_corpus_text(federalist$text)
+    value <- summary(text)
+    ntok <- text_ntoken(text)
+    expect_equal(value[["Min. Toks."]], min(ntok))
+    expect_equal(value[["Mean Toks."]], mean(ntok))
+    expect_equal(value[["Median Toks."]], median(ntok))
+    expect_equal(value[["Max. Toks."]], max(ntok))
+    expect_equal(value[["Types"]], text_ntype(text, collapse = TRUE))
+})

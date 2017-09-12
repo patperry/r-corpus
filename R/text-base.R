@@ -247,8 +247,12 @@ solve.corpus_text <- function(a, b, ...)
 
 summary.corpus_text <- function(object, ...)
 {
-    value <- c(Length = length(object), Class = "text", Mode = "character")
-    class(value) <- c("summaryDefault", "table")
+    ntok <- text_ntoken(object)
+    ntype <- text_ntype(object, collapse = TRUE)
+
+    value <- summary(ntok)
+    names(value) <- paste(names(value), "Toks.")
+    value <- c(value, Types = ntype)
     value
 }
 
