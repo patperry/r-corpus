@@ -18,7 +18,7 @@ gutenberg_default_mirrors <- c(
     "http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg/",
     "http://eremita.di.uminho.pt/gutenberg/",
     "http://mirror.csclub.uwaterloo.ca/gutenberg/",
-    "http://www.gutenberg.org/dirs/",
+##    "http://www.gutenberg.org/dirs/", prefer the other mirrors; this one is flaky
     "http://mirrors.xmission.com/gutenberg/",
     "http://gutenberg.pglaf.org/",
     "http://aleph.gutenberg.org/",
@@ -52,7 +52,7 @@ gutenberg_get_mirror <- function(verbose = TRUE)
     urls <- sub(pattern, "\\1", rows)
 
     if (length(urls) == 0) {
-        message("Failed retrieving MIRRORS.ALL; using default list (possibly outdated)")
+        message("Failed retrieving MIRRORS.ALL; using list from 2017-08-24 (possibly outdated)")
         urls <- gutenberg_default_mirrors
     }
 
