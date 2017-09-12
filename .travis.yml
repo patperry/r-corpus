@@ -11,7 +11,7 @@ cache: packages
 #    - valgrind
 
 r_github_packages:
-  - patperry/covr
+  - jimhester/covr
 
 before_install:
   - make NEWS
