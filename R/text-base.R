@@ -43,48 +43,42 @@ Ops.corpus_text <- function(e1, e2)
 }
 
 
-all.equal.corpus_text <- function(target, current, ...)
+all.equal.corpus_text <- function(target, current, ..., check.attributes = TRUE)
 {
-    if (!is_corpus_text(current)) {
-        return(c(paste("Modes: text,", mode(current)),
-                 paste("target is text, current is", mode(current))))
+    if (is.null(target) && is.null(current)) {
+        return(TRUE)
     }
 
-    nt <- names(target)
-    ft <- text_filter(target)
-    at <- attributes(target)
-    target <- as.character(target)
-    names(target) <- nt
-
-    for (a in names(at)) {
-        if (!(a %in% c("names", "class"))) {
-            attr(target, a) <- at[[a]]
-        }
+    if (!is_corpus_text(target)) {
+        stop("'target' is not a valid text object")
     }
 
-    nc <- names(current)
-    fc <- text_filter(current)
-    ac <- attributes(current)
-    current <- as.character(current)
-    names(current) <- nc
-
-    for (a in names(ac)) {
-        if (!(a %in% c("names", "class"))) {
-            attr(current, a) <- ac[[a]]
-        }
+    if (!inherits(current, "corpus_text")) {
+        return(sprintf("target is corpus_text, current is %s",
+                       class(current)[[1]]))
     }
 
-    ans <- all.equal(target, current, ...)
-
-    f <- all.equal(ft, fc)
-    if (!isTRUE(f)) {
-        if (isTRUE(ans)) {
-            ans <- character()
-        }
-        ans <- c(ans, paste("Filter:", f))
+    msg <- NULL
+    if (check.attributes) {
+        msg <- attr.all.equal(target, current, ..., check.names = FALSE)
     }
 
-    ans
+    fmsg <- all.equal(text_filter(target), text_filter(current))
+    if (!isTRUE(fmsg)) {
+        msg <- c(msg, paste("Filter:", fmsg))
+    }
+
+    xmsg <- all.equal(structure(as.character(target), names = names(target)),
+                      structure(as.character(current), names = names(current)),
+                      ...)
+
+    if (!isTRUE(xmsg)) {
+        msg <- c(msg, xmsg)
+    }
+
+    if (is.null(msg))
+        TRUE
+    else msg
 }
 
 
