@@ -6,6 +6,7 @@ test_that("invalid ops should fail", {
     expect_error(abs(x), "'abs' is not defined for text objects")
     expect_error(!x, "unary ! is not defined for text objects")
     expect_error(x + x, "+ is not defined for text objects")
+    expect_error(all(x), "'all' is not defined for text objects")
     expect_error(as.matrix(x), "'as.matrix' is not defined for text objects")
     expect_error(cbind(x), "'cbind' is not defined for text objects")
     expect_error(rbind(x), "'rbind' is not defined for text objects")
