@@ -20,7 +20,7 @@ as_character_scalar <- function(name, value, utf8 = TRUE)
     }
     value <- as_character_vector(name, value, utf8)
     if (length(value) != 1) {
-        stop("'", name, "' must be a scalar character string")
+        stop(sprintf("'%s' must be a scalar character string", name))
     }
     value
 }
@@ -30,7 +30,7 @@ as_character_vector <- function(name, value, utf8 = TRUE)
 {
     if (!(is.null(value) || is.character(value) || is_corpus_text(value)
           || all(is.na(value)))) {
-        stop(paste0("'", name, "' must be text, a character vector, or NULL"))
+        stop(sprintf("'%s' must be text, a character vector, or NULL", name))
     }
     if (is.null(value)) {
         return(NULL)
@@ -148,7 +148,7 @@ as_integer_vector <- function(name, value, nonnegative = FALSE)
     }
 
     value <- as.integer(value)
-    if (nonnegative && any(value < 0)) {
+    if (nonnegative && any(!is.na(value) & value < 0)) {
         stop(sprintf("'%s' must be non-negative", name))
     }
 
@@ -176,7 +176,7 @@ as_na_print <- function(name, value)
     }
     value <- as_character_scalar(name, value)
     if (is.na(value)) {
-        stop(sprintf("'%s' must not be NA", name))
+        stop(sprintf("'%s' cannot be NA", name))
     }
     value
 }
@@ -250,7 +250,7 @@ as_option <- function(name, value)
     }
 
     if (!(length(value) == 1 && is.logical(value) && !is.na(value))) {
-        stop(paste0("'", name, "' must be TRUE or FALSE"))
+        stop(sprintf("'%s' must be TRUE or FALSE", name))
     }
     as.logical(value)
 }
@@ -264,7 +264,7 @@ as_rows <- function(name, value)
 
     value <- as_integer_scalar(name, value)
     if (is.na(value)) {
-        stop(paste0("'", name, "' cannot be NA"))
+        stop(sprintf("'%s' cannot be NA", name))
     }
 
     value

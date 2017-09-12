@@ -88,36 +88,7 @@ as.Date.corpus_text <- function(x, format, ...)
 }
 
 
-as.data.frame.corpus_text <- function(x, row.names = NULL,
-                                      optional = FALSE, ...)
-{
-    nm <- deparse(substitute(x), width.cutoff = 500L)
-    nrows <- length(x)
-
-    # get row names
-    if (!is.null(row.names)) {
-        if (!(is.character(row.names) && length(row.names) == nrows)) {
-            stop("'row.names' is not a character vector of length %d", nrows)
-        }
-    } else if (is.null(row.names)) {
-        if (nrows == 0L) {
-            row.names <- character()
-        } else {
-            row.names <- names(x)
-            if (is.null(row.names)) {
-                row.names <- .set_row_names(nrows)
-            }
-        }
-    }
-
-    names(x) <- NULL
-    value <- list(x)
-    if (!optional)  {
-        names(value) <- nm
-    }
-
-    structure(value, row.names = row.names, class = "data.frame")
-}
+as.data.frame.corpus_text <- as.data.frame.vector
 
 
 as.matrix.corpus_text <- function(x, ...)
@@ -128,10 +99,7 @@ as.matrix.corpus_text <- function(x, ...)
 
 as.vector.corpus_text <- function(x, mode = "any")
 {
-    if (mode == "any") {
-        mode <- "character"
-    }
-    as.vector(as.character(x), mode = mode)
+    as.vector(as.character(x), mode)
 }
 
 
@@ -198,7 +166,7 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
     }
 
     if (!is_corpus_text(x)) {
-        stop("argument is not a text vector")
+        stop("argument is not a valid text object")
     }
 
     with_rethrow({

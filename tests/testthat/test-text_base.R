@@ -78,3 +78,21 @@ test_that("all.equal tests if filter is wrong", {
     expect_false(isTRUE(all.equal(x, y)))
     expect_true(isTRUE(all.equal(x, z)))
 })
+
+
+test_that("all.equal returns TRUE if both are NULL", {
+    expect_true(all.equal.corpus_text(NULL, NULL))
+})
+
+
+test_that("as.Date works", {
+    x <- c("1981-10-26", "2000-01-01", NA)
+    expect_equal(as.Date(as_corpus_text(x)), as.Date(x))
+})
+
+
+test_that("as.data.frame works", {
+    text <- as_corpus_text(letters)
+    expect_equal(as.data.frame(text),
+                 data.frame(text))
+})

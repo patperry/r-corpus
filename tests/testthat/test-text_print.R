@@ -22,3 +22,38 @@ test_that("'print.text' works with names", {
                           " \"", LETTERS[1:20], "\""),
                    "...   (26 entries total)"))
 })
+
+
+test_that("'print.text' works for empty", {
+    x <- as_corpus_text(character())
+    expect_equal(capture_output(print(x)),
+                 "text vector with 0 entries")
+})
+
+
+test_that("'print.text' works for NULL", {
+    expect_equal(print.corpus_text(NULL), NULL)
+})
+
+
+test_that("'print.text' errors for invalid", {
+    expect_error(print.corpus_text("hello"), "argument is not a valid text object")
+})
+
+
+test_that("'print.text' with negative rows prints entire object", {
+    x <- as_corpus_text(LETTERS)
+    expect_equal(strsplit(capture_output(print(x, -1)), "\n")[[1]],
+                 paste0(format(paste0("[", 1:26, "]"), justify = "right"),
+                        " \"", LETTERS, "\""))
+})
+
+
+test_that("'print.text' errors for invalid inputs", {
+    x <- as_corpus_text(LETTERS)
+    expect_error(print(x, chars = -1), "'chars' must be non-negative")
+    expect_error(print(x, chars = NA), "'chars' cannot be NA")
+    expect_error(print(x, chars = c(1,1)), "'chars' must have length 1")
+    expect_error(print(x, na.print = NA), "'na.print' cannot be NA")
+    expect_error(print(x, print.gap = 1025), "'print.gap' must be less than or equal to 1024")
+})
