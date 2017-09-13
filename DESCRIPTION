@@ -18,9 +18,8 @@ Authors@R: c(
   person("Unicode, Inc.",
          role = c("cph", "dtc"),
          comment = "Unicode Character Database"))
-Depends: R (>= 2.10)
+Depends: R (>= 2.10), Matrix
 Imports:
-  Matrix,
   methods
 Suggests:
   knitr,
