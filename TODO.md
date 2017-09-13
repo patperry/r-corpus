@@ -27,3 +27,6 @@ Deprecated
    comma in `text_sample()`:
 
         loc <- text_locate(x, terms, filter,, ...)
+
+ * Once `term_frame` is removed, take out 'methods' dependency from DESCRIPTION,
+   remove `as` import from NAMESPACE
