@@ -90,15 +90,10 @@ text_locate <- function(x, terms, filter = NULL, random = FALSE, ...)
     with_rethrow({
         x <- as_corpus_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
-        random <- as_option("random", random)
     })
 
     ans <- .Call(C_text_locate, x, terms)
     ans$text <- structure(ans$text, levels = labels(x), class = "factor")
-    if (random) {
-        o <- sample.int(nrow(ans))
-        ans <- ans[o,]
-    }
     ans
 }
 
