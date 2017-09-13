@@ -386,11 +386,13 @@ If we would like, we can search for multiple phrases at the same time:
 text_locate(data, c("wicked witch", "toto", "oz"))
 ```
 
-We can also request that the results be returned in random order. This is
-useful for inspecting a random sample of the matches:
+We can also request that the results be returned in random order, using the
+`text_sample()` function. This function takes the results from `text_locate()`
+and randomly orders the rows; this is useful for inspecting a random sample of
+the matches:
 
 ```{r}
-text_locate(data, c("wicked witch", "toto", "oz"), random = TRUE)
+text_sample(data, c("wicked witch", "toto", "oz"))
 ```
 
 Other functions allow counting term occurrences, testing for whether a term
@@ -568,27 +570,27 @@ usages of the most common terms using the `text_locate` function, which shows
 these terms in context.
 
 ```{r}
-text_locate(data, "down", random = TRUE)
+text_sample(data, "down")
 ```
 
-Here, we use the `random = TRUE` option to return the matches in random order.
-Since we are only looking at a subset of the matches, we use this option to
-ensure that we don't make conclusions about these words using a biased sample.
-With the default option (`random = FALSE`), we would only see the matches at
-the beginning of the novel.
+Here, we use the `text_sample()` instead of `text_locate()` to return the
+matches in random order.  Since we are only looking at a subset of the
+matches, we use this option to ensure that we don't make conclusions about
+these words using a biased sample.  Using `text_locate()`, we would would only
+see the matches at the beginning of the novel.
 
 It looks like "down" is mostly used as a preposition, not an emotion. We will
 exclude it form the lexicon.
 
 ```{r}
-text_locate(data, "good", random = TRUE)
+text_sample(data, "good")
 ```
 
 "Good" seems to be an appropriate emotion work, evoking positive affection or
 love. We will keep it in the lexicon.
 
 ```{r}
-text_locate(data, "heart", random = TRUE)
+text_sample(data, "heart")
 ```
 
 "Heart" is mostly used as an object (noun), not an emotion meaning compassion.

@@ -79,6 +79,14 @@ text_match <- function(x, terms, filter = NULL, ...)
 
 text_locate <- function(x, terms, filter = NULL, random = FALSE, ...)
 {
+    if (!missing(random)) {
+        warning("argument 'random' is deprecated; use the 'text_sample' function instead.",
+                call. = FALSE)
+        if (random) {
+            return(text_sample(x, terms, filter = filter, ...))
+        }
+    }
+
     with_rethrow({
         x <- as_corpus_text(x, filter, ...)
         terms <- as_character_vector("terms", terms)
@@ -91,6 +99,26 @@ text_locate <- function(x, terms, filter = NULL, random = FALSE, ...)
         o <- sample.int(nrow(ans))
         ans <- ans[o,]
     }
+    ans
+}
+
+
+text_sample <- function(x, terms, size = NULL, filter = NULL, ...)
+{
+    with_rethrow({
+        x <- as_corpus_text(x, filter, ...)
+        terms <- as_character_vector("terms", terms)
+        size <- as_nonnegative("size", size)
+    })
+
+    loc <- text_locate(x, terms, filter,, ...)
+    nloc <- nrow(loc)
+    if (is.null(size)) {
+        size <- nloc
+    }
+    o <- sample.int(nloc, min(size, nloc))
+    ans <- loc[o,]
+    row.names(ans) <- NULL
     ans
 }
 

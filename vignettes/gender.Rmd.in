@@ -78,7 +78,7 @@ investigate some of these:
 
 ```{r}
 # inspect a random sample of the occurrences
-text_locate(austen, c("_did_", "_had", "_meant_"), random = TRUE)
+text_sample(austen, c("_did_", "_had", "_meant_"))
 ```
 
 Let's clean the terms by removing underscores, and recompute the counts:

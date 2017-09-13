@@ -168,3 +168,16 @@ test_that("'text_locate' prints results correctly", {
 "2 3                  Snow White and    Rose    Red                          "))
     options(width = oldwidth)
 })
+
+
+test_that("'text_sample' can give a random sample", {
+    text <- c("Rose is a rose is a rose is a rose.",
+              "A rose by any other name would smell as sweet.",
+              "Snow White and Rose Red")
+
+    loc <- text_sample(text, "rose", 3)
+    expect_equal(nrow(loc), 3)
+
+    loc <- text_sample(text, "rose")
+    expect_equal(nrow(loc), nrow(text_locate(text, "rose")))
+})

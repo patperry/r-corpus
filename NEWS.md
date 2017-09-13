@@ -16,6 +16,8 @@ corpus 0.9.1.9000
 
   * Add `sentiment_afinn`, the AFINN sentiment lexicon.
 
+  * Add `text_sample()` for getting a random sample of term instances.
+
 ### MINOR IMPROVEMENTS
 
   * Switch `as_utf8()` default argument to `normalize = FALSE`.
@@ -56,6 +58,8 @@ corpus 0.9.1.9000
   * Deprecate `term_frame()` function since I don't think anyone needs it and
     I might need the name for something else.  If you need this function,
     please file an issue at https://github.com/patperry/r-corpus/issues .
+
+  * Deprecate `text_locate()` `random` argument; use `text_sample()` instead.
 
   * Remove deprecated `term_counts()` function; use `term_stats()` instead.
 
