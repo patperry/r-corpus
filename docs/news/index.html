@@ -141,6 +141,7 @@
 <li><p>Re-order <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> and <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> arguments; make both accept <code>...</code> arguments to override individual text filter properities.</p></li>
 <li><p>Add missing single-letter initials to English abbreviation list.</p></li>
 <li><p>Adaptively increase buffer size for <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> so that large files can be read quickly.</p></li>
+<li><p>Make <code>summary()</code> on a <code>corpus_text</code> object report statistics for the number of tokens and types.</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level3">
@@ -150,6 +151,7 @@
 <li><p>Fix bug in <code><a href="../reference/utf8.html">utf8_normalize()</a></code> when the input contains a backslash (<code>\</code>).</p></li>
 <li><p>Fix bug in <code><a href="../reference/term_matrix.html">term_matrix()</a></code> column names (non-ASCII names were getting replaced by Unicode escapes).</p></li>
 <li><p>Work around R Windows bug in converting native to UTF-8; described at <a href="https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329" class="uri">https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329</a> .</p></li>
+<li><p>Make comparison operations on text vectors keep names if arguments have them.</p></li>
 </ul>
 </div>
 <div id="deprecated-and-defunct" class="section level3">
