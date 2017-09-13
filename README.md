@@ -144,6 +144,9 @@ one or more types:
  + `text_locate()` reports all instances of tokens matching the search terms,
    along with contexts before and after the term instances;
 
+ + `text_sample()` for putting the results from `text_locate()` in random
+   order, for when you want to inspect a random subset of the results;
+
  + `text_count()` counts the number of matches in each of a set of texts;
 
  + `text_detect()` indicates whether each text contains at least one of
