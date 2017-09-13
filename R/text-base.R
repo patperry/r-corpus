@@ -250,9 +250,17 @@ summary.corpus_text <- function(object, ...)
     ntok <- text_ntoken(object)
     ntype <- text_ntype(object, collapse = TRUE)
 
-    value <- summary(ntok, ...)
+    isna <- is.na(ntok)
+    value <- summary(ntok[!isna], ...)
+    nas <- sum(isna)
+
     names(value) <- paste(names(value), "Toks.")
-    value <- c(value, Types = ntype)
+    value[["Types"]] <- ntype
+    if (nas > 0) {
+        value[["NA's"]] <- nas
+    }
+
+    class(value) <- c("summaryDefault", "table")
     value
 }
 

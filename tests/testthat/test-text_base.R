@@ -102,9 +102,44 @@ test_that("'summary' works", {
     text <- as_corpus_text(federalist$text)
     value <- summary(text)
     ntok <- text_ntoken(text)
-    expect_equal(value[["Min. Toks."]], min(ntok))
-    expect_equal(value[["Mean Toks."]], mean(ntok))
-    expect_equal(value[["Median Toks."]], median(ntok))
-    expect_equal(value[["Max. Toks."]], max(ntok))
-    expect_equal(value[["Types"]], text_ntype(text, collapse = TRUE))
+    expect_equal(summary(text),
+                 structure(c("Min. Toks." = min(ntok),
+                             "1st Qu. Toks." = quantile(ntok, .25)[[1]],
+                             "Median Toks." = median(ntok),
+                             "Mean Toks." = mean(ntok),
+                             "3rd Qu. Toks." = quantile(ntok, .75)[[1]],
+                             "Max. Toks." = max(ntok),
+                             "Types" = text_ntype(text, collapse = TRUE)),
+                           class = c("summaryDefault", "table")))
+})
+
+
+test_that("'summary' handles NA", {
+    text <- as_corpus_text(federalist$text)
+    text[c(5, 13, 40, 55)] <- NA
+    value <- summary(text)
+    ntok <- text_ntoken(text[!is.na(text)])
+    expect_equal(summary(text),
+                 structure(c("Min. Toks." = min(ntok),
+                             "1st Qu. Toks." = quantile(ntok, .25)[[1]],
+                             "Median Toks." = median(ntok),
+                             "Mean Toks." = mean(ntok),
+                             "3rd Qu. Toks." = quantile(ntok, .75)[[1]],
+                             "Max. Toks." = max(ntok),
+                             "Types" = text_ntype(text, collapse = TRUE),
+                             "NA's" = 4),
+                           class = c("summaryDefault", "table")))
+})
+
+
+test_that("'summary' hanldes empty", {
+    expect_equal(summary(as_corpus_text(character())),
+                 structure(c("Min. Toks." = NA,
+                             "1st Qu. Toks." = NA,
+                             "Median Toks." = NA,
+                             "Mean Toks." = NaN,
+                             "3rd Qu. Toks." = NA,
+                             "Max. Toks." = NA,
+                             "Types" = 0),
+                           class = c("summaryDefault", "table")))
 })
