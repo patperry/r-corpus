@@ -131,6 +131,7 @@
 <li><p>Add <code><a href="../reference/gutenberg_corpus.html">gutenberg_corpus()</a></code> for downloading a corpus from Project Gutenberg.</p></li>
 <li><p>Add <code>...</code> arguments to all text functions, for overriding individual <code><a href="../reference/text_filter.html">text_filter()</a></code> properties.</p></li>
 <li><p>Add <code>sentiment_afinn</code>, the AFINN sentiment lexicon.</p></li>
+<li><p>Add <code><a href="../reference/text_locate.html">text_sample()</a></code> for getting a random sample of term instances.</p></li>
 </ul>
 </div>
 <div id="minor-improvements" class="section level3">
@@ -161,6 +162,7 @@
 <li><p>Renamed <code><a href="../reference/corpus-deprecated.html">corpus()</a></code>, <code><a href="../reference/corpus-deprecated.html">as_corpus()</a></code> and <code><a href="../reference/corpus-deprecated.html">is_corpus()</a></code> to <code><a href="../reference/corpus_frame.html">corpus_frame()</a></code>, <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> and <code><a href="../reference/corpus_frame.html">is_corpus_frame()</a></code> to avoid name clashes with other packages.</p></li>
 <li><p>Renamed <code><a href="../reference/corpus-deprecated.html">as_text()</a></code> and <code><a href="../reference/corpus-deprecated.html">is_text()</a></code> to <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> and <code><a href="../reference/corpus_text.html">is_corpus_text()</a></code> to avoid name clashes with other packages.</p></li>
 <li><p>Deprecate <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code> function since I don’t think anyone needs it and I might need the name for something else. If you need this function, please file an issue at <a href="https://github.com/patperry/r-corpus/issues" class="uri">https://github.com/patperry/r-corpus/issues</a> .</p></li>
+<li><p>Deprecate <code><a href="../reference/text_locate.html">text_locate()</a></code> <code>random</code> argument; use <code><a href="../reference/text_locate.html">text_sample()</a></code> instead.</p></li>
 <li><p>Remove deprecated <code>term_counts()</code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</p></li>
 </ul>
 </div>

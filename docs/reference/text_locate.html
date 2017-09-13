@@ -129,6 +129,8 @@
 
 <span class='fu'>text_match</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
+<span class='fu'>text_sample</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+
 <span class='fu'>text_subset</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
@@ -148,9 +150,12 @@
     the default text filter for <code>x</code>.</p></td>
     </tr>
     <tr>
+      <th>size</th>
+      <td><p>the maximum number of results to return, or <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
       <th>random</th>
-      <td><p>logical value indicating whether to return the matches in
-    random order.</p></td>
+      <td><p>deprecated.</p></td>
     </tr>
     <tr>
       <th>&#8230;</th>
@@ -161,36 +166,40 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>text_locate</code> finds all instances of the search terms in the
-    input text, along with their contexts. When used with
-    <code>random = TRUE</code>, the function returns the results in random order;
-    this is useful for hand-inspecting a random sample of the matches.</p>
-<p><code>text_count</code> counts the number of search term instances in
-    each element of the text vector.</p>
-<p><code>text_detect</code> indicates whether each text contains at least
-    one of the search terms.</p>
-<p><code>text_match</code> reports the matching instances as a factor variable
-    with levels equal to the <code>terms</code> argument.</p>
-<p><code>text_subset</code> returns the texts that contain the search terms.</p>
+input text, along with their contexts.
+    <code>text_count</code> counts the number of search term instances in
+each element of the text vector.
+    <code>text_detect</code> indicates whether each text contains at least
+one of the search terms.
+    <code>text_match</code> reports the matching instances as a factor variable
+with levels equal to the <code>terms</code> argument.
+    <code>text_subset</code> returns the texts that contain the search terms.
+    <code>text_sample</code> returns a random sample of the results from
+<code>text_locate</code>, in random order. This is this is useful for
+hand-inspecting a subset of the <code>text_locate</code> matches.</p>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p><code>text_count</code> and <code>text_detect</code> return a numeric vector and
-    a logical vector, respectively, with length equal to the number of input
-    texts and names equal to the text names.</p>
-<p><code>text_locate</code> returns a data frame with one row for each search
-    result and columns named &#8216;text&#8217;, &#8216;before&#8217;,
-    &#8216;instance&#8217;, and &#8216;after&#8217;. The &#8216;text&#8217; column gives
-    the name of the text containing the instance; &#8216;before&#8217; and
-    &#8216;after&#8217; are text vectors giving the text before and after the
-    instance. The &#8216;instance&#8217; column gives the token or tokens matching
-    the search term.</p>
-<p><code>text_match</code> returns a data frame for one row for each search result,
-    with columns names &#8216;text&#8217; and &#8216;term&#8217;. Both columns are
-    factors. The &#8216;text&#8217; column has levels equal to the text labels,
-    and the &#8216;term&#8217; column has levels equal to <code>terms</code> argument.</p>
-<p><code>text_subset</code> returns the subset of texts that contain the given
-    search terms.  The resulting has its <code>text_filter</code> set to the
-    passed-in <code>filter</code> argument.</p>
+a logical vector, respectively, with length equal to the number of input
+texts and names equal to the text names.
+
+<code>text_locate</code> and <code>text_sample</code> both return a data frame with
+one row for each search result and columns named &#8216;text&#8217;, &#8216;before&#8217;,
+&#8216;instance&#8217;, and &#8216;after&#8217;. The &#8216;text&#8217; column gives
+the name of the text containing the instance; &#8216;before&#8217; and
+&#8216;after&#8217; are text vectors giving the text before and after the
+instance. The &#8216;instance&#8217; column gives the token or tokens matching
+the search term.
+
+<code>text_match</code> returns a data frame for one row for each search result,
+with columns names &#8216;text&#8217; and &#8216;term&#8217;. Both columns are
+factors. The &#8216;text&#8217; column has levels equal to the text labels,
+and the &#8216;term&#8217; column has levels equal to <code>terms</code> argument.
+
+<code>text_subset</code> returns the subset of texts that contain the given
+search terms.  The resulting has its <code>text_filter</code> set to the
+passed-in <code>filter</code> argument.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -214,7 +223,10 @@
 #&gt; 3 1    rose
 #&gt; 4 1    rose
 #&gt; 5 2    rose
-#&gt; 6 3    rose</div><div class='input'><span class='fu'>text_subset</span>(<span class='no'>text</span>, <span class='st'>"a rose"</span>)</div><div class='output co'>#&gt; [1] "Rose is a rose is a rose is a rose."           
+#&gt; 6 3    rose</div><div class='input'><span class='fu'>text_sample</span>(<span class='no'>text</span>, <span class='st'>"rose"</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt;   text             before              instance              after              
+#&gt; 1 1                                      Rose    is a rose is a rose is a rose. 
+#&gt; 2 2                                 A    rose    by any other name would smell …
+#&gt; 3 1               Rose is a rose is a    rose    is a rose.                     </div><div class='input'><span class='fu'>text_subset</span>(<span class='no'>text</span>, <span class='st'>"a rose"</span>)</div><div class='output co'>#&gt; [1] "Rose is a rose is a rose is a rose."           
 #&gt; [2] "A rose by any other name would smell as sweet."</div><div class='input'>
 <span class='co'># search for multiple terms</span>
 <span class='fu'>text_locate</span>(<span class='no'>text</span>, <span class='fu'>c</span>(<span class='st'>"rose"</span>, <span class='st'>"rose red"</span>, <span class='st'>"snow white"</span>))</div><div class='output co'>#&gt;   text             before              instance               after             
