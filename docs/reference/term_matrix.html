@@ -123,7 +123,10 @@
 
     <pre class="usage"><span class='fu'>term_matrix</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
             <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+            <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
+
+<span class='fu'>term_counts</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -173,38 +176,48 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>term_matrix</code> tokenizes a set of texts and computes the occurrence
-    counts for each term. If <code>weights</code> is non-<code>NULL</code>, then each
-    token in text <code>i</code> increments the count for the corresponding terms
-    by <code>weights[i]</code>; otherwise, each appearance increments the count
-    by one.</p>
+counts for each term, returning the result as a sparse matrix
+(texts-by-terms). <code>term_counts</code> returns the same information, but
+in a data frame. If <code>weights</code> is non-<code>NULL</code>, then each
+token in text <code>i</code> increments the count for the corresponding terms
+by <code>weights[i]</code>; otherwise, each appearance increments the count
+by one.</p>
 <p>If <code>ngrams</code> is non-<code>NULL</code>, then multi-type n-grams are
-    included in the output for all lengths appearing in the <code>ngrams</code>
-    argument. If <code>ngrams</code> is <code>NULL</code> but <code>select</code> is
-    non-<code>NULL</code>, then all n-grams appearing in the <code>select</code> set
-    are included. If both <code>ngrams</code> and <code>select</code> are <code>NULL</code>,
-    then only unigrams (single type terms) are included.</p>
+included in the output for all lengths appearing in the <code>ngrams</code>
+argument. If <code>ngrams</code> is <code>NULL</code> but <code>select</code> is
+non-<code>NULL</code>, then all n-grams appearing in the <code>select</code> set
+are included. If both <code>ngrams</code> and <code>select</code> are <code>NULL</code>,
+then only unigrams (single type terms) are included.</p>
 <p>If <code>group</code> is <code>NULL</code>, then the output has one set of term
-    counts for each input text. Otherwise, we convert <code>group</code> to
-    a <code>factor</code> and compute one set of term counts for each level.
-    Texts with <code>NA</code> values for <code>group</code> get skipped.</p>
+counts for each input text. Otherwise, we convert <code>group</code> to
+a <code>factor</code> and compute one set of term counts for each level.
+Texts with <code>NA</code> values for <code>group</code> get skipped.</p>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p><code>term_matrix</code> with <code>transpose = FALSE</code> returns a sparse matrix
-    in <code>"dgCMatrix"</code> format with one column for each term and one row for
-    each input text or (if <code>group</code> is non-<code>NULL</code>) for each grouping
-    level.  If <code>filter$select</code> is non-<code>NULL</code>, then the column names
-    will be equal to <code>filter$select</code>. Otherwise, the columns are assigned
-    in arbitrary order.</p>
-<p><code>term_matrix</code> with <code>transpose = TRUE</code> returns the transpose of
-    the term matrix, in <code>"dgCMatrix"</code> format.</p>
-<p><code>term_counts</code> with <code>group = NULL</code> returns a data frame with one
-    row for each entry of the term matrix, and columns <code>"text"</code>,
-    <code>"term"</code>, and <code>"count"</code> giving the text ID, term, and count.
-    The <code>"term"</code> column is a character vector.  The <code>"text"</code>
-    column is a factor with levels equal to <code>names(as_corpus_text(x))</code>;
-    calling <code>as.integer</code> on the <code>"text"</code> column converts from
-    the factor values to the integer row index in the term matrix.</p>
+in <code>"dgCMatrix"</code> format with one column for each term and one row for
+each input text or (if <code>group</code> is non-<code>NULL</code>) for each grouping
+level.  If <code>filter$select</code> is non-<code>NULL</code>, then the column names
+will be equal to <code>filter$select</code>. Otherwise, the columns are assigned
+in arbitrary order.
+
+<code>term_matrix</code> with <code>transpose = TRUE</code> returns the transpose of
+the term matrix, in <code>"dgCMatrix"</code> format.
+
+<code>term_counts</code> with <code>group = NULL</code> returns a data frame with one
+row for each entry of the term matrix, and columns <code>"text"</code>,
+<code>"term"</code>, and <code>"count"</code> giving the text ID, term, and count.
+The <code>"term"</code> column is a factor with levels equal to the selected
+terms. The <code>"text"</code>
+column is a factor with levels equal to <code>names(as_corpus_text(x))</code>;
+calling <code>as.integer</code> on the <code>"text"</code> column converts from
+the factor values to the integer row index in the term matrix.
+
+<code>term_counts</code> with <code>group</code> non-<code>NULL</code> behaves similarly,
+but the result instead has columns named <code>"group"</code>, <code>"term"</code>,
+and <code>"count"</code>, with <code>"group"</code> giving the grouping level, as
+a factor.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -261,7 +274,48 @@
 #&gt; a violet  . 1 .
 #&gt; any       . . 1
 #&gt; any other . . 1
-#&gt; as        . . 1</div></pre>
+#&gt; as        . . 1</div><div class='input'>
+<span class='co'># data frame</span>
+<span class='fu'>head</span>(<span class='fu'>term_counts</span>(<span class='no'>text</span>), <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>) <span class='co'># first 10 rows</span></div><div class='output co'>#&gt;    text term count
+#&gt; 1  2    ,        1
+#&gt; 2  2    !        1
+#&gt; 3  1    .        1
+#&gt; 4  3    .        1
+#&gt; 5  1    a        3
+#&gt; 6  2    a        2
+#&gt; 7  3    a        1
+#&gt; 8  3    any      1
+#&gt; 9  3    as       1
+#&gt; 10 2    blue     1</div><div class='input'>
+<span class='co'># with grouping</span>
+<span class='fu'>term_counts</span>(<span class='no'>text</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt;    group term   count
+#&gt; 1  Bad   ,          1
+#&gt; 2  Bad   !          1
+#&gt; 3  Good  .          2
+#&gt; 4  Bad   a          2
+#&gt; 5  Good  a          4
+#&gt; 6  Good  any        1
+#&gt; 7  Good  as         1
+#&gt; 8  Bad   blue       1
+#&gt; 9  Good  by         1
+#&gt; 10 Bad   is         2
+#&gt; 11 Good  is         2
+#&gt; 12 Good  name       1
+#&gt; 13 Good  other      1
+#&gt; 14 Bad   red        1
+#&gt; 15 Bad   rose       1
+#&gt; 16 Good  rose       4
+#&gt; 17 Good  smell      1
+#&gt; 18 Good  sweet      1
+#&gt; 19 Bad   violet     1
+#&gt; 20 Good  would      1</div><div class='input'>
+<span class='co'># taking names from the input</span>
+<span class='fu'>term_counts</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"One sentence."</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"Another"</span>, <span class='kw'>c</span> <span class='kw'>=</span> <span class='st'>"!!"</span>))</div><div class='output co'>#&gt;   text term     count
+#&gt; 1 c    !            2
+#&gt; 2 a    .            1
+#&gt; 3 b    another      1
+#&gt; 4 a    one          1
+#&gt; 5 a    sentence     1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

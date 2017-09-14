@@ -161,9 +161,9 @@
 <ul>
 <li><p>Renamed <code><a href="../reference/corpus-deprecated.html">corpus()</a></code>, <code><a href="../reference/corpus-deprecated.html">as_corpus()</a></code> and <code><a href="../reference/corpus-deprecated.html">is_corpus()</a></code> to <code><a href="../reference/corpus_frame.html">corpus_frame()</a></code>, <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> and <code><a href="../reference/corpus_frame.html">is_corpus_frame()</a></code> to avoid name clashes with other packages.</p></li>
 <li><p>Renamed <code><a href="../reference/corpus-deprecated.html">as_text()</a></code> and <code><a href="../reference/corpus-deprecated.html">is_text()</a></code> to <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> and <code><a href="../reference/corpus_text.html">is_corpus_text()</a></code> to avoid name clashes with other packages.</p></li>
-<li><p>Deprecate <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code> function since I don’t think anyone needs it and I might need the name for something else. If you need this function, please file an issue at <a href="https://github.com/patperry/r-corpus/issues" class="uri">https://github.com/patperry/r-corpus/issues</a> .</p></li>
+<li><p>Rename <code><a href="../reference/corpus-deprecated.html">term_frame()</a></code> to <code><a href="../reference/term_matrix.html">term_counts()</a></code>.</p></li>
 <li><p>Deprecate <code><a href="../reference/text_locate.html">text_locate()</a></code> <code>random</code> argument; use <code><a href="../reference/text_locate.html">text_sample()</a></code> instead.</p></li>
-<li><p>Remove deprecated <code>term_counts()</code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</p></li>
+<li><p>Remove old deprecated <code><a href="../reference/term_matrix.html">term_counts()</a></code> function; use <code><a href="../reference/term_stats.html">term_stats()</a></code> instead.</p></li>
 </ul>
 </div>
 </div>
@@ -237,7 +237,7 @@
 <h3 class="hasAnchor">
 <a href="#deprecated-and-defunct-2" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
-<li><p>Renamed <code>term_counts()</code> to <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
+<li><p>Renamed <code><a href="../reference/term_matrix.html">term_counts()</a></code> to <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
 <li><p>Removed deprecated functions <code>token_filter()</code> and <code>sentence_filter()</code>.</p></li>
 <li><p>Removed <code>term</code> column from <code><a href="../reference/text_locate.html">text_locate()</a></code> output.</p></li>
 <li><p>Removed <code>map_compat</code> option from <code>ext_filter()</code>; use <code><a href="../reference/utf8.html">utf8_normalize()</a></code> instead if you need to apply compatibility maps.</p></li>
@@ -264,7 +264,7 @@
 <a href="#minor-improvements-2" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
 <li><p>Handle @mentions, #hashtags, and URLs in word tokenizer.</p></li>
-<li><p><code>term_counts()</code> now reports the <code>support</code> for each term (the number of texts containing the term), and has options for restricting output by the minimum and maximum support.</p></li>
+<li><p><code><a href="../reference/term_matrix.html">term_counts()</a></code> now reports the <code>support</code> for each term (the number of texts containing the term), and has options for restricting output by the minimum and maximum support.</p></li>
 <li><p>Added new class <code>corpus_frame</code> to support better printing of data frame objects: left-align text data, truncate output to screen width, display emoji on Mac OS. Use this class for all data frame return values.</p></li>
 <li><p>Added a “unicode” vignette.</p></li>
 <li><p>Converted the “chinese” demo to a vignette. Thanks to Will Lowe for contributing.</p></li>
@@ -318,7 +318,7 @@
 <a href="#deprecated-and-defunct-4" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>tokens()</code> to <code><a href="../reference/text_tokens.html">text_tokens()</a></code> for consistency; add <code><a href="../reference/text_tokens.html">text_ntoken()</a></code>.</p></li>
-<li><p>Rename <code>term_counts()</code> <code>min</code> and <code>max</code> arguments to <code>min_count</code> and <code>max_count</code>.</p></li>
+<li><p>Rename <code><a href="../reference/term_matrix.html">term_counts()</a></code> <code>min</code> and <code>max</code> arguments to <code>min_count</code> and <code>max_count</code>.</p></li>
 </ul>
 </div>
 <div id="bug-fixes-4" class="section level3">
@@ -336,7 +336,7 @@
 <h3 class="hasAnchor">
 <a href="#new-features-4" class="anchor"></a>NEW FEATURES</h3>
 <ul>
-<li><p>Add <code>ngrams</code> options for <code>term_counts()</code> and <code><a href="../reference/term_matrix.html">term_matrix()</a></code>.</p></li>
+<li><p>Add <code>ngrams</code> options for <code><a href="../reference/term_matrix.html">term_counts()</a></code> and <code><a href="../reference/term_matrix.html">term_matrix()</a></code>.</p></li>
 <li><p>Add sentence break suppressions (special handling for abbreviations); the default behavior for <code><a href="../reference/text_split.html">text_split(, "sentences")</a></code> is to use a set of English abbreviations as suppressions.</p></li>
 <li><p>Add option to treat CR and LF like spaces when determining sentence boundaries; this is now the default.</p></li>
 </ul>
@@ -345,9 +345,9 @@
 <h3 class="hasAnchor">
 <a href="#minor-improvements-4" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
-<li><p>Add <code>term_counts()</code> <code>min</code> and <code>max</code> options for excluding terms with counts below or above specified limits.</p></li>
-<li><p>Add <code>term_counts()</code> <code>limit</code> option to limit the number of reported terms.</p></li>
-<li><p>Add <code>term_counts()</code> <code>types</code> option for reporting the types that make up a term.</p></li>
+<li><p>Add <code><a href="../reference/term_matrix.html">term_counts()</a></code> <code>min</code> and <code>max</code> options for excluding terms with counts below or above specified limits.</p></li>
+<li><p>Add <code><a href="../reference/term_matrix.html">term_counts()</a></code> <code>limit</code> option to limit the number of reported terms.</p></li>
+<li><p>Add <code><a href="../reference/term_matrix.html">term_counts()</a></code> <code>types</code> option for reporting the types that make up a term.</p></li>
 <li><p><code>Add abbreviations()</code> function with abbreviation lists for English, French, German, Italian, Portuguese, and Russian (from the Unicode Common Locale Data Repository).</p></li>
 <li><p>Add more refined control over <code>token_filter()</code> drop cateogries: merged <code>"kana"</code>, and <code>"ideo"</code> into <code>"letter"</code>; split off <code>"punct"</code>, <code>"mark"</code>, and <code>"other"</code> from <code>"symbol"</code>.</p></li>
 </ul>
@@ -390,7 +390,7 @@
 <h3 class="hasAnchor">
 <a href="#new-features-5" class="anchor"></a>NEW FEATURES</h3>
 <ul>
-<li><p>Add <code>term_counts()</code> function to tabulate term frequencies.</p></li>
+<li><p>Add <code><a href="../reference/term_matrix.html">term_counts()</a></code> function to tabulate term frequencies.</p></li>
 <li><p>Add <code><a href="../reference/term_matrix.html">term_matrix()</a></code> function to compute a term frequency matrix.</p></li>
 <li><p>Add <code><a href="../reference/text_filter.html">text_filter()</a></code> option (<code>stem_except</code>) to exempt specific terms from stemming.</p></li>
 <li><p>Add <code><a href="../reference/text_filter.html">text_filter()</a></code> option (<code>drop</code>) to drop specific terms, along with option (<code>drop_except</code>) to exempt specific terms from dropping.</p></li>
