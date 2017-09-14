@@ -54,20 +54,20 @@ term_frame <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
 {
     .Deprecated("term_matrix")
 
-    mat <- term_matrix(x, filter = filter, weights = weights, ngrams = ngrams,
-                       select = select, group = group, transpose = FALSE,
-                       ...)
-    mat <- as(mat, "dgTMatrix")
+    with_rethrow({
+        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
+    })
 
-    rn <- rownames(mat)
-    if (is.null(rn)) {
-        rn <- as.character(seq_len(nrow(mat)))
+    row_names <- mat$row_names
+    if (is.null(row_names)) {
+        row_names <- as.character(seq_len(mat$nrow))
     }
 
-    row <- structure(as.integer(mat@i + 1L), class = "factor", levels = rn)
-    term <- structure(as.integer(mat@j + 1L), class = "factor",
-                      levels = colnames(mat))
-    count <- mat@x
+    row <- structure(as.integer(mat$i + 1L), class = "factor",
+                     levels = row_names)
+    term <- structure(as.integer(mat$j + 1L), class = "factor",
+                      levels = mat$col_names)
+    count <- mat$count
 
     if (is.null(group)) {
         ans <- data.frame(text = row, term, count, stringsAsFactors = FALSE)

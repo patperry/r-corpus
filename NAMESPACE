@@ -4,7 +4,6 @@ useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 
 ## Imports
 importFrom(Matrix, sparseMatrix)
-importFrom(methods, as)
 importFrom(utils, download.file)
 importFrom(utils, str)
 
