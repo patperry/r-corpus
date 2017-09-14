@@ -18,6 +18,9 @@ corpus 0.9.1.9000
 
   * Add `text_sample()` for getting a random sample of term instances.
 
+  * Add `na.omit()`, `na.exclude()`, `na.fail()` implementations for
+    `corpus_text`.
+
 ### MINOR IMPROVEMENTS
 
   * Switch `as_utf8()` default argument to `normalize = FALSE`.

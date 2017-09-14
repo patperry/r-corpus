@@ -3,6 +3,9 @@ useDynLib(corpus, .registration = TRUE, .fixes = "C_")
 
 
 ## Imports
+importFrom(stats, na.exclude)
+importFrom(stats, na.fail)
+importFrom(stats, na.omit)
 importFrom(utils, download.file)
 importFrom(utils, str)
 
@@ -176,6 +179,9 @@ S3method(is.nan, corpus_text)
 S3method(length, corpus_text)
 S3method(`length<-`, corpus_text)
 S3method(`levels<-`, corpus_text)
+S3method(na.exclude, corpus_text)
+S3method(na.fail, corpus_text)
+S3method(na.omit, corpus_text)
 S3method(names, corpus_text)
 S3method(`names<-`, corpus_text)
 S3method(print, corpus_text)
