@@ -55,7 +55,7 @@ term_frame <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
     .Deprecated("term_matrix")
 
     with_rethrow({
-        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group)
+        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group, ...)
     })
 
     row_names <- mat$row_names
