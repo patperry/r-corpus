@@ -14,10 +14,10 @@
 
 corpus_frame <- function(..., row.names = NULL, filter = NULL)
 {
-    x <- data.frame(..., row.names = NULL, check.rows = FALSE,
+    x <- data.frame(..., row.names = row.names, check.rows = FALSE,
                     check.names = TRUE, fix.empty.names = TRUE,
                     stringsAsFactors = FALSE)
-    as_corpus_frame(x, filter = filter, row.names = row.names)
+    as_corpus_frame(x, filter = filter)
 }
 
 

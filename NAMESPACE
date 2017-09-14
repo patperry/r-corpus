@@ -116,6 +116,9 @@ S3method(print, corpus_text_filter)
 
 ### frame
 S3method(format, corpus_frame)
+S3method(na.exclude, corpus_frame)
+S3method(na.fail, corpus_frame)
+S3method(na.omit, corpus_frame)
 S3method(print, corpus_frame)
 
 ### json
