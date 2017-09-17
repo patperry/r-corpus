@@ -11,7 +11,6 @@ importFrom(utils, str)
 
 
 ## Exports
-export(abbreviations)
 export(as_corpus_frame)
 export(as_corpus_frame.character)
 export(as_corpus_frame.Corpus)
@@ -71,6 +70,7 @@ export(utf8_width)
 
 
 ## Deprecated
+export(abbreviations)
 export(as_corpus)
 export(as_text)
 export(corpus)

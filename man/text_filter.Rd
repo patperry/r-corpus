@@ -26,12 +26,12 @@ text_filter(x) <- value
             remove_ignorable = TRUE,
             stemmer = NULL, stem_dropped = FALSE,
             stem_except = NULL,
-            combine = abbreviations("english"),
+            combine = corpus::abbreviations_en,
             drop_letter = FALSE, drop_number = FALSE,
             drop_punct = FALSE, drop_symbol = FALSE,
             drop = NULL, drop_except = NULL,
             sent_crlf = FALSE,
-            sent_suppress = abbreviations("english"))
+            sent_suppress = corpus::abbreviations_en)
 }
 \arguments{
     \item{x}{text or corpus object.}

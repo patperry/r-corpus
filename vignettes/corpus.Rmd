@@ -617,12 +617,12 @@ times total in all 24 chapters. The pronoun "her" is the 20th most common
 term, appearing in all but one chapter.
 
 
-The most common words are function words, commonly known as "stop" words. We
-can exclude these terms from the tally using the `subset` argument.
+The most common words are English function words, commonly known as "stop"
+words. We can exclude these terms from the tally using the `subset` argument.
 
 
 ```r
-term_stats(data, subset = !term %in% stopwords("english"))
+term_stats(data, subset = !term %in% stopwords_en)
 ```
 
 ```
@@ -726,7 +726,7 @@ type is not a function word
 
 ```r
 term_stats(data, ngrams = 2:3, types = TRUE,
-           subset = type1 == "dorothy" & !type2 %in% stopwords("english"))
+           subset = type1 == "dorothy" & !type2 %in% stopwords_en)
 ```
 
 ```

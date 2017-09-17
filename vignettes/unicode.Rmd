@@ -391,7 +391,7 @@ It worked! Now we can analyze our text.
 
 
 ```r
-f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
+f <- text_filter(drop_punct = TRUE, drop = stopwords_en)
 term_stats(lines2, f)
 ```
 

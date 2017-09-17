@@ -20,4 +20,4 @@ before_install:
 after_success:
   - export LC_ALL="C"
   - export TEST_WEB_RESOURCES="true"
-  - Rscript -e 'covr::codecov(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
+  - Rscript -e 'covr::codecov(line_exclusions = c("R/deprecated.R", "R/wordlist.R", "src/wordlist.c", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'

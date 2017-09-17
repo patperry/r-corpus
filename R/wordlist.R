@@ -15,6 +15,7 @@
 
 abbreviations <- function(kind = "english")
 {
+    .Deprecated("abbreviations_en")
     with_rethrow({
         wordlist(kind, function(k) .Call(C_abbreviations, k))
     })

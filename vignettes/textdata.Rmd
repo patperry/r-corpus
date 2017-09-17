@@ -103,8 +103,7 @@ Text filter with the following options:
 
 ```r
 # set a new text filter
-text_filter(text) <- text_filter(drop_punct = TRUE,
-                                 drop = stopwords("english"))
+text_filter(text) <- text_filter(drop_punct = TRUE, drop = stopwords_en)
 
 # update a text filter property
 text_filter(text)$drop_punct <- TRUE
@@ -217,7 +216,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7fcd201295d0>
+<pointer: 0x7fe66dcc04b0>
 
 $sources
 $sources[[1]]
@@ -278,7 +277,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7fcd2003fde0>
+<pointer: 0x7fe66dcaed90>
 
 $sources
 $sources[[1]]
@@ -484,7 +483,7 @@ All *corpus* functions expecting text also work on *tm* Corpus objects:
 data("crude", package = "tm")
 
 # get the top terms in a tm corpus:
-term_stats(crude, drop_punct = TRUE, drop = stopwords("english"))
+term_stats(crude, drop_punct = TRUE, drop = stopwords_en)
 ```
 
 ```

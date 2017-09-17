@@ -16,6 +16,7 @@ kinds <- c(da = "danish",
 
 for (lang in names(kinds)) {
     words <- suppressWarnings(corpus:::stopwords(kinds[[lang]]))
+    words <- stringr::str_sort(words, locale = lang)
     assign(paste0("stopwords_", lang), words)
 }
 

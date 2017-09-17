@@ -109,7 +109,7 @@ text_length(x, filter = NULL, ...)
     cause consecutive instances of the words \code{new} and \code{york}
     to get replaced by a single token, \code{new york}.
 
-    By default, we set \code{combine = abbreviations("english")}, so
+    By default, we set \code{combine = abbreviations_en}, so
     that abbreviations like \code{"Ms."} get treated as single tokens;
     with \code{combine = NULL}, trailing punctuation gets split off, and
     \code{"Ms."} gets tokenized into two tokens, for "Ms" and ".".
@@ -166,6 +166,6 @@ text_tokens("Ms. Jones", text_filter(combine = NULL))
 
 # add new combinations
 text_tokens("Ms. Jones is from New York City, New York.",
-            text_filter(combine = c(abbreviations("english"),
+            text_filter(combine = c(abbreviations_en,
                                     "new york", "new york city")))
 }

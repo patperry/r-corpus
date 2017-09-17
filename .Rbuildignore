@@ -12,6 +12,8 @@
 ^TODO[.]md$
 ^appveyor[.]yml$
 ^bench$
+^data/abbreviations$
+^data/abbreviations/
 ^data/affect_wordnet$
 ^data/affect_wordnet/
 ^data/federalist$

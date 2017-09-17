@@ -64,8 +64,8 @@ corpus 0.9.1.9000
 
   * Remove old deprecated `term_counts()` function; use `term_stats()` instead.
 
-  * Deprecate `stopwords()` function in favor of data objects: `stopwords_en`,
-    `stopwords_fr`, etc.
+  * Deprecate `abbreviations()` and `stopwords()` function in favor of data
+    objects: `abbreviations_en`, `stopwords_en`, `stopwords_fr`, etc.
 
 
 corpus 0.9.1 (2017-08-20)

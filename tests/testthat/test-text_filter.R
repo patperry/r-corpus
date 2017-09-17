@@ -9,7 +9,7 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$stemmer, NULL)
     expect_equal(f$stem_dropped, FALSE)
     expect_equal(f$stem_except, NULL)
-    expect_equal(f$combine, abbreviations("english"))
+    expect_equal(f$combine, abbreviations_en)
     expect_equal(f$drop_letter, FALSE)
     expect_equal(f$drop_number, FALSE)
     expect_equal(f$drop_punct, FALSE)
@@ -17,7 +17,7 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$drop, NULL)
     expect_equal(f$drop_except, NULL)
     expect_equal(f$sent_crlf, FALSE)
-    expect_equal(f$sent_suppress, abbreviations("english"))
+    expect_equal(f$sent_suppress, abbreviations_en)
 })
 
 
@@ -250,10 +250,6 @@ test_that("text filter printing works", {
     options(width = 80)
     on.exit(options(width = oldwidth), add = TRUE)
 
-    oldcollate <- Sys.getlocale("LC_COLLATE")
-    Sys.setlocale("LC_COLLATE", "C")
-    on.exit(Sys.setlocale("LC_COLLATE", oldcollate), add = TRUE)
-
     f <- text_filter()
 expected <- c(
 'Text filter with the following options:',
@@ -264,7 +260,7 @@ expected <- c(
 '\tstemmer: NULL',
 '\tstem_dropped: FALSE',
 '\tstem_except: NULL',
-'\tcombine:  chr [1:155] "A." "A.D." "A.M." "A.S." "AA." "AB." "AD." ...',
+'\tcombine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." ...',
 '\tdrop_letter: FALSE',
 '\tdrop_number: FALSE',
 '\tdrop_punct: FALSE',
@@ -272,7 +268,7 @@ expected <- c(
 '\tdrop: NULL',
 '\tdrop_except: NULL',
 '\tsent_crlf: FALSE',
-'\tsent_suppress:  chr [1:155] "A." "A.D." "A.M." "A.S." "AA." "AB." ...')
+'\tsent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
 
     actual <- strsplit(capture_output(print(f)), "\n")[[1]]
     expect_equal(actual, expected)

@@ -80,8 +80,7 @@ sentence boundaries.
 print(text_filter(text))
 
 # set a new text filter
-text_filter(text) <- text_filter(drop_punct = TRUE,
-                                 drop = stopwords("english"))
+text_filter(text) <- text_filter(drop_punct = TRUE, drop = stopwords_en)
 
 # update a text filter property
 text_filter(text)$drop_punct <- TRUE
@@ -260,7 +259,7 @@ All *corpus* functions expecting text also work on *tm* Corpus objects:
 data("crude", package = "tm")
 
 # get the top terms in a tm corpus:
-term_stats(crude, drop_punct = TRUE, drop = stopwords("english"))
+term_stats(crude, drop_punct = TRUE, drop = stopwords_en)
 ```
 
 The `as_corpus_frame()` and `as_corpus_text()` functions also work on *tm*
