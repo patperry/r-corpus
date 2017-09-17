@@ -99,7 +99,7 @@ test_that("'text_tokens' can drop letter words", {
 test_that("'text_tokens' can drop tokens", {
     x <- c("Able was I ere I saw Elba.",
            "A man, a plan, a canal: Panama.")
-    f <- text_filter(drop = stopwords("english"))
+    f <- text_filter(drop = stopwords_en)
     expect_equal(text_tokens(x, f),
                  list(c("able", NA, NA, "ere", NA, "saw", "elba", "."),
                       c(NA, "man", ",", NA, "plan", ",", NA, "canal", ":",

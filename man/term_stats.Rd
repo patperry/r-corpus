@@ -75,9 +75,9 @@ term_stats(x, filter = NULL, weights = NULL,
 \examples{
 term_stats("A rose is a rose is a rose.")
 
-# remove punctuation and stop words
+# remove punctuation and English stop words
 term_stats("A rose is a rose is a rose.",
-           text_filter(drop_symbol = TRUE, drop = stopwords("english")))
+           text_filter(drop_symbol = TRUE, drop = stopwords_en))
 
 # weight the texts
 term_stats(c("A rose is a rose is a rose.",

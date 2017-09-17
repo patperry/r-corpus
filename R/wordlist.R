@@ -23,6 +23,7 @@ abbreviations <- function(kind = "english")
 
 stopwords <- function(kind = "english")
 {
+    .Deprecated("stopwords_en")
     with_rethrow({
         wordlist(kind, function(k) .Call(C_stopwords, k))
     })

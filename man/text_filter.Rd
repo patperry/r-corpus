@@ -128,7 +128,7 @@ text_filter(x) <- value
 text_filter()
 
 # specify some options but leave others unchanged
-f <- text_filter(map_case = FALSE, drop = stopwords("english"))
+f <- text_filter(map_case = FALSE, drop = stopwords_en)
 
 # set the text filter property
 x <- as_corpus_text(c("Marnie the Dog is #1 on the internet."))

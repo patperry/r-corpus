@@ -144,7 +144,7 @@ text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?", f)
 
 # drop common function words ('stop' words):
 text_tokens("Able was I ere I saw Elba.",
-            text_filter(drop = stopwords("english")))
+            text_filter(drop = stopwords_en))
 
 # drop numbers, with some exceptions:"
 text_tokens("0, 1, 2, 3, 4, 5",

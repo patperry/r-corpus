@@ -11,7 +11,7 @@ test_that("'term_stats' works", {
 
 
 test_that("'term_stats' can use a filter", {
-    f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
+    f <- text_filter(drop_punct = TRUE, drop = stopwords_en)
     expect_equal(term_stats("A rose is a rose is a rose.", f),
                  structure(data.frame(term = c("rose"),
                                       count = c(3),
@@ -42,7 +42,7 @@ test_that("'term_stats' can use weights", {
 test_that("'term_stats' can use a filter and weights", {
     x <- c("A rose is a rose is a rose.",
            "A Rose is red, a violet is blue!")
-    f <- text_filter(drop_punct = TRUE, drop = stopwords("english"))
+    f <- text_filter(drop_punct = TRUE, drop = stopwords_en)
     weights <- c(100, 1)
 
     expect_equal(term_stats(x, f, weights = weights),

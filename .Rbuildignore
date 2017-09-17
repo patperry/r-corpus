@@ -18,6 +18,8 @@
 ^data/federalist/
 ^data/sentiment_afinn$
 ^data/sentiment_afinn/
+^data/stopwords$
+^data/stopwords/
 ^dist$
 ^docs$
 ^man/figures/logo$

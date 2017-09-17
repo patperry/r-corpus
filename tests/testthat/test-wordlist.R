@@ -41,12 +41,5 @@ test_that("'abbreviations' can union lists", {
 
 
 test_that("'stopwords' has common function words", {
-    expect_true(all(c("the", "and", "is") %in% stopwords("english")))
+    expect_true(all(c("the", "and", "is") %in% stopwords_en))
 })
-
-
-test_that("'stopwords' errors for unknown kinds", {
-    expect_error(stopwords("xyz"),
-                 '^unknown kind \\("xyz"\\)$')
-})
-

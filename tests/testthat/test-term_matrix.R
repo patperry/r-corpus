@@ -118,7 +118,7 @@ test_that("'term_matrix can select ngrams", {
 test_that("'term_matrix' can select stemmed bigrams", {
     text <- "A sentence. Another sentence. Others..."
     f <- text_filter(stemmer = "english", drop_punct = TRUE,
-                      drop = stopwords("english"))
+                     drop = stopwords_en)
     select <- c("sentenc", "anoth", "anoth sentenc")
     x0 <- term_matrix(text, f, select = select)
     x <- Matrix::sparseMatrix(i = c(1, 1, 1),
