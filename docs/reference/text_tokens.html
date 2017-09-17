@@ -227,7 +227,7 @@
     example, specifying <code>combine = "new york"</code> will
     cause consecutive instances of the words <code>new</code> and <code>york</code>
     to get replaced by a single token, <code>new york</code>.</p>
-<p>By default, we set <code>combine = abbreviations("english")</code>, so
+<p>By default, we set <code>combine = abbreviations_en</code>, so
     that abbreviations like <code>"Ms."</code> get treated as single tokens;
     with <code>combine = NULL</code>, trailing punctuation gets split off, and
     <code>"Ms."</code> gets tokenized into two tokens, for "Ms" and ".".</p>
@@ -266,7 +266,7 @@
 #&gt; </div><div class='input'>
 <span class='co'># drop common function words ('stop' words):</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"Able was I ere I saw Elba."</span>,
-            <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>)))</div><div class='output co'>#&gt; [[1]]
+            <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop</span> <span class='kw'>=</span> <span class='no'>stopwords_en</span>))</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "able" NA     NA     "ere"  NA     "saw"  "elba" "."   
 #&gt; </div><div class='input'>
 <span class='co'># drop numbers, with some exceptions:"</span>
@@ -294,7 +294,7 @@
 #&gt; </div><div class='input'>
 <span class='co'># add new combinations</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"Ms. Jones is from New York City, New York."</span>,
-            <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>combine</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>),
+            <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>combine</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='no'>abbreviations_en</span>,
                                     <span class='st'>"new york"</span>, <span class='st'>"new york city"</span>)))</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "ms."           "jones"         "is"            "from"         
 #&gt; [5] "new york city" ","             "new york"      "."            

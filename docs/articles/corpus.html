@@ -458,8 +458,8 @@ outlier &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="k
 20 her       410      23
 ⋮  (2878 rows total)</code></pre>
 <p>This returns a data frame with each row giving the count and support for each term. The “count” is the total number of occurrences of the term in the corpus. The “support” is the number of texts containing the term. In the output above, we can see that “the” is the most common term, appearing 2922 times total in all 24 chapters. The pronoun “her” is the 20th most common term, appearing in all but one chapter.</p>
-<p>The most common words are function words, commonly known as “stop” words. We can exclude these terms from the tally using the <code>subset</code> argument.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(data, <span class="dt">subset =</span> <span class="op">!</span>term <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="../reference/stopwords.html">stopwords</a></span>(<span class="st">"english"</span>))</code></pre></div>
+<p>The most common words are English function words, commonly known as “stop” words. We can exclude these terms from the tally using the <code>subset</code> argument.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(data, <span class="dt">subset =</span> <span class="op">!</span>term <span class="op">%in%</span><span class="st"> </span>stopwords_en)</code></pre></div>
 <pre><code>   term      count support
 1  dorothy     345      24
 2  said        332      23
@@ -537,7 +537,7 @@ outlier &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="k
 ⋮  (23596 rows total)</code></pre>
 <p>Here are the most common 2-, 3-grams starting with “dorothy”, where the second type is not a function word</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(data, <span class="dt">ngrams =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">types =</span> <span class="ot">TRUE</span>,
-           <span class="dt">subset =</span> type1 <span class="op">==</span><span class="st"> "dorothy"</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>type2 <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="../reference/stopwords.html">stopwords</a></span>(<span class="st">"english"</span>))</code></pre></div>
+           <span class="dt">subset =</span> type1 <span class="op">==</span><span class="st"> "dorothy"</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>type2 <span class="op">%in%</span><span class="st"> </span>stopwords_en)</code></pre></div>
 <pre><code>   term              type1   type2     type3 count support
 1  dorothy went      dorothy went      &lt;NA&gt;      6       6
 2  dorothy looked    dorothy looked    &lt;NA&gt;      6       5

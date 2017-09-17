@@ -145,8 +145,7 @@ raw &lt;-<span class="st"> </span><span class="kw">c</span>(
     sent_crlf: FALSE
     sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set a new text filter</span>
-<span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(text) &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>,
-                                 <span class="dt">drop =</span> <span class="kw"><a href="../reference/stopwords.html">stopwords</a></span>(<span class="st">"english"</span>))
+<span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(text) &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>, <span class="dt">drop =</span> stopwords_en)
 
 <span class="co"># update a text filter property</span>
 <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(text)<span class="op">$</span>drop_punct &lt;-<span class="st"> </span><span class="ot">TRUE</span>
@@ -201,7 +200,7 @@ data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_n
 <span class="co"># display the internal representation of the resulting 'corpus_text' object</span>
 <span class="kw">unclass</span>(data<span class="op">$</span>text)</code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fcd201295d0&gt;
+&lt;pointer: 0x7fe66dcc04b0&gt;
 
 $sources
 $sources[[1]]
@@ -242,7 +241,7 @@ NULL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># segmenting does not allocate new objects for the segments</span>
 <span class="kw">unclass</span>(chunks<span class="op">$</span>text) <span class="co"># inspect text internals</span></code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fcd2003fde0&gt;
+&lt;pointer: 0x7fe66dcaed90&gt;
 
 $sources
 $sources[[1]]
@@ -374,7 +373,7 @@ UKIP         UKIP         Immigration &amp; Asylum.\n\nAs a member of the EU, Br
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"crude"</span>, <span class="dt">package =</span> <span class="st">"tm"</span>)
 
 <span class="co"># get the top terms in a tm corpus:</span>
-<span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(crude, <span class="dt">drop_punct =</span> <span class="ot">TRUE</span>, <span class="dt">drop =</span> <span class="kw"><a href="../reference/stopwords.html">stopwords</a></span>(<span class="st">"english"</span>))</code></pre></div>
+<span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(crude, <span class="dt">drop_punct =</span> <span class="ot">TRUE</span>, <span class="dt">drop =</span> stopwords_en)</code></pre></div>
 <pre><code>   term      count support
 1  oil          85      20
 2  said         73      20

@@ -118,68 +118,62 @@
     </div>
 
     
-    <p>Get a list of common function words (&#8216;stop&#8217; words).</p>
+    <p>Lists of common function words (&#8216;stop&#8217; words).</p>
     
 
-    <pre class="usage"><span class='fu'>stopwords</span>(<span class='kw'>kind</span> <span class='kw'>=</span> <span class='st'>"english"</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>kind</th>
-      <td><p>a character vector giving the desired name or names
-        of the stop word list(s), <code>NA</code>, or <code>NULL</code>. Allowed
-        values are <code>"danish"</code>, <code>"dutch"</code>, <code>"english"</code>,
-        <code>"finnish"</code>, <code>"french"</code>, <code>"german"</code>,
-        <code>"hungarian"</code>, <code>"italian"</code>, <code>"norwegian"</code>,
-        <code>"portuguese"</code>, and <code>"russian"</code>; these values
-        retrieve the language-specific stop word lists.</p></td>
-    </tr>
-    </table>
-    
+    <pre class="usage"><span class='no'>stopwords_da</span>
+<span class='no'>stopwords_de</span>
+<span class='no'>stopwords_en</span>
+<span class='no'>stopwords_es</span>
+<span class='no'>stopwords_fi</span>
+<span class='no'>stopwords_fr</span>
+<span class='no'>stopwords_hu</span>
+<span class='no'>stopwords_it</span>
+<span class='no'>stopwords_nl</span>
+<span class='no'>stopwords_no</span>
+<span class='no'>stopwords_pt</span>
+<span class='no'>stopwords_ru</span>
+<span class='no'>stopwords_sv</span></pre>
+        
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>stopwords</code> returns a character vector of case-folded &#8216;stop&#8217;
-    words. These are common function words that often get discarded before
-    performing other text analysis tasks.</p>
-<p>The built-in word lists returned by this function are reasonable defaults,
-    but they may require further tailoring to suit your particular task. The
-    original lists were compiled by the
-    <a href='http://snowballstem.org/'>Snowball stemming project</a>. Following
-    the Quanteda text analysis software, we have tailored the original
-    lists by adding the word "will" to the English list.</p>
+    <p>The <code>stopwords_</code> objects are character vectors of case-folded
+&#8216;stop&#8217; words. These are common function words that often get discarded
+before performing other text analysis tasks.</p>
+<p>There are lists available for the following languages:
+Danish (<code>stopwords_da</code>), Dutch (<code>stopwords_nl</code>),
+English (<code>stopwords_en</code>), Finnish (<code>stopwords_fi</code>),
+French (<code>stopwords_fr</code>, German (<code>stopwords_de</code>)
+Hungarian (<code>stopwords_hu</code>), Italian (<code>stopwords_it</code>),
+Norwegian (<code>stopwords_no</code>), Portuguese (<code>stopwords_pt</code>),
+Russian (<code>stopwords_ru</code>), Spanish (<code>stopwords_es</code>),
+and Swedish (<code>stopwords_sv</code>).</p>
+<p>These built-in word lists are reasonable defaults, but they may require
+further tailoring to suit your particular task. The original lists were
+compiled by the <a href='http://snowballstem.org/'>Snowball stemming project</a>.
+Following the Quanteda text analysis software, we have tailored the original
+lists by adding the word "will" to the English list.</p>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A character vector of unique stop words of the specified kind (or kinds
-    if <code>kind</code> is a vector), or <code>NULL</code> if <code>kind = NULL</code>.</p>
+    <p>A character vector of unique stop words.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p><code><a href='text_filter.html'>text_filter</a></code></p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>head</span>(<span class='fu'>stopwords</span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; [1] "a"       "about"   "above"   "after"   "again"   "against"</div><div class='input'><span class='fu'>head</span>(<span class='fu'>stopwords</span>(<span class='st'>"russian"</span>))</div><div class='output co'>#&gt; [1] "Б"      "ВЕЪ"    "ВПМЕЕ"  "ВПМШЫЕ" "ВХДЕФ"  "ВХДФП" </div><div class='input'><span class='fu'>stopwords</span>(<span class='kw'>NULL</span>)</div><div class='output co'>#&gt; NULL</div><div class='input'>
-<span class='co'># combine multiple lists, removing duplicates</span>
-<span class='fu'>head</span>(<span class='fu'>stopwords</span>(<span class='fu'>c</span>(<span class='st'>"spanish"</span>, <span class='st'>"portuguese"</span>)))</div><div class='output co'>#&gt; [1] "a"       "à"       "al"      "algo"    "algunas" "algunos"</div><div class='input'>
-<span class='co'># add words to the default list:</span>
-<span class='no'>my_stopwords</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fu'>stopwords</span>(<span class='st'>"english"</span>), <span class='st'>"mr."</span>, <span class='st'>"mrs."</span>, <span class='st'>"ms."</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
 
-      <li><a href="#value">Value</a></li>
+      <li><a href="#format">Format</a></li>
 
       <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

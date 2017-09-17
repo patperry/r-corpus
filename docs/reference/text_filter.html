@@ -137,12 +137,12 @@
             <span class='kw'>remove_ignorable</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
             <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stem_dropped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>stem_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>combine</span> <span class='kw'>=</span> <span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>),
+            <span class='kw'>combine</span> <span class='kw'>=</span> <span class='kw pkg'>corpus</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/corpus/topics/abbreviations'>abbreviations_en</a></span>,
             <span class='kw'>drop_letter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_number</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>drop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>drop_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
             <span class='kw'>sent_crlf</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-            <span class='kw'>sent_suppress</span> <span class='kw'>=</span> <span class='fu'><a href='abbreviations.html'>abbreviations</a></span>(<span class='st'>"english"</span>))</pre>
+            <span class='kw'>sent_suppress</span> <span class='kw'>=</span> <span class='kw pkg'>corpus</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/corpus/topics/abbreviations'>abbreviations_en</a></span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -296,7 +296,7 @@
 #&gt; 	sent_crlf: FALSE
 #&gt; 	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...</div><div class='input'>
 <span class='co'># specify some options but leave others unchanged</span>
-<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))
+<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='no'>stopwords_en</span>)
 
 <span class='co'># set the text filter property</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='corpus_text.html'>as_corpus_text</a></span>(<span class='fu'>c</span>(<span class='st'>"Marnie the Dog is #1 on the internet."</span>))

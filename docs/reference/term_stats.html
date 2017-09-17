@@ -222,9 +222,9 @@
 #&gt; 2 rose     3       1
 #&gt; 3 is       2       1
 #&gt; 4 .        1       1</div><div class='input'>
-<span class='co'># remove punctuation and stop words</span>
+<span class='co'># remove punctuation and English stop words</span>
 <span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>,
-           <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>)))</div><div class='output co'>#&gt;   term count support
+           <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='no'>stopwords_en</span>))</div><div class='output co'>#&gt;   term count support
 #&gt; 1 rose     3       1
 #&gt; 2 .        1       1</div><div class='input'>
 <span class='co'># weight the texts</span>

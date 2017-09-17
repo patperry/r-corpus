@@ -118,70 +118,50 @@
     </div>
 
     
-    <p>Get a list of common abbreviations.</p>
+    <p>Lists of common abbreviations.</p>
     
 
-    <pre class="usage"><span class='fu'>abbreviations</span>(<span class='kw'>kind</span> <span class='kw'>=</span> <span class='st'>"english"</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>kind</th>
-      <td><p>the name (or names) of the abbreviation list(s),
-        <code>NA</code>, or <code>NULL</code>. Allowed values are <code>"english"</code>,
-        <code>"french"</code>, <code>"german"</code>, <code>"italian"</code>,
-        <code>"portuguese"</code>, and <code>"russian"</code>; these values
-        retrieve the language-specific sentence break suppression
-        lists compiled by the
-        <a href='http://cldr.unicode.org/'>Unicode Common Locale Data
-            Repository</a>,
-        with a few additions to the <code>"english"</code> list.</p></td>
-    </tr>
-    </table>
-    
+    <pre class="usage"><span class='no'>abbreviations_de</span>
+<span class='no'>abbreviations_en</span>
+<span class='no'>abbreviations_es</span>
+<span class='no'>abbreviations_fr</span>
+<span class='no'>abbreviations_it</span>
+<span class='no'>abbreviations_pt</span>
+<span class='no'>abbreviations_ru</span></pre>
+        
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>abbreviations</code> returns a character vector of abbreviations. The main
-    use of this function is to get a list of sentence break suppressions,
-    terms ending in full stops (periods, ambiguous sentence terminators) that
-    when followed by an upper-case letter, do not signal the end of a
-    sentence.</p>
-<p>The built-in abbreviation lists returned by this function are reasonable
-    defaults, but they may require further tailoring to suit your particular
-    task.</p>
+    <p>The <code>abbreviations_</code> objects are character vectors of abbreviations.
+These are words or phrases containing full stops (periods, ambiguous sentence
+terminators) that require special handling for sentence detection and
+tokenization.</p>
+<p>The original lists were compiled by the
+<a href='http://cldr.unicode.org/'>Unicode Common Locale Data Repository</a>. We
+have tailored the English list by adding single-letter abbreviations and
+making a few other additions.</p>
+<p>The built-in abbreviation lists are reasonable defaults, but they may require
+further tailoring to suit your particular task.</p>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A sorted character vector of unique abbreviations of the specified
-    kind (or kinds if the <code>kind</code> argument is a vector), or <code>NULL</code>
-    if <code>kind = NULL</code> or <code>kind = NA</code>.</p>
+    <p>A character vector of unique abbreviations.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p><code><a href='text_filter.html'>text_filter</a></code>.</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>head</span>(<span class='fu'>abbreviations</span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; [1] "A."   "A.D." "a.m." "A.M." "A.S." "AA." </div><div class='input'><span class='fu'>head</span>(<span class='fu'>abbreviations</span>(<span class='st'>"french"</span>))</div><div class='output co'>#&gt; [1] "acoust." "adr."    "All."    "anc."    "ann."    "anon."  </div><div class='input'><span class='fu'>abbreviations</span>(<span class='kw'>NULL</span>)</div><div class='output co'>#&gt; NULL</div><div class='input'>
-<span class='co'># multiple kinds:</span>
-<span class='fu'>head</span>(<span class='fu'>abbreviations</span>(<span class='fu'>c</span>(<span class='st'>"italian"</span>, <span class='st'>"portuguese"</span>)))</div><div class='output co'>#&gt; [1] "a.C."   "A.C."   "A.M"    "a.m."   "abr."   "abrev."</div><div class='input'>
-<span class='co'># add words to the default list:</span>
-<span class='no'>my_abbrev</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fu'>abbreviations</span>(<span class='st'>"english"</span>), <span class='st'>"Mon."</span>, <span class='st'>"Tues."</span>, <span class='st'>"Weds."</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
 
-      <li><a href="#value">Value</a></li>
+      <li><a href="#format">Format</a></li>
 
       <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>
