@@ -101,7 +101,7 @@ Here's how to find all instances of tokens that stem to "power":
 
 Here's how to get a term frequency matrix of all 1-, 2-, 3-, 4-, and 5-grams.
 
-    > system.time(x <- term_matrix(federalist, ngrams=1:5))
+    > system.time(x <- term_matrix(federalist, ngrams = 1:5))
        user  system elapsed 
       7.592   0.140   7.795 
 

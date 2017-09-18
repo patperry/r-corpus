@@ -162,7 +162,7 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <span class="dv">20</span> <span class="dv">6</span>    …rprising a passion as that of   power    or glory? Have there not\nbee…
 ⋮  (<span class="dv">912</span> rows total)</code></pre></div>
 <p>Here’s how to get a term frequency matrix of all 1-, 2-, 3-, 4-, and 5-grams.</p>
-<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw">system.time</span>(x &lt;-<span class="st"> </span><span class="kw"><a href="reference/term_matrix.html">term_matrix</a></span>(federalist, <span class="dt">ngrams=</span><span class="dv">1</span><span class="op">:</span><span class="dv">5</span>))
+<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw">system.time</span>(x &lt;-<span class="st"> </span><span class="kw"><a href="reference/term_matrix.html">term_matrix</a></span>(federalist, <span class="dt">ngrams =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>))
    user  system elapsed 
   <span class="fl">7.592</span>   <span class="fl">0.140</span>   <span class="fl">7.795</span> </code></pre></div>
 <p>This computation uses only a single CPU, yet it still completes in under 10 seconds.</p>
