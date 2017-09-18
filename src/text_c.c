@@ -56,8 +56,14 @@ static int context_add(struct context *ctx, SEXP source)
 
 	if (n == nmax) {
 		TRY(corpus_array_size_add(&nmax, sizeof(*sources), n, 1));
-		ctx->sources = (void *)S_realloc((char *)sources, nmax, n,
-						 sizeof(*sources));
+		if (n > 0) {
+			ctx->sources = (void *)S_realloc((char *)sources,
+							 nmax, n,
+							 sizeof(*sources));
+		} else {
+			ctx->sources = (void *)R_alloc(nmax,
+						       sizeof(*sources));
+		}
 		ctx->nsource_max = nmax;
 	}
 	ctx->sources[n] = source;

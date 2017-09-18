@@ -367,7 +367,11 @@ static void grow_buffer(uint8_t **bufptr, int *nbufptr, int nadd)
 		      INT_MAX);
 	}
 
-	buf = (void *)S_realloc((char *)buf, nbuf, nbuf0, sizeof(uint8_t));
+	if (nbuf0 > 0) {
+		buf = (void *)S_realloc((char *)buf, nbuf, nbuf0, sizeof(uint8_t));
+	} else {
+		buf = (void *)R_alloc(nbuf, sizeof(uint8_t));
+	}
 
 	*bufptr = buf;
 	*nbufptr = nbuf;

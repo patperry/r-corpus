@@ -182,7 +182,7 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 	     sclass, snames, srow_names, stype = NA_STRING;
 	SEXP *stypes;
 	struct context *ctx;
-	const struct corpus_text *text, *type;
+	const struct corpus_text *text, *type = NULL;
 	const struct corpus_termset_term *term;
 	struct mkchar mkchar;
 	struct corpus_filter *filter;

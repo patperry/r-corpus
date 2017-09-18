@@ -89,7 +89,12 @@ void locate_grow(struct locate *loc, int nadd)
 
         TRY(corpus_array_size_add(&size, width, loc->nitem, nadd));
 
-        loc->items = (void *)S_realloc(base, size, loc->nitem_max, width);
+	if (loc->nitem_max > 0) {
+		loc->items = (void *)S_realloc(base, size, loc->nitem_max,
+					       width);
+	} else {
+		loc->items = (void *)R_alloc(size, width);
+	}
         loc->nitem_max = size;
 	err = 0;
 out:

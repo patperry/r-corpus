@@ -84,9 +84,14 @@ void tokens_add_token(struct tokens *ctx, int type_id)
 	if (count == size) {
 		TRY(corpus_array_size_add(&size, sizeof(*ctx->tokens),
 					  count, 1));
-		ctx->tokens = (void *)S_realloc((void *)ctx->tokens,
-					       size, count,
-					       sizeof(*ctx->tokens));
+		if (count > 0) {
+			ctx->tokens = (void *)S_realloc((void *)ctx->tokens,
+							size, count,
+							sizeof(*ctx->tokens));
+		} else {
+			ctx->tokens = (void *)R_alloc(size,
+						      sizeof(*ctx->tokens));
+		}
 		ctx->ntoken_max = size;
 	}
 
@@ -108,9 +113,14 @@ SEXP tokens_add_type(struct tokens *ctx, int type_id)
 	if (count == size) {
 		TRY(corpus_array_size_add(&size, sizeof(*ctx->types),
 					  count, 1));
-		ctx->types = (void *)S_realloc((void *)ctx->types,
-					       size, count,
-					       sizeof(*ctx->types));
+		if (count > 0) {
+			ctx->types = (void *)S_realloc((void *)ctx->types,
+						       size, count,
+						       sizeof(*ctx->types));
+		} else {
+			ctx->types = (void *)R_alloc(size,
+						     sizeof(*ctx->types));
+		}
 		ctx->ntype_max = size;
 	}
 
