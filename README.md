@@ -1,14 +1,12 @@
-<div><img alt="Corpus" src="man/figures/banner.png" /></div>
+<div style="margin-bottom:14px"><img alt="Corpus" src="man/figures/banner.png" /></div>
 
 [![Build Status (Linux)][travis-badge]][travis]
 [![Build Status (Windows)][appveyor-badge]][appveyor]
 [![Coverage Status][codecov-badge]][codecov]
 [![CRAN Status][cran-badge]][cran]
+[![License][apache-badge]][apache]
 [![CRAN RStudio Mirror Downloads][cranlogs-badge]][cran]
 
-
-Overview
---------
 
 *Corpus* is an R text processing package with full support for international
 text (Unicode). It includes functions for reading data from newline-delimited
@@ -16,212 +14,118 @@ JSON files, for normalizing and tokenizing text, for searching for term
 occurrences, and for computing term occurrence frequencies (including
 n-grams).
 
-*Corpus* does not provide any language models, part-of-speech tagging,
-topic models, or word vectors.
+*Corpus* does not provide any language models, part-of-speech tagging, topic
+models, or word vectors, but it can be used in conjunction with other packages
+that provide these features.
 
 
 Installation
 ------------
 
-*Corpus* is [available on CRAN][cran]. To install the latest released version,
+### Stable version
+
+*Corpus* is [available on CRAN][cran].To install the latest released version,
 run the following command in R:
 
     install.packages("corpus")
 
-*Note:* corpus *uses a git submodule, so `install_git` and `install_github`
-won't work.  See the section on [building from source][building] below if you
-want to install the development version.*
 
+### Development version
 
-Performance
------------
+To install the latest development version, run the following:
 
-*Corpus* was designed for performance, with the majority of the package
-implemented as a [standalone  C library][corpus].  Two benchmarks illustrate
-its performance:
+    tmp <- tempfile()
+    system2("git", c("clone", "--recursive",
+                     shQuote("https://github.com/patperry/r-corpus.git"), shQuote(tmp)))
+    devtools::install(tmp)
 
-  + [reading in newline-delmited JSON data][bench-ndjson];
-
-  + [computing a term frequency matrix][bench-term-matrix].
-
-In both of these benchmarks, *corpus* is at least twice as fast as the next
-competitor.
+Note that *corpus* uses a git submodule, so you cannot use
+`devtools::install_github`.
 
 
 Usage
 -----
 
-### Data input
+Here's how to get the most common non-punctuation, non-stop-word terms in *The
+Federalist Papers*:
 
-*Corpus* does not have a special "corpus" object. It uses data frames. It
-does, however, have a special object for storing text, `corpus_text`, for the
-`"text"` column of a data frame.
+    > term_stats(federalist, drop = stopwords_en, drop_punct = TRUE)
+       term         count support
+    1  government     825      85
+    2  state          787      85
+    3  people         612      85
+    4  one            544      85
+    5  new            324      85
+    6  york           151      85
+    7  publius         85      85
+    8  may            812      84
+    9  states         845      82
+    10 power          606      82
+    11 must           446      81
+    12 can            464      78
+    13 every          350      77
+    14 part           226      77
+    15 constitution   462      76
+    16 might          322      76
+    17 general        255      76
+    18 time           249      76
+    19 great          291      74
+    20 public         282      74
+    ⋮  (8631 rows total)
 
-Read text data into R or convert an existing corpus using one of the following
-functions:
+Here's how to find all instances of tokens that stem to "power":
 
- + `read_ndjson()` reads data in newline-delimited JSON format, optionally
-   memory-mapping to enable processing large corpora that do not fit into
-   RAM;
+    > text_locate(federalist, "power", stemmer = "english")
+       text             before              instance              after             
+    1  1    …ay hazard a diminution of the   power   , emolument,\nand consequence …
+    2  1    …s. So numerous indeed and so\n powerful  are the causes which serve to…
+    3  1    … of a temper fond of despotic   power    and\nhostile to the principle…
+    4  2    …der to vest it with requisite   powers  . It is well worthy\nof consid…
+    5  2    …head of each the same kind of   powers   which they are advised to\npl…
+    6  2    …\nwithout having been awed by   power   , or influenced by any passion…
+    7  3    …ment, vested with sufficient\n  powers   for all general and national …
+    8  3    … of nations towards all these   powers  , and to me it\nappears eviden…
+    9  3    …he wrong themselves, nor want   power    or\ninclination to prevent or…
+    10 3    …it will also be more in their   power    to\naccommodate and settle th…
+    11 3    …cy of little consideration or   power   .\n\nIn the year 1685, the sta…
+    12 3    …ain, or Britain, or any other  POWERFUL  nation?\n\nPUBLIUS.\n         
+    13 4    … our advancement in union, in   power    and\nconsequence by land and …
+    14 4    …t can apply the resources and   power    of the whole to the\ndefense …
+    15 4    …\ncombining and directing the   powers   and resources of the whole, w…
+    16 5    …h tend to beget and\nincrease   power    in one part and to impede its…
+    17 6    … description are the love of\n  power    or the desire of pre-eminence…
+    18 6    …nd dominion--the jealousy of\n  power   , or the desire of equality an…
+    19 6    …rest of this enterprising and  powerful  monarch, he\nprecipitated Eng…
+    20 6    …rprising a passion as that of   power    or glory? Have there not\nbee…
+    ⋮  (912 rows total)
 
- + `corpus_frame()` creates a new corpus data frame: a data frame with
-   a column named `"text"` of type `corpus_text`;
+Here's how to get a term frequency matrix of all 1-, 2-, 3-, 4-, and 5-grams.
 
- + `as_corpus_frame()` converts a character vector, data frame, or corpus
-   object from another package (*quanteda*, *readtext*, or *tm*) to
-   a data frame with a column named `"text"` of type `corpus_text`;
+    > system.time(x <- term_matrix(federalist, ngrams=1:5))
+       user  system elapsed 
+      7.592   0.140   7.795 
 
- + `as_corpus_text()` extracts the texts from a corpus object.
-
-All *corpus* functions expecting text accept a variety of formats, including
-*quanteda* and *tm* corpus objects. These functions call `as_corpus_text()`
-on their inputs, then process the resulting `corpus_text` object.
-
-
-### Preprocessing
-
-You specify all preprocessing and text normalization (case folding, stemming,
-stop word removal, etc.) using a *text filter*:
-
- + `text_filter()` gets or sets a text filter specifying token
-   preprocessing and sentence boundaries.
-
-Every `corpus_text` object has a text filter. You can get or set this filter
-using the `text_filter()` function, or you can override the filter or specific
-properties using the `filter` or `...` arguments of functions expecting text.
-
-
-### Tokenizing text
-
-*Corpus* conceives of texts as sequences of tokens, each of which is an
-instance of a particular type.  To tokenize text or to compute its types,
-use the following functions: 
-
- + `text_tokens()` transforms raw texts into token sequences.
-
- + `text_ntoken()` counts the number of tokens in each text.
-
- + `text_types()` computes the unique types in a set of texts.
-
- + `text_ntype()` counts the number of unique types.
-
-The default text filter case folds the text, removes Unicode default ignorable
-characters like zero-width spaces, and converts to Unicode normalized composed
-form ([NFC][nfc]), and combines English abbreviations like `"Ms."` into single
-tokens (for other words, trailing punctuation gets split off). For token
-boundaries, *corpus* uses the word boundaries defined by [Unicode Standard
-Annex #29, Section 4][wordbreak], with special rules for handling hyphens,
-`@mentions`, `#hashtags`, and URLs.
-
-
-### Segmenting text
-
-*Corpus* can break text into sentences or token blocks:
-
- + `text_split()` segments text into sentences or blocks of tokens;
-
- + `text_sub()` extracts subsequences of tokens;
-
- + `text_length()` gets the number of dropped and non-dropped tokens in
-   a set of texts;
-
- + `text_nsentence()` counts the number of sentences in a set of texts.
-
-For sentence boundaries, *corpus* uses a tailored version of the boundaries
-defined in [Unicode Standard Annex #29, Section 5][sentbreak]. Specifically,
-when finding sentence boundaries, by default *corpus* treats carriage return
-and new line like spaces, and *corpus* suppresses sentence breaks after
-English abbreviations. You can override this behavior by using a different
-`corpus_text_filter` constructed using the `text_filter()` function
-mentioned above.
+This computation uses only a single CPU, yet it still completes in under 10
+seconds.
 
 
-### Searching for terms
-
-*Corpus* can search text for particular "terms" each of which is a sequence of
-one or more types:
-
- + `text_locate()` reports all instances of tokens matching the search terms,
-   along with contexts before and after the term instances;
-
- + `text_sample()` for putting the results from `text_locate()` in random
-   order, for when you want to inspect a random subset of the results;
-
- + `text_count()` counts the number of matches in each of a set of texts;
-
- + `text_detect()` indicates whether each text contains at least one of
-   the search terms;
-
- + `text_subset()` gets the subset of texts containing a term.
-
-Notably, each of these functions accepts a `corpus_token_filter` argument.
-If this filter specifies a particular stemming behavior, then you search with
-the stemmed type, and the search results will show the raw (unstemmed) text
-that matches the term after tokenization.
+For a more complete introduction to the package, see the
+[getting started guide][corpus-intro] and the other articles at
+[corpustext.com](http://corpustext.com).
 
 
-### Tabulating term frequencies
+Citation
+--------
 
-*Corpus* can tabulate type or n-gram occurrence frequencies:
+Cite *corpus* with the following BibTeX entry:
 
- + `term_stats()` for tabulating term occurrence statistics, aggregating
-   over a set of texts.
-
- + `term_matrix()` for computing a term frequency matrix or its transpose
-   (a "document-by-term matrix" or "term-by-document" matrix).
- 
-All three functions allow weighting the texts.  The `term_matrix()` function
-allows you to select a specific term set, and also allow you to aggregate
-over a specified a grouping factor.
-
-
-### UTF-8 Handling
-
-*Corpus* has functions for translating, validating, normalizing, and printing
-UTF-8 encoded character data. These functions are useful for working around
-[several][windows-enc2utf8] [bugs][emoji-print] in R's handling of UTF-8 data.
-The [Unicdode vignette][unicode-vignette] describes these functions in detail.
-
-
-Building from source
---------------------
-
-To install the latest development version of the package, run the following
-sequence of commands in R:
-
-    local({
-        # download the sources
-        tmp <- tempfile()
-        system2("git", c("clone", "--recursive",
-                         shQuote("https://github.com/patperry/r-corpus.git"),
-                         shQuote(tmp)))
-
-        # install the package
-        devtools::install(tmp)
-
-        # optional: run the tests
-        devtools::test(tmp)
-
-        # optional: remove the temporary files
-        unlink(tmp, recursive = TRUE)
-    })
-
-Note that the package uses a git submodule, so you cannot use
-`devtools::install_github` to install it.
-
-
-To obtain the source code, clone the repository and the submodules:
-
-    git clone --recursive https://github.com/patperry/r-corpus.git
-
-The `--recursive` flag is to make sure that the corpus library also gets
-cloned. If you forget the `--recursive` flag, you can manually clone
-the submodule with the following commands:
-
-    cd r-corpus
-    git submodule update --init
-
-There are no other dependencies.
+    @Manual{,
+        title = {corpus: Text Corpus Analysis},
+        author = {Patrick O. Perry},
+        year = {2017},
+        note = {R package version 0.9.2},
+        url = {http://corpustext.com},
+    }
 
 
 Contributing
@@ -247,17 +151,12 @@ Acknowledgments
 
 The API and feature set for *corpus* draw inspiration from
 [*quanteda*][quanteda], developed by Ken Benoit and collaborators;
-[*stringr*][stringr], developed by Hadley Wickham;
-[*tidytext*][tidytext], developed by Julia Silge and David Robinson.
-
-
-License
--------
-
-*Corpus* is released under the [Apache Licence, Version 2.0][apache].
+[*stringr*][stringr], developed by Hadley Wickham; [*tidytext*][tidytext],
+developed by Julia Silge and David Robinson.
 
 
 [apache]: https://www.apache.org/licenses/LICENSE-2.0.html "Apache License, Version 2.0"
+[apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg "Apache License, Version 2.0"
 [appveyor]: https://ci.appveyor.com/project/patperry/r-corpus/branch/master "Continuous Integration (Windows)"
 [appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/patperry/r-corpus?branch=master&svg=true "Continuous Inegration (Windows)"
 [bench-term-matrix]: https://github.com/patperry/bench-term-matrix#readme "Term Matrix Benchmark"
@@ -269,6 +168,7 @@ License
 [codecov-badge]: https://codecov.io/github/patperry/r-corpus/coverage.svg?branch=master "Code Coverage"
 [conduct]: https://github.com/patperry/r-corpus/blob/master/CONDUCT.md "Contributor Code of Conduct"
 [corpus]: https://github.com/patperry/corpus "Corpus C Library"
+[corpus-intro]: file:///Users/ptrck/Projects/r-corpus/docs/articles/corpus.html "Introduction to corpus"
 [cran]: https://cran.r-project.org/package=corpus "CRAN Page"
 [cran-badge]: http://www.r-pkg.org/badges/version/corpus "CRAN Page"
 [cranlogs-badge]: http://cranlogs.r-pkg.org/badges/corpus "CRAN Downloads"

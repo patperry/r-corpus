@@ -86,137 +86,99 @@
       </header><div class="row">
   <div class="contents col-md-9">
     
-<div><img alt="Corpus" src="reference/figures/banner.png"></div>
+<div style="margin-bottom:14px"><img alt="Corpus" src="reference/figures/banner.png"></div>
 
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
 <p><em>Corpus</em> is an R text processing package with full support for international text (Unicode). It includes functions for reading data from newline-delimited JSON files, for normalizing and tokenizing text, for searching for term occurrences, and for computing term occurrence frequencies (including n-grams).</p>
-<p><em>Corpus</em> does not provide any language models, part-of-speech tagging, topic models, or word vectors.</p>
-</div>
+<p><em>Corpus</em> does not provide any language models, part-of-speech tagging, topic models, or word vectors, but it can be used in conjunction with other packages that provide these features.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p><em>Corpus</em> is <a href="https://cran.r-project.org/package=corpus" title="CRAN Page">available on CRAN</a>. To install the latest released version, run the following command in R:</p>
+<div id="stable-version" class="section level3">
+<h3 class="hasAnchor">
+<a href="#stable-version" class="anchor"></a>Stable version</h3>
+<p><em>Corpus</em> is <a href="https://cran.r-project.org/package=corpus" title="CRAN Page">available on CRAN</a>.To install the latest released version, run the following command in R:</p>
 <div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"corpus"</span>)</code></pre></div>
-<p><em>Note:</em> corpus <em>uses a git submodule, so <code>install_git</code> and <code>install_github</code> won’t work. See the section on <a href="#building-from-source" title="Building from Source">building from source</a> below if you want to install the development version.</em></p>
 </div>
-<div id="performance" class="section level2">
-<h2 class="hasAnchor">
-<a href="#performance" class="anchor"></a>Performance</h2>
-<p><em>Corpus</em> was designed for performance, with the majority of the package implemented as a <a href="https://github.com/patperry/corpus" title="Corpus C Library">standalone C library</a>. Two benchmarks illustrate its performance:</p>
-<ul>
-<li><p><a href="https://github.com/jeroen/ndjson-benchmark#readme" title="NDJSON Benchmark">reading in newline-delmited JSON data</a>;</p></li>
-<li><p><a href="https://github.com/patperry/bench-term-matrix#readme" title="Term Matrix Benchmark">computing a term frequency matrix</a>.</p></li>
-</ul>
-<p>In both of these benchmarks, <em>corpus</em> is at least twice as fast as the next competitor.</p>
+<div id="development-version" class="section level3">
+<h3 class="hasAnchor">
+<a href="#development-version" class="anchor"></a>Development version</h3>
+<p>To install the latest development version, run the following:</p>
+<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
+<span class="kw">system2</span>(<span class="st">"git"</span>, <span class="kw">c</span>(<span class="st">"clone"</span>, <span class="st">"--recursive"</span>,
+                 <span class="kw">shQuote</span>(<span class="st">"https://github.com/patperry/r-corpus.git"</span>), <span class="kw">shQuote</span>(tmp)))
+devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>(tmp)</code></pre></div>
+<p>Note that <em>corpus</em> uses a git submodule, so you cannot use <code><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">devtools::install_github</a></code>.</p>
+</div>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<div id="data-input" class="section level3">
-<h3 class="hasAnchor">
-<a href="#data-input" class="anchor"></a>Data input</h3>
-<p><em>Corpus</em> does not have a special “corpus” object. It uses data frames. It does, however, have a special object for storing text, <code>corpus_text</code>, for the <code>"text"</code> column of a data frame.</p>
-<p>Read text data into R or convert an existing corpus using one of the following functions:</p>
-<ul>
-<li><p><code><a href="reference/read_ndjson.html">read_ndjson()</a></code> reads data in newline-delimited JSON format, optionally memory-mapping to enable processing large corpora that do not fit into RAM;</p></li>
-<li><p><code><a href="reference/corpus_frame.html">corpus_frame()</a></code> creates a new corpus data frame: a data frame with a column named <code>"text"</code> of type <code>corpus_text</code>;</p></li>
-<li><p><code><a href="reference/corpus_frame.html">as_corpus_frame()</a></code> converts a character vector, data frame, or corpus object from another package (<em>quanteda</em>, <em>readtext</em>, or <em>tm</em>) to a data frame with a column named <code>"text"</code> of type <code>corpus_text</code>;</p></li>
-<li><p><code><a href="reference/corpus_text.html">as_corpus_text()</a></code> extracts the texts from a corpus object.</p></li>
-</ul>
-<p>All <em>corpus</em> functions expecting text accept a variety of formats, including <em>quanteda</em> and <em>tm</em> corpus objects. These functions call <code><a href="reference/corpus_text.html">as_corpus_text()</a></code> on their inputs, then process the resulting <code>corpus_text</code> object.</p>
+<p>Here’s how to get the most common non-punctuation, non-stop-word terms in <em>The Federalist Papers</em>:</p>
+<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="reference/term_stats.html">term_stats</a></span>(federalist, <span class="dt">drop =</span> stopwords_en, <span class="dt">drop_punct =</span> <span class="ot">TRUE</span>)
+   term         count support
+<span class="dv">1</span>  government     <span class="dv">825</span>      <span class="dv">85</span>
+<span class="dv">2</span>  state          <span class="dv">787</span>      <span class="dv">85</span>
+<span class="dv">3</span>  people         <span class="dv">612</span>      <span class="dv">85</span>
+<span class="dv">4</span>  one            <span class="dv">544</span>      <span class="dv">85</span>
+<span class="dv">5</span>  new            <span class="dv">324</span>      <span class="dv">85</span>
+<span class="dv">6</span>  york           <span class="dv">151</span>      <span class="dv">85</span>
+<span class="dv">7</span>  publius         <span class="dv">85</span>      <span class="dv">85</span>
+<span class="dv">8</span>  may            <span class="dv">812</span>      <span class="dv">84</span>
+<span class="dv">9</span>  states         <span class="dv">845</span>      <span class="dv">82</span>
+<span class="dv">10</span> power          <span class="dv">606</span>      <span class="dv">82</span>
+<span class="dv">11</span> must           <span class="dv">446</span>      <span class="dv">81</span>
+<span class="dv">12</span> can            <span class="dv">464</span>      <span class="dv">78</span>
+<span class="dv">13</span> every          <span class="dv">350</span>      <span class="dv">77</span>
+<span class="dv">14</span> part           <span class="dv">226</span>      <span class="dv">77</span>
+<span class="dv">15</span> constitution   <span class="dv">462</span>      <span class="dv">76</span>
+<span class="dv">16</span> might          <span class="dv">322</span>      <span class="dv">76</span>
+<span class="dv">17</span> general        <span class="dv">255</span>      <span class="dv">76</span>
+<span class="dv">18</span> time           <span class="dv">249</span>      <span class="dv">76</span>
+<span class="dv">19</span> great          <span class="dv">291</span>      <span class="dv">74</span>
+<span class="dv">20</span> public         <span class="dv">282</span>      <span class="dv">74</span>
+⋮  (<span class="dv">8631</span> rows total)</code></pre></div>
+<p>Here’s how to find all instances of tokens that stem to “power”:</p>
+<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="reference/text_locate.html">text_locate</a></span>(federalist, <span class="st">"power"</span>, <span class="dt">stemmer =</span> <span class="st">"english"</span>)
+   text             before              instance              after             
+<span class="dv">1</span>  <span class="dv">1</span>    …ay hazard a diminution of the   power   , emolument,\nand consequence …
+<span class="dv">2</span>  <span class="dv">1</span>    …s. So numerous indeed and so\n powerful  are the causes which serve to…
+<span class="dv">3</span>  <span class="dv">1</span>    … of a temper fond of despotic   power    and\nhostile to the principle…
+<span class="dv">4</span>  <span class="dv">2</span>    …der to vest it with requisite   powers  . It is well worthy\nof consid…
+<span class="dv">5</span>  <span class="dv">2</span>    …head of each the same kind of   powers   which they are advised to\npl…
+<span class="dv">6</span>  <span class="dv">2</span>    …\nwithout having been awed by   power   , or influenced by any passion…
+<span class="dv">7</span>  <span class="dv">3</span>    …ment, vested with sufficient\n  powers   <span class="cf">for</span> all general and national …
+<span class="dv">8</span>  <span class="dv">3</span>    … of nations towards all these   powers  , and to me it\nappears eviden…
+<span class="dv">9</span>  <span class="dv">3</span>    …he wrong themselves, nor want   power    or\ninclination to prevent or…
+<span class="dv">10</span> <span class="dv">3</span>    …it will also be more <span class="cf">in</span> their   power    to\naccommodate and settle th…
+<span class="dv">11</span> <span class="dv">3</span>    …cy of little consideration or   power   .\n\nIn the year <span class="dv">1685</span>, the sta…
+<span class="dv">12</span> <span class="dv">3</span>    …ain, or Britain, or any other  POWERFUL  nation?\n\nPUBLIUS.\n         
+<span class="dv">13</span> <span class="dv">4</span>    … our advancement <span class="cf">in</span> union, <span class="cf">in</span>   power    and\nconsequence by land and …
+<span class="dv">14</span> <span class="dv">4</span>    …t can apply the resources and   power    of the whole to the\ndefense …
+<span class="dv">15</span> <span class="dv">4</span>    …\ncombining and directing the   powers   and resources of the whole, w…
+<span class="dv">16</span> <span class="dv">5</span>    …h tend to beget and\nincrease   power    <span class="cf">in</span> one part and to impede its…
+<span class="dv">17</span> <span class="dv">6</span>    … description are the love of\n  power    or the desire of pre<span class="op">-</span>eminence…
+<span class="dv">18</span> <span class="dv">6</span>    …nd dominion<span class="op">--</span>the jealousy of\n  power   , or the desire of equality an…
+<span class="dv">19</span> <span class="dv">6</span>    …rest of this enterprising and  powerful  monarch, he\nprecipitated Eng…
+<span class="dv">20</span> <span class="dv">6</span>    …rprising a passion as that of   power    or glory? Have there not\nbee…
+⋮  (<span class="dv">912</span> rows total)</code></pre></div>
+<p>Here’s how to get a term frequency matrix of all 1-, 2-, 3-, 4-, and 5-grams.</p>
+<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw">system.time</span>(x &lt;-<span class="st"> </span><span class="kw"><a href="reference/term_matrix.html">term_matrix</a></span>(federalist, <span class="dt">ngrams=</span><span class="dv">1</span><span class="op">:</span><span class="dv">5</span>))
+   user  system elapsed 
+  <span class="fl">7.592</span>   <span class="fl">0.140</span>   <span class="fl">7.795</span> </code></pre></div>
+<p>This computation uses only a single CPU, yet it still completes in under 10 seconds.</p>
+<p>For a more complete introduction to the package, see the <a href="file:///Users/ptrck/Projects/r-corpus/docs/articles/corpus.html" title="Introduction to corpus">getting started guide</a> and the other articles at <a href="http://corpustext.com">corpustext.com</a>.</p>
 </div>
-<div id="preprocessing" class="section level3">
-<h3 class="hasAnchor">
-<a href="#preprocessing" class="anchor"></a>Preprocessing</h3>
-<p>You specify all preprocessing and text normalization (case folding, stemming, stop word removal, etc.) using a <em>text filter</em>:</p>
-<ul>
-<li>
-<code><a href="reference/text_filter.html">text_filter()</a></code> gets or sets a text filter specifying token preprocessing and sentence boundaries.</li>
-</ul>
-<p>Every <code>corpus_text</code> object has a text filter. You can get or set this filter using the <code><a href="reference/text_filter.html">text_filter()</a></code> function, or you can override the filter or specific properties using the <code>filter</code> or <code>...</code> arguments of functions expecting text.</p>
-</div>
-<div id="tokenizing-text" class="section level3">
-<h3 class="hasAnchor">
-<a href="#tokenizing-text" class="anchor"></a>Tokenizing text</h3>
-<p><em>Corpus</em> conceives of texts as sequences of tokens, each of which is an instance of a particular type. To tokenize text or to compute its types, use the following functions:</p>
-<ul>
-<li><p><code><a href="reference/text_tokens.html">text_tokens()</a></code> transforms raw texts into token sequences.</p></li>
-<li><p><code><a href="reference/text_tokens.html">text_ntoken()</a></code> counts the number of tokens in each text.</p></li>
-<li><p><code><a href="reference/text_types.html">text_types()</a></code> computes the unique types in a set of texts.</p></li>
-<li><p><code><a href="reference/text_types.html">text_ntype()</a></code> counts the number of unique types.</p></li>
-</ul>
-<p>The default text filter case folds the text, removes Unicode default ignorable characters like zero-width spaces, and converts to Unicode normalized composed form (<a href="http://unicode.org/reports/tr15/" title="Unicode Normalization Forms">NFC</a>), and combines English abbreviations like <code>"Ms."</code> into single tokens (for other words, trailing punctuation gets split off). For token boundaries, <em>corpus</em> uses the word boundaries defined by <a href="http://unicode.org/reports/tr29/#Word_Boundaries" title="Unicode Text Segmentation, Word Boundaries">Unicode Standard Annex #29, Section 4</a>, with special rules for handling hyphens, <code>@mentions</code>, <code>#hashtags</code>, and URLs.</p>
-</div>
-<div id="segmenting-text" class="section level3">
-<h3 class="hasAnchor">
-<a href="#segmenting-text" class="anchor"></a>Segmenting text</h3>
-<p><em>Corpus</em> can break text into sentences or token blocks:</p>
-<ul>
-<li><p><code><a href="reference/text_split.html">text_split()</a></code> segments text into sentences or blocks of tokens;</p></li>
-<li><p><code><a href="reference/text_sub.html">text_sub()</a></code> extracts subsequences of tokens;</p></li>
-<li><p><code><a href="reference/text_tokens.html">text_length()</a></code> gets the number of dropped and non-dropped tokens in a set of texts;</p></li>
-<li><p><code><a href="reference/text_split.html">text_nsentence()</a></code> counts the number of sentences in a set of texts.</p></li>
-</ul>
-<p>For sentence boundaries, <em>corpus</em> uses a tailored version of the boundaries defined in <a href="http://unicode.org/reports/tr29/#Sentence_Boundaries" title="Unicode Text Segmentation, Sentence Boundaries">Unicode Standard Annex #29, Section 5</a>. Specifically, when finding sentence boundaries, by default <em>corpus</em> treats carriage return and new line like spaces, and <em>corpus</em> suppresses sentence breaks after English abbreviations. You can override this behavior by using a different <code>corpus_text_filter</code> constructed using the <code><a href="reference/text_filter.html">text_filter()</a></code> function mentioned above.</p>
-</div>
-<div id="searching-for-terms" class="section level3">
-<h3 class="hasAnchor">
-<a href="#searching-for-terms" class="anchor"></a>Searching for terms</h3>
-<p><em>Corpus</em> can search text for particular “terms” each of which is a sequence of one or more types:</p>
-<ul>
-<li><p><code><a href="reference/text_locate.html">text_locate()</a></code> reports all instances of tokens matching the search terms, along with contexts before and after the term instances;</p></li>
-<li><p><code><a href="reference/text_locate.html">text_sample()</a></code> for putting the results from <code><a href="reference/text_locate.html">text_locate()</a></code> in random order, for when you want to inspect a random subset of the results;</p></li>
-<li><p><code><a href="reference/text_locate.html">text_count()</a></code> counts the number of matches in each of a set of texts;</p></li>
-<li><p><code><a href="reference/text_locate.html">text_detect()</a></code> indicates whether each text contains at least one of the search terms;</p></li>
-<li><p><code><a href="reference/text_locate.html">text_subset()</a></code> gets the subset of texts containing a term.</p></li>
-</ul>
-<p>Notably, each of these functions accepts a <code>corpus_token_filter</code> argument. If this filter specifies a particular stemming behavior, then you search with the stemmed type, and the search results will show the raw (unstemmed) text that matches the term after tokenization.</p>
-</div>
-<div id="tabulating-term-frequencies" class="section level3">
-<h3 class="hasAnchor">
-<a href="#tabulating-term-frequencies" class="anchor"></a>Tabulating term frequencies</h3>
-<p><em>Corpus</em> can tabulate type or n-gram occurrence frequencies:</p>
-<ul>
-<li><p><code><a href="reference/term_stats.html">term_stats()</a></code> for tabulating term occurrence statistics, aggregating over a set of texts.</p></li>
-<li><p><code><a href="reference/term_matrix.html">term_matrix()</a></code> for computing a term frequency matrix or its transpose (a “document-by-term matrix” or “term-by-document” matrix).</p></li>
-</ul>
-<p>All three functions allow weighting the texts. The <code><a href="reference/term_matrix.html">term_matrix()</a></code> function allows you to select a specific term set, and also allow you to aggregate over a specified a grouping factor.</p>
-</div>
-<div id="utf-8-handling" class="section level3">
-<h3 class="hasAnchor">
-<a href="#utf-8-handling" class="anchor"></a>UTF-8 Handling</h3>
-<p><em>Corpus</em> has functions for translating, validating, normalizing, and printing UTF-8 encoded character data. These functions are useful for working around <a href="https://twitter.com/ptrckprry/status/901494853758054401" title="Windows enc2utf8 Bug">several</a> <a href="https://twitter.com/ptrckprry/status/887732831161425920" title="MacOS Emoji Printing">bugs</a> in R’s handling of UTF-8 data. The <a href="http://corpustext.com/articles/unicode.html" title="Unicode: Emoji, accents, and international text">Unicdode vignette</a> describes these functions in detail.</p>
-</div>
-</div>
-<div id="building-from-source" class="section level2">
+<div id="citation" class="section level2">
 <h2 class="hasAnchor">
-<a href="#building-from-source" class="anchor"></a>Building from source</h2>
-<p>To install the latest development version of the package, run the following sequence of commands in R:</p>
-<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="kw">local</span>({
-    <span class="co"># download the sources</span>
-    tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
-    <span class="kw">system2</span>(<span class="st">"git"</span>, <span class="kw">c</span>(<span class="st">"clone"</span>, <span class="st">"--recursive"</span>,
-                     <span class="kw">shQuote</span>(<span class="st">"https://github.com/patperry/r-corpus.git"</span>),
-                     <span class="kw">shQuote</span>(tmp)))
-
-    <span class="co"># install the package</span>
-    devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>(tmp)
-
-    <span class="co"># optional: run the tests</span>
-    devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/test">test</a></span>(tmp)
-
-    <span class="co"># optional: remove the temporary files</span>
-    <span class="kw">unlink</span>(tmp, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)
-})</code></pre></div>
-<p>Note that the package uses a git submodule, so you cannot use <code><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">devtools::install_github</a></code> to install it.</p>
-<p>To obtain the source code, clone the repository and the submodules:</p>
-<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r">git clone <span class="op">--</span>recursive https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>patperry<span class="op">/</span>r<span class="op">-</span>corpus.git</code></pre></div>
-<p>The <code>--recursive</code> flag is to make sure that the corpus library also gets cloned. If you forget the <code>--recursive</code> flag, you can manually clone the submodule with the following commands:</p>
-<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r">cd r<span class="op">-</span>corpus
-git submodule update <span class="op">--</span>init</code></pre></div>
-<p>There are no other dependencies.</p>
+<a href="#citation" class="anchor"></a>Citation</h2>
+<p>Cite <em>corpus</em> with the following BibTeX entry:</p>
+<div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">@</span>Manual{,
+    title =<span class="st"> </span>{corpus<span class="op">:</span><span class="st"> </span>Text Corpus Analysis},
+    author =<span class="st"> </span>{Patrick O. Perry},
+    year =<span class="st"> </span>{<span class="dv">2017</span>},
+    note =<span class="st"> </span>{R package version <span class="fl">0.9</span>.<span class="dv">2</span>},
+    url =<span class="st"> </span>{http<span class="op">:</span><span class="er">//</span>corpustext.com},
+}</code></pre></div>
 </div>
 <div id="contributing" class="section level2">
 <h2 class="hasAnchor">
@@ -233,11 +195,6 @@ git submodule update <span class="op">--</span>init</code></pre></div>
 <h2 class="hasAnchor">
 <a href="#acknowledgments" class="anchor"></a>Acknowledgments</h2>
 <p>The API and feature set for <em>corpus</em> draw inspiration from <a href="http://quanteda.io/" title="Quanteda"><em>quanteda</em></a>, developed by Ken Benoit and collaborators; <a href="http://stringr.tidyverse.org/" title="Stringr"><em>stringr</em></a>, developed by Hadley Wickham; <a href="http://juliasilge.github.io/tidytext/" title="Tidytext"><em>tidytext</em></a>, developed by Julia Silge and David Robinson.</p>
-</div>
-<div id="license" class="section level2">
-<h2 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h2>
-<p><em>Corpus</em> is released under the <a href="https://www.apache.org/licenses/LICENSE-2.0.html" title="Apache License, Version 2.0">Apache Licence, Version 2.0</a>.</p>
 </div>
 
   </div>
@@ -263,6 +220,7 @@ git submodule update <span class="op">--</span>init</code></pre></div>
 <li><a href="https://ci.appveyor.com/project/patperry/r-corpus/branch/master" title="Continuous Integration (Windows)"><img src="https://ci.appveyor.com/api/projects/status/github/patperry/r-corpus?branch=master&amp;svg=true" title="Continuous Inegration (Windows)" alt="Build Status (Windows)"></a></li>
 <li><a href="https://codecov.io/github/patperry/r-corpus?branch=master" title="Code Coverage"><img src="https://codecov.io/github/patperry/r-corpus/coverage.svg?branch=master" title="Code Coverage" alt="Coverage Status"></a></li>
 <li><a href="https://cran.r-project.org/package=corpus" title="CRAN Page"><img src="http://www.r-pkg.org/badges/version/corpus" title="CRAN Page" alt="CRAN Status"></a></li>
+<li><a href="https://www.apache.org/licenses/LICENSE-2.0.html" title="Apache License, Version 2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" title="Apache License, Version 2.0" alt="License"></a></li>
 <li><a href="https://cran.r-project.org/package=corpus" title="CRAN Page"><img src="http://cranlogs.r-pkg.org/badges/corpus" title="CRAN Downloads" alt="CRAN RStudio Mirror Downloads"></a></li>
 </ul>
 </div>
