@@ -13,7 +13,7 @@ NEWS: NEWS.md
 	sed -e 's/^### //g; s/`//g' $< > $@
 
 README: README.md
-	sed -e '/Overview/,$$!d' $< > $@
+	sed -e '/\*Corpus\*/,$$!d' $< > $@
 
 vignettes/%.Rmd: vignettes/%.Rmd.in
 	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit(basename("$<"), basename("$@"))'
