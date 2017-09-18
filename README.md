@@ -168,7 +168,7 @@ developed by Julia Silge and David Robinson.
 [codecov-badge]: https://codecov.io/github/patperry/r-corpus/coverage.svg?branch=master "Code Coverage"
 [conduct]: https://github.com/patperry/r-corpus/blob/master/CONDUCT.md "Contributor Code of Conduct"
 [corpus]: https://github.com/patperry/corpus "Corpus C Library"
-[corpus-intro]: file:///Users/ptrck/Projects/r-corpus/docs/articles/corpus.html "Introduction to corpus"
+[corpus-intro]: http://corpustext.com/articles/corpus.html "Introduction to corpus"
 [cran]: https://cran.r-project.org/package=corpus "CRAN Page"
 [cran-badge]: http://www.r-pkg.org/badges/version/corpus "CRAN Page"
 [cranlogs-badge]: http://cranlogs.r-pkg.org/badges/corpus "CRAN Downloads"
