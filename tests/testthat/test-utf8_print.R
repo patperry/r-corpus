@@ -69,6 +69,10 @@ test_that("'utf8_print' can use the 'max' argument for unnamed vectors", {
 
 
 test_that("'utf8_print' can use the 'max' argument for named vectors", {
+    oldwidth <- options()$width
+    options(width = 80)
+    on.exit(options(width = oldwidth))
+
     x <- as.character(1:260)
     names(x) <- rep(letters, 10)
 
