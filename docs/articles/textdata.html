@@ -200,7 +200,7 @@ data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_n
 <span class="co"># display the internal representation of the resulting 'corpus_text' object</span>
 <span class="kw">unclass</span>(data<span class="op">$</span>text)</code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fe66dcc04b0&gt;
+&lt;pointer: 0x7fc2576e75f0&gt;
 
 $sources
 $sources[[1]]
@@ -241,7 +241,7 @@ NULL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># segmenting does not allocate new objects for the segments</span>
 <span class="kw">unclass</span>(chunks<span class="op">$</span>text) <span class="co"># inspect text internals</span></code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fe66dcaed90&gt;
+&lt;pointer: 0x7fc25b131600&gt;
 
 $sources
 $sources[[1]]
@@ -317,7 +317,7 @@ para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the 
            <span class="dt">metacorpus =</span> <span class="kw">list</span>(<span class="dt">notes =</span> <span class="st">"Immigration-related sections of 2010 UK party manifestos"</span>))
 
 <span class="co"># search for terms in a quanteda corpus that stem to "immigr":</span>
-<span class="kw"><a href="../reference/text_locate.html">text_locate</a></span>(uk2010immigCorpus, <span class="st">"immigr"</span>, <span class="dt">stemmer =</span> <span class="st">"english"</span>)</code></pre></div>
+<span class="kw"><a href="../reference/text_locate.html">text_locate</a></span>(uk2010immigCorpus, <span class="st">"immigr"</span>, <span class="dt">stemmer =</span> <span class="st">"en"</span>)</code></pre></div>
 <pre><code>   text                 before                   instance                    after                  
 1  BNP                                          IMMIGRATION : AN UNPARALLELED CRISIS WHICH ONLY THE…
 2  BNP  …Y THE BNP CAN SOLVE. \n\n- At current  immigration  and birth rates, indigenous British pe…
