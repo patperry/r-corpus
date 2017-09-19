@@ -75,7 +75,7 @@ Federalist Papers*:
 
 Here's how to find all instances of tokens that stem to "power":
 
-    > text_locate(federalist, "power", stemmer = "english")
+    > text_locate(federalist, "power", stemmer = "en")
        text             before              instance              after             
     1  1    …ay hazard a diminution of the   power   , emolument,\nand consequence …
     2  1    …s. So numerous indeed and so\n powerful  are the causes which serve to…

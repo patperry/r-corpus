@@ -36,6 +36,8 @@ corpus 0.9.2
   * Make `summary()` on a `corpus_text` object report statistics for the
     number of tokens and types.
 
+  * Switch to 2-letter language codes for stemming algorithms.
+
 ### BUG FIXES
 
   * Fix bug in `utf8_normalize()` when the input contains a backslash (`\`).

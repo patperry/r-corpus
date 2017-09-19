@@ -785,7 +785,7 @@ stem to "scream":
 
 
 ```r
-text_locate(data, "scream", stemmer = "english")
+text_locate(data, "scream", stemmer = "en") # english stemmer
 ```
 
 ```

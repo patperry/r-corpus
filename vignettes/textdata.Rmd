@@ -216,7 +216,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7fe66dcc04b0>
+<pointer: 0x7fc2576e75f0>
 
 $sources
 $sources[[1]]
@@ -277,7 +277,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7fe66dcaed90>
+<pointer: 0x7fc25b131600>
 
 $sources
 $sources[[1]]
@@ -406,7 +406,7 @@ uk2010immigCorpus <-
            metacorpus = list(notes = "Immigration-related sections of 2010 UK party manifestos"))
 
 # search for terms in a quanteda corpus that stem to "immigr":
-text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
+text_locate(uk2010immigCorpus, "immigr", stemmer = "en")
 ```
 
 ```

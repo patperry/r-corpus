@@ -236,7 +236,7 @@ uk2010immigCorpus <-
            metacorpus = list(notes = "Immigration-related sections of 2010 UK party manifestos"))
 
 # search for terms in a quanteda corpus that stem to "immigr":
-text_locate(uk2010immigCorpus, "immigr", stemmer = "english")
+text_locate(uk2010immigCorpus, "immigr", stemmer = "en")
 ```
 
 You can convert a *quanteda* corpus to a data frame using `as_corpus_frame()`,

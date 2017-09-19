@@ -288,16 +288,24 @@ as_size <- function(size)
 
 as_stemmer <- function(stemmer)
 {
-    stemmers <- c("arabic", "danish", "dutch", "english", "finnish",
-                  "french", "german", "hungarian", "italian", "norwegian",
-                  "porter", "portuguese", "romanian", "russian", "spanish",
-                  "swedish", "tamil", "turkish")
-
     if (is.null(stemmer)) {
         return(NULL)
     }
 
-    as_enum("stemmer", stemmer, stemmers)
+    isocodes <- c(ar = "arabic", da = "danish", de = "german",
+                  en = "english", es = "spanish", fi = "finnish",
+                  fr = "french", hu = "hungarian", it = "italian",
+                  nl = "dutch", no = "norwegian", pt = "portuguese",
+                  ro = "romanian", ru = "russian", sv = "swedish",
+                  ta = "tamil", tr = "turkish")
+    extra <- "porter"
+
+    stemmers <- c(names(isocodes), sort(c(isocodes, extra)))
+    stemmer <- as_enum("stemmer", stemmer, stemmers)
+    if (!is.na(i <- match(stemmer, isocodes))) {
+        stemmer <- names(isocodes)[[i]]
+    }
+    stemmer
 }
 
 

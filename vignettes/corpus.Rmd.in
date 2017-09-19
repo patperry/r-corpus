@@ -377,7 +377,7 @@ want to search for a stemmed token. Here are all instances of tokens that
 stem to "scream":
 
 ```{r}
-text_locate(data, "scream", stemmer = "english")
+text_locate(data, "scream", stemmer = "en") # english stemmer
 ```
 
 If we would like, we can search for multiple phrases at the same time:

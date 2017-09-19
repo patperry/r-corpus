@@ -57,18 +57,53 @@ static int filter_type_kind(SEXP filter)
 	return kind;
 }
 
+struct stemmer {
+	const char *abbrev;
+	const char *name;
+};
+
+static const struct stemmer stemmers[]  = {
+	{ "ar", "arabic" },
+	{ "da", "danish" },
+	{ "de", "german" },
+	{ "en", "english" },
+	{ "es", "spanish" },
+	{ "fi", "finnish" },
+	{ "fr", "french" },
+	{ "hu", "hungarian" },
+	{ "it",  "italian" },
+	{ "nl", "dutch" },
+	{ "no", "norwegian" },
+	{ "porter", "porter" },
+	{ "pt", "portuguese" },
+	{ "ro", "romanian" },
+	{ "ru", "russian" },
+	{ "sv", "swedish" },
+	{ "ta", "tamil" },
+	{ "tr", "turkish" },
+	{ NULL, NULL } };
 
 static const char *filter_stemmer(SEXP filter)
 {
+	const struct stemmer *stem = stemmers;
 	SEXP alg = getListElement(filter, "stemmer");
-	SEXP val;
+	const char *val;
 
 	if (alg == R_NilValue) {
 		return NULL;
 	}
 
-	val = STRING_ELT(alg, 0);
-	return CHAR(val);
+	val = CHAR(STRING_ELT(alg, 0));
+
+	while (stem->abbrev) {
+		if (strcmp(val, stem->abbrev) == 0) {
+			return stem->name;
+		}
+		stem++;
+	}
+
+	error("unrecognized stemmer: '%s'", val);
+	return NULL;
 }
 
 

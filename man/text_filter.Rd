@@ -57,12 +57,24 @@ text_filter(x) <- value
         algorithms are provided by the
         \href{http://snowballstem.org/algorithms/}{Snowball stemming library};
         the following stemming algorithms are available:
-            \code{"arabic"}, \code{"danish"}, \code{"dutch"},
-            \code{"english"}, \code{"finnish"}, \code{"french"},
-	        \code{"german"}, \code{"hungarian"}, \code{"italian"},
-            \code{"norwegian"}, \code{"porter"}, \code{"portuguese"},
-	        \code{"romanian"}, \code{"russian"}, \code{"spanish"},
-            \code{"swedish"}, \code{"tamil"}, and \code{"turkish"}.
+            \code{"ar"} (\code{"arabic"}),
+            \code{"da"} (\code{"danish"}),
+	        \code{"de"} (\code{"german"}),
+            \code{"en"} (\code{"english"}),
+            \code{"es"} (\code{"spanish"}),
+            \code{"fi"} (\code{"finnish"}),
+            \code{"fr"} (\code{"french"}),
+            \code{"hu"} (\code{"hungarian"}),
+            \code{"it"} (\code{"italian"}),
+            \code{"nl"} (\code{"dutch"}),
+            \code{"no"} (\code{"norwegian"}),
+            \code{"pt"} (\code{"portuguese"}),
+	        \code{"ro"} (\code{"romanian"}),
+            \code{"ru"} (\code{"russian"}),
+            \code{"sv"} (\code{"swedish"}),
+            \code{"ta"} (\code{"tamil"}),
+            \code{"tr"} (\code{"turkish"}),
+            and \code{"porter"}.
         }
 
     \item{stem_dropped}{a logical value indicating whether to stem words

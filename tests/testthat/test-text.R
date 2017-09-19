@@ -114,9 +114,9 @@ test_that("'as_corpus_text' should be able to set filter properties", {
     txt <- as_corpus_text(chr)
 
     expect_equal(text_filter(as_corpus_text(chr, stemmer = "english"))$stemmer,
-                 "english")
-    expect_equal(text_filter(as_corpus_text(txt, stemmer = "english"))$stemmer,
-                 "english")
+                 "en")
+    expect_equal(text_filter(as_corpus_text(txt, stemmer = "en"))$stemmer,
+                 "en")
 })
 
 
