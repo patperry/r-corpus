@@ -161,7 +161,7 @@ developed by Julia Silge and David Robinson.
 [appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/patperry/r-corpus?branch=master&svg=true "Continuous Inegration (Windows)"
 [bench-term-matrix]: https://github.com/patperry/bench-term-matrix#readme "Term Matrix Benchmark"
 [bench-ndjson]: https://github.com/jeroen/ndjson-benchmark#readme "NDJSON Benchmark"
-[building]: #building-from-source "Building from Source"
+[building]: #development-version "Building from Source"
 [casefold]: https://www.w3.org/International/wiki/Case_folding "Case Folding"
 [cc]: https://en.wikipedia.org/wiki/C0_and_C1_control_codes "C0 and C1 Control Codes"
 [codecov]: https://codecov.io/github/patperry/r-corpus?branch=master "Code Coverage"
