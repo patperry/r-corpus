@@ -131,7 +131,7 @@ as_corpus_text.data.frame <- function(x, filter = NULL, ..., names = NULL)
 as_corpus_text.Corpus <- function(x, filter = NULL, ..., names = NULL)
 {
     with_package("tm", {
-        x <- sapply(x, as.character)
+        x <- vapply(x, as.character, "")
     })
     as_corpus_text(x, filter = filter, ..., names = names)
 }

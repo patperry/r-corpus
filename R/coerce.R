@@ -311,13 +311,13 @@ as_weights <- function(weights, n)
                         length(weights), ", must be ", n, ")"))
         }
         if (any(is.nan(weights))) {
-            stop("'weights' argument contains a NaN value");
+            stop("'weights' argument contains a NaN value")
         }
         if (anyNA(weights)) {
-            stop("'weights' argument contains a missing value");
+            stop("'weights' argument contains a missing value")
         }
         if (any(is.infinite(weights))) {
-            stop("'weights' argument contains an infinite value");
+            stop("'weights' argument contains an infinite value")
         }
     }
 

@@ -146,7 +146,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
             colwidths[[i]] <- 0
             nctx <- nctx + 1
         } else {
-            w = utf8_width(nm)
+            w <- utf8_width(nm)
             j <- justify
             if (nm == "text") {
                 # use as_corpus_text to format an integer text id like
@@ -160,8 +160,8 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
                                     chars = charmax, display = display,
                                     justify = j)
             } else {
-                rval[[i]] = format(x[[i]], width = w, ...,
-                                   display = display, justify = j)
+                rval[[i]] <- format(x[[i]], width = w, ...,
+                                    display = display, justify = j)
             }
             colwidths[[i]] <- max(w, utf8_width(rval[[i]]))
             names[[i]] <- format(nm, width = colwidths[[i]],

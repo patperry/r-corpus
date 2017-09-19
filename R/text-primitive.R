@@ -266,7 +266,7 @@ c_corpus_text_list <- function(args, recursive = FALSE, use.names = TRUE)
         }
 
         # if all names are NULL, don't set the names
-        if (all(sapply(ansnames, is.null))) {
+        if (all(vapply(ansnames, is.null, FALSE))) {
             names <- NULL
 
         # otherwise, set missing names to empty index, and concatenate

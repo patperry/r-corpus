@@ -116,7 +116,7 @@ corpus_with_meta <- function(text, meta, filter = NULL, ..., row.names = NULL)
 as_corpus_frame.Corpus <- function(x, filter = NULL, ..., row.names = NULL)
 {
     with_package("tm", {
-        text <- sapply(x, as.character)
+        text <- vapply(x, as.character, "")
     })
     meta <- as.data.frame(x$dmeta)
 

@@ -62,7 +62,7 @@ test_that("subsetting should work", {
     x <- as_corpus_text(LETTERS)
     i <- c(7, 2, 3, 21, 15)
     y <- x[i]
-    expect_equal(y, as_corpus_text(LETTERS[i]));
+    expect_equal(y, as_corpus_text(LETTERS[i]))
 })
 
 
