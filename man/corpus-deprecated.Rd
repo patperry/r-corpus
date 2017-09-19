@@ -2,7 +2,6 @@
 \alias{corpus-deprecated}
 \alias{as_corpus}
 \alias{as_text}
-\alias{corpus}
 \alias{is_corpus}
 \alias{is_text}
 \alias{term_frame}
