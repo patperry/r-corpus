@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stddef.h>
@@ -304,6 +305,8 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 		if (!(min_support <= supp && supp <= max_support)) {
 			continue;
 		}
+
+		assert(term->length <= ctx->ngram_max);
 
 		for (j = 0; j < term->length; j++) {
 			type_id = term->type_ids[j];
