@@ -170,7 +170,8 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 
 	weights = as_weights(sweights, n);
 	if (sgroup != R_NilValue) {
-		srow_names = getAttrib(sgroup, R_LevelsSymbol);
+		PROTECT(srow_names = getAttrib(sgroup, R_LevelsSymbol));
+		nprot++;
 		ngroup = XLENGTH(srow_names);
 		group = INTEGER(sgroup);
 	} else {

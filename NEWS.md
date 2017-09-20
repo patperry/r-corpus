@@ -1,6 +1,10 @@
 corpus 0.9.2.9000
 =================
 
+### BUG FIXES
+
+  * Fix spurious rchk warnings.
+
 
 corpus 0.9.2
 ============

@@ -26,23 +26,28 @@ int findListElement(SEXP list, const char *str)
 {
 	SEXP names;
 	int i, n;
+	int nprot = 0;
+	int ans = -1;
 
 	if (list == R_NilValue) {
-		return -1;
+		goto out;
 	}
 
-	names = getAttrib(list, R_NamesSymbol);
+	PROTECT(names = getAttrib(list, R_NamesSymbol)); nprot++;
 	if (names == R_NilValue) {
-		return -1;
+		goto out;
 	}
 
 	n = LENGTH(list);
 	for (i = 0; i < n; i++) {
 		if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
-			return i;
+			ans = i;
+			goto out;
 		}
 	}
-	return -1;
+out:
+	UNPROTECT(nprot);
+	return ans;
 }
 
 

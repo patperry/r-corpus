@@ -148,8 +148,9 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 	char *buf;
 	int nbuf, nbuf_max, nbuf_max0;
 	int i, j, nrow, n, w, nprint, width, utf8;
+	int nprot = 0;
 
-	dim_names = getAttrib(sx, R_DimNamesSymbol);
+	PROTECT(dim_names = getAttrib(sx, R_DimNamesSymbol)); nprot++;
 	row_names = VECTOR_ELT(dim_names, 0);
 	col_names = VECTOR_ELT(dim_names, 1);
 	nrow = nrows(sx);
@@ -188,7 +189,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 
 		if (nprint == max) {
 			FLUSH();
-			return nprint;
+			goto out;
 		}
 
 		if (row_names != R_NilValue) {
@@ -211,7 +212,7 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 			if (nprint == max) {
 				PRINT_CHAR('\n');
 				FLUSH();
-				return nprint;
+				goto out;
 			}
 			nprint++;
 
@@ -234,7 +235,8 @@ static int print_range(SEXP sx, int begin, int end, int print_gap,
 	}
 
 	(void)is_stdout; // unused unless on Windows
-
+out:
+	UNPROTECT(nprot);
 	return nprint;
 }
 
@@ -247,8 +249,9 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 	int i, j, nrow, ncol;
 	int print_gap, right, max, width, is_stdout, utf8;
 	int begin, end, w, nprint, linewidth, namewidth, *colwidths;
+	int nprot = 0;
 
-	dim_names = getAttrib(sx, R_DimNamesSymbol);
+	PROTECT(dim_names = getAttrib(sx, R_DimNamesSymbol)); nprot++;
 	row_names = VECTOR_ELT(dim_names, 0);
 	col_names = VECTOR_ELT(dim_names, 1);
 	nrow = nrows(sx);
@@ -354,5 +357,6 @@ SEXP print_table(SEXP sx, SEXP sprint_gap, SEXP sright, SEXP smax,
 	}
 
 out:
+	UNPROTECT(nprot);
 	return ScalarInteger(nprint);
 }
