@@ -1,6 +1,8 @@
 context("foreign")
 
 test_that("'as_corpus_text' and 'as_corpus_frame' work on tm VCorpus", {
+    skip_if_not_installed("tm")
+
     content <- list(
         `reut-00001.xml` =
             structure(
@@ -41,6 +43,8 @@ test_that("'as_corpus_text' and 'as_corpus_frame' work on tm VCorpus", {
 
 
 test_that("'as_corpus_text' and 'as_corpus_frame' warn if tm VCorpus has duplicate names", {
+    skip_if_not_installed("tm")
+
     content <- list(
         `reut-00001.xml` =
             structure(
@@ -80,6 +84,8 @@ test_that("'as_corpus_text' and 'as_corpus_frame' warn if tm VCorpus has duplica
 
 
 test_that("'as_corpus_text' and 'as_corpus_frame' work on quanteda corpus", {
+    skip_if_not_installed("quanteda")
+
     data <- data.frame(filename = c("reut-00001.xml",
                                     "reut-00002.xml",
                                     "reut-00004.xml"),
@@ -97,6 +103,8 @@ test_that("'as_corpus_text' and 'as_corpus_frame' work on quanteda corpus", {
 
 
 test_that("'as_corpus_frame' renames docvar named 'text'", {
+    skip_if_not_installed("quanteda")
+
     data <- data.frame(filename = c("reut-00001.xml",
                                     "reut-00002.xml",
                                     "reut-00004.xml"),
