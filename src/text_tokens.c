@@ -153,7 +153,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 				CORPUS_FILTER_SCAN_TOKENS));
 	while (corpus_filter_advance(ctx->filter)) {
 		type_id = ctx->filter->type_id;
-		if (type_id == CORPUS_FILTER_IGNORED) {
+		if (type_id == CORPUS_FILTER_NONE) {
 			continue;
 		}
 
