@@ -29,7 +29,7 @@ export(as_corpus_text.default)
 export(as_utf8)
 export(corpus_frame)
 export(gutenberg_corpus)
-export(is_corpus)
+export(is_corpus_frame)
 export(is_corpus_text)
 export(format.corpus_frame)
 export(print.corpus_frame)
@@ -70,15 +70,7 @@ export(utf8_width)
 
 
 ## Deprecated
-export(abbreviations)
-export(as_corpus)
-export(as_text)
-export(corpus)
-export(is_corpus)
-export(is_text)
-export(stopwords)
-export(term_frame)
-
+# (none)
 
 ## New S3 methods
 S3method(as_corpus_frame, character)

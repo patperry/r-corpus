@@ -5,9 +5,17 @@ corpus 0.9.2.9000
 
   * Fix spurious rchk warnings.
 
+### DEPRECATED AND DEFUNCT
 
-corpus 0.9.2
-============
+  * Removed deprecated functions `abbreviations()`, `as_corpus()`,
+    `as_text()` `corpus()`, `is_corpus()`, `is_text()`, `stopwords()`,
+    `term_frame()`.
+
+  * Removed deprecated `random` argument from `text_locate()`.
+
+
+corpus 0.9.2 (2017-09-20)
+=========================
 
 ### NEW FEATURES
 

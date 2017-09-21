@@ -10,7 +10,7 @@
     Look for instances of one or more terms in a set of texts.
 }
 \usage{
-text_locate(x, terms, filter = NULL, random = FALSE, ...)
+text_locate(x, terms, filter = NULL, ...)
 
 text_count(x, terms, filter = NULL, ...)
 
@@ -31,8 +31,6 @@ text_subset(x, terms, filter = NULL, ...)
     the default text filter for \code{x}.}
 
 \item{size}{the maximum number of results to return, or \code{NULL}.}
-
-\item{random}{deprecated.}
 
 \item{\dots}{additional properties to set on the text filter.}
 }

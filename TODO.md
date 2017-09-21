@@ -20,10 +20,3 @@ Features
 
        m <- text_match(x, dict$term)
        score <- tapply(dict$score[m$term], m$text, mean, default = 0)
-
-Deprecated
-----------
- * Remove 'random' argument from `text_locate`; make sure to remove the extra
-   comma in `text_sample()`:
-
-        loc <- text_locate(x, terms, filter,, ...)
