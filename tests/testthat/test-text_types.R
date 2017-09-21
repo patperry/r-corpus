@@ -8,8 +8,8 @@ test_that("'text_types' works elementwise", {
               "What. Are. You. Doing????",
               "She asked 'do you really mean that?' and I said 'yes.'")
     toks <- text_tokens(text)
-    typs <- lapply(toks, function(x) unique(sort((x))))
-    typs_tot <- unique(sort(c(toks, recursive = TRUE)))
+    typs <- lapply(toks, function(x) unique(sort(x, method = "radix")))
+    typs_tot <- unique(sort(c(toks, recursive = TRUE), method = "radix"))
      
     expect_equal(text_types(text), typs)
     expect_equal(text_types(text, collapse = TRUE), typs_tot)

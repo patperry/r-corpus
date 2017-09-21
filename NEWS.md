@@ -1,6 +1,11 @@
 corpus 0.9.2.9000
 =================
 
+### MINOR IMPROVEMENTS
+
+  * Switch to `"radix"` sort algorithm for consistent, fast term ordering
+    on all platforms, regardless of locale.
+
 ### BUG FIXES
 
   * Fix spurious rchk warnings.

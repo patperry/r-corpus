@@ -29,7 +29,7 @@ test_that("'term_stats' can use weights", {
     term <- c("a", "rose", "is", ".", "!", ",", "blue", "red", "violet")
     count <- c(302, 301, 202, 100, 1, 1, 1, 1, 1)
     support <- c(101, 101, 101, 100, 1, 1, 1, 1, 1)
-    o <- order(-support, -count, term)
+    o <- order(-support, -count, term, method = "radix")
 
     expect_equal(term_stats(x, weights = weights),
                  structure(data.frame(term = term[o], count = count[o],

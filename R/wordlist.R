@@ -45,6 +45,6 @@ wordlist <- function(kind, call)
         return(NULL)
     }
 
-    words <- sort(unique(words))
+    words <- unique(sort(words, method = "radix"))
     words
 }

@@ -33,7 +33,8 @@ term_stats <- function(x, filter = NULL, weights = NULL,
                  min_count, max_count, min_support, max_support, types)
 
     # order by descending support, then descending count, then ascending term
-    o <- order(-ans$support, -ans$count, ans$term)
+    o <- order(ans$support, ans$count, ans$term,
+               decreasing = c(TRUE, TRUE, FALSE), method = "radix")
 
     ans <- ans[o, , drop = FALSE]
     row.names(ans) <- NULL
@@ -72,7 +73,7 @@ term_matrix_raw <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
 
     if (is.null(select)) {
         # put the terms in lexicographic order
-        p <- order(mat$col_names)
+        p <- order(mat$col_names, method = "radix")
         pinv <- integer(length(p))
         pinv[p] <- seq_along(p)
 
@@ -110,7 +111,7 @@ term_counts <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
     }
 
     # order by term, then text
-    o <- order(term, row)
+    o <- order(term, row, method = "radix")
     ans <- ans[o,]
     row.names(ans) <- NULL
     class(ans) <- c("corpus_frame", "data.frame")

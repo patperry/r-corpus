@@ -10,8 +10,6 @@ Bugs
 Features
 --------
 
- * sort terms with `LC_COLLATE="C"` for consistent behavior across platforms.
-
  * allow arbitrary function for stemmer
 
  * wrap.pad, width arguments to `utf8_print`

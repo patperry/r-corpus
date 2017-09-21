@@ -103,9 +103,9 @@ Here's how to get a term frequency matrix of all 1-, 2-, 3-, 4-, and 5-grams.
 
     > system.time(x <- term_matrix(federalist, ngrams = 1:5))
        user  system elapsed 
-      7.592   0.140   7.795 
+      2.781   0.123   2.906
 
-This computation uses only a single CPU, yet it still completes in under 10
+This computation uses only a single CPU, yet it still completes in under three
 seconds.
 
 

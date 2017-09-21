@@ -31,9 +31,9 @@ text_types <- function(x, filter = NULL, collapse = FALSE, ...)
     })
     typs <- .Call(C_text_types, x, collapse)
     if (collapse) {
-        typs <- sort(typs)
+        typs <- sort(typs, method = "radix")
     } else {
-        typs <- lapply(typs, sort)
+        typs <- lapply(typs, sort, method = "radix")
     }
     typs
 }
