@@ -220,7 +220,8 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 			max_length = length;
 		}
 
-		if (length == 0 || type_id == CORPUS_FILTER_DROPPED) {
+		// TODO: better behavior. warning?
+		if (length == 0 || type_id == CORPUS_FILTER_NONE) {
 			corpus_render_printf(&render,
 				"%s term in position %"PRIu64" ('",
 				name, (uint64_t)(i+1));

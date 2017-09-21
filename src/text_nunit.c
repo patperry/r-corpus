@@ -123,12 +123,7 @@ static SEXP text_measure(SEXP sx, int include_na)
 		nunit = 0;
 
 		while (corpus_filter_advance(filter)) {
-			if (filter->type_id == CORPUS_FILTER_DROPPED) {
-				if (!include_na) {
-					continue;
-				}
-			} else if (filter->type_id < 0) {
-				// skip ignored tokens
+			if (filter->type_id < 0 && !include_na) {
 				continue;
 			}
 			nunit++;

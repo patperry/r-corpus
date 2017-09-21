@@ -10,6 +10,10 @@ Bugs
 Features
 --------
 
+ * Better warning/behavior if select contains dropped terms. Possibly ignore?
+
+ * Expose `drop_space` and `drop_other` options for `text_filter`?
+
  * allow arbitrary function for stemmer
 
  * wrap.pad, width arguments to `utf8_print`
