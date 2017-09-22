@@ -29,13 +29,15 @@ check: $(CORPUS_LIB)
 
 clean:
 	$(RSCRIPT) -e 'devtools::clean_dll(".")'
-	rm -rf $(BUILT_VIGNETTES)
 
 cov:
 	$(RSCRIPT) -e 'covr::package_coverage(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
 
 dist: $(BUILT_VIGNETTES) NEWS README
 	mkdir -p dist && cd dist && R CMD build ..
+
+distclean: clean
+	rm -rf $(BUILT_VIGNETTES)
 
 doc: $(BUILT_VIGNETTES) NEWS README
 
@@ -45,4 +47,4 @@ install: $(CORPUS_LIB)
 site: $(BUILT_VIGNETTES)
 	$(RSCRIPT) -e 'pkgdown::build_site(".")'
 
-.PHONY: all bench check clean con dist doc install site
+.PHONY: all bench check clean con dist distclean doc install site
