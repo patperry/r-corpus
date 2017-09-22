@@ -232,7 +232,7 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
 
-			if (type_id == CORPUS_FILTER_NONE) {
+			if (type_id == CORPUS_TYPE_NONE) {
 				continue;
 			} else if (type_id < 0) {
 				TRY(corpus_ngram_break(&ctx->ngram));

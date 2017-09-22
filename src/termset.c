@@ -183,13 +183,13 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 					CORPUS_FILTER_SCAN_TYPES));
 
 		length = 0;
-		type_id = CORPUS_FILTER_NONE;
+		type_id = CORPUS_TYPE_NONE;
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
 
 			// skip dropped types
-			if (type_id == CORPUS_FILTER_NONE) {
+			if (type_id == CORPUS_TYPE_NONE) {
 				continue;
 			}
 
