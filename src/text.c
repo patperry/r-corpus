@@ -79,6 +79,10 @@ static void free_text(SEXP stext)
 			corpus_filter_destroy(&obj->filter);
 		}
 
+		if (obj->has_snowball) {
+			corpus_stem_snowball_destroy(&obj->snowball);
+		}
+
 		corpus_free(obj->text);
 		corpus_free(obj);
 	}

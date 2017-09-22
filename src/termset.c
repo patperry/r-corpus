@@ -23,6 +23,7 @@
 #include "corpus/src/tree.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
+#include "corpus/src/stem.h"
 #include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/wordscan.h"
@@ -173,7 +174,7 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 	has_render = 1;
 
 	type_kind = filter->symtab.typemap.kind;
-	TRY(corpus_typemap_init(&typemap, type_kind, NULL));
+	TRY(corpus_typemap_init(&typemap, type_kind, NULL, NULL));
 	has_typemap = 1;
 
 	for (i = 0; i < n; i++) {

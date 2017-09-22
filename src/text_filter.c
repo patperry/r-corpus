@@ -228,10 +228,21 @@ struct corpus_filter *text_filter(SEXP x)
 		combine = getListElement(filter, "combine");
 	}
 
-	TRY(corpus_typemap_init(&map, type_kind, NULL));
+	TRY(corpus_typemap_init(&map, type_kind, NULL, NULL));
 	has_map = 1;
 
-	TRY(corpus_filter_init(&obj->filter, type_kind, stemmer, flags));
+	if (stemmer) {
+		if (!obj->has_snowball) {
+			TRY(corpus_stem_snowball_init(&obj->snowball,
+						      stemmer));
+			obj->has_snowball = 1;
+		}
+		TRY(corpus_filter_init(&obj->filter, flags, type_kind,
+				       corpus_stem_snowball, &obj->snowball));
+	} else {
+		TRY(corpus_filter_init(&obj->filter, flags, type_kind,
+				       NULL, NULL));
+	}
 	obj->has_filter = 1;
 
 	if (!stem_dropped) {

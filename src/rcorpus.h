@@ -29,6 +29,7 @@
 #include "corpus/src/termset.h"
 #include "corpus/src/text.h"
 #include "corpus/src/textset.h"
+#include "corpus/src/stem.h"
 #include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/datatype.h"
@@ -134,11 +135,13 @@ struct rcorpus_text {
 	struct corpus_text *text;
 	struct corpus_filter filter;
 	struct corpus_sentfilter sentfilter;
+	struct corpus_stem_snowball snowball;
 	R_xlen_t length;
 	int has_filter;
 	int valid_filter;
 	int has_sentfilter;
 	int valid_sentfilter;
+	int has_snowball;
 };
 
 struct termset {
