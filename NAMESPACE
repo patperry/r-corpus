@@ -47,7 +47,6 @@ export(`text_filter<-`)
 export(`text_filter<-.corpus_text`)
 export(`text_filter<-.data.frame`)
 export(`text_filter<-.default`)
-export(text_length)
 export(text_locate)
 export(text_match)
 export(text_nsentence)
@@ -70,7 +69,8 @@ export(utf8_width)
 
 
 ## Deprecated
-# (none)
+export(text_length)
+
 
 ## New S3 methods
 S3method(as_corpus_frame, character)

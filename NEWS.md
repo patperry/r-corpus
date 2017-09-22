@@ -12,6 +12,8 @@ corpus 0.9.2.9000
 
 ### DEPRECATED AND DEFUNCT
 
+  * Deprecate `text_length()` function in favor of `text_ntoken()`.
+
   * Removed deprecated functions `abbreviations()`, `as_corpus()`,
     `as_text()` `corpus()`, `is_corpus()`, `is_text()`, `stopwords()`,
     `term_frame()`.

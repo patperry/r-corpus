@@ -282,7 +282,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 		m = terms->items[i].length;
 
 		for (j = 0; j < m; j++) {
-			type = corpus_filter_type(filter, type_ids[j]);
+			type = &filter->symtab.types[type_ids[j]].text;
 			if (j > 0) {
 				corpus_render_char(&ctx->render, ' ');
 			}

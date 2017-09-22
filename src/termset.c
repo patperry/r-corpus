@@ -187,14 +187,9 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;
 
-			// skip ignored types
+			// skip dropped types
 			if (type_id == CORPUS_FILTER_NONE) {
 				continue;
-			}
-
-			// error on dropped types
-			if (type_id < 0) {
-				break;
 			}
 
 			// expand the buffer if necessary
@@ -220,22 +215,13 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 			max_length = length;
 		}
 
-		// TODO: better behavior. warning?
-		if (length == 0 || type_id == CORPUS_FILTER_NONE) {
+		if (length == 0) {
 			corpus_render_printf(&render,
-				"%s term in position %"PRIu64" ('",
+				"%s term in position %"PRIu64" (\"",
 				name, (uint64_t)(i+1));
 			corpus_render_text(&render, &terms[i]);
-			corpus_render_string(&render, "') ");
-			if (length == 0) {
-				corpus_render_string(&render,
-						"does not contain a type");
-			} else {
-				corpus_render_string(&render,
-						"contains a dropped type ('");
-				corpus_render_text(&render, &filter->current);
-				corpus_render_string(&render, "')");
-			}
+			corpus_render_string(&render, "\") ");
+			corpus_render_string(&render, "has empty type (\"\")");
 			rendered_error = 1;
 			goto out;
 		}
@@ -244,12 +230,12 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 			&& corpus_termset_has(&obj->set, buf, length, &id)) {
 			corpus_render_printf(&render,
 				"%s terms in positions %"PRIu64
-				" and %"PRIu64" ('", name,
+				" and %"PRIu64" (\"", name,
 				(uint64_t)(id + 1), (uint64_t)(i + 1));
 			corpus_render_text(&render, &terms[id]);
-			corpus_render_string(&render, "' and '");
+			corpus_render_string(&render, "\" and \"");
 			corpus_render_text(&render, &terms[i]);
-			corpus_render_string(&render, "') have the same type");
+			corpus_render_string(&render, "\") have the same type");
 			rendered_error = 1;
 			goto out;
 		}

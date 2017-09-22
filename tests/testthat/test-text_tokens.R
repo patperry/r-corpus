@@ -76,7 +76,7 @@ test_that("'text_tokens' can drop punctuation", {
     x <- "easy as 1, 2, 3!"
     f <- text_filter(drop_punct = TRUE)
     expect_equal(text_tokens(x, f),
-                 list(c("easy", "as", "1", NA, "2", NA, "3", NA)))
+                 list(c("easy", "as", "1", "2", "3")))
 })
 
 
@@ -84,7 +84,7 @@ test_that("'text_tokens' can drop numbers", {
     x <- "easy as 1, 2, 3!"
     f <- text_filter(drop_number = TRUE)
     expect_equal(text_tokens(x, f),
-                 list(c("easy", "as", NA, ",", NA, ",", NA, "!")))
+                 list(c("easy", "as", ",", ",", "!")))
 })
 
 
@@ -92,7 +92,7 @@ test_that("'text_tokens' can drop letter words", {
     x <- "easy as 1, 2, 3!"
     f <- text_filter(drop_letter = TRUE)
     expect_equal(text_tokens(x, f),
-                 list(c(NA, NA, "1", ",", "2", ",", "3", "!")))
+                 list(c("1", ",", "2", ",", "3", "!")))
 })
 
 
@@ -101,9 +101,8 @@ test_that("'text_tokens' can drop tokens", {
            "A man, a plan, a canal: Panama.")
     f <- text_filter(drop = stopwords_en)
     expect_equal(text_tokens(x, f),
-                 list(c("able", NA, NA, "ere", NA, "saw", "elba", "."),
-                      c(NA, "man", ",", NA, "plan", ",", NA, "canal", ":",
-                        "panama", ".")))
+                 list(c("able", "ere", "saw", "elba", "."),
+                      c("man", ",", "plan", ",", "canal", ":", "panama", ".")))
 })
 
 
@@ -111,7 +110,7 @@ test_that("'text_tokens' can make drop exceptions", {
     x <- "0, 1, 2, 3, 4, 5"
     f <- text_filter(drop_number = TRUE, drop_except = c("0", "2", "4"))
     expect_equal(text_tokens(x, f),
-                 list(c("0", ",", NA, ",", "2", ",", NA, ",", "4", ",", NA)))
+                 list(c("0", ",", ",", "2", ",", ",", "4", ",")))
 })
 
 

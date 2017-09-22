@@ -131,23 +131,23 @@ test_that("'term_matrix' can select stemmed bigrams", {
 
 test_that("'term_matrix' errors for empty terms", {
     expect_error(term_matrix("", select = c("a", "b", " ", "c")),
-                 "select term in position 3 (' ') does not contain a type",
+                 "select term in position 3 (\" \") has empty type (\"\")",
                  fixed = TRUE)
 })
 
 
 test_that("'term_matrix' errors for dropped select terms", {
     f <- text_filter(drop = "a")
-    expect_error(term_matrix("", f, select = c("b b", "b a", "c")),
-                 paste0("select term in position 2 ('b a')",
-                        " contains a dropped type ('a')"),
+    expect_error(term_matrix("", f, select = c("b b", "a a", "c")),
+                 paste0("select term in position 2 (\"a a\")",
+                        " has empty type (\"\")"),
                  fixed = TRUE)
 })
 
 
 test_that("'term_matrix' errors for duplicated select terms", {
     expect_error(term_matrix("", select = c("a", "b", "c", "b")),
-                 paste0("select terms in positions 2 and 4 ('b' and 'b')",
+                 paste0("select terms in positions 2 and 4 (\"b\" and \"b\")",
                         " have the same type"),
                  fixed = TRUE)
 })

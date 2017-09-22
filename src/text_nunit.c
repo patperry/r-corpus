@@ -89,7 +89,7 @@ out:
 }
 
 
-static SEXP text_measure(SEXP sx, int include_na)
+SEXP text_ntoken(SEXP sx)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
@@ -123,7 +123,7 @@ static SEXP text_measure(SEXP sx, int include_na)
 		nunit = 0;
 
 		while (corpus_filter_advance(filter)) {
-			if (filter->type_id < 0 && !include_na) {
+			if (filter->type_id < 0) {
 				continue;
 			}
 			nunit++;
@@ -137,16 +137,4 @@ out:
 	UNPROTECT(nprot);
 	CHECK_ERROR(err);
 	return ans;
-}
-
-
-SEXP text_ntoken(SEXP sx)
-{
-	return text_measure(sx, 0);
-}
-
-
-SEXP text_length(SEXP sx)
-{
-	return text_measure(sx, 1);
 }

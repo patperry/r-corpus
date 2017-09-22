@@ -50,15 +50,15 @@ test_that("'text_sub' can return whole text", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
     expect_equal(text_sub(x), x)
-    expect_equal(text_sub(x, 1, text_length(x)), x)
-    expect_equal(text_sub(x, 0, text_length(x) + 1), x)
+    expect_equal(text_sub(x, 1, text_ntoken(x)), x)
+    expect_equal(text_sub(x, 0, text_ntoken(x) + 1), x)
 })
 
 
 test_that("'text_sub' can get first token", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
-    y <- as_corpus_text(c("A ", "A ", "Panama", "", NA),
+    y <- as_corpus_text(c("A ", "A \"", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
 
     expect_equal(text_sub(x, 1, 1), y)
@@ -68,7 +68,7 @@ test_that("'text_sub' can get first token", {
 test_that("'text_sub' can get second token", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
-    y <- as_corpus_text(c("man", "\"", "!", "", NA),
+    y <- as_corpus_text(c("man, ", "canal\"?", "", "", NA),
                  filter = text_filter(drop_punct = TRUE))
 
     expect_equal(text_sub(x, 2, 2), y)
@@ -78,7 +78,7 @@ test_that("'text_sub' can get second token", {
 test_that("'text_sub' can get third token", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
-    y <- as_corpus_text(c(", ", "canal", "", "", NA),
+    y <- as_corpus_text(c("a ", "", "", "", NA),
                  filter = text_filter(drop_punct = TRUE))
 
     expect_equal(text_sub(x, 3, 3), y)
@@ -88,7 +88,7 @@ test_that("'text_sub' can get third token", {
 test_that("'text_sub' can get last token", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
-    y <- as_corpus_text(c(".", "?", "!", "", NA),
+    y <- as_corpus_text(c("plan.", "canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
 
     expect_equal(text_sub(x, -1, -1), y)
@@ -98,7 +98,7 @@ test_that("'text_sub' can get last token", {
 test_that("'text_sub' can get second-to-last token", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
-    y <- as_corpus_text(c("plan", "\"", "Panama", "", NA),
+    y <- as_corpus_text(c("a ", "A \"", "", "", NA),
                  filter = text_filter(drop_punct = TRUE))
 
     expect_equal(text_sub(x, -2, -2), y)
@@ -108,7 +108,7 @@ test_that("'text_sub' can get second-to-last token", {
 test_that("'text_sub' can get third-to-last token", {
     x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!", "", NA),
                  filter = text_filter(drop_punct = TRUE))
-    y <- as_corpus_text(c("a ", "canal", "", "", NA),
+    y <- as_corpus_text(c("man, ", "", "", "", NA),
                  filter = text_filter(drop_punct = TRUE))
 
     expect_equal(text_sub(x, -3, -3), y)

@@ -310,7 +310,7 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 
 		for (j = 0; j < term->length; j++) {
 			type_id = term->type_ids[j];
-			type = corpus_filter_type(filter, type_id);
+			type = &filter->symtab.types[type_id].text;
 
 			if (output_types) {
 				stype = mkchar_get(&mkchar, type);

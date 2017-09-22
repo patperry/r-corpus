@@ -1,5 +1,4 @@
 \name{text_tokens}
-\alias{text_length}
 \alias{text_ntoken}
 \alias{text_tokens}
 \title{Text Tokenization}
@@ -11,8 +10,6 @@
 text_tokens(x, filter = NULL, ...)
 
 text_ntoken(x, filter = NULL, ...)
-
-text_length(x, filter = NULL, ...)
 }
 \arguments{
 \item{x}{object to be tokenized.}
@@ -120,9 +117,7 @@ text_length(x, filter = NULL, ...)
     for the corresponding element of \code{x}.
 
     \code{text_ntoken} returns a numeric vector the same length as \code{x},
-    with each element giving the number of non-dropped tokens in the
-    corresponding text. \code{text_length} is similar, but includes dropped
-    tokens in the result.
+    with each element giving the number of tokens in the corresponding text.
 }
 \seealso{
     \code{\link{text_split}}, \code{\link{text_types}},
@@ -132,11 +127,8 @@ text_length(x, filter = NULL, ...)
 \examples{
 text_tokens("The quick ('brown') fox can't jump 32.3 feet, right?")
 
-# count non-dropped tokens:
+# count tokens:
 text_ntoken("The quick ('brown') fox can't jump 32.3 feet, right?")
-
-# count dropped and non-dropped tokens:
-text_length("The quick ('brown') fox can't jump 32.3 feet, right?")
 
 # don't change case or quotes:
 f <- text_filter(map_case = FALSE, map_quote = FALSE)

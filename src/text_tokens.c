@@ -124,7 +124,7 @@ SEXP tokens_add_type(struct tokens *ctx, int type_id)
 		ctx->ntype_max = size;
 	}
 
-	type = corpus_filter_type(ctx->filter, type_id);
+	type = &ctx->filter->symtab.types[type_id].text;
 	ans = mkCharLenCE((char *)type->ptr, CORPUS_TEXT_SIZE(type), CE_UTF8);
 	ctx->types[count] = ans;
 	ctx->ntype = count + 1;
@@ -147,23 +147,21 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		return ScalarString(NA_STRING);
 	}
 
-	ntype = ctx->filter->ntype;
+	ntype = ctx->filter->symtab.ntype;
 
 	TRY(corpus_filter_start(ctx->filter, text,
 				CORPUS_FILTER_SCAN_TOKENS));
 	while (corpus_filter_advance(ctx->filter)) {
-		type_id = ctx->filter->type_id;
-		if (type_id == CORPUS_FILTER_NONE) {
-			continue;
-		}
-
 		// add the new types
-		while (ntype < ctx->filter->ntype) {
+		while (ntype < ctx->filter->symtab.ntype) {
 			PROTECT(tokens_add_type(ctx, ntype)); nprot++;
 			ntype++;
 		}
 
-		tokens_add_token(ctx, type_id);
+		type_id = ctx->filter->type_id;
+		if (type_id >= 0) {
+			tokens_add_token(ctx, type_id);
+		}
 	}
 	TRY(ctx->filter->error);
 
@@ -172,11 +170,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 		RCORPUS_CHECK_INTERRUPT(i);
 
 		type_id =  ctx->tokens[i];
-		if (type_id >= 0) {
-			SET_STRING_ELT(ans, i, ctx->types[type_id]);
-		} else {
-			SET_STRING_ELT(ans, i, NA_STRING);
-		}
+		SET_STRING_ELT(ans, i, ctx->types[type_id]);
 	}
 	tokens_clear_tokens(ctx);
 
@@ -210,7 +204,7 @@ SEXP text_tokens(SEXP sx)
 	tokens_init(&ctx, filter);
 
 	// add the existing types in the filter
-	ntype = ctx.filter->ntype;
+	ntype = ctx.filter->symtab.ntype;
 	for (type_id = 0; type_id < ntype; type_id++) {
 		RCORPUS_CHECK_INTERRUPT(type_id);
 		PROTECT(tokens_add_type(&ctx, type_id)); nprot++;

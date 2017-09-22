@@ -31,15 +31,6 @@ text_ntoken <- function(x, filter = NULL, ...)
 }
 
 
-text_length <- function(x, filter = NULL, ...)
-{
-    with_rethrow({
-        x <- as_corpus_text(x, filter, ...)
-    })
-    .Call(C_text_length, x)
-}
-
-
 text_sub <- function(x, start = 1L, end = -1L, filter = NULL, ...)
 {
     with_rethrow({

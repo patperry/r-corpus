@@ -10,6 +10,8 @@ Bugs
 Features
 --------
 
+ * Update documentation for `text_tokens()`.
+
  * Better warning/behavior if select contains dropped terms. Possibly ignore?
 
  * Expose `drop_space` and `drop_other` options for `text_filter`?

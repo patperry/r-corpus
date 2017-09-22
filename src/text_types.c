@@ -185,7 +185,7 @@ SEXP text_types(SEXP sx, SEXP scollapse)
 
 		for (i = 0; i < n; i++) {
 			type_id = types->items[i];
-			type = corpus_filter_type(ctx->filter, type_id);
+			type = &ctx->filter->symtab.types[type_id].text;
 			SET_STRING_ELT(set, i, mkchar_get(&mkchar, type));
 		}
 

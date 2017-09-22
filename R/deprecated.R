@@ -12,3 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
+text_length <- function(x, filter = NULL, ...)
+{
+    .Deprecated("text_ntoken")
+    text_ntoken(x, filter, ...)
+}
