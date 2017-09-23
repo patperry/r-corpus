@@ -57,6 +57,14 @@ static int filter_type_kind(SEXP filter)
 	return kind;
 }
 
+
+static uint32_t filter_connector(SEXP filter)
+{
+	(void)filter;
+	return CORPUS_FILTER_CONNECTOR;
+}
+
+
 struct stemmer {
 	const char *abbrev;
 	const char *name;
@@ -200,6 +208,7 @@ struct corpus_filter *text_filter(SEXP x)
 	struct rcorpus_text *obj;
 	struct corpus_typemap map;
 	const char *stemmer;
+	uint32_t connector;
 	int err = 0, has_map = 0, nprot = 0, type_kind, flags, stem_dropped;
 
 	handle = getListElement(x, "handle");
@@ -217,6 +226,7 @@ struct corpus_filter *text_filter(SEXP x)
 
 	filter = getListElement(x, "filter");
 	type_kind = filter_type_kind(filter);
+	connector = filter_connector(filter);
 	stemmer = filter_stemmer(filter);
 	flags = filter_flags(filter);
 	stem_dropped = filter_logical(filter, "stem_dropped", 0);
@@ -238,10 +248,11 @@ struct corpus_filter *text_filter(SEXP x)
 			obj->has_snowball = 1;
 		}
 		TRY(corpus_filter_init(&obj->filter, flags, type_kind,
-				       corpus_stem_snowball, &obj->snowball));
+				       connector, corpus_stem_snowball,
+				       &obj->snowball));
 	} else {
 		TRY(corpus_filter_init(&obj->filter, flags, type_kind,
-				       NULL, NULL));
+				       connector, NULL, NULL));
 	}
 	obj->has_filter = 1;
 

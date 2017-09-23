@@ -119,8 +119,8 @@ test_that("'text_tokens' can combine two words", {
            "a new York Street restaurant")
     f <- text_filter(combine = "new york")
     expect_equal(text_tokens(x, f),
-                 list(c("new york", "is", "the", "empire", "state"),
-                      c("a", "new york", "street", "restaurant")))
+                 list(c("new_york", "is", "the", "empire", "state"),
+                      c("a", "new_york", "street", "restaurant")))
 })
 
 
@@ -128,7 +128,7 @@ test_that("'text_tokens' can combine three words", {
     x <- c("New York City is the Big Apple")
     f <- text_filter(combine = "new york city")
     expect_equal(text_tokens(x, f),
-                 list(c("new york city", "is", "the", "big", "apple")))
+                 list(c("new_york_city", "is", "the", "big", "apple")))
 })
 
 
@@ -136,5 +136,5 @@ test_that("'text_tokens' combines the longest match", {
     x <- "I live in New York City, New York"
     f <- text_filter(combine = c("new york", "new york city"))
     expect_equal(text_tokens(x, f),
-                 list(c("i", "live", "in", "new york city", ",", "new york")))
+                 list(c("i", "live", "in", "new_york_city", ",", "new_york")))
 })
