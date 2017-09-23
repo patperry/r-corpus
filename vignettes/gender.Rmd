@@ -49,7 +49,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://mirrors.xmission.com/gutenberg/
+Using mirror http://www.gutenberg.org/dirs/
 ```
 
 ```
@@ -90,22 +90,22 @@ print(bigram_counts)
 3  he had    he    had     1023       6
 4  he was    he    was      889       6
 5  she could she   could    817       6
-6  he is     he    is       398       6
-7  she would she   would    381       6
-8  she is    she   is       327       6
+6  he is     he    is       399       6
+7  she would she   would    383       6
+8  she is    she   is       330       6
 9  he could  he    could    307       6
-10 he would  he    would    263       6
-11 she did   she   did      225       6
-12 he has    he    has      219       6
-13 he did    he    did      191       6
+10 he would  he    would    264       6
+11 she did   she   did      227       6
+12 he has    he    has      222       6
+13 he did    he    did      195       6
 14 she felt  she   felt     189       6
 15 she must  she   must     184       6
 16 she might she   might    173       6
 17 he should he    should   158       6
-18 she has   she   has      148       6
-19 he must   he    must     142       6
+18 she has   she   has      149       6
+19 he must   he    must     143       6
 20 he might  he    might    137       6
-⋮  (1448 rows total)
+⋮  (1573 rows total)
 ```
 
 Above, we can see the most common bigrams with gendered pronouns as their first
@@ -171,7 +171,7 @@ head(terms)
 
 ```
            he she
-a           4   6
+a           5   6
 able        0   1
 abominates  1   0
 absented    0   1
@@ -200,8 +200,8 @@ print(tab)
 
 ```
     loves ¬loves
-he      5   6988
-she     7   9875
+he      5   7287
+she     7  10130
 ```
 
 When the first type in a bigram is "he", it is followed by "loves" in 5
@@ -215,7 +215,7 @@ instances and another type in 6988 instances. Here are the relative rates of
 
 ```
           he          she 
-0.0007150007 0.0007083586 
+0.0006856829 0.0006905396 
 ```
 
 The ratio of these rates is very close to one:
@@ -226,7 +226,7 @@ rates[["she"]] / rates[["he"]]
 ```
 
 ```
-[1] 0.9907104
+[1] 1.007083
 ```
 
 The log (base-2) ratio of the rates is close to zero:
@@ -236,7 +236,7 @@ log2(rates[["she"]]) - log2(rates[["he"]])
 ```
 
 ```
-[1] -0.01346472
+[1] 0.01018254
 ```
 
 This log ratio is a good measure of the strength of association. When the
@@ -292,12 +292,12 @@ sort(log2_ratio[abs(z) > 2])
 ```
 
 ```
-   gravely   believes      bowed    intends       next         or      quite     sought      won't 
- -3.958263  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186 
-    beheld        lay      looks    refused    checked    dreaded    eagerly     seized    hurried 
-  3.201608   3.201608   3.201608   3.201608   3.408059   3.408059   3.408059   3.408059   3.588632 
-remembered 
-  4.545563 
+   gravely    smiling         no     indeed    turning addressing   believes      bowed    intends 
+ -4.382079  -4.382079  -3.934620  -3.645114  -3.645114  -3.282544  -3.282544  -3.282544  -3.282544 
+      next    perhaps      quite     sought      won't     beheld        lay      looks    refused 
+ -3.282544  -3.282544  -3.282544  -3.282544  -3.282544   3.225251   3.225251   3.225251   3.225251 
+       yet    checked    dreaded    eagerly     seized    hurried remembered 
+  3.225251   3.431702   3.431702   3.431702   3.431702   3.612274   4.569205 
 ```
 
 The terms "remembered", "hurried", and "seized" have more "she" usages; the
@@ -410,7 +410,7 @@ print(log2_ratio[["expressed"]])
 ```
 
 ```
-[1] -1.287327
+[1] -1.263685
 ```
 
 ```r
@@ -418,7 +418,7 @@ print(log2_ratio_se[["expressed"]])
 ```
 
 ```
-[1] 0.7727118
+[1] 0.7727217
 ```
 
 This is a word with a large imbalance, but only in a relatively small number
@@ -441,7 +441,7 @@ print(log2_ratio[["felt"]])
 ```
 
 ```
-[1] 1.877398
+[1] 1.901041
 ```
 
 ```r
@@ -449,7 +449,7 @@ print(log2_ratio_se[["felt"]])
 ```
 
 ```
-[1] 0.2598236
+[1] 0.2598566
 ```
 
 This has an effect size estimate on the same order as "stopped", but the
@@ -475,7 +475,7 @@ print(log2_ratio[["was"]])
 ```
 
 ```
-[1] 0.1299613
+[1] 0.1536038
 ```
 
 ```r
@@ -483,7 +483,7 @@ print(log2_ratio_se[["was"]])
 ```
 
 ```
-[1] 0.05776495
+[1] 0.0579161
 ```
 
 This word has only a minor difference between "he" and "she", but it shows up

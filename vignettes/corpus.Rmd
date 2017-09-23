@@ -265,16 +265,14 @@ text_tokens(data["ch24",])
 $ch24
  [1] "Aunt"     "Em"       "had"      "just"     "come"     "out"      "of"       "the"     
  [9] "house"    "to"       "water"    "the"      "cabbages" "when"     "she"      "looked"  
-[17] "up"       "and"      "saw"      "Dorothy"  "running"  "toward"   "her"      NA        
-[25] NA         "My"       "darling"  "child"    NA         NA         "she"      "cried"   
-[33] NA         "folding"  "the"      "little"   "girl"     "in"       "her"      "arms"    
-[41] "and"      "covering" "her"      "face"     "with"     "kisses"   NA         NA        
-[49] "Where"    "in"       "the"      "world"    "did"      "you"      "come"     "from"    
-[57] NA         NA         NA         "From"     "the"      "Land"     "of"       "Oz"      
-[65] NA         NA         "said"     "Dorothy"  "gravely"  NA         NA         "And"     
-[73] "here"     "is"       "Toto"     NA         "too"      NA         "And"      "oh"      
-[81] NA         "Aunt"     "Em"       NA         "I'm"      "so"       "glad"     "to"      
-[89] "be"       "at"       "home"     "again"    NA         NA        
+[17] "up"       "and"      "saw"      "Dorothy"  "running"  "toward"   "her"      "My"      
+[25] "darling"  "child"    "she"      "cried"    "folding"  "the"      "little"   "girl"    
+[33] "in"       "her"      "arms"     "and"      "covering" "her"      "face"     "with"    
+[41] "kisses"   "Where"    "in"       "the"      "world"    "did"      "you"      "come"    
+[49] "from"     "From"     "the"      "Land"     "of"       "Oz"       "said"     "Dorothy" 
+[57] "gravely"  "And"      "here"     "is"       "Toto"     "too"      "And"      "oh"      
+[65] "Aunt"     "Em"       "I'm"      "so"       "glad"     "to"       "be"       "at"      
+[73] "home"     "again"   
 ```
 
 To restore the defaults, set the text filter to `NULL`:
@@ -304,7 +302,7 @@ text_tokens("I live in New York City, New York",
 
 ```
 [[1]]
-[1] "i"             "live"          "in"            "new york city" ","             "new york"     
+[1] "i"             "live"          "in"            "new_york_city" ","             "new_york"     
 ```
 
 This example using the optional second argument to `text_tokens` to override
@@ -339,7 +337,7 @@ text_tokens("One, two, three!", filter = text_filter(drop_punct = TRUE))
 
 ```
 [[1]]
-[1] "one"   NA      "two"   NA      "three" NA     
+[1] "one"   "two"   "three"
 ```
 
 ```r
@@ -347,7 +345,13 @@ text_length("One, two, three!", filter = text_filter(drop_punct = TRUE))
 ```
 
 ```
-[1] 6
+Warning: 'text_length' is deprecated.
+Use 'text_ntoken' instead.
+See help("Deprecated")
+```
+
+```
+[1] 3
 ```
 
 You can set subsequences of consecutive tokens using the `text_sub` function.
@@ -362,8 +366,8 @@ text_sub(c("One, two, three!", "4 5 6 7 8 9 10"), 2, 4,
 ```
 
 ```
-[1] ", two, "
-[2] "5 6 7 " 
+[1] "two, three!"
+[2] "5 6 7 "     
 ```
 
 Negative indices count from the end of the sequence, with `-1` denoting the
@@ -377,8 +381,8 @@ text_sub(c("One, two, three!", "4 5 6 7 8 9 10"), -2, -1,
 ```
 
 ```
-[1] "three!"
-[2] "9 10"  
+[1] "two, three!"
+[2] "9 10"       
 ```
 
 Note that `text_length` and `text_sub` count both dropped and non-dropped
@@ -393,26 +397,26 @@ text_sub(data, -10)
 ```
 
 ```
-ch01 "Dorothy soon closed her eyes and fell fast asleep."         
-ch02 "way, and was not surprised in the least."                   
-ch03 "the Scarecrow; \"it's a lighted match.\""                   
-ch04 "in another\ncorner and waited patiently until morning came."
-ch05 ", and could not live unless she was fed."                   
-ch06 "heart of course I needn't mind so much.\""                  
-ch07 "soon send her back to her own home again."                  
-ch08 "and waited for the fresh breeze to waken her."              
-ch09 "near by, which she\nate for her dinner."                    
-ch10 "the portal into the streets of the Emerald City."           
-ch11 "of a hen that had laid a\ngreen egg."                       
-ch12 "they were no longer prisoners in a strange\nland."          
-ch13 "cheers and many good wishes to\ncarry with them."           
-ch14 "it was you brought away that wonderful Cap!\""              
-ch15 "he did she was willing to forgive him everything."          
-ch16 "I don't know\nhow it can be done.\""                        
-ch17 "the Wonderful\nWizard, and would not be comforted."         
-ch18 ", for it will be a long journey.\""                         
-ch19 "for we certainly must\nclimb over the wall.\""              
-ch20 "things in the\nworld than being a Scarecrow.\""             
+ch01 "wind,\nDorothy soon closed her eyes and fell fast asleep."               
+ch02 "just that way, and was not surprised in the least."                      
+ch03 "made you?\"\n\n\"No,\" answered the Scarecrow; \"it's a lighted match.\""
+ch04 "up in another\ncorner and waited patiently until morning came."          
+ch05 "nor straw, and could not live unless she was fed."                       
+ch06 "me a heart of course I needn't mind so much.\""                          
+ch07 "would soon send her back to her own home again."                         
+ch08 "grass\nand waited for the fresh breeze to waken her."                    
+ch09 "a tree near by, which she\nate for her dinner."                          
+ch10 "through the portal into the streets of the Emerald City."                
+ch11 "cackling of a hen that had laid a\ngreen egg."                           
+ch12 "that they were no longer prisoners in a strange\nland."                  
+ch13 "three cheers and many good wishes to\ncarry with them."                  
+ch14 "How\nlucky it was you brought away that wonderful Cap!\""                
+ch15 "if he did she was willing to forgive him everything."                    
+ch16 "I'm sure I don't know\nhow it can be done.\""                            
+ch17 "loss of the Wonderful\nWizard, and would not be comforted."              
+ch18 "all get ready, for it will be a long journey.\""                         
+ch19 "Tin Woodman, \"for we certainly must\nclimb over the wall.\""            
+ch20 "are worse things in the\nworld than being a Scarecrow.\""                
 ⋮    (24 entries total)
 ```
 
@@ -673,20 +677,20 @@ term_stats(data, ngrams = 5)
 5  wicked witch of the west           12       6
 6  soldier with the green whiskers     8       6
 7  the soldier with the green          8       6
-8  send me back to kansas              6       6
-9  to get back to kansas               7       5
-10 the tin woodman and the             6       5
-11 the guardian of the gates          10       4
-12 in the middle of the                8       4
-13 wicked witch of the east            8       4
-14 until they came to the              6       4
-15 to the land of the                  5       4
-16 and the tin woodman and             4       4
-17 in the midst of a                   4       4
-18 to give me a heart                  4       4
-19 to send me back to                  4       4
-20 what shall we do now                4       4
-⋮  (20230 rows total)
+8  the tin woodman and the             7       6
+9  send me back to kansas              6       6
+10 to get back to kansas               7       5
+11 heart said the tin woodman          5       5
+12 the guardian of the gates          10       4
+13 in the middle of the                8       4
+14 wicked witch of the east            8       4
+15 until they came to the              6       4
+16 to the land of the                  5       4
+17 and the tin woodman and             4       4
+18 and the tin woodman were            4       4
+19 in the midst of a                   4       4
+20 tin woodman and the lion            4       4
+⋮  (38339 rows total)
 ```
 
 The `types` argument allows us to request the component types in the result:
@@ -701,24 +705,24 @@ term_stats(data, ngrams = 3, types = TRUE)
 1  the tin woodman     the       tin       woodman     112      18
 2  said the scarecrow  said      the       scarecrow    36      16
 3  the emerald city    the       emerald   city         53      14
-4  back to kansas      back      to        kansas       28      14
-5  as soon as          as        soon      as           17      13
-6  and the lion        and       the       lion         24      12
-7  the little girl     the       little    girl         21      12
-8  and the tin         and       the       tin          19      12
-9  and the scarecrow   and       the       scarecrow    21      11
-10 the scarecrow and   the       scarecrow and          19      11
-11 the wicked witch    the       wicked    witch        56      10
-12 said the tin        said      the       tin          19      10
-13 the cowardly lion   the       cowardly  lion         19      10
-14 the land of         the       land      of           19      10
-15 they came to        they      came      to           19      10
-16 scarecrow and the   scarecrow and       the          17      10
-17 get back to         get       back      to           15      10
-18 asked the scarecrow asked     the       scarecrow    10      10
-19 witch of the        witch     of        the          30       9
-20 to the emerald      to        the       emerald      21       9
-⋮  (23596 rows total)
+4  the scarecrow and   the       scarecrow and          30      14
+5  back to kansas      back      to        kansas       28      14
+6  as soon as          as        soon      as           17      13
+7  and the lion        and       the       lion         24      12
+8  the little girl     the       little    girl         21      12
+9  and the tin         and       the       tin          19      12
+10 and the scarecrow   and       the       scarecrow    21      11
+11 the lion and        the       lion      and          19      11
+12 the wicked witch    the       wicked    witch        56      10
+13 said the tin        said      the       tin          19      10
+14 the cowardly lion   the       cowardly  lion         19      10
+15 the land of         the       land      of           19      10
+16 they came to        they      came      to           19      10
+17 tin woodman and     tin       woodman   and          18      10
+18 scarecrow and the   scarecrow and       the          17      10
+19 get back to         get       back      to           15      10
+20 asked the scarecrow asked     the       scarecrow    10      10
+⋮  (32730 rows total)
 ```
 
 Here are the most common 2-, 3-grams starting with "dorothy", where the second
@@ -730,28 +734,28 @@ term_stats(data, ngrams = 2:3, types = TRUE,
 ```
 
 ```
-   term              type1   type2     type3 count support
-1  dorothy went      dorothy went      <NA>      6       6
-2  dorothy looked    dorothy looked    <NA>      6       5
-3  dorothy said      dorothy said      <NA>      5       5
-4  dorothy saw       dorothy saw       <NA>      5       5
-5  dorothy walked    dorothy walked    <NA>      4       4
-6  dorothy went to   dorothy went      to        4       4
-7  dorothy asked     dorothy asked     <NA>      3       3
-8  dorothy found     dorothy found     <NA>      3       3
-9  dorothy looked at dorothy looked    at        3       3
-10 dorothy picked    dorothy picked    <NA>      3       3
-11 dorothy sat       dorothy sat       <NA>      3       3
-12 dorothy thought   dorothy thought   <NA>      3       3
-13 dorothy put       dorothy put       <NA>      3       2
-14 dorothy stood     dorothy stood     <NA>      3       2
-15 dorothy ate       dorothy ate       <NA>      2       2
-16 dorothy awoke     dorothy awoke     <NA>      2       2
-17 dorothy awoke the dorothy awoke     the       2       2
-18 dorothy carried   dorothy carried   <NA>      2       2
-19 dorothy earnestly dorothy earnestly <NA>      2       2
-20 dorothy entered   dorothy entered   <NA>      2       2
-⋮  (202 rows total)
+   term              type1   type2    type3 count support
+1  dorothy said      dorothy said     <NA>      7       6
+2  dorothy went      dorothy went     <NA>      6       6
+3  dorothy looked    dorothy looked   <NA>      6       5
+4  dorothy saw       dorothy saw      <NA>      5       5
+5  dorothy walked    dorothy walked   <NA>      4       4
+6  dorothy went to   dorothy went     to        4       4
+7  dorothy asked     dorothy asked    <NA>      3       3
+8  dorothy found     dorothy found    <NA>      3       3
+9  dorothy looked at dorothy looked   at        3       3
+10 dorothy picked    dorothy picked   <NA>      3       3
+11 dorothy sat       dorothy sat      <NA>      3       3
+12 dorothy thought   dorothy thought  <NA>      3       3
+13 dorothy put       dorothy put      <NA>      3       2
+14 dorothy stood     dorothy stood    <NA>      3       2
+15 dorothy answered  dorothy answered <NA>      2       2
+16 dorothy ate       dorothy ate      <NA>      2       2
+17 dorothy awoke     dorothy awoke    <NA>      2       2
+18 dorothy awoke the dorothy awoke    the       2       2
+19 dorothy can       dorothy can      <NA>      2       2
+20 dorothy carried   dorothy carried  <NA>      2       2
+⋮  (270 rows total)
 ```
 
 
@@ -1370,7 +1374,7 @@ summary(before | after)
 
 ```
    Mode   FALSE    TRUE 
-logical      22      45 
+logical      16      51 
 ```
 
 "Woodman" appears within 25 tokens of "heart" in in 45 of the 67 contexts

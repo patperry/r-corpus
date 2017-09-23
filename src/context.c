@@ -18,7 +18,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "corpus/src/memory.h"
 #include "rcorpus.h"
 
 #define CONTEXT_TAG install("corpus::context")

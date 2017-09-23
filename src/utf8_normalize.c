@@ -49,7 +49,7 @@ static void context_init(struct context *ctx, SEXP map_case, SEXP map_compat,
 		kind |= CORPUS_TYPE_RMDI;
 	}
 
-	TRY(corpus_typemap_init(&ctx->map, kind, NULL, NULL));
+	TRY(corpus_typemap_init(&ctx->map, kind));
 	ctx->has_map = 1;
 out:
 	CHECK_ERROR(err);

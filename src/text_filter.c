@@ -238,7 +238,7 @@ struct corpus_filter *text_filter(SEXP x)
 		combine = getListElement(filter, "combine");
 	}
 
-	TRY(corpus_typemap_init(&map, type_kind, NULL, NULL));
+	TRY(corpus_typemap_init(&map, type_kind));
 	has_map = 1;
 
 	if (stemmer) {

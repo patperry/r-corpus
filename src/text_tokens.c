@@ -18,22 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "corpus/src/array.h"
-#include "corpus/src/table.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/symtab.h"
-#include "corpus/src/wordscan.h"
-#include "corpus/src/filter.h"
 #include "rcorpus.h"
-
-// the R 'error' is a #define (to Rf_error) that clashes with the 'error'
-// member of struct corpus_filter
-#ifdef error
-#  undef error
-#endif
 
 
 struct tokens {

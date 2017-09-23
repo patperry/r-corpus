@@ -174,7 +174,7 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 	has_render = 1;
 
 	type_kind = filter->symtab.typemap.kind;
-	TRY(corpus_typemap_init(&typemap, type_kind, NULL, NULL));
+	TRY(corpus_typemap_init(&typemap, type_kind));
 	has_typemap = 1;
 
 	for (i = 0; i < n; i++) {

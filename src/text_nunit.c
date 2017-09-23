@@ -17,25 +17,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "corpus/src/table.h"
-#include "corpus/src/intset.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/symtab.h"
-#include "corpus/src/sentscan.h"
-#include "corpus/src/wordscan.h"
-#include "corpus/src/filter.h"
-#include "corpus/src/sentfilter.h"
 #include "rcorpus.h"
-
-// the R 'error' is a #define (to Rf_error) that clashes with the 'error'
-// member of struct corpus_sentfilter
-#ifdef error
-#  undef error
-#endif
 
 
 SEXP text_nsentence(SEXP sx)
