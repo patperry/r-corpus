@@ -226,17 +226,11 @@ struct corpus_filter *text_filter(SEXP x)
 
 	filter = getListElement(x, "filter");
 	type_kind = filter_type_kind(filter);
+	combine = getListElement(filter, "combine");
 	connector = filter_connector(filter);
 	stemmer = filter_stemmer(filter);
 	flags = filter_flags(filter);
 	stem_dropped = filter_logical(filter, "stem_dropped", 0);
-
-	if (filter == R_NilValue) {
-		PROTECT(abbrev_kind = mkString("english")); nprot++;
-		PROTECT(combine = abbreviations(abbrev_kind)); nprot++;
-	} else {
-		combine = getListElement(filter, "combine");
-	}
 
 	TRY(corpus_typemap_init(&map, type_kind));
 	has_map = 1;

@@ -400,11 +400,11 @@ term_stats(lines2, f)
 1  fanny      816     806
 2  must       508     492
 3  crawford   493     488
-4  mr.        482     466
+4  mr         482     466
 5  much       459     450
 6  miss       432     419
 7  said       406     400
-8  mrs.       408     399
+8  mrs        408     399
 9  sir        372     366
 10 edmund     364     364
 11 one        370     358
@@ -417,7 +417,7 @@ term_stats(lines2, f)
 18 well       299     286
 19 thomas     288     285
 20 good       280     275
-⋮  (8458 rows total)
+⋮  (8451 rows total)
 ```
 
 The *readtext* package

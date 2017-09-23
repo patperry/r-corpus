@@ -43,20 +43,19 @@ text_ntoken(x, filter = NULL, ...)
             the text into a sequence of normalized words, in Unicode composed
             normal form (NFC).
 
-        \item In the third stage, if the \code{stemmer} property is
-            non-\code{NULL}, we apply the indicated stemming algorithm to
-            each word that does not match one of the elements of the
-            \code{stem_except} character vector. See the
-            \sQuote{Stemming} section below for more information.
-
-        \item Next, if the \code{combine} property is non-\code{NULL},
+        \item In the third stage, if the \code{combine} property is
+            non-\code{NULL},
             we scan the word sequence from left to right, searching for
             the longest possible match in the \code{combine} list. If
             a match exists, we replace the word sequence with a single token
             for that type; otherwise, we create a single-word token. See the
-            \sQuote{Combining words} section below for more details.  After
-            this stage, the sequence elements are \sQuote{tokens}, not
-            \sQuote{words}.
+            \sQuote{Combining words} section below for more details.
+
+        \item Next, if the \code{stemmer} property is
+            non-\code{NULL}, we apply the indicated stemming algorithm to
+            each word that does not match one of the elements of the
+            \code{stem_except} character vector. See the
+            \sQuote{Stemming} section below for more information.
 
         \item If any of \code{drop_letter}, \code{drop_number},
             \code{drop_punct}, or \code{drop_symbol} are \code{TRUE},
@@ -84,6 +83,13 @@ text_ntoken(x, filter = NULL, ...)
     \code{combine = "Mx."} produces the same results as a token filter
     with \code{combine = "mx."}.
 }
+\section{Combining words}{
+    The \code{combine} property of a \code{text_filter} enables
+    transformations that combine two or more words into a single token. For
+    example, specifying \code{combine = "new york"} will
+    cause consecutive instances of the words \code{new} and \code{york}
+    to get replaced by a single token, \code{new york}.
+}
 \section{Stemming}{
     We use the stemming algorithms provided by the Snowball library. These
     algorithms are also available in the \code{SnowballC} R package. Unlike
@@ -98,18 +104,6 @@ text_ntoken(x, filter = NULL, ...)
     stemming procedure would turn single-word tokens into multi-word
     tokens (compare \code{text_tokens("u.s")} with \code{text_tokens("u.")}).
     For English, this likely only affects words ending in \code{".s"}.
-}
-\section{Combining words}{
-    The \code{combine} property of a \code{text_filter} enables
-    transformations that combine two or more words into a single token. For
-    example, specifying \code{combine = "new york"} will
-    cause consecutive instances of the words \code{new} and \code{york}
-    to get replaced by a single token, \code{new york}.
-
-    By default, we set \code{combine = abbreviations_en}, so
-    that abbreviations like \code{"Ms."} get treated as single tokens;
-    with \code{combine = NULL}, trailing punctuation gets split off, and
-    \code{"Ms."} gets tokenized into two tokens, for "Ms" and ".".
 }
 \value{
     \code{text_tokens} returns a list of the same length as \code{x}, with
@@ -150,13 +144,13 @@ text_tokens("Mary is running", text_filter(stemmer = "english"))
 text_tokens("Mary is running",
             text_filter(stemmer = "english", stem_except = "mary"))
 
-# combine abbreviations by default
+# default tokenization
 text_tokens("Ms. Jones")
 
-# disable default combinations
-text_tokens("Ms. Jones", text_filter(combine = NULL))
+# combine abbreviations
+text_tokens("Ms. Jones", text_filter(combine = abbreviations_en))
 
-# add new combinations
+# add custom combinations
 text_tokens("Ms. Jones is from New York City, New York.",
             text_filter(combine = c(abbreviations_en,
                                     "new york", "new york city")))

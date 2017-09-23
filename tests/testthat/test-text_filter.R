@@ -9,7 +9,7 @@ test_that("'text_filter' has the right defaults", {
     expect_equal(f$stemmer, NULL)
     expect_equal(f$stem_dropped, FALSE)
     expect_equal(f$stem_except, NULL)
-    expect_equal(f$combine, abbreviations_en)
+    expect_equal(f$combine, NULL)
     expect_equal(f$drop_letter, FALSE)
     expect_equal(f$drop_number, FALSE)
     expect_equal(f$drop_punct, FALSE)
@@ -260,7 +260,7 @@ expected <- c(
 '\tstemmer: NULL',
 '\tstem_dropped: FALSE',
 '\tstem_except: NULL',
-'\tcombine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." ...',
+'\tcombine: NULL',
 '\tdrop_letter: FALSE',
 '\tdrop_number: FALSE',
 '\tdrop_punct: FALSE',

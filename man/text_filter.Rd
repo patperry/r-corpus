@@ -24,9 +24,9 @@ text_filter(x) <- value
 \method{text_filter}{default}(x = NULL, ...,
             map_case = TRUE, map_quote = TRUE,
             remove_ignorable = TRUE,
+            combine = NULL,
             stemmer = NULL, stem_dropped = FALSE,
             stem_except = NULL,
-            combine = corpus::abbreviations_en,
             drop_letter = FALSE, drop_number = FALSE,
             drop_punct = FALSE, drop_symbol = FALSE,
             drop = NULL, drop_except = NULL,
@@ -51,6 +51,9 @@ text_filter(x) <- value
     \item{remove_ignorable}{a logical value indicating whether to remove
         Unicode "default ignorable" characters like zero-width spaces
         and soft hyphens.}
+
+    \item{combine}{a character vector of multi-word phrases to combine, or
+        \code{NULL}; see \sQuote{Combining words}.}
 
     \item{stemmer}{a character value giving the name of the stemming
         algorithm, or \code{NULL} to leave words unchanged. The stemming
@@ -83,9 +86,6 @@ text_filter(x) <- value
     \item{stem_except}{a character vector of exception words to exempt from
         stemming, or \code{NULL}. If left unspecified, \code{stem_except}
         is set equal to the \code{drop} argument.}
-
-    \item{combine}{a character vector of multi-word phrases to combine, or
-        \code{NULL}; see \sQuote{Combining words}.}
 
     \item{drop_letter}{a logical value indicating whether to replace
         \code{"letter"} tokens (cased letters, kana, ideographic, letter-like
