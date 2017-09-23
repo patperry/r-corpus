@@ -22,9 +22,9 @@ text_filter <- function(x = NULL, ...)
 text_filter.default <- function(x = NULL, ...,
                                 map_case = TRUE, map_quote = TRUE,
                                 remove_ignorable = TRUE,
+                                combine = NULL,
                                 stemmer = NULL, stem_dropped = FALSE,
                                 stem_except = NULL,
-                                combine = NULL,
                                 drop_letter = FALSE, drop_number = FALSE,
                                 drop_punct = FALSE, drop_symbol = FALSE,
                                 drop = NULL, drop_except = NULL,
@@ -44,10 +44,10 @@ text_filter.default <- function(x = NULL, ...,
     ans$map_case <- map_case
     ans$map_quote <- map_quote
     ans$remove_ignorable <- remove_ignorable
+    ans$combine <- combine
     ans$stemmer <- stemmer
     ans$stem_dropped <- stem_dropped
     ans$stem_except <- stem_except
-    ans$combine <- combine
     ans$drop_letter <- drop_letter
     ans$drop_number <- drop_number
     ans$drop_punct <- drop_punct
