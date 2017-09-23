@@ -100,8 +100,7 @@ SEXP text_ntoken(SEXP sx)
 			continue;
 		}
 
-		TRY(corpus_filter_start(filter, &text[i],
-					CORPUS_FILTER_SCAN_TOKENS));
+		TRY(corpus_filter_start(filter, &text[i]));
 
 		nunit = 0;
 

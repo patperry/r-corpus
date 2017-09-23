@@ -199,8 +199,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 
 		w = weights ? weights[i] : 1;
 
-		TRY(corpus_filter_start(filter, &text[i],
-					CORPUS_FILTER_SCAN_TOKENS));
+		TRY(corpus_filter_start(filter, &text[i]));
 
 		while (corpus_filter_advance(filter)) {
 			type_id = filter->type_id;

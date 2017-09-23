@@ -135,8 +135,7 @@ SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
 
 	ntype = ctx->filter->symtab.ntype;
 
-	TRY(corpus_filter_start(ctx->filter, text,
-				CORPUS_FILTER_SCAN_TOKENS));
+	TRY(corpus_filter_start(ctx->filter, text));
 	while (corpus_filter_advance(ctx->filter)) {
 		// add the new types
 		while (ntype < ctx->filter->symtab.ntype) {

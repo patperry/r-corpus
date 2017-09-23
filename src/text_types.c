@@ -66,8 +66,7 @@ static void types_context_init(struct types_context *ctx, SEXP sx,
 			continue;
 		}
 
-		TRY(corpus_filter_start(ctx->filter, &text[i],
-					CORPUS_FILTER_SCAN_TOKENS));
+		TRY(corpus_filter_start(ctx->filter, &text[i]));
 
 		while (corpus_filter_advance(ctx->filter)) {
 			if (ctx->filter->type_id < 0) {

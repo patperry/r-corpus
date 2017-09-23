@@ -22,7 +22,7 @@ static int text_len(const struct corpus_text *text,
 {
 	int err = 0, len = 0;
 
-	TRY(corpus_filter_start(filter, text, CORPUS_FILTER_SCAN_TOKENS));
+	TRY(corpus_filter_start(filter, text));
 	while (corpus_filter_advance(filter)) {
 		if (filter->type_id == CORPUS_TYPE_NONE) {
 			continue;
@@ -108,8 +108,7 @@ SEXP text_sub(SEXP sx, SEXP sstart, SEXP send)
 
 		// find start
 		j = 0;
-		TRY(corpus_filter_start(filter, &text[i],
-					CORPUS_FILTER_SCAN_TOKENS));
+		TRY(corpus_filter_start(filter, &text[i]));
 		while (j != s && corpus_filter_advance(filter)) {
 			if (filter->type_id == CORPUS_TYPE_NONE) {
 				// skip ignored

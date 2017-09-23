@@ -387,8 +387,8 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 		size = 0;
 		attr = 0;
 
-		TRY(corpus_filter_start(filter, &text[i],
-					CORPUS_FILTER_SCAN_TOKENS));
+		TRY(corpus_filter_start(filter, &text[i]));
+
 		while (corpus_filter_advance(filter)) {
 			// if we encounter a non-dropped, non-ignored
 			// token and the block is already full, add it
