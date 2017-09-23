@@ -95,7 +95,7 @@ test_that("'text_match' errors for invalid arguments", {
     expect_error(text_match(text, invalid),
                  "'terms' argument cannot contain invalid UTF-8")
 
-    expect_error(text_match(text, c("rose", "Rose")),
+    expect_error(text_match(text, c("rose", "  rose  ")),
                  "'terms' argument cannot contain duplicate types")
 })
 

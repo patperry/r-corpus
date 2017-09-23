@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
 #include <inttypes.h>
-#include "corpus/src/error.h"
-#include "corpus/src/memory.h"
-#include "corpus/src/render.h"
-#include "corpus/src/table.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/symtab.h"
-#include "corpus/src/wordscan.h"
-#include "corpus/src/filter.h"
+#include <stddef.h>
+#include <stdint.h>
 #include "rcorpus.h"
 
-#ifdef error
-#  undef error
-#endif
 
 #define TERMSET_TAG install("corpus::termset")
 
@@ -56,7 +42,7 @@ struct termset *termset_new(void)
 out:
 	if (err) {
 		termset_free(obj);
-		Rf_error("memory allocation failure");
+		error("memory allocation failure");
 	}
 
 	return obj;
@@ -107,7 +93,7 @@ int is_termset(SEXP stermset)
 struct termset *as_termset(SEXP stermset)
 {
 	if (!is_termset(stermset)) {
-		Rf_error("invalid 'termset' object");
+		error("invalid 'termset' object");
 	}
 	return R_ExternalPtrAddr(stermset);
 }
@@ -121,10 +107,6 @@ struct termset *as_termset(SEXP stermset)
 			corpus_render_destroy(&render); \
 			has_render = 0; \
 		} \
-		if (has_typemap) { \
-			corpus_typemap_destroy(&typemap); \
-			has_typemap = 0; \
-		} \
 	} while (0)
 
 
@@ -132,18 +114,20 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 		   struct corpus_filter *filter, int allow_dup)
 {
 	SEXP ans;
+	struct corpus_wordscan scan;
 	struct corpus_render render;
-	struct corpus_typemap typemap;
 	const struct corpus_text *terms;
+	struct corpus_text type;
 	struct termset *obj;
+	const uint8_t *ptr;
+	size_t attr, size;
 	int *buf, *buf2;
 	char *errstr;
 	R_xlen_t i, n;
-	int err,  has_render, has_typemap, id, length, max_length,
-	    nbuf, nprot, rendered_error, type_id, type_kind;
+	int err,  has_render, id, j, length, max_length,
+	    nbuf, nprot, rendered_error, type_id;
 
 	has_render = 0;
-	has_typemap = 0;
 	buf = NULL;
 	nprot = 0;
 	err = 0;
@@ -173,25 +157,35 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 	TRY(corpus_render_init(&render, CORPUS_ESCAPE_CONTROL));
 	has_render = 1;
 
-	type_kind = filter->symtab.typemap.kind;
-	TRY(corpus_typemap_init(&typemap, type_kind));
-	has_typemap = 1;
-
 	for (i = 0; i < n; i++) {
-		TRY(corpus_typemap_set(&typemap, &terms[i]));
-		TRY(corpus_filter_start(filter, &typemap.type,
-					CORPUS_FILTER_SCAN_TYPES));
+		corpus_wordscan_make(&scan, &terms[i]);
 
 		length = 0;
-		type_id = CORPUS_TYPE_NONE;
-
-		while (corpus_filter_advance(filter)) {
-			type_id = filter->type_id;
-
-			// skip dropped types
-			if (type_id == CORPUS_TYPE_NONE) {
+		while (corpus_wordscan_advance(&scan)) {
+			// skip over leading spaces
+			if (scan.type == CORPUS_WORD_NONE) {
 				continue;
 			}
+
+			// found a non-space word
+			ptr = scan.current.ptr;
+			attr = CORPUS_TEXT_BITS(&scan.current);
+
+			// skip until we find a space
+			while (corpus_wordscan_advance(&scan)) {
+				if (scan.type == CORPUS_WORD_NONE) {
+					break;
+				}
+				attr |= CORPUS_TEXT_BITS(&scan.current);
+			}
+
+			size = (size_t)(scan.current.ptr - ptr);
+
+			// found a type; get the id
+			type.ptr = (uint8_t *)ptr;
+			type.attr = attr | size;
+
+			TRY(corpus_filter_add_type(filter, &type, &type_id));
 
 			// expand the buffer if necessary
 			if (length == nbuf) {
@@ -210,8 +204,6 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 			length++;
 		}
 
-		TRY(filter->error);
-
 		if (length > max_length) {
 			max_length = length;
 		}
@@ -223,6 +215,26 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 			corpus_render_text(&render, &terms[i]);
 			corpus_render_string(&render, "\") ");
 			corpus_render_string(&render, "has empty type (\"\")");
+			rendered_error = 1;
+			goto out;
+		}
+
+		for (j = 0; j < length; j++) {
+			type_id = buf[j];
+			if (!filter->props[type_id].drop) {
+				continue;
+			}
+
+			corpus_render_printf(&render,
+				"%s term in position %"PRIu64" (\"",
+				name, (uint64_t)(i+1));
+			corpus_render_text(&render, &terms[i]);
+			corpus_render_string(&render, "\") ");
+			corpus_render_string(&render,
+				"contains a dropped type (\"");
+			corpus_render_text(&render,
+				&filter->symtab.types[type_id].text);
+			corpus_render_string(&render, "\")");
 			rendered_error = 1;
 			goto out;
 		}
@@ -243,8 +255,7 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 
 		TRY(corpus_termset_add(&obj->set, buf, length, &id));
 		if (id == obj->nitem) {
-			TRY(corpus_text_init_copy(&obj->items[id],
-						  &typemap.type));
+			TRY(corpus_text_init_copy(&obj->items[id], &terms[i]));
 			obj->nitem = id + 1;
 		}
 	}
@@ -256,13 +267,13 @@ out:
 		errstr = (void *)R_alloc(render.length + 1, 1);
 		memcpy(errstr, render.string, render.length + 1);
 		CLEANUP();
-		Rf_error(errstr);
+		error(errstr);
 		return R_NilValue;
 	}
 
 	CLEANUP();
 	if (err) {
-		Rf_error("failed initializing %s term set", name);
+		error("failed initializing %s term set", name);
 	}
 
 	obj->max_length = max_length;

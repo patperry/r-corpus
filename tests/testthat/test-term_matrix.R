@@ -140,7 +140,7 @@ test_that("'term_matrix' errors for dropped select terms", {
     f <- text_filter(drop = "a")
     expect_error(term_matrix("", f, select = c("b b", "a a", "c")),
                  paste0("select term in position 2 (\"a a\")",
-                        " has empty type (\"\")"),
+                        " contains a dropped type (\"a\")"),
                  fixed = TRUE)
 })
 
@@ -165,10 +165,10 @@ test_that("'term_matrix' can select really long terms", {
 
 
 test_that("'term_matrix' can select types ending in '.s", {
-    f <- text_filter(stemmer = "english", drop_punct = TRUE, combine = NULL)
-    expect_equal(term_matrix("u.s.", f, select = "u.s"),
+    f <- text_filter(stemmer = "en", drop_punct = TRUE, combine = NULL)
+    expect_equal(term_matrix("u.s.", f, select = "u."),
                  Matrix::sparseMatrix(i = 1, j = 1, x = 1,
-                                      dimnames = list(NULL, "u.s")))
+                                      dimnames = list(NULL, "u.")))
 })
 
 

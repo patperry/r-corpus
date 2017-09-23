@@ -204,7 +204,7 @@ static int add_combine(void *obj, const struct corpus_text *x)
 
 struct corpus_filter *text_filter(SEXP x)
 {
-	SEXP handle, filter, abbrev_kind, combine;
+	SEXP handle, filter, combine;
 	struct rcorpus_text *obj;
 	struct corpus_typemap map;
 	const char *stemmer;
