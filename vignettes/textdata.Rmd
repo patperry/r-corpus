@@ -87,10 +87,10 @@ Text filter with the following options:
 	map_case: TRUE
 	map_quote: TRUE
 	remove_ignorable: TRUE
+	combine: NULL
 	stemmer: NULL
 	stem_dropped: FALSE
 	stem_except: NULL
-	combine: NULL
 	drop_letter: FALSE
 	drop_number: FALSE
 	drop_punct: FALSE
@@ -216,7 +216,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7fd137468860>
+<pointer: 0x7f9974d6cf40>
 
 $sources
 $sources[[1]]
@@ -277,7 +277,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7fd1374cff40>
+<pointer: 0x7f99780d1110>
 
 $sources
 $sources[[1]]

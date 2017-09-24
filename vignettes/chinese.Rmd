@@ -84,10 +84,10 @@ Text filter with the following options:
 	map_case: TRUE
 	map_quote: TRUE
 	remove_ignorable: TRUE
+	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
 	stemmer: NULL
 	stem_dropped: FALSE
 	stem_except: NULL
-	combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
 	drop_letter: FALSE
 	drop_number: FALSE
 	drop_punct: TRUE
