@@ -140,7 +140,7 @@ static int filter_flags(SEXP filter)
 
 
 static void add_terms(int (*add_term)(void *, const struct corpus_text *),
-		      void *f, struct corpus_typemap *map, SEXP sterms)
+		      void *f, SEXP sterms)
 {
 	const struct corpus_text *terms;
 	R_xlen_t i, n;
@@ -158,18 +158,10 @@ static void add_terms(int (*add_term)(void *, const struct corpus_text *),
 			continue;
 		}
 
-		if (map) {
-			TRY(corpus_typemap_set(map, &terms[i]));
-			TRY(add_term(f, &map->type));
-		} else {
-			TRY(add_term(f, &terms[i]));
-		}
+		TRY(add_term(f, &terms[i]));
 	}
 out:
 	UNPROTECT(1);
-	if (err && map) {
-		corpus_typemap_destroy(map);
-	}
 	CHECK_ERROR(err);
 }
 
@@ -206,10 +198,9 @@ struct corpus_filter *text_filter(SEXP x)
 {
 	SEXP handle, filter, combine;
 	struct rcorpus_text *obj;
-	struct corpus_typemap map;
 	const char *stemmer;
 	uint32_t connector;
-	int err = 0, has_map = 0, nprot = 0, type_kind, flags, stem_dropped;
+	int err = 0, nprot = 0, type_kind, flags, stem_dropped;
 
 	handle = getListElement(x, "handle");
 	obj = R_ExternalPtrAddr(handle);
@@ -232,9 +223,6 @@ struct corpus_filter *text_filter(SEXP x)
 	flags = filter_flags(filter);
 	stem_dropped = filter_logical(filter, "stem_dropped", 0);
 
-	TRY(corpus_typemap_init(&map, type_kind));
-	has_map = 1;
-
 	if (stemmer) {
 		if (!obj->has_snowball) {
 			TRY(corpus_stem_snowball_init(&obj->snowball,
@@ -251,20 +239,17 @@ struct corpus_filter *text_filter(SEXP x)
 	obj->has_filter = 1;
 
 	if (!stem_dropped) {
-		add_terms(add_stem_except, &obj->filter, &map,
+		add_terms(add_stem_except, &obj->filter,
 			  getListElement(filter, "drop"));
 	}
-	add_terms(add_stem_except, &obj->filter, &map,
+	add_terms(add_stem_except, &obj->filter,
 		  getListElement(filter, "stem_except"));
-	add_terms(add_drop, &obj->filter, &map,
+	add_terms(add_drop, &obj->filter,
 		  getListElement(filter, "drop"));
-	add_terms(add_drop_except, &obj->filter, &map,
+	add_terms(add_drop_except, &obj->filter,
 		  getListElement(filter, "drop_except"));
-	add_terms(add_combine, &obj->filter, &map, combine);
+	add_terms(add_combine, &obj->filter, combine);
 out:
-	if (has_map) {
-		corpus_typemap_destroy(&map);
-	}
 	UNPROTECT(nprot);
 	CHECK_ERROR(err);
 	obj->valid_filter = 1;
@@ -327,7 +312,7 @@ struct corpus_sentfilter *text_sentfilter(SEXP x)
 	TRY(corpus_sentfilter_init(&obj->sentfilter, flags));
 	obj->has_sentfilter = 1;
 
-	add_terms(add_suppress, &obj->sentfilter, NULL, suppress);
+	add_terms(add_suppress, &obj->sentfilter, suppress);
 
 out:
 	UNPROTECT(nprot);
