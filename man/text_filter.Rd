@@ -30,6 +30,7 @@ text_filter(x) <- value
             drop_letter = FALSE, drop_number = FALSE,
             drop_punct = FALSE, drop_symbol = FALSE,
             drop = NULL, drop_except = NULL,
+            connector = "_",
             sent_crlf = FALSE,
             sent_suppress = corpus::abbreviations_en)
 }
@@ -86,6 +87,9 @@ text_filter(x) <- value
     \item{stem_except}{a character vector of exception words to exempt from
         stemming, or \code{NULL}. If left unspecified, \code{stem_except}
         is set equal to the \code{drop} argument.}
+
+    \item{connector}{a character to use as a connector in lieu of
+        white space for types that stem to multi-word phrases.}
 
     \item{drop_letter}{a logical value indicating whether to replace
         \code{"letter"} tokens (cased letters, kana, ideographic, letter-like

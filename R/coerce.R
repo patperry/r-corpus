@@ -43,6 +43,13 @@ as_character_vector <- function(name, value, utf8 = TRUE)
 }
 
 
+as_connector <- function(value)
+{
+    value <- as_character_scalar("connector", value)
+    .Call(C_as_text_filter_connector, value)
+}
+
+
 as_double_scalar <- function(name, value, allow_null = FALSE)
 {
     if (is.null(value)) {

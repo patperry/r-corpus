@@ -28,6 +28,7 @@ text_filter.default <- function(x = NULL, ...,
                                 drop_letter = FALSE, drop_number = FALSE,
                                 drop_punct = FALSE, drop_symbol = FALSE,
                                 drop = NULL, drop_except = NULL,
+                                connector = "_",
                                 sent_crlf = FALSE,
                                 sent_suppress = corpus::abbreviations_en)
 {
@@ -54,6 +55,7 @@ text_filter.default <- function(x = NULL, ...,
     ans$drop_symbol <- drop_symbol
     ans$drop <- drop
     ans$drop_except <- drop_except
+    ans$connector <- connector
     ans$sent_crlf <- sent_crlf
     ans$sent_suppress <- sent_suppress
 
@@ -163,6 +165,8 @@ text_filter.corpus_text <- function(x = NULL, ...)
         value <- as_character_vector(name, value)
     } else if (name == "stemmer") {
         value <- as_stemmer(value)
+    } else if (name == "connector") {
+        value <- as_connector(value)
     } else {
         stop(sprintf("unrecognized text filter property: '%s'", name))
     }

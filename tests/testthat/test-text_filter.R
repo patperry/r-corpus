@@ -267,6 +267,7 @@ expected <- c(
 '\tdrop_symbol: FALSE',
 '\tdrop: NULL',
 '\tdrop_except: NULL',
+'\tconnector: _',
 '\tsent_crlf: FALSE',
 '\tsent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
 

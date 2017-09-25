@@ -179,7 +179,7 @@ SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
 SEXP logging_off(void);
 SEXP logging_on(void);
 
-/* data set */
+/* json */
 SEXP alloc_json(SEXP buffer, SEXP field, SEXP rows, SEXP text);
 int is_json(SEXP data);
 struct json *as_json(SEXP data);
@@ -233,6 +233,9 @@ SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
 SEXP text_c(SEXP args, SEXP names, SEXP filter);
 SEXP text_valid(SEXP x);
+
+/* text filter */
+SEXP as_text_filter_connector(SEXP value);
 
 /* search */
 SEXP alloc_search(SEXP sterms, const char *name, struct corpus_filter *filter);

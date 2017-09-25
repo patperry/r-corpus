@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 
@@ -58,10 +59,58 @@ static int filter_type_kind(SEXP filter)
 }
 
 
+SEXP as_text_filter_connector(SEXP value)
+{
+	SEXP con;
+	const uint8_t *ptr, *str;
+	uint32_t ch;
+	int len;
+
+	if (value == R_NilValue) {
+		error("'connector' cannot be NULL");
+	}
+
+	con = STRING_ELT(value, 0);
+	if (con == NA_STRING) {
+		error("'connector' cannot be NA");
+	}
+
+	str = (const uint8_t *)CHAR(con);
+	len = LENGTH(con);
+
+	ptr = str;
+	corpus_decode_utf8(&ptr, &ch);
+	if (ptr != str + len) {
+		error("'connector' must be a single-character string");
+	}
+
+	if (corpus_unicode_isspace(ch)) {
+		error("'connector' cannot be a white space character");
+	}
+
+	return value;
+}
+
+
 static uint32_t filter_connector(SEXP filter)
 {
-	(void)filter;
-	return CORPUS_FILTER_CONNECTOR;
+	SEXP value, con;
+	const uint8_t *str;
+	uint32_t connector = '_';
+
+	value = getListElement(filter, "connector");
+	if (value == R_NilValue) {
+		return connector;
+	}
+
+	con = STRING_ELT(value, 0);
+	if (con == NA_STRING) {
+		return connector;
+	}
+
+	str = (const uint8_t *)CHAR(con);
+	corpus_decode_utf8(&str, &connector);
+	return connector;
 }
 
 
