@@ -139,7 +139,6 @@ static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
 		goto out;
 	}
 
-
 	// check for scalar string
 	if (ans != R_NilValue && TYPEOF(ans) != STRSXP) {
 		error("'stemmer' returned a non-string value for input \"%s\"",
