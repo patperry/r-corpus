@@ -2,7 +2,7 @@ RSCRIPT= Rscript --vanilla
 CORPUS_LIB= src/corpus.so
 BUILT_VIGNETTES= \
 	vignettes/chinese.Rmd vignettes/corpus.Rmd vignettes/gender.Rmd \
-	vignettes/textdata.Rmd vignettes/unicode.Rmd
+	vignettes/stemmer.Rmd vignettes/textdata.Rmd vignettes/unicode.Rmd
 
 all: $(CORPUS_LIB) $(BUILT_VIGNETTES)
 
