@@ -138,3 +138,12 @@ test_that("'text_tokens' combines the longest match", {
     expect_equal(text_tokens(x, f),
                  list(c("i", "live", "in", "new_york_city", ",", "new_york")))
 })
+
+
+test_that("'text_tokens' can use other connectors", {
+    x <- "I live in New York City, New York"
+    f <- text_filter(combine = c("new york", "new york city"),
+                     connector = "+")
+    expect_equal(text_tokens(x, f),
+                 list(c("i", "live", "in", "new+york+city", ",", "new+york")))
+})
