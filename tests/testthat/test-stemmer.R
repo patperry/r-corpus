@@ -48,3 +48,9 @@ test_that("handles stemmer errors", {
     expect_error(text_tokens(x, stemmer = function(w) 7),
                  "'stemmer' returned a non-string value for input \"a\"")
 })
+
+
+test_that("handles internal stemmer errors", {
+    expect_error(text_tokens("hello", stemmer = function(x) stop("what?")),
+                 "'stemmer' raised an error for input \"hello\"")
+})

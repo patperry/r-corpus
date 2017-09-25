@@ -101,7 +101,7 @@ static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
 	SEXP str, inchr, outchr, fcall, ans;
 	struct stemmer *stemmer = context;
 	const uint8_t *stem;
-	int nprot = 0, stemlen;
+	int err = 0, nprot = 0, stemlen;
 
 	assert(!stemmer->error);
 
@@ -122,13 +122,23 @@ static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
 	SETCADR(fcall, str);
 
 	// evaluate the call
-	PROTECT(ans = eval(fcall, stemmer->value.rfunc.rho)); nprot++;
+	PROTECT(ans = R_tryEvalSilent(fcall, stemmer->value.rfunc.rho, &err));
+	nprot++;
+
+	// check for error
+	// see https://stackoverflow.com/a/27486741/6233565
+	if (err) {
+		// TODO: report the error message
+		error("'stemmer' raised an error for input \"%s\"",
+		      translateChar(inchr));
+    	}
 
 	// check for logical NA
 	if (TYPEOF(ans) == LGLSXP && XLENGTH(ans) == 1
 			&& LOGICAL(ans)[0] == NA_LOGICAL) {
 		goto out;
 	}
+
 
 	// check for scalar string
 	if (ans != R_NilValue && TYPEOF(ans) != STRSXP) {
