@@ -94,6 +94,7 @@ Text filter with the following options:
 	drop_symbol: FALSE
 	drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
 	drop_except: NULL
+	connector: _
 	sent_crlf: FALSE
 	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." ...
 ```

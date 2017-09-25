@@ -248,6 +248,7 @@ Text filter with the following options:
 	drop_symbol: FALSE
 	drop: NULL
 	drop_except: NULL
+	connector: _
 	sent_crlf: FALSE
 	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```

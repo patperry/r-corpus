@@ -97,6 +97,7 @@ Text filter with the following options:
 	drop_symbol: FALSE
 	drop: NULL
 	drop_except: NULL
+	connector: _
 	sent_crlf: FALSE
 	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```
@@ -216,7 +217,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7f9974d6cf40>
+<pointer: 0x7f8f470331e0>
 
 $sources
 $sources[[1]]
@@ -277,7 +278,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7f99780d1110>
+<pointer: 0x7f8f43d1f1f0>
 
 $sources
 $sources[[1]]
