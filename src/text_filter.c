@@ -114,53 +114,12 @@ static uint32_t filter_connector(SEXP filter)
 }
 
 
-struct stemmer {
-	const char *abbrev;
-	const char *name;
-};
 
-static const struct stemmer stemmers[]  = {
-	{ "ar", "arabic" },
-	{ "da", "danish" },
-	{ "de", "german" },
-	{ "en", "english" },
-	{ "es", "spanish" },
-	{ "fi", "finnish" },
-	{ "fr", "french" },
-	{ "hu", "hungarian" },
-	{ "it",  "italian" },
-	{ "nl", "dutch" },
-	{ "no", "norwegian" },
-	{ "porter", "porter" },
-	{ "pt", "portuguese" },
-	{ "ro", "romanian" },
-	{ "ru", "russian" },
-	{ "sv", "swedish" },
-	{ "ta", "tamil" },
-	{ "tr", "turkish" },
-	{ NULL, NULL } };
-
-static const char *filter_stemmer(SEXP filter)
+static const char *filter_stemmer_snowball(SEXP alg)
 {
-	const struct stemmer *stem = stemmers;
-	SEXP alg = getListElement(filter, "stemmer");
-	const char *val;
-
-	if (alg == R_NilValue) {
-		return NULL;
-	}
-
-	val = CHAR(STRING_ELT(alg, 0));
-
-	while (stem->abbrev) {
-		if (strcmp(val, stem->abbrev) == 0) {
-			return stem->name;
-		}
-		stem++;
-	}
-
-	error("unrecognized stemmer: '%s'", val);
-	return NULL;
+	const char *name;
+	name = CHAR(STRING_ELT(alg, 0));
+	return name;
 }
 
 
@@ -245,14 +204,19 @@ static int add_combine(void *obj, const struct corpus_text *x)
 
 struct corpus_filter *text_filter(SEXP x)
 {
-	SEXP handle, filter, combine;
+	SEXP handle, filter, combine, stemmer;
 	struct rcorpus_text *obj;
-	const char *stemmer;
+	const char *snowball;
 	uint32_t connector;
 	int err = 0, nprot = 0, type_kind, flags, stem_dropped;
 
 	handle = getListElement(x, "handle");
 	obj = R_ExternalPtrAddr(handle);
+
+	// check the stemmer for errors
+	if (obj->has_stemmer && obj->stemmer.error) {
+		obj->valid_filter = 0;
+	}
 
 	if (obj->has_filter) {
 		if (obj->valid_filter && !obj->filter.error) {
@@ -260,6 +224,10 @@ struct corpus_filter *text_filter(SEXP x)
 		} else {
 			corpus_filter_destroy(&obj->filter);
 			obj->has_filter = 0;
+			if (obj->has_stemmer) {
+				stemmer_destroy(&obj->stemmer);
+				obj->has_stemmer = 0;
+			}
 		}
 	}
 	obj->valid_filter = 0;
@@ -268,23 +236,29 @@ struct corpus_filter *text_filter(SEXP x)
 	type_kind = filter_type_kind(filter);
 	combine = getListElement(filter, "combine");
 	connector = filter_connector(filter);
-	stemmer = filter_stemmer(filter);
 	flags = filter_flags(filter);
 	stem_dropped = filter_logical(filter, "stem_dropped", 0);
 
-	if (stemmer) {
-		if (!obj->has_snowball) {
-			TRY(corpus_stem_snowball_init(&obj->snowball,
-						      stemmer));
-			obj->has_snowball = 1;
+	if (!obj->has_stemmer) {
+		stemmer = getListElement(filter, "stemmer");
+		
+		if (stemmer == R_NilValue) {
+			stemmer_init_none(&obj->stemmer);
+		} else if (TYPEOF(stemmer) == STRSXP) {
+			snowball = filter_stemmer_snowball(stemmer);
+			stemmer_init_snowball(&obj->stemmer, snowball);
+		} else if (isFunction(stemmer)) {
+			stemmer_init_rfunc(&obj->stemmer, stemmer,
+					   R_GlobalEnv);
+		} else {
+			error("invalid filter 'stemmer' value");
 		}
-		TRY(corpus_filter_init(&obj->filter, flags, type_kind,
-				       connector, corpus_stem_snowball,
-				       &obj->snowball));
-	} else {
-		TRY(corpus_filter_init(&obj->filter, flags, type_kind,
-				       connector, NULL, NULL));
+		obj->has_stemmer = 1;
 	}
+
+	TRY(corpus_filter_init(&obj->filter, flags, type_kind,
+			       connector, obj->stemmer.stem_func,
+			       obj->stemmer.stem_context));
 	obj->has_filter = 1;
 
 	if (!stem_dropped) {
@@ -293,7 +267,7 @@ struct corpus_filter *text_filter(SEXP x)
 	}
 	add_terms(add_stem_except, &obj->filter,
 		  getListElement(filter, "stem_except"));
-	add_terms(add_drop, &obj->filter,
+add_terms(add_drop, &obj->filter,
 		  getListElement(filter, "drop"));
 	add_terms(add_drop_except, &obj->filter,
 		  getListElement(filter, "drop_except"));

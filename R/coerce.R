@@ -299,18 +299,29 @@ as_stemmer <- function(stemmer)
         return(NULL)
     }
 
-    isocodes <- c(ar = "arabic", da = "danish", de = "german",
-                  en = "english", es = "spanish", fi = "finnish",
-                  fr = "french", hu = "hungarian", it = "italian",
-                  nl = "dutch", no = "norwegian", pt = "portuguese",
-                  ro = "romanian", ru = "russian", sv = "swedish",
-                  ta = "tamil", tr = "turkish")
-    extra <- "porter"
+    if (is.character(stemmer)) {
+        isocodes <- c(ar = "arabic", da = "danish", de = "german",
+                      en = "english", es = "spanish", fi = "finnish",
+                      fr = "french", hu = "hungarian", it = "italian",
+                      nl = "dutch", no = "norwegian", pt = "portuguese",
+                      ro = "romanian", ru = "russian", sv = "swedish",
+                      ta = "tamil", tr = "turkish")
+        extra <- "porter"
 
-    stemmers <- c(names(isocodes), sort(c(isocodes, extra)))
-    stemmer <- as_enum("stemmer", stemmer, stemmers)
-    if (!is.na(i <- match(stemmer, isocodes))) {
-        stemmer <- names(isocodes)[[i]]
+        stemmers <- c(names(isocodes), sort(c(isocodes, extra)))
+        stemmer <- as_enum("stemmer", stemmer, stemmers)
+        if (!is.na(i <- match(stemmer, isocodes))) {
+            stemmer <- names(isocodes)[[i]]
+        }
+    } else if (!is.function(stemmer)) {
+        if (!is.null(attr(stemmer, "class"))) {
+            stemmer <- as.function(stemmer)
+            if (!is.function(stemmer)) {
+                stop("calling 'as.function' on 'stemmer' value did not return a function")
+            }
+        } else {
+            stop("'stemmer' must be a character string, a function, or NULL")
+        }
     }
     stemmer
 }

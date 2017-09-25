@@ -132,17 +132,39 @@ struct json {
 	int kind;
 };
 
+enum stemmer_type {
+	STEMMER_NONE = 0,
+	STEMMER_RFUNC,
+	STEMMER_SNOWBALL,
+};
+
+struct stemmer_rfunc {
+	SEXP fn;
+	SEXP rho;
+};
+
+struct stemmer {
+	union {
+		struct stemmer_rfunc rfunc;
+		struct corpus_stem_snowball snowball;
+	} value;
+	int type;
+	corpus_stem_func stem_func;
+	void *stem_context;
+	int error;
+};
+
 struct rcorpus_text {
 	struct corpus_text *text;
 	struct corpus_filter filter;
 	struct corpus_sentfilter sentfilter;
-	struct corpus_stem_snowball snowball;
+	struct stemmer stemmer;
 	R_xlen_t length;
 	int has_filter;
 	int valid_filter;
 	int has_sentfilter;
 	int valid_sentfilter;
-	int has_snowball;
+	int has_stemmer;
 };
 
 struct termset {
@@ -174,6 +196,13 @@ double decode_real(struct decode *d, const struct corpus_data *val);
 SEXP decode_charsxp(struct decode *d, const struct corpus_data *val);
 SEXP decode_sexp(struct decode *d, const struct corpus_data *val,
 		 const struct corpus_schema *s);
+
+/* stemmer */
+void stemmer_init_none(struct stemmer *s);
+void stemmer_init_snowball(struct stemmer *s, const char *algorithm);
+void stemmer_init_rfunc(struct stemmer *s, SEXP fn, SEXP rho);
+void stemmer_destroy(struct stemmer *s);
+const char *stemmer_snowball_name(const char *alias);
 
 /* logging */
 SEXP logging_off(void);
