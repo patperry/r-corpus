@@ -239,6 +239,11 @@ struct corpus_filter *text_filter(SEXP x)
 	flags = filter_flags(filter);
 	stem_dropped = filter_logical(filter, "stem_dropped", 0);
 
+	if (obj->has_stemmer && obj->stemmer.error) {
+		stemmer_destroy(&obj->stemmer);
+		obj->has_stemmer = 0;
+	}
+
 	if (!obj->has_stemmer) {
 		stemmer = getListElement(filter, "stemmer");
 		
@@ -253,6 +258,7 @@ struct corpus_filter *text_filter(SEXP x)
 		} else {
 			error("invalid filter 'stemmer' value");
 		}
+
 		obj->has_stemmer = 1;
 	}
 
