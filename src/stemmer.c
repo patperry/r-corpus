@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 #include "rcorpus.h"
 
 struct snowball_stemmer {
@@ -92,13 +95,83 @@ out:
 }
 
 
+static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
+		      int *lenptr, void *context)
+{
+	SEXP str, inchr, outchr, fcall, ans;
+	struct stemmer *stemmer = context;
+	const uint8_t *stem;
+	int nprot = 0, stemlen;
+
+	assert(!stemmer->error);
+
+	// assume that the R code will error
+	stemmer->error = CORPUS_ERROR_INVAL;
+
+	// default to returning NA
+	stem = NULL;
+	stemlen = -1;
+
+	// cast argument to SEXP
+	PROTECT(str = allocVector(STRSXP, 1)); nprot++;
+	inchr = mkCharLenCE((const char *)ptr, len, CE_UTF8);
+	SET_STRING_ELT(str, 0, inchr);
+
+	// set up the function call
+	PROTECT(fcall = lang2(stemmer->value.rfunc.fn, R_NilValue)); nprot++;
+	SETCADR(fcall, str);
+
+	// evaluate the call
+	PROTECT(ans = eval(fcall, stemmer->value.rfunc.rho)); nprot++;
+
+	// check for logical NA
+	if (TYPEOF(ans) == LGLSXP && XLENGTH(ans) == 1
+			&& LOGICAL(ans)[0] == NA_LOGICAL) {
+		goto out;
+	}
+
+	// check for scalar string
+	if (ans != R_NilValue && TYPEOF(ans) != STRSXP) {
+		error("'stemmer' returned a non-string value for input \"%s\"",
+		      translateChar(inchr));
+	} else if (ans == R_NilValue || XLENGTH(ans) == 0) {
+		error("'stemmer' did not return a value for input \"%s\"",
+		      translateChar(inchr));
+	} else if (XLENGTH(ans) > 1) {
+		error("'stemmer' returned multiple values for input \"%s\"",
+		      translateChar(inchr));
+	}
+
+	// convert to UTF-8
+	PROTECT(ans = utf8_coerce(ans)); nprot++;
+
+	outchr = STRING_ELT(ans, 0);
+	if (outchr != NA_STRING) {
+		stem = (const uint8_t *)CHAR(outchr);
+		stemlen = LENGTH(outchr);
+	}
+out:
+	if (stemptr) {
+		*stemptr = stem;
+	}
+	if (lenptr) {
+		*lenptr = stemlen;
+	}
+
+	UNPROTECT(nprot);
+	// if we made it here, then the R code didn't error;
+	stemmer->error = 0;
+	return 0;
+}
+
+
 void stemmer_init_rfunc(struct stemmer *s, SEXP fn, SEXP rho)
 {
 	s->value.rfunc.fn = fn;
 	s->value.rfunc.rho = rho;
 	s->type = STEMMER_RFUNC;
-	s->stem_func = NULL; // TODO: fix
-	s->stem_context = NULL; // TODO: fix
+	s->stem_func = stem_rfunc;
+	s->stem_context = s;
 	s->error = 0;
 }
 
