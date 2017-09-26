@@ -9,7 +9,7 @@ vignette: >
 
 
 
-### Snowball stemmer
+## Snowball stemmer
 
 *Corpus* comes with built-in support for the algorithmic stemmers provided by
 the [Snowball Stemming Library][snowball], which supports the following
@@ -34,7 +34,7 @@ These stemmers are purely algorithmic; they mostly just strip off common
 suffixes. 
 
 
-### Hunspell stemmer
+## Hunspell stemmer
 
 If you want more precise stemming behavior, you can provide a custom stemming
 function.  The stemming function should, when given a term as an input, return
@@ -67,7 +67,7 @@ text_tokens(text, stemmer = stem_hunspell)
 ```
 
 
-### Dictionary stemmer
+## Dictionary stemmer
 
 One common way to build a stemmer is from a list of (term, stem) pairs. Many
 such lists are available at [lexoconista.com][lexiconista]. Here's an example
@@ -128,7 +128,120 @@ text_tokens(text, stemmer = stem_list)
 [1] "love"     "love"     "lovingly" "love"     "lover"    "lovely"   "love"    
 ```
 
+This pattern is so common that *corpus* provides a convenience function that
+will build a stemmer from the input term and stem lists:
 
+
+```r
+stem_list2 <- stemmer_make(term, stem)
+```
+
+```
+Error in stemmer_make(term, stem): object 'term' not found
+```
+
+```r
+text_tokens(text, stemmer = stem_list2)
+```
+
+```
+Error in text_tokens(text, stemmer = stem_list2): object 'stem_list2' not found
+```
+
+
+## Application: Emotion word usage
+
+Here's how to use a custom stemmer to get counts of emotion word usage. We
+will use the text of _The Wizard of Oz_ (Project Gutenberg Work #55)
+to demonstrate.
+
+
+```r
+data <- gutenberg_corpus(55)
+```
+
+```
+Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL
+```
+
+```
+Using mirror http://www.gutenberg.org/dirs/
+```
+
+```r
+text_filter(data)$stemmer <- with(affect_wordnet,
+    stemmer_make(term, interaction(category, emotion), default = NA,
+                 ties = "omit"))
+```
+
+This stemmer replaces terms by the emotional affect, as listed in the
+`affect_wordnet` lexicon. Setting `default = NA` specifies that terms
+that are not in the lexicon get dropped. We also specify `ties = "omit"`
+so that words listed in multiple categories don't get stemmed.
+
+Here are the (stemmed) term statistics:
+
+
+```r
+term_stats(data)
+```
+
+```
+   term                  count support
+1  Sadness.Negative        207       1
+2  Enthusiasm.Positive     146       1
+3  Dislike.Negative        109       1
+4  Joy.Positive             97       1
+5  Liking.Positive          94       1
+6  Love.Positive            81       1
+7  Affection.Positive       77       1
+8  Fear.Negative            75       1
+9  Agitation.Ambiguous      38       1
+10 Anxiety.Negative         24       1
+11 Calmness.Positive        24       1
+12 Gravity.Ambiguous        21       1
+13 Shame.Negative           20       1
+14 Surprise.Ambiguous       12       1
+15 Gratitude.Positive       10       1
+16 Expectation.Ambiguous     9       1
+17 Pride.Positive            7       1
+18 Compassion.Negative       5       1
+19 Despair.Negative          3       1
+20 Daze.Negative             2       1
+⋮  (22 rows total)
+```
+
+We can also get a sample of the instances of the stemmed terms:
+
+
+```r
+text_sample(data, "Joy.Positive")
+```
+
+```
+   text                before                  instance                   after                
+1  1    … Scarecrow and the Tin Woodman were     glad      to be of\nuse to her.  As for the L…
+2  1    …rs and\nfruit trees and sunshine to     cheer     them, and had they not felt so sorr…
+3  1    …te a little of\neverything, and was     glad      to get a good supper again.\n\nThe …
+4  1    …Dorothy and her friends spent a few     happy    \ndays at the Yellow Castle, where t…
+5  1    …ever thought of that!" said Dorothy   joyfully   .  "It's just the\nthing.  I'll go a…
+6  1    …d the Tin Woodman, "you ought to be     glad     , for it\nproves you have a heart.  …
+7  1    …of this beautiful City, I am\nquite   satisfied   with my lot."\n\n"I also," said the…
+8  1    …y don't belong there.  We\nshall be     glad      to serve you in any way in our powe…
+9  1    …der, "we were a free people, living    happily    in the\ngreat forest, flying from t…
+10 1    …get my brains," added the Scarecrow   joyfully   .\n\n"And I shall get my courage," s…
+11 1    …hing and singing, while a big table     near      by was\nloaded with delicious fruit…
+12 1    … brains do not\nmake one happy, and   happiness   is the best thing in the world."\n… 
+13 1    …know enough," replied the Scarecrow  cheerfully  .  "My head is\nstuffed with straw, …
+14 1    …ut it, if you wish."\n\n"I shall be     glad      to hear it," she replied.\n\n"Once,…
+15 1    …such little\nthings as flowers came     near      to killing me, and such small anima…
+16 1    …apid flight of the Monkeys, but was     glad      the journey was over.\nThe strange …
+17 1    …tle room in the world, with a soft\n comfortable  bed that had sheets of green silk a…
+18 1    …ued the Scarecrow, "we might all be     happy     together."\n\n"But I don't want to …
+19 1    …\nThus each of the little party was   satisfied   except Dorothy, who longed\nmore th…
+20 1    …ught Dorothy some fruit from a tree     near      by, which she\nate for her dinner.… 
+⋮  (97 rows total)
+```
 
 [lexiconista]: http://www.lexiconista.com/datasets/lemmatization/ "Lexiconista Lemmatization Lists"
-[snowball]: https://snowballstem.org/ "Snowball Stemming Library".
+[snowball]: https://snowballstem.org/ "Snowball Stemming Library"

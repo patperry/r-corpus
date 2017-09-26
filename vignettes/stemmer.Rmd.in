@@ -10,9 +10,10 @@ vignette: >
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(comment = "", fig.path = "textdata-")
 options(width = 95)
+set.seed(0)
 ```
 
-### Snowball stemmer
+## Snowball stemmer
 
 *Corpus* comes with built-in support for the algorithmic stemmers provided by
 the [Snowball Stemming Library][snowball], which supports the following
@@ -31,7 +32,7 @@ These stemmers are purely algorithmic; they mostly just strip off common
 suffixes. 
 
 
-### Hunspell stemmer
+## Hunspell stemmer
 
 If you want more precise stemming behavior, you can provide a custom stemming
 function.  The stemming function should, when given a term as an input, return
@@ -58,7 +59,7 @@ text_tokens(text, stemmer = stem_hunspell)
 ```
 
 
-### Dictionary stemmer
+## Dictionary stemmer
 
 One common way to build a stemmer is from a list of (term, stem) pairs. Many
 such lists are available at [lexoconista.com][lexiconista]. Here's an example
@@ -101,7 +102,44 @@ stem_list <- function(term) {
 text_tokens(text, stemmer = stem_list)
 ```
 
+This pattern is so common that *corpus* provides a convenience function that
+will build a stemmer from the input term and stem lists:
 
+```{r}
+stem_list2 <- stemmer_make(term, stem)
+text_tokens(text, stemmer = stem_list2)
+```
+
+
+## Application: Emotion word usage
+
+Here's how to use a custom stemmer to get counts of emotion word usage. We
+will use the text of _The Wizard of Oz_ (Project Gutenberg Work #55)
+to demonstrate.
+
+```{r}
+data <- gutenberg_corpus(55)
+text_filter(data)$stemmer <- with(affect_wordnet,
+    stemmer_make(term, interaction(category, emotion), default = NA,
+                 ties = "omit"))
+```
+
+This stemmer replaces terms by the emotional affect, as listed in the
+`affect_wordnet` lexicon. Setting `default = NA` specifies that terms
+that are not in the lexicon get dropped. We also specify `ties = "omit"`
+so that words listed in multiple categories don't get stemmed.
+
+Here are the (stemmed) term statistics:
+
+```{r}
+term_stats(data)
+```
+
+We can also get a sample of the instances of the stemmed terms:
+
+```{r}
+text_sample(data, "Joy.Positive")
+```
 
 [lexiconista]: http://www.lexiconista.com/datasets/lemmatization/ "Lexiconista Lemmatization Lists"
-[snowball]: https://snowballstem.org/ "Snowball Stemming Library".
+[snowball]: https://snowballstem.org/ "Snowball Stemming Library"
