@@ -54,3 +54,58 @@ test_that("handles internal stemmer errors", {
     expect_error(text_tokens("hello", stemmer = function(x) stop("what?")),
                  "'stemmer' raised an error for input \"hello\"")
 })
+
+
+test_that("'stemmer_make' can detect errors", {
+    expect_error(stemmer_make(c("a", "b"), c("a")),
+                 "'term' argument length must equal 'stem' argument length")
+})
+
+
+test_that("'stemmer_make' can handle empty inputs", {
+    fn <- stemmer_make(NULL, NULL)
+    expect_equal(fn("a"), "a")
+})
+
+
+test_that("'stemmer_make' can use a default", {
+    fn <- stemmer_make(LETTERS, letters, default = NA)
+    expect_equal(fn("A"), "a")
+    expect_equal(fn("AB"), NA_character_)
+})
+
+
+test_that("'stemmer_make' can handle ties", {
+    term <- c("a", "a", "b", "c", "c", "c", "d")
+    stem <- c("a1", "a2", "b", "c1", "c2", "c3", "d")
+
+    fn <- stemmer_make(term, stem, ties = "first", vectorize = FALSE)
+    expect_equal(sapply(term, fn, USE.NAMES = FALSE),
+                 c("a1", "a1", "b", "c1", "c1", "c1", "d"))
+
+    fn <- stemmer_make(term, stem, ties = "last", vectorize = FALSE)
+    expect_equal(sapply(term, fn, USE.NAMES = FALSE),
+                 c("a2", "a2", "b", "c3", "c3", "c3", "d"))
+
+    fn <- stemmer_make(term, stem, ties = "omit", vectorize = FALSE)
+    expect_equal(sapply(term, fn, USE.NAMES = FALSE),
+                 c("a", "a", "b", "c", "c", "c", "d"))
+})
+
+
+test_that("'stemmer_make' can vectorize ", {
+    term <- c("a", "a", "b", "c", "c", "c", "d")
+    stem <- c("a1", "a2", "b", "c1", "c2", "c3", "d")
+
+    fn <- stemmer_make(term, stem, ties = "first", vectorize = TRUE)
+    expect_equal(fn(term), c("a1", "a1", "b", "c1", "c1", "c1", "d"))
+
+    fn <- stemmer_make(term, stem, ties = "last", vectorize = TRUE)
+    expect_equal(fn(term), c("a2", "a2", "b", "c3", "c3", "c3", "d"))
+
+    fn <- stemmer_make(term, stem, ties = "omit", vectorize = TRUE)
+    expect_equal(fn(term), c("a", "a", "b", "c", "c", "c", "d"))
+
+    expect_error(stemmer_make(term, stem, ties = "fail", vectorize = TRUE),
+                 "'term' argument entries must be unique")
+})
