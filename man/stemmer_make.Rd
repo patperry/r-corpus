@@ -5,7 +5,7 @@
     Make a stemmer from a set of (term, stem) pairs.
 }
 \usage{
-stemmer_make(term, stem, default = NULL, ties = "first",
+stemmer_make(term, stem, default = NULL, duplicates = "first",
              vectorize = TRUE)
 }
 \arguments{
@@ -18,7 +18,7 @@ stemmer_make(term, stem, default = NULL, ties = "first",
     that do not have a stem; \code{NULL} specifies that such terms
     should be left unchanged.}
 
-\item{ties}{action to take for duplicates in the \code{term} list. See
+\item{duplicates}{action to take for duplicates in the \code{term} list. See
     \sQuote{Details}}.
 
 \item{vectorize}{whether to produce a vectorized stemmer that accepts and
@@ -30,19 +30,20 @@ function that maps terms to their corresponding entry. If
 \code{default = NULL}, then values absent from the \code{term} argument
 get left as-is; otherwise, they get replaced by the \code{default} value.
 
-The \code{ties} argument indicates the action to take if
+The \code{duplicates} argument indicates the action to take if
 there are duplicate entries in the \code{term} argument:
 \itemize{
-  \item \code{ties = "first"} take the first matching entry in the
+  \item \code{duplicates = "first"} take the first matching entry in the
     \code{stem} list.
 
-  \item \code{ties = "last"} take the last matching entry in the
+  \item \code{duplicates = "last"} take the last matching entry in the
     \code{stem} list.
 
-  \item \code{ties = "omit"} use the \code{default} value for
+  \item \code{duplicates = "omit"} use the \code{default} value for
     duplicated terms.
 
-  \item \code{ties = "fail"} raise an error if there are duplicated terms.
+  \item \code{duplicates = "fail"} raise an error if there are duplicated
+    terms.
 }
 }
 \value{

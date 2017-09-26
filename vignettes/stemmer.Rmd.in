@@ -122,13 +122,14 @@ data <- gutenberg_corpus(55, verbose = FALSE)
 text_filter(data)$stemmer <-
     with(affect_wordnet,
         stemmer_make(term, interaction(category, emotion),
-                     default = NA, ties = "omit"))
+                     default = NA, duplicates = "omit"))
 ```
 
 This stemmer replaces terms by the emotional affect, as listed in the
 `affect_wordnet` lexicon. Setting `default = NA` specifies that terms
-that are not in the lexicon get dropped. We also specify `ties = "omit"`
-so that words listed in multiple categories don't get stemmed.
+that are not in the lexicon get dropped. We also specify
+`duplicates = "omit"` so that words listed in multiple categories
+get replaced with the default (i.e., they get dropped).
 
 Here are the (stemmed) term statistics:
 

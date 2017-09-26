@@ -75,19 +75,19 @@ test_that("'stemmer_make' can use a default", {
 })
 
 
-test_that("'stemmer_make' can handle ties", {
+test_that("'stemmer_make' can handle duplicates", {
     term <- c("a", "a", "b", "c", "c", "c", "d")
     stem <- c("a1", "a2", "b", "c1", "c2", "c3", "d")
 
-    fn <- stemmer_make(term, stem, ties = "first", vectorize = FALSE)
+    fn <- stemmer_make(term, stem, duplicates = "first", vectorize = FALSE)
     expect_equal(sapply(term, fn, USE.NAMES = FALSE),
                  c("a1", "a1", "b", "c1", "c1", "c1", "d"))
 
-    fn <- stemmer_make(term, stem, ties = "last", vectorize = FALSE)
+    fn <- stemmer_make(term, stem, duplicates = "last", vectorize = FALSE)
     expect_equal(sapply(term, fn, USE.NAMES = FALSE),
                  c("a2", "a2", "b", "c3", "c3", "c3", "d"))
 
-    fn <- stemmer_make(term, stem, ties = "omit", vectorize = FALSE)
+    fn <- stemmer_make(term, stem, duplicates = "omit", vectorize = FALSE)
     expect_equal(sapply(term, fn, USE.NAMES = FALSE),
                  c("a", "a", "b", "c", "c", "c", "d"))
 })
@@ -97,15 +97,16 @@ test_that("'stemmer_make' can vectorize ", {
     term <- c("a", "a", "b", "c", "c", "c", "d")
     stem <- c("a1", "a2", "b", "c1", "c2", "c3", "d")
 
-    fn <- stemmer_make(term, stem, ties = "first", vectorize = TRUE)
+    fn <- stemmer_make(term, stem, duplicates = "first", vectorize = TRUE)
     expect_equal(fn(term), c("a1", "a1", "b", "c1", "c1", "c1", "d"))
 
-    fn <- stemmer_make(term, stem, ties = "last", vectorize = TRUE)
+    fn <- stemmer_make(term, stem, duplicates = "last", vectorize = TRUE)
     expect_equal(fn(term), c("a2", "a2", "b", "c3", "c3", "c3", "d"))
 
-    fn <- stemmer_make(term, stem, ties = "omit", vectorize = TRUE)
+    fn <- stemmer_make(term, stem, duplicates = "omit", vectorize = TRUE)
     expect_equal(fn(term), c("a", "a", "b", "c", "c", "c", "d"))
 
-    expect_error(stemmer_make(term, stem, ties = "fail", vectorize = TRUE),
+    expect_error(stemmer_make(term, stem, duplicates = "fail",
+                              vectorize = TRUE),
                  "'term' argument entries must be unique")
 })

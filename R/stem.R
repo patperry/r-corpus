@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-stemmer_make <- function(term, stem, default = NULL, ties = "first",
+stemmer_make <- function(term, stem, default = NULL, duplicates = "first",
                          vectorize = TRUE)
 {
     call <- sys.call()
@@ -20,7 +20,8 @@ stemmer_make <- function(term, stem, default = NULL, ties = "first",
         term <- as_character_vector("term", term)
         stem <- as_character_vector("stem", stem)
         default <- as_character_scalar("default", default)
-        ties <- as_enum("ties", ties, c("first", "last", "omit", "fail"))
+        duplicates <- as_enum("duplicates", duplicates,
+                              c("first", "last", "omit", "fail"))
     })
 
     if (is.null(term)) {
@@ -35,23 +36,23 @@ stemmer_make <- function(term, stem, default = NULL, ties = "first",
         stop("'term' argument length must equal 'stem' argument length")
     }
 
-    if (ties == "last") {
+    if (duplicates == "last") {
         termlist <- rev(term)
         stemlist <- rev(stem)
-        ties <- "first"
+        duplicates <- "first"
     } else {
         termlist <- term
         stemlist <- stem
     }
 
-    if (ties != "first") {
+    if (duplicates != "first") {
         dup <- duplicated(termlist)
-        if (ties == "omit") {
+        if (duplicates == "omit") {
             dups <- termlist[dup]
             rm <- termlist %in% dups
             termlist <- termlist[!rm]
             stemlist <- stemlist[!rm]
-        } else if (any(dup)) { # ties == "fail"
+        } else if (any(dup)) { # duplicates == "fail"
             stop("'term' argument entries must be unique")
         }
     }
