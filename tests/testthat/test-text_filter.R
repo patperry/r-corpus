@@ -254,22 +254,22 @@ test_that("text filter printing works", {
 expected <- c(
 'Text filter with the following options:',
 '',
-'\tmap_case: TRUE',
-'\tmap_quote: TRUE',
-'\tremove_ignorable: TRUE',
-'\tcombine: NULL',
-'\tstemmer: NULL',
-'\tstem_dropped: FALSE',
-'\tstem_except: NULL',
-'\tdrop_letter: FALSE',
-'\tdrop_number: FALSE',
-'\tdrop_punct: FALSE',
-'\tdrop_symbol: FALSE',
-'\tdrop: NULL',
-'\tdrop_except: NULL',
-'\tconnector: _',
-'\tsent_crlf: FALSE',
-'\tsent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
+'    map_case: TRUE',
+'    map_quote: TRUE',
+'    remove_ignorable: TRUE',
+'    combine: NULL',
+'    stemmer: NULL',
+'    stem_dropped: FALSE',
+'    stem_except: NULL',
+'    drop_letter: FALSE',
+'    drop_number: FALSE',
+'    drop_punct: FALSE',
+'    drop_symbol: FALSE',
+'    drop: NULL',
+'    drop_except: NULL',
+'    connector: _',
+'    sent_crlf: FALSE',
+'    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
 
     actual <- strsplit(capture_output(print(f)), "\n")[[1]]
     expect_equal(actual, expected)

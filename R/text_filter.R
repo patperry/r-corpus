@@ -240,13 +240,15 @@ print.corpus_text_filter <- function(x, ...)
     for (k in names(x)) {
         val <- x[[k]]
 
-        cat(paste0("\t", k, ": "))
+        cat(paste0("    ", k, ": "))
         if (is.null(val)) {
             cat("NULL\n")
+        } else if (is.function(val)) {
+            cat("<function>\n")
         } else if (length(val) == 1) {
             cat(paste0(val, "\n"))
         } else {
-            utils::str(val, width = getOption("width") - 8 - nchar(k) - 2,
+            utils::str(val, width = getOption("width") - 4 - nchar(k) - 2,
                        give.attr = FALSE)
         }
     }

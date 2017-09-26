@@ -118,10 +118,11 @@ will use the text of _The Wizard of Oz_ (Project Gutenberg Work #55)
 to demonstrate.
 
 ```{r}
-data <- gutenberg_corpus(55)
-text_filter(data)$stemmer <- with(affect_wordnet,
-    stemmer_make(term, interaction(category, emotion), default = NA,
-                 ties = "omit"))
+data <- gutenberg_corpus(55, verbose = FALSE)
+text_filter(data)$stemmer <-
+    with(affect_wordnet,
+        stemmer_make(term, interaction(category, emotion),
+                     default = NA, ties = "omit"))
 ```
 
 This stemmer replaces terms by the emotional affect, as listed in the

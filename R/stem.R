@@ -15,6 +15,7 @@
 stemmer_make <- function(term, stem, default = NULL, ties = "first",
                          vectorize = TRUE)
 {
+    call <- sys.call()
     with_rethrow({
         term <- as_character_vector("term", term)
         stem <- as_character_vector("stem", stem)
@@ -55,31 +56,47 @@ stemmer_make <- function(term, stem, default = NULL, ties = "first",
         }
     }
 
+    # parse dynamically so that we can add a comment with the function call
+    comment <- paste("    #", deparse(call), collapse = "\n")
     if (is.null(default)) {
-        stem_term <- function(term) {
-            i <- match(term, termlist, 0L)
-            if (i > 0L) {
-                stemlist[[i]]
-            } else {
-                term
-            }
-        }
+        src <- paste('function(term) {',
+            comment,
+            '    i <- match(term, termlist, 0L)',
+            '    if (i > 0L) {',
+            '        stemlist[[i]]',
+            '    } else {',
+            '        term',
+            '    }',
+            '}',
+            sep = '\n')
     } else {
-        stem_term <- function(term) {
-            i <- match(term, termlist, 0L)
-            if (i > 0L) {
-                stemlist[[i]]
-            } else {
-                default
-            }
-        }
+        src <- paste('function(term) {',
+            comment,
+            '    i <- match(term, termlist, 0L)',
+            '    if (i > 0L) {',
+            '        stemlist[[i]]',
+            '    } else {',
+            '        default',
+            '    }',
+            '}',
+            sep = '\n')
     }
 
+    env <- new.env()
+    assign("termlist", termlist, env)
+    assign("stemlist", stemlist, env)
+    assign("default", default, env)
+    stem_term <- eval(parse(text = src), env)
+
     if (vectorize) {
-        function(term) {
-            use.names <- is.null(dim(term)) && !is.null(names(term))
-            vapply(term, stem_term, "", USE.NAMES = use.names)
-        }
+        vsrc <- paste('function(term) {',
+            comment,
+            '    use.names <- !is.null(names(term))',
+            '    vapply(term, stem_term, "", USE.NAMES = use.names)',
+            '}',
+            sep = '\n')
+        assign("stem_term", stem_term, env)
+        stem_term <- eval(parse(text = vsrc, keep.source = TRUE), env)
     } else {
         stem_term
     }
