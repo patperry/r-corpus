@@ -133,19 +133,13 @@ will build a stemmer from the input term and stem lists:
 
 
 ```r
-stem_list2 <- stemmer_make(term, stem)
-```
-
-```
-Error in stemmer_make(term, stem): object 'term' not found
-```
-
-```r
+stem_list2 <- stemmer_make(tab$term, tab$stem)
 text_tokens(text, stemmer = stem_list2)
 ```
 
 ```
-Error in text_tokens(text, stemmer = stem_list2): object 'stem_list2' not found
+[[1]]
+[1] "love"     "love"     "lovingly" "love"     "lover"    "lovely"   "love"    
 ```
 
 
@@ -165,7 +159,7 @@ Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.
 ```
 
 ```
-Using mirror http://www.gutenberg.org/dirs/
+Using mirror http://mirrors.xmission.com/gutenberg/
 ```
 
 ```r

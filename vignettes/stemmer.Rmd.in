@@ -106,7 +106,7 @@ This pattern is so common that *corpus* provides a convenience function that
 will build a stemmer from the input term and stem lists:
 
 ```{r}
-stem_list2 <- stemmer_make(term, stem)
+stem_list2 <- stemmer_make(tab$term, tab$stem)
 text_tokens(text, stemmer = stem_list2)
 ```
 
