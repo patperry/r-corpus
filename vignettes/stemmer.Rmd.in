@@ -1,0 +1,107 @@
+---
+title: "Stemming Words"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Stemming Words}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(comment = "", fig.path = "textdata-")
+options(width = 95)
+```
+
+### Snowball stemmer
+
+*Corpus* comes with built-in support for the algorithmic stemmers provided by
+the [Snowball Stemming Library][snowball], which supports the following
+languages: arabic (ar), danish (da), german (de), english (en), spanish (es),
+finnish (fi), french (fr), hungarian (hu), italian (it), dutch (nl), norwegian
+(no), portuguese (pt), romanian (ro), russian (ru), swedish (sv), tamil (ta),
+and turkish (tr). You can select one of these stemmers using either the full
+name of the language of the two-letter country code:
+
+```{r}
+text <- "love loving lovingly loved lover lovely love"
+text_tokens(text, stemmer = "en") # english stemmer
+```
+
+These stemmers are purely algorithmic; they mostly just strip off common
+suffixes. 
+
+
+### Hunspell stemmer
+
+If you want more precise stemming behavior, you can provide a custom stemming
+function.  The stemming function should, when given a term as an input, return
+the stem of the term as the output.
+
+
+Here's an example that uses the `hunspell` dictionary to do the stemming.
+
+```{r}
+stem_hunspell <- function(term) {
+    # look up the term in the dictionary
+    stems <- hunspell::hunspell_stem(term)[[1]]
+
+    if (length(stems) == 0) { # if there are no stems, use the original term
+        stem <- term
+    } else { # if there are multiple stems, use the last one
+        stem <- stems[[length(stems)]]
+    }
+
+    stem
+}
+
+text_tokens(text, stemmer = stem_hunspell)
+```
+
+
+### Dictionary stemmer
+
+One common way to build a stemmer is from a list of (term, stem) pairs. Many
+such lists are available at [lexoconista.com][lexiconista]. Here's an example
+stemmer for English:
+
+```{r}
+# download the list
+url <- "http://www.lexiconista.com/Datasets/lemmatization-en.zip"
+tmp <- tempfile()
+download.file(url, tmp)
+
+# extract the contents
+con <- unz(tmp, "lemmatization-en.txt", encoding = "UTF-8")
+tab <- read.delim(con, header=FALSE, stringsAsFactors = FALSE)
+names(tab) <- c("stem", "term")
+```
+
+The first column of this table contains the stem; the second column contains
+the raw term:
+
+```{r}
+head(tab)
+```
+We can see that, for example, `"first"` stems to `"1"`.
+
+
+Here a custom stemming function that uses the list:
+
+```{r}
+stem_list <- function(term) {
+    i <- match(term, tab$term)
+    if (is.na(i)) {
+        stem <- term
+    } else {
+        stem <- tab$stem[[i]]
+    }
+    stem
+}
+
+text_tokens(text, stemmer = stem_list)
+```
+
+
+
+[lexiconista]: http://www.lexiconista.com/datasets/lemmatization/ "Lexiconista Lemmatization Lists"
+[snowball]: https://snowballstem.org/ "Snowball Stemming Library".
