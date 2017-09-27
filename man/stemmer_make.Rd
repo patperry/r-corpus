@@ -56,7 +56,7 @@ and returns a single output. This can be more efficient when used as part of
 a \code{\link{text_filter}}.
 }
 \seealso{
-\code{\link{text_filter}}, \code{\link{text_tokens}}.
+\code{\link{stem_snowball}, \link{text_filter}}, \code{\link{text_tokens}}.
 }
 \examples{
 # map uppercase to lowercase, leave others unchanged

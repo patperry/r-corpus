@@ -195,3 +195,80 @@ void stemmer_destroy(struct stemmer *s)
 		break;
 	}
 }
+
+
+struct stem_snowball_context {
+	struct corpus_stem_snowball snowball;
+	int has_snowball;
+};
+
+
+static void stem_snowball_context_init(struct stem_snowball_context *ctx,
+				       SEXP salgorithm)
+{
+	const char *algorithm, *name;
+	int err = 0;
+
+	algorithm = CHAR(STRING_ELT(salgorithm, 0));
+	name = stemmer_snowball_name(algorithm);
+
+	TRY(corpus_stem_snowball_init(&ctx->snowball, name));
+	ctx->has_snowball = 1;
+out:
+	CHECK_ERROR(err);
+}
+
+
+static void stem_snowball_context_destroy(void *obj)
+{
+	struct stem_snowball_context *ctx = obj;
+
+	if (ctx->has_snowball) {
+		corpus_stem_snowball_destroy(&ctx->snowball);
+	}
+}
+
+
+SEXP stem_snowball(SEXP x, SEXP algorithm)
+{
+	SEXP ans, elt, sctx;
+	struct stem_snowball_context *ctx;
+	const uint8_t *ptr, *stemptr;
+	R_xlen_t i, n;
+	int err = 0, nprot = 0, len, stemlen;
+
+	if (x == R_NilValue || algorithm == R_NilValue) {
+		return x;
+	}
+
+	PROTECT(sctx = alloc_context(sizeof(*ctx),
+				     stem_snowball_context_destroy));
+	nprot++;
+
+        ctx = as_context(sctx);
+	stem_snowball_context_init(ctx, algorithm);
+
+	PROTECT(ans = duplicate(x)); nprot++;
+	n = XLENGTH(ans);
+
+	for (i = 0; i < n; i++) {
+		RCORPUS_CHECK_INTERRUPT(i);
+		elt = STRING_ELT(ans, i);
+		if (elt == NA_STRING) {
+			continue;
+		}
+
+		ptr = (const uint8_t *)CHAR(elt);
+		len = LENGTH(elt);
+		TRY(corpus_stem_snowball(ptr, len, &stemptr, &stemlen,
+					 &ctx->snowball));
+
+		elt = mkCharLenCE((const char *)stemptr, stemlen, CE_UTF8);
+		SET_STRING_ELT(ans, i, elt);
+	}
+out:
+	CHECK_ERROR(err);
+	free_context(sctx);
+	UNPROTECT(nprot);
+	return ans;
+}

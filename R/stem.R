@@ -12,6 +12,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
+stem_snowball <- function(x, algorithm = "en")
+{
+    with_rethrow({
+        x <- as_character_vector("x", x)
+        algorithm <- as_snowball_algorithm("algorithm", algorithm)
+    })
+
+    .Call(C_stem_snowball, x, algorithm)
+}
+
+
 stemmer_make <- function(term, stem, default = NULL, duplicates = "first",
                          vectorize = TRUE)
 {
@@ -37,21 +49,18 @@ stemmer_make <- function(term, stem, default = NULL, duplicates = "first",
     }
 
     if (duplicates == "last") {
-        termlist <- rev(term)
-        stemlist <- rev(stem)
+        term <- rev(term)
+        stem <- rev(stem)
         duplicates <- "first"
-    } else {
-        termlist <- term
-        stemlist <- stem
     }
 
     if (duplicates != "first") {
-        dup <- duplicated(termlist)
+        dup <- duplicated(term)
         if (duplicates == "omit") {
-            dups <- termlist[dup]
-            rm <- termlist %in% dups
-            termlist <- termlist[!rm]
-            stemlist <- stemlist[!rm]
+            dups <- term[dup]
+            rm <- term %in% dups
+            term <- term[!rm]
+            stem <- stem[!rm]
         } else if (any(dup)) { # duplicates == "fail"
             stop("'term' argument entries must be unique")
         }
@@ -60,40 +69,35 @@ stemmer_make <- function(term, stem, default = NULL, duplicates = "first",
     # parse dynamically so that we can add a comment with the function call
     comment <- paste("    #", deparse(call), collapse = "\n")
     if (is.null(default)) {
-        src <- paste('function(term) {',
+        src <- paste('function(x) {',
             comment,
-            '    i <- match(term, termlist, 0L)',
-            '    if (i > 0L) {',
-            '        stemlist[[i]]',
-            '    } else {',
-            '        term',
-            '    }',
+            '    i <- match(x, term, 0L)',
+            '    if (i > 0L)',
+            '        stem[[i]]',
+            '    else x',
             '}',
             sep = '\n')
     } else {
-        src <- paste('function(term) {',
+        src <- paste('function(x) {',
             comment,
-            '    i <- match(term, termlist, 0L)',
-            '    if (i > 0L) {',
-            '        stemlist[[i]]',
-            '    } else {',
-            '        default',
-            '    }',
+            '    i <- match(x, term, 0L)',
+            '    if (i > 0L)',
+            '        stem[[i]]',
+            '    else default',
             '}',
             sep = '\n')
     }
 
     env <- new.env()
-    assign("termlist", termlist, env)
-    assign("stemlist", stemlist, env)
+    assign("term", term, env)
+    assign("stem", stem, env)
     assign("default", default, env)
     stem_term <- eval(parse(text = src), env)
 
     if (vectorize) {
-        vsrc <- paste('function(term) {',
+        vsrc <- paste('function(x) {',
             comment,
-            '    use.names <- !is.null(names(term))',
-            '    vapply(term, stem_term, "", USE.NAMES = use.names)',
+            '    vapply(x, stem_term, "", USE.NAMES = !is.null(names(x)))',
             '}',
             sep = '\n')
         assign("stem_term", stem_term, env)

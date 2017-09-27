@@ -204,6 +204,9 @@ void stemmer_init_rfunc(struct stemmer *s, SEXP fn, SEXP rho);
 void stemmer_destroy(struct stemmer *s);
 const char *stemmer_snowball_name(const char *alias);
 
+SEXP stem_snowball(SEXP x, SEXP algorithm);
+
+
 /* logging */
 SEXP logging_off(void);
 SEXP logging_on(void);

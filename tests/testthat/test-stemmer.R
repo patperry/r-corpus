@@ -110,3 +110,21 @@ test_that("'stemmer_make' can vectorize ", {
                               vectorize = TRUE),
                  "'term' argument entries must be unique")
 })
+
+
+test_that("'stem_snowball' can handle NULL algorithm", {
+    x <- c("win", "winning", "winner", "#winning")
+    expect_equal(stem_snowball(x, NULL), x)
+})
+
+
+test_that("'stem_snowball' can handle NULL input", {
+    expect_equal(stem_snowball(NULL), NULL)
+})
+
+
+test_that("'stem_snowball' can handle stem input", {
+    x <- c("win", "winning", "winner", "#winning")
+    expect_equal(stem_snowball(x),
+                 c("win", "win", "winner", "#winning"))
+})

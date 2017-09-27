@@ -293,6 +293,31 @@ as_size <- function(size)
 }
 
 
+as_snowball_algorithm <- function(name, value)
+{
+    if (is.null(value)) {
+        return(value)
+    }
+
+    value <- as_character_scalar(name, value)
+    isocodes <- c(ar = "arabic", da = "danish", de = "german",
+                  en = "english", es = "spanish", fi = "finnish",
+                  fr = "french", hu = "hungarian", it = "italian",
+                  nl = "dutch", no = "norwegian", pt = "portuguese",
+                  ro = "romanian", ru = "russian", sv = "swedish",
+                  ta = "tamil", tr = "turkish")
+    extra <- "porter"
+
+    stemmers <- c(names(isocodes), sort(c(isocodes, extra)))
+    value <- as_enum(name, value, stemmers)
+    if (!is.na(i <- match(value, isocodes))) {
+        value <- names(isocodes)[[i]]
+    }
+
+    value
+}
+
+
 as_stemmer <- function(stemmer)
 {
     if (is.null(stemmer)) {
@@ -300,19 +325,7 @@ as_stemmer <- function(stemmer)
     }
 
     if (is.character(stemmer)) {
-        isocodes <- c(ar = "arabic", da = "danish", de = "german",
-                      en = "english", es = "spanish", fi = "finnish",
-                      fr = "french", hu = "hungarian", it = "italian",
-                      nl = "dutch", no = "norwegian", pt = "portuguese",
-                      ro = "romanian", ru = "russian", sv = "swedish",
-                      ta = "tamil", tr = "turkish")
-        extra <- "porter"
-
-        stemmers <- c(names(isocodes), sort(c(isocodes, extra)))
-        stemmer <- as_enum("stemmer", stemmer, stemmers)
-        if (!is.na(i <- match(stemmer, isocodes))) {
-            stemmer <- names(isocodes)[[i]]
-        }
+        stemmer <- as_snowball_algorithm("stemmer", stemmer)
     } else if (!is.function(stemmer)) {
         if (!is.null(attr(stemmer, "class"))) {
             stemmer <- as.function(stemmer)
