@@ -67,7 +67,7 @@ of stages, controlled by the \code{filter} argument:
 
   \item Finally, we replace sequences of white-space in the terms with
     the specified \code{connector}, which defaults to a low line character
-    ('_', U+005F).
+    (\code{_}, U+005F).
 }
 Multi-word terms specified by the \code{combine} property can be specified as
 tokens, prior to normalization.  Terms specified by the \code{stem_except},
@@ -75,7 +75,7 @@ tokens, prior to normalization.  Terms specified by the \code{stem_except},
 \code{stemmer} is non-\code{NULL}).  Thus, for example, if
 \code{map_case = TRUE}, then a token filter with \code{combine = "Mx."}
 produces the same results as a token filter with \code{combine = "mx."}.
-However, \code{drop = "Mx.} behaves different from \code{drop = "mx."}.
+However, \code{drop = "Mx."} behaves different from \code{drop = "mx."}.
 }
 \section{Combining words}{
 The \code{combine} property of a \code{text_filter} enables
