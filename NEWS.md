@@ -1,10 +1,29 @@
 corpus 0.9.2.9000
 =================
 
+### NEW FEATURES
+
+  * Allow user-supplied stemming functions in `text_filter()`.
+
+  * Add `stemmer_make()` function to make a stemming function from a set
+    of (term, stem) pairs.
+
+  * Add `stem_snowball()` function for the Snowball stemming algorithms
+    (similar to SnowballC::wordStem, but only stemming "letter" tokens,
+    not "number", "punct", or "symbol").
+
+  * Apply filter combine rules before stemming rather than after.
+
+  * Remove dropped tokens rather than replace them with `NA`.
+
 ### MINOR IMPROVEMENTS
+
+  * Replace white-space in types with connector (`_`).
 
   * Switch to `"radix"` sort algorithm for consistent, fast term ordering
     on all platforms, regardless of locale.
+
+  * Set `combine = NULL` be default for text filters.
 
 ### BUG FIXES
 
