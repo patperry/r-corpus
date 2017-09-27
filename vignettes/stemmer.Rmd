@@ -168,7 +168,7 @@ Here are the (stemmed) term statistics:
 
 
 ```r
-term_stats(data)
+print(term_stats(data), -1)
 ```
 
 ```
@@ -193,7 +193,8 @@ term_stats(data)
 18 Compassion.Negative       5       1
 19 Despair.Negative          3       1
 20 Daze.Negative             2       1
-⋮  (22 rows total)
+21 Fear.Positive             1       1
+22 Fearlessness.Positive     1       1
 ```
 
 We can also get a sample of the instances of the stemmed terms:

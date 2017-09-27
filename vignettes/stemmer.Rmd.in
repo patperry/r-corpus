@@ -134,7 +134,7 @@ get replaced with the default (i.e., they get dropped).
 Here are the (stemmed) term statistics:
 
 ```{r}
-term_stats(data)
+print(term_stats(data), -1)
 ```
 
 We can also get a sample of the instances of the stemmed terms:
