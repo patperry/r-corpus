@@ -176,5 +176,67 @@ text <- "spell checkers are not neccessairy for langauge ninja's"
 text_tokens(text, stemmer = stem_spellcorrect)
 ```
 
+
+## Efficiency considerations
+
+When you stem a text, the result gets cached, so you never have to stem the
+same type twice. If the input is a `corpus_text` object, these cached values
+are shared across multiple tokenizations.
+
+Here's a stemmer that prepends "bunny" to every word, keeping track of how
+many times it gets called:
+
+```{r}
+nbunny <- 0
+stem_bunny <- function(term) {
+    nbunny <<- nbunny + 1
+    paste("bunny", term)
+}
+```
+
+We will set this as the stemmer for a corpus (a data frame with a "text"
+column of type `corpus_text`):
+```{r}
+corpus <- as_corpus_frame(federalist)
+text_filter(corpus)$stemmer <- stem_bunny
+```
+
+Here's how long it takes to tokenize the text once and compute the term
+statistics:
+```{r}
+system.time(stats <- term_stats(corpus))
+```
+
+Here's how many times the stemmer got called:
+```{r}
+print(nbunny)
+```
+
+We will now set the bunny count to zero and run the same computation:
+
+```{r}
+nbunny <- 0
+system.time(stats2 <- term_stats(corpus))
+```
+
+It took us half the time. How many additional calls to the stemmer were there?
+
+```{r}
+print(nbunny)
+```
+
+No additional calls. We used the cached stems from the first call to
+`term_stats`. We can verify that the results were the same both times.
+
+```{r}
+identical(stats, stats2)
+```
+
+Just for fun, here are the results:
+
+```{r}
+stats
+```
+
 [lexiconista]: http://www.lexiconista.com/datasets/lemmatization/ "Lexiconista Lemmatization Lists"
 [snowball]: https://snowballstem.org/ "Snowball Stemming Library"

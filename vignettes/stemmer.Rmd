@@ -270,5 +270,122 @@ text_tokens(text, stemmer = stem_spellcorrect)
 [8] "ninjas"   
 ```
 
+
+## Efficiency considerations
+
+When you stem a text, the result gets cached, so you never have to stem the
+same type twice. If the input is a `corpus_text` object, these cached values
+are shared across multiple tokenizations.
+
+Here's a stemmer that prepends "bunny" to every word, keeping track of how
+many times it gets called:
+
+
+```r
+nbunny <- 0
+stem_bunny <- function(term) {
+    nbunny <<- nbunny + 1
+    paste("bunny", term)
+}
+```
+
+We will set this as the stemmer for a corpus (a data frame with a "text"
+column of type `corpus_text`):
+
+```r
+corpus <- as_corpus_frame(federalist)
+text_filter(corpus)$stemmer <- stem_bunny
+```
+
+Here's how long it takes to tokenize the text once and compute the term
+statistics:
+
+```r
+system.time(stats <- term_stats(corpus))
+```
+
+```
+   user  system elapsed 
+  0.089   0.003   0.095 
+```
+
+Here's how many times the stemmer got called:
+
+```r
+print(nbunny)
+```
+
+```
+[1] 8766
+```
+
+We will now set the bunny count to zero and run the same computation:
+
+
+```r
+nbunny <- 0
+system.time(stats2 <- term_stats(corpus))
+```
+
+```
+   user  system elapsed 
+  0.038   0.001   0.040 
+```
+
+It took us half the time. How many additional calls to the stemmer were there?
+
+
+```r
+print(nbunny)
+```
+
+```
+[1] 0
+```
+
+No additional calls. We used the cached stems from the first call to
+`term_stats`. We can verify that the results were the same both times.
+
+
+```r
+identical(stats, stats2)
+```
+
+```
+[1] TRUE
+```
+
+Just for fun, here are the results:
+
+
+```r
+stats
+```
+
+```
+   term        count support
+1  bunny_the   17743      85
+2  bunny_,     13251      85
+3  bunny_of    11798      85
+4  bunny_to     7052      85
+5  bunny_.      5400      85
+6  bunny_and    5080      85
+7  bunny_in     4439      85
+8  bunny_a      3984      85
+9  bunny_be     3832      85
+10 bunny_that   2788      85
+11 bunny_it     2544      85
+12 bunny_is     2190      85
+13 bunny_which  2061      85
+14 bunny_by     1745      85
+15 bunny_as     1720      85
+16 bunny_;      1496      85
+17 bunny_this   1409      85
+18 bunny_would  1277      85
+19 bunny_have   1258      85
+20 bunny_will   1250      85
+⋮  (8766 rows total)
+```
+
 [lexiconista]: http://www.lexiconista.com/datasets/lemmatization/ "Lexiconista Lemmatization Lists"
 [snowball]: https://snowballstem.org/ "Snowball Stemming Library"
