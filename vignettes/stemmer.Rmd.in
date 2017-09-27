@@ -143,5 +143,38 @@ We can also get a sample of the instances of the stemmed terms:
 text_sample(data, "Joy.Positive")
 ```
 
+
+## Application: Spell-corrected tokens
+
+Suppose we want to analyze texts with spelling errors, using our best
+guess of the intended word rather than the literal spelling in the text. We
+can do this by using a stemmer that tries to correct spelling errors in the
+tokens:
+
+```{r}
+stem_spellcorrect <- function(term) {
+    # if the term is spelled correctly, leave it as-is
+    if (hunspell::hunspell_check(term)) {
+        return(term)
+    }
+
+    suggestions <- hunspell::hunspell_suggest(term)[[1]]
+
+    # if hunspell found a suggestion, use the first one
+    if (length(suggestions) > 1) {
+        suggestions[[1]]
+    } else {
+        # otherwise, use the original term
+        term
+    }
+}
+```
+
+Here's an example use of the stemmer:
+```{r}
+text <- "spell checkers are not neccessairy for langauge ninja's"
+text_tokens(text, stemmer = stem_spellcorrect)
+```
+
 [lexiconista]: http://www.lexiconista.com/datasets/lemmatization/ "Lexiconista Lemmatization Lists"
 [snowball]: https://snowballstem.org/ "Snowball Stemming Library"
