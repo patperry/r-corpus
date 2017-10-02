@@ -28,19 +28,17 @@ text_sub(x, start = 1L, end = -1L, filter = NULL, ...)
     positions of the subsequences within the parent texts, as an inclusive
     range.  Negative indices are interpreted as counting from the end of
     the text, with \code{-1L} referring to the last element.
-
-    Text subsequences include both dropped and non-dropped tokens.
 }
 \value{
     A text vector with the same length and names as \code{x}, with the
     desired subsequences.
 }
 \seealso{
-    \code{\link{text_tokens}}, \code{\link{text_length}}.
+    \code{\link{text_tokens}}, \code{\link{text_ntoken}}.
 }
 \examples{
 x <- as_corpus_text(c("A man, a plan.", "A \"canal\"?", "Panama!"),
-                    filter = text_filter(drop_punct = TRUE))
+                    drop_punct = TRUE)
 
 # entire text
 text_sub(x, 1, -1)

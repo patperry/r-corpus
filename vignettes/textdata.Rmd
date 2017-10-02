@@ -84,22 +84,22 @@ print(text_filter(text))
 ```
 Text filter with the following options:
 
-	map_case: TRUE
-	map_quote: TRUE
-	remove_ignorable: TRUE
-	combine: NULL
-	stemmer: NULL
-	stem_dropped: FALSE
-	stem_except: NULL
-	drop_letter: FALSE
-	drop_number: FALSE
-	drop_punct: FALSE
-	drop_symbol: FALSE
-	drop: NULL
-	drop_except: NULL
-	connector: _
-	sent_crlf: FALSE
-	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
+    map_case: TRUE
+    map_quote: TRUE
+    remove_ignorable: TRUE
+    combine: NULL
+    stemmer: NULL
+    stem_dropped: FALSE
+    stem_except: NULL
+    drop_letter: FALSE
+    drop_number: FALSE
+    drop_punct: FALSE
+    drop_symbol: FALSE
+    drop: NULL
+    drop_except: NULL
+    connector: _
+    sent_crlf: FALSE
+    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```
 
 ```r
@@ -217,7 +217,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7f8f470331e0>
+<pointer: 0x7f978d7534c0>
 
 $sources
 $sources[[1]]
@@ -278,7 +278,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7f8f43d1f1f0>
+<pointer: 0x7f978d6e4bc0>
 
 $sources
 $sources[[1]]

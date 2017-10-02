@@ -235,22 +235,22 @@ text_filter(data)
 ```
 Text filter with the following options:
 
-	map_case: TRUE
-	map_quote: TRUE
-	remove_ignorable: TRUE
-	combine: NULL
-	stemmer: NULL
-	stem_dropped: FALSE
-	stem_except: NULL
-	drop_letter: FALSE
-	drop_number: FALSE
-	drop_punct: FALSE
-	drop_symbol: FALSE
-	drop: NULL
-	drop_except: NULL
-	connector: _
-	sent_crlf: FALSE
-	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
+    map_case: TRUE
+    map_quote: TRUE
+    remove_ignorable: TRUE
+    combine: NULL
+    stemmer: NULL
+    stem_dropped: FALSE
+    stem_except: NULL
+    drop_letter: FALSE
+    drop_number: FALSE
+    drop_punct: FALSE
+    drop_symbol: FALSE
+    drop: NULL
+    drop_except: NULL
+    connector: _
+    sent_crlf: FALSE
+    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...
 ```
 
 We can change the text filter properties:
@@ -317,18 +317,18 @@ Texts as sequences
 ------------------
 
 The mental model of the *corpus* package is that a text is s sequence of
-tokens, some of which are dropped (`NA`). Every object has a `text_filter()`
-property defining its token boundaries. The default token filter transforms
-the text to Unicode composed normal form (NFC), applies Unicode case folding,
-and maps curly quotes to straight quotes. Text objects, created with
-`as_corpus_text` or `as_corpus` can have custom text filters. You cannot set
-the text filter for a character vector. However, all *corpus* text functions
-accept a `filter` argument to override the input object's text filter (this is
-demonstrated in the "New York City" example in the previous section).
+tokens.  Every object has a `text_filter()` property defining its tokens. The
+default token filter transforms the text to Unicode composed normal form
+(NFC), applies Unicode case folding, and maps curly quotes to straight quotes.
+Text objects, created with `as_corpus_text` or `as_corpus` can have custom
+text filters. You cannot set the text filter for a character vector. However,
+all *corpus* text functions accept a `filter` argument to override the input
+object's text filter (this is demonstrated in the "New York City" example in
+the previous section).
 
 
-To find out the length of a text, as measured in dropped and non-dropped
-tokens, use the `text_length` function.
+To find out the number of tokens in a set of texts, use the `text_ntoken`
+function.
 
 
 
@@ -342,13 +342,7 @@ text_tokens("One, two, three!", filter = text_filter(drop_punct = TRUE))
 ```
 
 ```r
-text_length("One, two, three!", filter = text_filter(drop_punct = TRUE))
-```
-
-```
-Warning: 'text_length' is deprecated.
-Use 'text_ntoken' instead.
-See help("Deprecated")
+text_ntoken("One, two, three!", filter = text_filter(drop_punct = TRUE))
 ```
 
 ```
@@ -386,8 +380,7 @@ text_sub(c("One, two, three!", "4 5 6 7 8 9 10"), -2, -1,
 [2] "9 10"       
 ```
 
-Note that `text_length` and `text_sub` count both dropped and non-dropped
-tokens.
+Note that `text_ntoken` and `text_sub` ignore dropped tokens.
 
 
 Here's how to get the last 10 tokens in each chapter:

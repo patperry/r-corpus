@@ -20,8 +20,6 @@ Features
 
  * `token_kind` and `token_map` functions (?)
 
- * Add `ignore_dropped` option to `text_filter` (?)
-
  * Add demonstration of dictionary scaling with `text_match`:
 
        m <- text_match(x, dict$term)
