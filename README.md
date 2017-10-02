@@ -151,8 +151,8 @@ Acknowledgments
 
 The API and feature set for *corpus* draw inspiration from
 [*quanteda*][quanteda], developed by Ken Benoit and collaborators;
-[*stringr*][stringr], developed by Hadley Wickham; [*tidytext*][tidytext],
-developed by Julia Silge and David Robinson.
+[*stringr*][stringr], developed by Hadley Wickham; and
+[*tidytext*][tidytext], developed by Julia Silge and David Robinson.
 
 
 [apache]: https://www.apache.org/licenses/LICENSE-2.0.html "Apache License, Version 2.0"
