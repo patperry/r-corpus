@@ -246,6 +246,8 @@ test_that("invalid operations send errors", {
 
 
 test_that("text filter printing works", {
+    skip_if_not(with(R.Version(), paste(major, minor, sep = ".")) >= "3.4.0",
+                "Setting width fails on R < 3.4.0")
     oldwidth <- options()$width
     options(width = 80)
     on.exit(options(width = oldwidth), add = TRUE)
