@@ -46,7 +46,7 @@ utf8_width(x, encode = TRUE, quote = FALSE)
         for NFKC and NFKD normal forms.}
 
     \item{map_quote}{a logical value indicating whether to replace curly
-        single quotes and Unicode aposrophe characters with ASCII
+        single quotes and Unicode apostrophe characters with ASCII
         apostrophe (U+0027).}
 
     \item{remove_ignorable}{a logical value indicating whether to remove
