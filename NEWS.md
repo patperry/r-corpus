@@ -1,5 +1,5 @@
-corpus 0.9.2.9000
-=================
+corpus 0.9.3 (2017-10-02)
+=========================
 
 ### NEW FEATURES
 
@@ -31,6 +31,8 @@ corpus 0.9.2.9000
 ### BUG FIXES
 
   * Fix spurious rchk warnings.
+
+  * Fix failing tests on R version 3.3.
 
 ### DEPRECATED AND DEFUNCT
 
