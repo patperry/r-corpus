@@ -22,7 +22,7 @@ test_that("'text_tokens' normalizes tokens by default", {
     toks <- text_tokens(text)
 
     expect_equal(toks, list(
-        c("the", "quick", "(", "\"", "brown", "\"", ")", "fox", "can't",
+        c("the", "quick", "(", "\u201c", "brown", "\u201d", ")", "fox", "can't",
           "jump", "32.3", "feet", ",", "right", "?")))
 })
 

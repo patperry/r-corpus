@@ -56,7 +56,7 @@ test_that("'utf8_normalize' can normalize, case fold, and remove ignorables", {
 
 test_that("'utf8_normalize' can map quotes", {
     src <- c("\"", "'", "\u2018", "\u2019", "\u201c", "\u201d")
-    quotefold <- c("\"", "'", "'", "'", "\"", "\"")
+    quotefold <- c("\"", "'", "'", "'", "\u201c", "\u201d")
     expect_equal(utf8_normalize(src, map_quote = TRUE), quotefold)
 })
 

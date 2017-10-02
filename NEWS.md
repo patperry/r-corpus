@@ -25,6 +25,9 @@ corpus 0.9.2.9000
 
   * Set `combine = NULL` be default for text filters.
 
+  * Make `map_quote` only change apostrophe and single quote characters,
+    not double quote.
+
 ### BUG FIXES
 
   * Fix spurious rchk warnings.

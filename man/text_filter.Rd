@@ -46,8 +46,8 @@ text_filter(x) <- value
         changes uppercase characters to their lowercase equivalents.}
 
     \item{map_quote}{a logical value indicating whether to replace curly
-        single quotes and double quotes with straight single quotes
-        and double quotes.}
+        single quotes and other Unicode apostrophe characters with
+        ASCII apostrophe (U+0027).}
 
     \item{remove_ignorable}{a logical value indicating whether to remove
         Unicode "default ignorable" characters like zero-width spaces
