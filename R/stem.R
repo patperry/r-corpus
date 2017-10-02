@@ -24,8 +24,8 @@ stem_snowball <- function(x, algorithm = "en")
 }
 
 
-stemmer_make <- function(term, stem, default = NULL, duplicates = "first",
-                         vectorize = TRUE)
+new_stemmer<- function(term, stem, default = NULL, duplicates = "first",
+                       vectorize = TRUE)
 {
     call <- sys.call()
     with_rethrow({

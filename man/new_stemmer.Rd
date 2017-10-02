@@ -1,12 +1,12 @@
-\name{stemmer_make}
-\alias{stemmer_make}
+\name{new_stemmer}
+\alias{new_stemmer}
 \title{Stemmer Construction}
 \description{
     Make a stemmer from a set of (term, stem) pairs.
 }
 \usage{
-stemmer_make(term, stem, default = NULL, duplicates = "first",
-             vectorize = TRUE)
+new_stemmer(term, stem, default = NULL, duplicates = "first",
+            vectorize = TRUE)
 }
 \arguments{
 \item{term}{character vector of terms to stem.}
@@ -60,10 +60,10 @@ a \code{\link{text_filter}}.
 }
 \examples{
 # map uppercase to lowercase, leave others unchanged
-stemmer <- stemmer_make(LETTERS, letters)
+stemmer <- new_stemmer(LETTERS, letters)
 stemmer(c("A", "E", "I", "O", "U", "1", "2", "3"))
 
 # map uppercase to lowercase, drop others
-stemmer <- stemmer_make(LETTERS, letters, default = NA)
+stemmer <- new_stemmer(LETTERS, letters, default = NA)
 stemmer(c("A", "E", "I", "O", "U", "1", "2", "3"))
 }

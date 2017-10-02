@@ -106,7 +106,7 @@ This pattern is so common that *corpus* provides a convenience function that
 will build a stemmer from the input term and stem lists:
 
 ```{r}
-stem_list2 <- stemmer_make(tab$term, tab$stem)
+stem_list2 <- new_stemmer(tab$term, tab$stem)
 text_tokens(text, stemmer = stem_list2)
 ```
 
@@ -121,8 +121,8 @@ to demonstrate.
 data <- gutenberg_corpus(55, verbose = FALSE)
 text_filter(data)$stemmer <-
     with(affect_wordnet,
-        stemmer_make(term, interaction(category, emotion),
-                     default = NA, duplicates = "omit"))
+        new_stemmer(term, interaction(category, emotion),
+                    default = NA, duplicates = "omit"))
 ```
 
 This stemmer replaces terms by the emotional affect, as listed in the

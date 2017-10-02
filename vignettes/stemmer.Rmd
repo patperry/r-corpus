@@ -133,7 +133,7 @@ will build a stemmer from the input term and stem lists:
 
 
 ```r
-stem_list2 <- stemmer_make(tab$term, tab$stem)
+stem_list2 <- new_stemmer(tab$term, tab$stem)
 text_tokens(text, stemmer = stem_list2)
 ```
 
@@ -154,8 +154,8 @@ to demonstrate.
 data <- gutenberg_corpus(55, verbose = FALSE)
 text_filter(data)$stemmer <-
     with(affect_wordnet,
-        stemmer_make(term, interaction(category, emotion),
-                     default = NA, duplicates = "omit"))
+        new_stemmer(term, interaction(category, emotion),
+                    default = NA, duplicates = "omit"))
 ```
 
 This stemmer replaces terms by the emotional affect, as listed in the
@@ -306,7 +306,7 @@ system.time(stats <- term_stats(corpus))
 
 ```
    user  system elapsed 
-  0.089   0.003   0.095 
+  0.098   0.004   0.103 
 ```
 
 Here's how many times the stemmer got called:
@@ -329,7 +329,7 @@ system.time(stats2 <- term_stats(corpus))
 
 ```
    user  system elapsed 
-  0.038   0.001   0.040 
+  0.038   0.001   0.039 
 ```
 
 It took us half the time. How many additional calls to the stemmer were there?

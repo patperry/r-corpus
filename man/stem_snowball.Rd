@@ -56,7 +56,7 @@ A character vector the same length and names as the input, \code{x}, with
 entries containing the corresponding stems.
 }
 \seealso{
-\code{\link{stemmer_make}}, \link{text_filter}.
+\code{\link{new_stemmer}}, \link{text_filter}.
 }
 \examples{
 # apply english stemming algorithm; don't stem non-letter terms

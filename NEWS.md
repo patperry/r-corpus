@@ -5,7 +5,7 @@ corpus 0.9.2.9000
 
   * Allow user-supplied stemming functions in `text_filter()`.
 
-  * Add `stemmer_make()` function to make a stemming function from a set
+  * Add `new_stemmer()` function to make a stemming function from a set
     of (term, stem) pairs.
 
   * Add `stem_snowball()` function for the Snowball stemming algorithms

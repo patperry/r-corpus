@@ -56,57 +56,57 @@ test_that("handles internal stemmer errors", {
 })
 
 
-test_that("'stemmer_make' can detect errors", {
-    expect_error(stemmer_make(c("a", "b"), c("a")),
+test_that("'new_stemmer' can detect errors", {
+    expect_error(new_stemmer(c("a", "b"), c("a")),
                  "'term' argument length must equal 'stem' argument length")
 })
 
 
-test_that("'stemmer_make' can handle empty inputs", {
-    fn <- stemmer_make(NULL, NULL)
+test_that("'new_stemmer' can handle empty inputs", {
+    fn <- new_stemmer(NULL, NULL)
     expect_equal(fn("a"), "a")
 })
 
 
-test_that("'stemmer_make' can use a default", {
-    fn <- stemmer_make(LETTERS, letters, default = NA)
+test_that("'new_stemmer' can use a default", {
+    fn <- new_stemmer(LETTERS, letters, default = NA)
     expect_equal(fn("A"), "a")
     expect_equal(fn("AB"), NA_character_)
 })
 
 
-test_that("'stemmer_make' can handle duplicates", {
+test_that("'new_stemmer' can handle duplicates", {
     term <- c("a", "a", "b", "c", "c", "c", "d")
     stem <- c("a1", "a2", "b", "c1", "c2", "c3", "d")
 
-    fn <- stemmer_make(term, stem, duplicates = "first", vectorize = FALSE)
+    fn <- new_stemmer(term, stem, duplicates = "first", vectorize = FALSE)
     expect_equal(sapply(term, fn, USE.NAMES = FALSE),
                  c("a1", "a1", "b", "c1", "c1", "c1", "d"))
 
-    fn <- stemmer_make(term, stem, duplicates = "last", vectorize = FALSE)
+    fn <- new_stemmer(term, stem, duplicates = "last", vectorize = FALSE)
     expect_equal(sapply(term, fn, USE.NAMES = FALSE),
                  c("a2", "a2", "b", "c3", "c3", "c3", "d"))
 
-    fn <- stemmer_make(term, stem, duplicates = "omit", vectorize = FALSE)
+    fn <- new_stemmer(term, stem, duplicates = "omit", vectorize = FALSE)
     expect_equal(sapply(term, fn, USE.NAMES = FALSE),
                  c("a", "a", "b", "c", "c", "c", "d"))
 })
 
 
-test_that("'stemmer_make' can vectorize ", {
+test_that("'new_stemmer' can vectorize ", {
     term <- c("a", "a", "b", "c", "c", "c", "d")
     stem <- c("a1", "a2", "b", "c1", "c2", "c3", "d")
 
-    fn <- stemmer_make(term, stem, duplicates = "first", vectorize = TRUE)
+    fn <- new_stemmer(term, stem, duplicates = "first", vectorize = TRUE)
     expect_equal(fn(term), c("a1", "a1", "b", "c1", "c1", "c1", "d"))
 
-    fn <- stemmer_make(term, stem, duplicates = "last", vectorize = TRUE)
+    fn <- new_stemmer(term, stem, duplicates = "last", vectorize = TRUE)
     expect_equal(fn(term), c("a2", "a2", "b", "c3", "c3", "c3", "d"))
 
-    fn <- stemmer_make(term, stem, duplicates = "omit", vectorize = TRUE)
+    fn <- new_stemmer(term, stem, duplicates = "omit", vectorize = TRUE)
     expect_equal(fn(term), c("a", "a", "b", "c", "c", "c", "d"))
 
-    expect_error(stemmer_make(term, stem, duplicates = "fail",
+    expect_error(new_stemmer(term, stem, duplicates = "fail",
                               vectorize = TRUE),
                  "'term' argument entries must be unique")
 })
