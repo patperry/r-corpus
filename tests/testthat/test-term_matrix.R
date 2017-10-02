@@ -94,8 +94,8 @@ test_that("'term_matrix' can transpose", {
     w <- c(100, 3, 1000)
     g <- c("B", "B", "A")
     x <- term_matrix(text, weights = w, group = g, transpose = TRUE)
-    x0 <- t(as.matrix(term_matrix(text, weights = w, group = g)))
-    expect_equal(as.matrix(x), x0)
+    x0 <- t(Matrix::as.matrix(term_matrix(text, weights = w, group = g)))
+    expect_equal(Matrix::as.matrix(x), x0)
 })
 
 

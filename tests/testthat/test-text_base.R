@@ -99,6 +99,9 @@ test_that("as.data.frame works", {
 
 
 test_that("'summary' works", {
+    skip_if_not(with(R.Version(), paste(major, minor, sep = ".")) >= "3.4.0",
+                "'summary.integer' rounds to integer on R < 3.4.0")
+
     text <- as_corpus_text(federalist$text)
     value <- summary(text)
     ntok <- text_ntoken(text)
@@ -115,6 +118,9 @@ test_that("'summary' works", {
 
 
 test_that("'summary' handles NA", {
+    skip_if_not(with(R.Version(), paste(major, minor, sep = ".")) >= "3.4.0",
+                "'summary.integer' rounds to integer on R < 3.4.0")
+
     text <- as_corpus_text(federalist$text)
     text[c(5, 13, 40, 55)] <- NA
     value <- summary(text)
