@@ -1,5 +1,5 @@
 Package: corpus
-Version: 0.9.3
+Version: 0.9.3.9000
 Title: Text Corpus Analysis
 Authors@R: c(
   person(c("Patrick", "O."), "Perry",

@@ -4,7 +4,7 @@ To Do
 Bugs
 ----
 
- (no known bugs)
+ * Change vignette width to 94 or 95
 
 
 Features
