@@ -161,7 +161,7 @@ stem_spellcorrect <- function(term) {
     suggestions <- hunspell::hunspell_suggest(term)[[1]]
 
     # if hunspell found a suggestion, use the first one
-    if (length(suggestions) > 1) {
+    if (length(suggestions) > 0) {
         suggestions[[1]]
     } else {
         # otherwise, use the original term

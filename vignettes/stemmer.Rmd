@@ -248,7 +248,7 @@ stem_spellcorrect <- function(term) {
     suggestions <- hunspell::hunspell_suggest(term)[[1]]
 
     # if hunspell found a suggestion, use the first one
-    if (length(suggestions) > 1) {
+    if (length(suggestions) > 0) {
         suggestions[[1]]
     } else {
         # otherwise, use the original term
@@ -306,7 +306,7 @@ system.time(stats <- term_stats(corpus))
 
 ```
    user  system elapsed 
-  0.091   0.003   0.094 
+  0.088   0.002   0.091 
 ```
 
 Here's how many times the stemmer got called:
@@ -329,7 +329,7 @@ system.time(stats2 <- term_stats(corpus))
 
 ```
    user  system elapsed 
-  0.036   0.001   0.038 
+   0.04    0.00    0.04 
 ```
 
 It took us half the time. How many additional calls to the stemmer were there?

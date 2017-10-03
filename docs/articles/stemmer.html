@@ -251,7 +251,7 @@ tab &lt;-<span class="st"> </span><span class="kw">read.delim</span>(con, <span 
     suggestions &lt;-<span class="st"> </span>hunspell<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/hunspell/topics/hunspell">hunspell_suggest</a></span>(term)[[<span class="dv">1</span>]]
 
     <span class="co"># if hunspell found a suggestion, use the first one</span>
-    <span class="cf">if</span> (<span class="kw">length</span>(suggestions) <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) {
+    <span class="cf">if</span> (<span class="kw">length</span>(suggestions) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {
         suggestions[[<span class="dv">1</span>]]
     } <span class="cf">else</span> {
         <span class="co"># otherwise, use the original term</span>
@@ -281,7 +281,7 @@ stem_bunny &lt;-<span class="st"> </span><span class="cf">function</span>(term) 
 <p>Here’s how long it takes to tokenize the text once and compute the term statistics:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>(stats &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(corpus))</code></pre></div>
 <pre><code>   user  system elapsed 
-  0.091   0.003   0.094 </code></pre>
+  0.088   0.002   0.091 </code></pre>
 <p>Here’s how many times the stemmer got called:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(nbunny)</code></pre></div>
 <pre><code>[1] 8766</code></pre>
@@ -289,7 +289,7 @@ stem_bunny &lt;-<span class="st"> </span><span class="cf">function</span>(term) 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nbunny &lt;-<span class="st"> </span><span class="dv">0</span>
 <span class="kw">system.time</span>(stats2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(corpus))</code></pre></div>
 <pre><code>   user  system elapsed 
-  0.036   0.001   0.038 </code></pre>
+   0.04    0.00    0.04 </code></pre>
 <p>It took us half the time. How many additional calls to the stemmer were there?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(nbunny)</code></pre></div>
 <pre><code>[1] 0</code></pre>
