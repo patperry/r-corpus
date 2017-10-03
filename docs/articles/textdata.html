@@ -63,6 +63,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -74,7 +77,14 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -132,16 +142,17 @@ raw &lt;-<span class="st"> </span><span class="kw">c</span>(
     map_case: TRUE
     map_quote: TRUE
     remove_ignorable: TRUE
+    combine: NULL
     stemmer: NULL
     stem_dropped: FALSE
     stem_except: NULL
-    combine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." ...
     drop_letter: FALSE
     drop_number: FALSE
     drop_punct: FALSE
     drop_symbol: FALSE
     drop: NULL
     drop_except: NULL
+    connector: _
     sent_crlf: FALSE
     sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set a new text filter</span>
@@ -200,7 +211,7 @@ data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_n
 <span class="co"># display the internal representation of the resulting 'corpus_text' object</span>
 <span class="kw">unclass</span>(data<span class="op">$</span>text)</code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fc2576e75f0&gt;
+&lt;pointer: 0x7fd32d830de0&gt;
 
 $sources
 $sources[[1]]
@@ -232,16 +243,16 @@ NULL</code></pre>
 3  para1      3 , Cottontail, and Peter.\nThey lived with      
 4  para1      4 their Mother in a sandbank,\nunderneath the    
 5  para1      5 root of a very big fir tree.                   
-6  para2      1 'Now, my dears,' said old                      
-7  para2      2 Mrs. Rabbit one morning,\n'you may go          
-8  para2      3 into the fields or down the lane,\nbut         
-9  para2      4 don't go into Mr. McGregor's garden --\nyour   
+6  para2      1 'Now, my dears,' said old Mrs                  
+7  para2      2 . Rabbit one morning,\n'you may go into        
+8  para2      3 the fields or down the lane,\nbut don't        
+9  para2      4 go into Mr. McGregor's garden --\nyour         
 10 para2      5 Father had an accident there;\nhe was put      
 11 para2      6 in a pie by Mrs. McGregor.'                    </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># segmenting does not allocate new objects for the segments</span>
 <span class="kw">unclass</span>(chunks<span class="op">$</span>text) <span class="co"># inspect text internals</span></code></pre></div>
 <pre><code>$handle
-&lt;pointer: 0x7fc25b131600&gt;
+&lt;pointer: 0x7fd32d834f80&gt;
 
 $sources
 $sources[[1]]
@@ -258,10 +269,10 @@ $table
 3       1   1    85  125
 4       1   1   126  168
 5       1   1   169  196
-6       1   2     1   26
-7       1   2    27   63
-8       1   2    64  101
-9       1   2   102  145
+6       1   2     1   29
+7       1   2    30   68
+8       1   2    69  107
+9       1   2   108  145
 10      1   2   146  186
 11      1   2   187  213
 

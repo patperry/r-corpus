@@ -89,6 +89,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -102,7 +105,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -228,7 +236,7 @@ a factor.</p>
     <pre class="examples"><div class='input'><span class='no'>text</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"A rose is a rose is a rose."</span>,
           <span class='st'>"A Rose is red, a violet is blue!"</span>,
           <span class='st'>"A rose by any other name would smell as sweet."</span>)
-<span class='fu'>term_matrix</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; 3 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘,’, ‘!’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                       
+<span class='fu'>term_matrix</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; 3 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘!’, ‘,’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                       
 #&gt; [1,] . . 1 3 . . . . 2 . . . 3 . . . .
 #&gt; [2,] 1 1 . 2 . . 1 . 2 . . 1 1 . . 1 .
 #&gt; [3,] . . 1 1 1 1 . 1 . 1 1 . 1 1 1 . 1</div><div class='input'>
@@ -239,16 +247,16 @@ a factor.</p>
 #&gt; [2,]    1   1      1     .
 #&gt; [3,]    1   .      .     1</div><div class='input'>
 <span class='co'># specify a grouping factor</span>
-<span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt; 2 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘,’, ‘!’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                       
+<span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt; 2 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘!’, ‘,’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                       
 #&gt; Bad  1 1 . 2 . . 1 . 2 . . 1 1 . . 1 .
 #&gt; Good . . 2 4 1 1 . 1 2 1 1 . 4 1 1 . 1</div><div class='input'>
 <span class='co'># weight the texts</span>
 <span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>10</span>),
-            <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt; 2 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘,’, ‘!’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                                  
+            <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt; 2 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘!’, ‘,’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                                  
 #&gt; Bad  2 2  .  4  .  . 2  . 4  .  . 2  2  .  . 2  .
 #&gt; Good . . 11 13 10 10 . 10 2 10 10 . 13 10 10 . 10</div><div class='input'>
 <span class='co'># include higher-order n-grams</span>
-<span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt; 3 x 57 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 57 column names ‘,’, ‘, a’, ‘, a violet’ ... ]]</span></div><div class='output co'>#&gt;                                                                               
+<span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt; 3 x 57 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 57 column names ‘!’, ‘,’, ‘, a’ ... ]]</span></div><div class='output co'>#&gt;                                                                               
 #&gt; [1,] . . . . 1 3 3 1 . 2 . . . . . . . . . . . . . 2 2 2 . . . . . . . . . . .
 #&gt; [2,] 1 1 1 1 . 2 1 . . 1 1 1 . . . . . . 1 1 . . . 2 . . 1 1 1 1 . . . . . . 1
 #&gt; [3,] . . . . 1 1 1 . 1 . . . 1 1 1 1 1 1 . . 1 1 1 . . . . . . . 1 1 1 1 1 1 .
@@ -265,9 +273,9 @@ a factor.</p>
 <span class='co'># transpose the result</span>
 <span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>2</span>, <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)[<span class='fl'>1</span>:<span class='fl'>10</span>, ] <span class='co'># first 10 rows</span></div><div class='output co'>#&gt; 10 x 3 sparse Matrix of class "dgCMatrix"
 #&gt;                
+#&gt; !         . 1 .
 #&gt; ,         . 1 .
 #&gt; , a       . 1 .
-#&gt; !         . 1 .
 #&gt; .         1 . 1
 #&gt; a         3 2 1
 #&gt; a rose    3 1 1
@@ -277,8 +285,8 @@ a factor.</p>
 #&gt; as        . . 1</div><div class='input'>
 <span class='co'># data frame</span>
 <span class='fu'>head</span>(<span class='fu'>term_counts</span>(<span class='no'>text</span>), <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>) <span class='co'># first 10 rows</span></div><div class='output co'>#&gt;    text term count
-#&gt; 1  2    ,        1
-#&gt; 2  2    !        1
+#&gt; 1  2    !        1
+#&gt; 2  2    ,        1
 #&gt; 3  1    .        1
 #&gt; 4  3    .        1
 #&gt; 5  1    a        3
@@ -289,8 +297,8 @@ a factor.</p>
 #&gt; 10 2    blue     1</div><div class='input'>
 <span class='co'># with grouping</span>
 <span class='fu'>term_counts</span>(<span class='no'>text</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt;    group term   count
-#&gt; 1  Bad   ,          1
-#&gt; 2  Bad   !          1
+#&gt; 1  Bad   !          1
+#&gt; 2  Bad   ,          1
 #&gt; 3  Good  .          2
 #&gt; 4  Bad   a          2
 #&gt; 5  Good  a          4

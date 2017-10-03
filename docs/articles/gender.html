@@ -63,6 +63,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -74,7 +77,14 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -113,7 +123,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Gutenberg IDs gotten from gutenbergr::gutenberg_works(author == "Austen, Jane")</span>
 (austen &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gutenberg_corpus.html">gutenberg_corpus</a></span>(<span class="kw">c</span>(<span class="dv">161</span>, <span class="dv">1342</span>, <span class="dv">141</span>, <span class="dv">158</span>, <span class="dv">121</span>, <span class="dv">105</span>)))</code></pre></div>
 <pre><code>Determining mirror for Project Gutenberg from https://www.gutenberg.org/MIRRORS.ALL</code></pre>
-<pre><code>Using mirror http://mirrors.xmission.com/gutenberg/</code></pre>
+<pre><code>Using mirror http://www.gutenberg.org/dirs/</code></pre>
 <pre><code>Converting text from declared encoding "ISO-8859-1" to UTF-8</code></pre>
 <pre><code>  title                 author      language text                                                   
 1 Sense and Sensibility Jane Austen English  SENSE AND SENSIBILITY\n\nby Jane Austen\n\n(1811)\n\n… 
@@ -135,22 +145,22 @@ bigram_counts &lt;-<span class="st"> </span><span class="kw"><a href="../referen
 3  he had    he    had     1023       6
 4  he was    he    was      889       6
 5  she could she   could    817       6
-6  he is     he    is       398       6
-7  she would she   would    381       6
-8  she is    she   is       327       6
+6  he is     he    is       399       6
+7  she would she   would    383       6
+8  she is    she   is       330       6
 9  he could  he    could    307       6
-10 he would  he    would    263       6
-11 she did   she   did      225       6
-12 he has    he    has      219       6
-13 he did    he    did      191       6
+10 he would  he    would    264       6
+11 she did   she   did      227       6
+12 he has    he    has      222       6
+13 he did    he    did      195       6
 14 she felt  she   felt     189       6
 15 she must  she   must     184       6
 16 she might she   might    173       6
 17 he should he    should   158       6
-18 she has   she   has      148       6
-19 he must   he    must     142       6
+18 she has   she   has      149       6
+19 he must   he    must     143       6
 20 he might  he    might    137       6
-⋮  (1448 rows total)</code></pre>
+⋮  (1573 rows total)</code></pre>
 <p>Above, we can see the most common bigrams with gendered pronouns as their first types.</p>
 <p>Next, we rearrange the data into tabular form, with one row for each term and one column for each pronoun:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">terms &lt;-<span class="st">  </span><span class="kw">with</span>(bigram_counts,
@@ -187,7 +197,7 @@ _meant_  0   1</code></pre>
                       sum, <span class="dt">default =</span> <span class="dv">0</span>))
 <span class="kw">head</span>(terms)</code></pre></div>
 <pre><code>           he she
-a           4   6
+a           5   6
 able        0   1
 abominates  1   0
 absented    0   1
@@ -205,18 +215,18 @@ tab &lt;-<span class="st"> </span><span class="kw">cbind</span>(terms[i,], <span
 <span class="kw">colnames</span>(tab) &lt;-<span class="st"> </span><span class="kw">c</span>(term, <span class="kw">paste0</span>(<span class="st">"\u00ac"</span>, term))
 <span class="kw">print</span>(tab)</code></pre></div>
 <pre><code>    loves ¬loves
-he      5   6988
-she     7   9875</code></pre>
+he      5   7287
+she     7  10130</code></pre>
 <p>When the first type in a bigram is “he”, it is followed by “loves” in 5 instances and another type in 6988 instances. Here are the relative rates of “loves”, conditional on the first type in the bigram:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(rates &lt;-<span class="st"> </span>tab[,<span class="st">"loves"</span>] <span class="op">/</span><span class="st"> </span><span class="kw">rowSums</span>(tab))</code></pre></div>
 <pre><code>          he          she 
-0.0007150007 0.0007083586 </code></pre>
+0.0006856829 0.0006905396 </code></pre>
 <p>The ratio of these rates is very close to one:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rates[[<span class="st">"she"</span>]] <span class="op">/</span><span class="st"> </span>rates[[<span class="st">"he"</span>]]</code></pre></div>
-<pre><code>[1] 0.9907104</code></pre>
+<pre><code>[1] 1.007083</code></pre>
 <p>The log (base-2) ratio of the rates is close to zero:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">log2</span>(rates[[<span class="st">"she"</span>]]) <span class="op">-</span><span class="st"> </span><span class="kw">log2</span>(rates[[<span class="st">"he"</span>]])</code></pre></div>
-<pre><code>[1] -0.01346472</code></pre>
+<pre><code>[1] 0.01018254</code></pre>
 <p>This log ratio is a good measure of the strength of association. When the value is close to zero, there is no meaningful association. For large absolute log ratios, we would say that there is a meaningful difference in usage between the genders.</p>
 <p>We compute the log ratios for all types. To avoid dividing by zero, and to smooth the estimates when the counts are small, we add 0.5 to the count when estimating the rate. (Many people smooth by adding 1, but I prefer 0.5 since that value has stronger theoretical justification.)</p>
 <p>Some terms only appear once in the corpus. The rate estimates for these terms will be unreliable, so we discard them.</p>
@@ -237,12 +247,12 @@ log2_ratio &lt;-<span class="st"> </span><span class="kw">log2</span>(she) <span
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">z &lt;-<span class="st"> </span>(log2_ratio <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(log2_ratio)) <span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(log2_ratio)</code></pre></div>
 <p>Here are the words more than two standard deviations away from the mean log ratio:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sort</span>(log2_ratio[<span class="kw">abs</span>(z) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>])</code></pre></div>
-<pre><code>   gravely   believes      bowed    intends       next         or      quite     sought      won't 
- -3.958263  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186  -3.306186 
-    beheld        lay      looks    refused    checked    dreaded    eagerly     seized    hurried 
-  3.201608   3.201608   3.201608   3.201608   3.408059   3.408059   3.408059   3.408059   3.588632 
-remembered 
-  4.545563 </code></pre>
+<pre><code>   gravely    smiling         no     indeed    turning addressing   believes      bowed    intends 
+ -4.382079  -4.382079  -3.934620  -3.645114  -3.645114  -3.282544  -3.282544  -3.282544  -3.282544 
+      next    perhaps      quite     sought      won't     beheld        lay      looks    refused 
+ -3.282544  -3.282544  -3.282544  -3.282544  -3.282544   3.225251   3.225251   3.225251   3.225251 
+       yet    checked    dreaded    eagerly     seized    hurried remembered 
+  3.225251   3.431702   3.431702   3.431702   3.431702   3.612274   4.569205 </code></pre>
 <p>The terms “remembered”, “hurried”, and “seized” have more “she” usages; the terms “gravely”, “believes”, and “bowed” have more “he” usages.</p>
 </div>
 <div id="uncertainty-quantification" class="section level2">
@@ -296,26 +306,26 @@ ylim &lt;-<span class="st"> </span><span class="kw">range</span>(log2_ratio,
 <pre><code> he she 
   9   5 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"expressed"</span>]])</code></pre></div>
-<pre><code>[1] -1.287327</code></pre>
+<pre><code>[1] -1.263685</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"expressed"</span>]])</code></pre></div>
-<pre><code>[1] 0.7727118</code></pre>
+<pre><code>[1] 0.7727217</code></pre>
 <p>This is a word with a large imbalance, but only in a relatively small number of samples. Due to the lack of data for the word “expressed”, we deem this imbalance to not be statistically significant. Compare this to the word “felt”:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"felt"</span>,])</code></pre></div>
 <pre><code> he she 
  36 189 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"felt"</span>]])</code></pre></div>
-<pre><code>[1] 1.877398</code></pre>
+<pre><code>[1] 1.901041</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"felt"</span>]])</code></pre></div>
-<pre><code>[1] 0.2598236</code></pre>
+<pre><code>[1] 0.2598566</code></pre>
 <p>This has an effect size estimate on the same order as “stopped”, but the estimate is much more reliable given the larger number of appearances of the word “felt”. We judge “felt” both to have a practically significant difference <em>and</em> a statistically significant difference.</p>
 <p>The word “was” exhibits one other extreme:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(terms[<span class="st">"was"</span>,])</code></pre></div>
 <pre><code>  he  she 
  891 1378 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio[[<span class="st">"was"</span>]])</code></pre></div>
-<pre><code>[1] 0.1299613</code></pre>
+<pre><code>[1] 0.1536038</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(log2_ratio_se[[<span class="st">"was"</span>]])</code></pre></div>
-<pre><code>[1] 0.05776495</code></pre>
+<pre><code>[1] 0.0579161</code></pre>
 <p>This word has only a minor difference between “he” and “she”, but it shows up often enough for us to get a reliable estimate of the difference. The word “was” has a statistically significant difference between the genders, but probably not a practically significant difference.</p>
 <p>In the context of our application, a word is practically significance if the absolute value of its estimate is large. This difference is statistically significant if the estimate is large relative to its standard error. If we only care about Austen’s writing in these six novels, we may not care about statistical significance. If, however, we want to make a statement about Austen’s writing style in general, then we want to generalize beyond our data set, and we should only do so for words we can get reliable estimates for.</p>
 </div>

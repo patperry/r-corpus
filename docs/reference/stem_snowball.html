@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Text Objects — corpus_text • corpus</title>
+<title>Snowball Stemmer — stem_snowball • corpus</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -122,100 +122,82 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Text Objects</h1>
+    <h1>Snowball Stemmer</h1>
     </div>
 
     
-    <p>Create or test for text objects.</p>
+    <p>Stem a set of terms using one of the algorithms provided by the
+Snowball stemming library.</p>
     
 
-    <pre class="usage"><span class='fu'>as_corpus_text</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>is_corpus_text</span>(<span class='no'>x</span>)</pre>
+    <pre class="usage"><span class='fu'>stem_snowball</span>(<span class='no'>x</span>, <span class='kw'>algorithm</span> <span class='kw'>=</span> <span class='st'>"en"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>object to be coerced or tested.</p></td>
+      <td><p>character vector of terms to stem.</p></td>
     </tr>
     <tr>
-      <th>filter</th>
-      <td><p>if non-<code>NULL</code>, a text filter for the converted result.</p></td>
-    </tr>
-    <tr>
-      <th>&#8230;</th>
-      <td><p>text filter properties to set on the result.</p></td>
-    </tr>
-    <tr>
-      <th>names</th>
-      <td><p>if non-<code>NULL</code> character vector of names for
-    the converted result.</p></td>
+      <th>algorithm</th>
+      <td><p>stemming algorithm; see &#8216;Details&#8217; for the valid
+    choices.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The <code>corpus_text</code> type is a new data type provided by the <code>corpus</code>
-package suitable for processing international (Unicode) text. Text vectors
-behave like character vectors (and can be converted to them with the
-<code>as.character</code> function). They can be created using the
-<code><a href='read_ndjson.html'>read_ndjson</a></code> function or by converting another object using the
-<code>as_corpus_text</code> function.</p>
-<p>All text objects have a <code><a href='text_filter.html'>text_filter</a></code> property specify how to
-transform the text into tokens or segment it into sentences.</p>
-<p>The default behavior for <code>as_corpus_text</code> is to proceed as follows:</p><ol>
-<li><p>If <code>x</code> is a <code>character</code> vector, then we create
-    a new <code>text</code> vector from <code>x</code>.</p></li>
-<li><p>If <code>x</code> is a data frame, then we call <code>as_corpus_text</code>
-     on <code>x$text</code> if a column named <code>"text"</code> exists in
-     the data frame.  If the data frame does not have a column
-     named <code>"text"</code>, then we fail with an error message.</p></li>
-<li><p>If <code>x</code> is a <code>corpus_text</code> object, then we drop all
-     attributes and we set the class to <code>"corpus_text"</code>.</p></li>
-<li><p>The default behavior for when none of the above conditions
-     are true is to call <code>as.character</code> on the object first,
-     preserving the names, and then and call <code>as_corpus_text</code> on
-     the returned character object.</p></li>
-</ol>
-    <p>In all cases, when the <code>names</code> is <code>NULL</code>, we set the result
-names to <code>names(x)</code> (or <code>rownames(x)</code> for a data frame
-argument). When <code>names</code> is a character vector, we set the result names
-to this vector of names</p>
-<p>Similarly, when <code>filter</code> is <code>NULL</code>, we set the result text
-filter to <code><a href='text_filter.html'>text_filter(x)</a></code>. When <code>filter</code> is non-<code>NULL</code>
-missing, we set the result text filter to this value. In either case,
-if there are additional names arguments, then we override the filter
-properties specified by the names of these arguments with the new values
-given.</p>
-<p>Note that the special handling for the names of the object is different
-from the other R conversion functions (<code>as.numeric</code>,
-<code>as.character</code>, etc.), which drop the names.
-    <code>as_corpus_text</code> is generic: you can write methods to handle specific
-classes of objects.</p>
+    <p>Apply a Snowball stemming algorithm to a vector of input terms, <code>x</code>,
+returning the result in a character vector of the same length with the
+same names.</p>
+<p>The <code>algorithm</code> argument specifies the stemming algorithm. Valid choices
+include the following:
+    <code>"ar"</code> (<code>"arabic"</code>),
+    <code>"da"</code> (<code>"danish"</code>),
+	<code>"de"</code> (<code>"german"</code>),
+    <code>"en"</code> (<code>"english"</code>),
+    <code>"es"</code> (<code>"spanish"</code>),
+    <code>"fi"</code> (<code>"finnish"</code>),
+    <code>"fr"</code> (<code>"french"</code>),
+    <code>"hu"</code> (<code>"hungarian"</code>),
+    <code>"it"</code> (<code>"italian"</code>),
+    <code>"nl"</code> (<code>"dutch"</code>),
+    <code>"no"</code> (<code>"norwegian"</code>),
+    <code>"pt"</code> (<code>"portuguese"</code>),
+	<code>"ro"</code> (<code>"romanian"</code>),
+    <code>"ru"</code> (<code>"russian"</code>),
+    <code>"sv"</code> (<code>"swedish"</code>),
+    <code>"ta"</code> (<code>"tamil"</code>),
+    <code>"tr"</code> (<code>"turkish"</code>),
+    and <code>"porter"</code>.
+Setting <code>algorithm = NULL</code> gives a stemmer that returns its input
+unchanged.</p>
+<p>The function only stems single-word terms of kind "letter"; it leaves
+other inputs (multi-word terms, and terms of kind "number", "punct", and
+"symbol") unchanged.</p>
+<p>The <a href='http://snowballstem.org/algorithms/'>Snowball stemming library</a>
+provides the underlying implementation. The <code>wordStem</code> function from
+the <span class="pkg">SnowballC</span> package provides a similar interface, but that function
+applies the algorithm to all input terms, regardless of the kind of the term.</p>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>as_corpus_text</code> attempts to coerce its argument to <code>text</code> type and
-  set its <code>names</code> and <code>text_filter</code> properties; it strips
-  all other attributes.
-
-<code>is_corpus_text</code> returns <code>TRUE</code> or <code>FALSE</code> depending on
-  whether its argument is of text type or not.</p>
+    <p>A character vector the same length and names as the input, <code>x</code>, with
+entries containing the corresponding stems.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='utf8.html'>as_utf8</a></code>, <code><a href='text_filter.html'>text_filter</a></code>, <code><a href='read_ndjson.html'>read_ndjson</a></code>.</p>
+    <p><code><a href='new_stemmer.html'>new_stemmer</a></code>, <a href='text_filter.html'>text_filter</a>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>as_corpus_text</span>(<span class='st'>"hello, world!"</span>)</div><div class='output co'>#&gt; [1] "hello, world!"</div><div class='input'><span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt; a "goodnight"
-#&gt; b "moon"     </div><div class='input'>
-<span class='co'># set a filter property</span>
-<span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='st'>"english"</span>)</div><div class='output co'>#&gt; a "goodnight"
-#&gt; b "moon"     </div><div class='input'>
-<span class='fu'>is_corpus_text</span>(<span class='st'>"hello"</span>) <span class='co'># FALSE, "hello" is character, not text</span></div><div class='output co'>#&gt; [1] FALSE</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># apply english stemming algorithm; don't stem non-letter terms</span>
+<span class='fu'>stem_snowball</span>(<span class='fu'>c</span>(<span class='st'>"win"</span>, <span class='st'>"winning"</span>, <span class='st'>"winner"</span>, <span class='st'>"#winning"</span>))</div><div class='output co'>#&gt; [1] "win"      "win"      "winner"   "#winning"</div><div class='input'>
+# compare with SnowballC, which stems all kinds, not just letter
+</div><span class='co'># NOT RUN {</span>
+<span class='kw pkg'>SnowballC</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/SnowballC/topics/wordStem'>wordStem</a></span>(<span class='fu'>c</span>(<span class='st'>"win"</span>, <span class='st'>"winning"</span>, <span class='st'>"winner"</span>, <span class='st'>"#winning"</span>), <span class='st'>"en"</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

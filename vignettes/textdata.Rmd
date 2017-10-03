@@ -217,7 +217,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7f978d7534c0>
+<pointer: 0x7fd32d830de0>
 
 $sources
 $sources[[1]]
@@ -278,7 +278,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7f978d6e4bc0>
+<pointer: 0x7fd32d834f80>
 
 $sources
 $sources[[1]]

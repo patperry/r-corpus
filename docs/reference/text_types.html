@@ -89,6 +89,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -102,7 +105,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -182,19 +190,19 @@
 <span class='fu'>text_ntype</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; [1]  6  5  6 14</div><div class='input'><span class='fu'>text_ntype</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] 25</div><div class='input'>
 <span class='co'># get the type sets</span>
 <span class='fu'>text_types</span>(<span class='no'>text</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] "."     "i"     "jones" "mr."   "saw"   "today"
+#&gt; [1] "."     "i"     "jones" "mr"    "saw"   "today"
 #&gt; 
 #&gt; [[2]]
 #&gt; [1] "."      "a"      "across" "line"   "split" 
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] "?"     "."     "are"   "doing" "what"  "you"  
+#&gt; [1] "."     "?"     "are"   "doing" "what"  "you"  
 #&gt; 
 #&gt; [[4]]
-#&gt;  [1] "?"      "."      "'"      "and"    "asked"  "do"     "i"      "mean"  
+#&gt;  [1] "'"      "."      "?"      "and"    "asked"  "do"     "i"      "mean"  
 #&gt;  [9] "really" "said"   "she"    "that"   "yes"    "you"   
-#&gt; </div><div class='input'><span class='fu'>text_types</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  [1] "?"      "."      "'"      "a"      "across" "and"    "are"    "asked" 
-#&gt;  [9] "do"     "doing"  "i"      "jones"  "line"   "mean"   "mr."    "really"
+#&gt; </div><div class='input'><span class='fu'>text_types</span>(<span class='no'>text</span>, <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  [1] "'"      "."      "?"      "a"      "across" "and"    "are"    "asked" 
+#&gt;  [9] "do"     "doing"  "i"      "jones"  "line"   "mean"   "mr"     "really"
 #&gt; [17] "said"   "saw"    "she"    "split"  "that"   "today"  "what"   "yes"   
 #&gt; [25] "you"   </div></pre>
   </div>

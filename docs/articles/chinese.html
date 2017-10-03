@@ -63,6 +63,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -74,7 +77,14 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -138,18 +148,19 @@ text2 &lt;-<span class="st"> </span><span class="kw">sapply</span>(toks, paste, 
     map_case: TRUE
     map_quote: TRUE
     remove_ignorable: TRUE
+    combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" "—" ...
     stemmer: NULL
     stem_dropped: FALSE
     stem_except: NULL
-    combine:  chr [1:12033] "\n" "1954" "年" "政府" "工作" "报告" ...
     drop_letter: FALSE
     drop_number: FALSE
     drop_punct: TRUE
     drop_symbol: FALSE
-    drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" ...
+    drop:  chr [1:717] "按" "按照" "俺" "俺们" "阿" "别" "别人" "别处" ...
     drop_except: NULL
+    connector: _
     sent_crlf: FALSE
-    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." ...</code></pre>
+    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...</code></pre>
 </div>
 <div id="document-statistics" class="section level2">
 <h2 class="hasAnchor">

@@ -63,6 +63,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -74,7 +77,14 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -242,16 +252,17 @@ ch24 Home Again                                  Aunt Em had just come out of th
     map_case: TRUE
     map_quote: TRUE
     remove_ignorable: TRUE
+    combine: NULL
     stemmer: NULL
     stem_dropped: FALSE
     stem_except: NULL
-    combine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." "Adj." ...
     drop_letter: FALSE
     drop_number: FALSE
     drop_punct: FALSE
     drop_symbol: FALSE
     drop: NULL
     drop_except: NULL
+    connector: _
     sent_crlf: FALSE
     sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." "Abs." "AD." ...</code></pre>
 <p>We can change the text filter properties:</p>
@@ -261,16 +272,14 @@ ch24 Home Again                                  Aunt Em had just come out of th
 <pre><code>$ch24
  [1] "Aunt"     "Em"       "had"      "just"     "come"     "out"      "of"       "the"     
  [9] "house"    "to"       "water"    "the"      "cabbages" "when"     "she"      "looked"  
-[17] "up"       "and"      "saw"      "Dorothy"  "running"  "toward"   "her"      NA        
-[25] NA         "My"       "darling"  "child"    NA         NA         "she"      "cried"   
-[33] NA         "folding"  "the"      "little"   "girl"     "in"       "her"      "arms"    
-[41] "and"      "covering" "her"      "face"     "with"     "kisses"   NA         NA        
-[49] "Where"    "in"       "the"      "world"    "did"      "you"      "come"     "from"    
-[57] NA         NA         NA         "From"     "the"      "Land"     "of"       "Oz"      
-[65] NA         NA         "said"     "Dorothy"  "gravely"  NA         NA         "And"     
-[73] "here"     "is"       "Toto"     NA         "too"      NA         "And"      "oh"      
-[81] NA         "Aunt"     "Em"       NA         "I'm"      "so"       "glad"     "to"      
-[89] "be"       "at"       "home"     "again"    NA         NA        </code></pre>
+[17] "up"       "and"      "saw"      "Dorothy"  "running"  "toward"   "her"      "My"      
+[25] "darling"  "child"    "she"      "cried"    "folding"  "the"      "little"   "girl"    
+[33] "in"       "her"      "arms"     "and"      "covering" "her"      "face"     "with"    
+[41] "kisses"   "Where"    "in"       "the"      "world"    "did"      "you"      "come"    
+[49] "from"     "From"     "the"      "Land"     "of"       "Oz"       "said"     "Dorothy" 
+[57] "gravely"  "And"      "here"     "is"       "Toto"     "too"      "And"      "oh"      
+[65] "Aunt"     "Em"       "I'm"      "so"       "glad"     "to"       "be"       "at"      
+[73] "home"     "again"   </code></pre>
 <p>To restore the defaults, set the text filter to <code>NULL</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(data) &lt;-<span class="st"> </span><span class="ot">NULL</span></code></pre></div>
 <p>In addition to mapping case and quotes (the defaults), I’m going to drop punctuation.</p>
@@ -279,53 +288,53 @@ ch24 Home Again                                  Aunt Em had just come out of th
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_tokens.html">text_tokens</a></span>(<span class="st">"I live in New York City, New York"</span>,
             <span class="dt">combine =</span> <span class="kw">c</span>(<span class="st">"new york"</span>, <span class="st">"new york city"</span>))</code></pre></div>
 <pre><code>[[1]]
-[1] "i"             "live"          "in"            "new york city" ","             "new york"     </code></pre>
+[1] "i"             "live"          "in"            "new_york_city" ","             "new_york"     </code></pre>
 <p>This example using the optional second argument to <code>text_tokens</code> to override the first argument’s default text filter. Here, instances of “new york” and “new york city” get replaced by single tokens, with the longest match taking precedence. See the documentation for <code>text_tokens</code> describes the full tokenization process.</p>
 </div>
 <div id="texts-as-sequences" class="section level2">
 <h2 class="hasAnchor">
 <a href="#texts-as-sequences" class="anchor"></a>Texts as sequences</h2>
-<p>The mental model of the <em>corpus</em> package is that a text is s sequence of tokens, some of which are dropped (<code>NA</code>). Every object has a <code><a href="../reference/text_filter.html">text_filter()</a></code> property defining its token boundaries. The default token filter transforms the text to Unicode composed normal form (NFC), applies Unicode case folding, and maps curly quotes to straight quotes. Text objects, created with <code>as_corpus_text</code> or <code>as_corpus</code> can have custom text filters. You cannot set the text filter for a character vector. However, all <em>corpus</em> text functions accept a <code>filter</code> argument to override the input object’s text filter (this is demonstrated in the “New York City” example in the previous section).</p>
-<p>To find out the length of a text, as measured in dropped and non-dropped tokens, use the <code>text_length</code> function.</p>
+<p>The mental model of the <em>corpus</em> package is that a text is s sequence of tokens. Every object has a <code><a href="../reference/text_filter.html">text_filter()</a></code> property defining its tokens. The default token filter transforms the text to Unicode composed normal form (NFC), applies Unicode case folding, and maps curly quotes to straight quotes. Text objects, created with <code>as_corpus_text</code> or <code>as_corpus</code> can have custom text filters. You cannot set the text filter for a character vector. However, all <em>corpus</em> text functions accept a <code>filter</code> argument to override the input object’s text filter (this is demonstrated in the “New York City” example in the previous section).</p>
+<p>To find out the number of tokens in a set of texts, use the <code>text_ntoken</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_tokens.html">text_tokens</a></span>(<span class="st">"One, two, three!"</span>, <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <pre><code>[[1]]
-[1] "one"   NA      "two"   NA      "three" NA     </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_tokens.html">text_length</a></span>(<span class="st">"One, two, three!"</span>, <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>))</code></pre></div>
-<pre><code>[1] 6</code></pre>
+[1] "one"   "two"   "three"</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_tokens.html">text_ntoken</a></span>(<span class="st">"One, two, three!"</span>, <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>[1] 3</code></pre>
 <p>You can set subsequences of consecutive tokens using the <code>text_sub</code> function. This function accepts two arguments specifying the start and then end token position. The following example extracts the subsequences from positions 2 to 4:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_sub.html">text_sub</a></span>(<span class="kw">c</span>(<span class="st">"One, two, three!"</span>, <span class="st">"4 5 6 7 8 9 10"</span>), <span class="dv">2</span>, <span class="dv">4</span>,
          <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>))</code></pre></div>
-<pre><code>[1] ", two, "
-[2] "5 6 7 " </code></pre>
+<pre><code>[1] "two, three!"
+[2] "5 6 7 "     </code></pre>
 <p>Negative indices count from the end of the sequence, with <code>-1</code> denoting the last token.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># last 2 tokens</span>
 <span class="kw"><a href="../reference/text_sub.html">text_sub</a></span>(<span class="kw">c</span>(<span class="st">"One, two, three!"</span>, <span class="st">"4 5 6 7 8 9 10"</span>), <span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>,
          <span class="dt">filter =</span> <span class="kw"><a href="../reference/text_filter.html">text_filter</a></span>(<span class="dt">drop_punct =</span> <span class="ot">TRUE</span>))</code></pre></div>
-<pre><code>[1] "three!"
-[2] "9 10"  </code></pre>
-<p>Note that <code>text_length</code> and <code>text_sub</code> count both dropped and non-dropped tokens.</p>
+<pre><code>[1] "two, three!"
+[2] "9 10"       </code></pre>
+<p>Note that <code>text_ntoken</code> and <code>text_sub</code> ignore dropped tokens.</p>
 <p>Here’s how to get the last 10 tokens in each chapter:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/text_sub.html">text_sub</a></span>(data, <span class="op">-</span><span class="dv">10</span>)</code></pre></div>
-<pre><code>ch01 "Dorothy soon closed her eyes and fell fast asleep."         
-ch02 "way, and was not surprised in the least."                   
-ch03 "the Scarecrow; \"it's a lighted match.\""                   
-ch04 "in another\ncorner and waited patiently until morning came."
-ch05 ", and could not live unless she was fed."                   
-ch06 "heart of course I needn't mind so much.\""                  
-ch07 "soon send her back to her own home again."                  
-ch08 "and waited for the fresh breeze to waken her."              
-ch09 "near by, which she\nate for her dinner."                    
-ch10 "the portal into the streets of the Emerald City."           
-ch11 "of a hen that had laid a\ngreen egg."                       
-ch12 "they were no longer prisoners in a strange\nland."          
-ch13 "cheers and many good wishes to\ncarry with them."           
-ch14 "it was you brought away that wonderful Cap!\""              
-ch15 "he did she was willing to forgive him everything."          
-ch16 "I don't know\nhow it can be done.\""                        
-ch17 "the Wonderful\nWizard, and would not be comforted."         
-ch18 ", for it will be a long journey.\""                         
-ch19 "for we certainly must\nclimb over the wall.\""              
-ch20 "things in the\nworld than being a Scarecrow.\""             
+<pre><code>ch01 "wind,\nDorothy soon closed her eyes and fell fast asleep."               
+ch02 "just that way, and was not surprised in the least."                      
+ch03 "made you?\"\n\n\"No,\" answered the Scarecrow; \"it's a lighted match.\""
+ch04 "up in another\ncorner and waited patiently until morning came."          
+ch05 "nor straw, and could not live unless she was fed."                       
+ch06 "me a heart of course I needn't mind so much.\""                          
+ch07 "would soon send her back to her own home again."                         
+ch08 "grass\nand waited for the fresh breeze to waken her."                    
+ch09 "a tree near by, which she\nate for her dinner."                          
+ch10 "through the portal into the streets of the Emerald City."                
+ch11 "cackling of a hen that had laid a\ngreen egg."                           
+ch12 "that they were no longer prisoners in a strange\nland."                  
+ch13 "three cheers and many good wishes to\ncarry with them."                  
+ch14 "How\nlucky it was you brought away that wonderful Cap!\""                
+ch15 "if he did she was willing to forgive him everything."                    
+ch16 "I'm sure I don't know\nhow it can be done.\""                            
+ch17 "loss of the Wonderful\nWizard, and would not be comforted."              
+ch18 "all get ready, for it will be a long journey.\""                         
+ch19 "Tin Woodman, \"for we certainly must\nclimb over the wall.\""            
+ch20 "are worse things in the\nworld than being a Scarecrow.\""                
 ⋮    (24 entries total)</code></pre>
 <p>In this example, we do not specify the ending position, so it defaults to <code>-1</code>.</p>
 </div>
@@ -497,69 +506,69 @@ outlier &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="k
 5  wicked witch of the west           12       6
 6  soldier with the green whiskers     8       6
 7  the soldier with the green          8       6
-8  send me back to kansas              6       6
-9  to get back to kansas               7       5
-10 the tin woodman and the             6       5
-11 the guardian of the gates          10       4
-12 in the middle of the                8       4
-13 wicked witch of the east            8       4
-14 until they came to the              6       4
-15 to the land of the                  5       4
-16 and the tin woodman and             4       4
-17 in the midst of a                   4       4
-18 to give me a heart                  4       4
-19 to send me back to                  4       4
-20 what shall we do now                4       4
-⋮  (20230 rows total)</code></pre>
+8  the tin woodman and the             7       6
+9  send me back to kansas              6       6
+10 to get back to kansas               7       5
+11 heart said the tin woodman          5       5
+12 the guardian of the gates          10       4
+13 in the middle of the                8       4
+14 wicked witch of the east            8       4
+15 until they came to the              6       4
+16 to the land of the                  5       4
+17 and the tin woodman and             4       4
+18 and the tin woodman were            4       4
+19 in the midst of a                   4       4
+20 tin woodman and the lion            4       4
+⋮  (38339 rows total)</code></pre>
 <p>The <code>types</code> argument allows us to request the component types in the result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(data, <span class="dt">ngrams =</span> <span class="dv">3</span>, <span class="dt">types =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>   term                type1     type2     type3     count support
 1  the tin woodman     the       tin       woodman     112      18
 2  said the scarecrow  said      the       scarecrow    36      16
 3  the emerald city    the       emerald   city         53      14
-4  back to kansas      back      to        kansas       28      14
-5  as soon as          as        soon      as           17      13
-6  and the lion        and       the       lion         24      12
-7  the little girl     the       little    girl         21      12
-8  and the tin         and       the       tin          19      12
-9  and the scarecrow   and       the       scarecrow    21      11
-10 the scarecrow and   the       scarecrow and          19      11
-11 the wicked witch    the       wicked    witch        56      10
-12 said the tin        said      the       tin          19      10
-13 the cowardly lion   the       cowardly  lion         19      10
-14 the land of         the       land      of           19      10
-15 they came to        they      came      to           19      10
-16 scarecrow and the   scarecrow and       the          17      10
-17 get back to         get       back      to           15      10
-18 asked the scarecrow asked     the       scarecrow    10      10
-19 witch of the        witch     of        the          30       9
-20 to the emerald      to        the       emerald      21       9
-⋮  (23596 rows total)</code></pre>
+4  the scarecrow and   the       scarecrow and          30      14
+5  back to kansas      back      to        kansas       28      14
+6  as soon as          as        soon      as           17      13
+7  and the lion        and       the       lion         24      12
+8  the little girl     the       little    girl         21      12
+9  and the tin         and       the       tin          19      12
+10 and the scarecrow   and       the       scarecrow    21      11
+11 the lion and        the       lion      and          19      11
+12 the wicked witch    the       wicked    witch        56      10
+13 said the tin        said      the       tin          19      10
+14 the cowardly lion   the       cowardly  lion         19      10
+15 the land of         the       land      of           19      10
+16 they came to        they      came      to           19      10
+17 tin woodman and     tin       woodman   and          18      10
+18 scarecrow and the   scarecrow and       the          17      10
+19 get back to         get       back      to           15      10
+20 asked the scarecrow asked     the       scarecrow    10      10
+⋮  (32730 rows total)</code></pre>
 <p>Here are the most common 2-, 3-grams starting with “dorothy”, where the second type is not a function word</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/term_stats.html">term_stats</a></span>(data, <span class="dt">ngrams =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">types =</span> <span class="ot">TRUE</span>,
            <span class="dt">subset =</span> type1 <span class="op">==</span><span class="st"> "dorothy"</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>type2 <span class="op">%in%</span><span class="st"> </span>stopwords_en)</code></pre></div>
-<pre><code>   term              type1   type2     type3 count support
-1  dorothy went      dorothy went      &lt;NA&gt;      6       6
-2  dorothy looked    dorothy looked    &lt;NA&gt;      6       5
-3  dorothy said      dorothy said      &lt;NA&gt;      5       5
-4  dorothy saw       dorothy saw       &lt;NA&gt;      5       5
-5  dorothy walked    dorothy walked    &lt;NA&gt;      4       4
-6  dorothy went to   dorothy went      to        4       4
-7  dorothy asked     dorothy asked     &lt;NA&gt;      3       3
-8  dorothy found     dorothy found     &lt;NA&gt;      3       3
-9  dorothy looked at dorothy looked    at        3       3
-10 dorothy picked    dorothy picked    &lt;NA&gt;      3       3
-11 dorothy sat       dorothy sat       &lt;NA&gt;      3       3
-12 dorothy thought   dorothy thought   &lt;NA&gt;      3       3
-13 dorothy put       dorothy put       &lt;NA&gt;      3       2
-14 dorothy stood     dorothy stood     &lt;NA&gt;      3       2
-15 dorothy ate       dorothy ate       &lt;NA&gt;      2       2
-16 dorothy awoke     dorothy awoke     &lt;NA&gt;      2       2
-17 dorothy awoke the dorothy awoke     the       2       2
-18 dorothy carried   dorothy carried   &lt;NA&gt;      2       2
-19 dorothy earnestly dorothy earnestly &lt;NA&gt;      2       2
-20 dorothy entered   dorothy entered   &lt;NA&gt;      2       2
-⋮  (202 rows total)</code></pre>
+<pre><code>   term              type1   type2    type3 count support
+1  dorothy said      dorothy said     &lt;NA&gt;      7       6
+2  dorothy went      dorothy went     &lt;NA&gt;      6       6
+3  dorothy looked    dorothy looked   &lt;NA&gt;      6       5
+4  dorothy saw       dorothy saw      &lt;NA&gt;      5       5
+5  dorothy walked    dorothy walked   &lt;NA&gt;      4       4
+6  dorothy went to   dorothy went     to        4       4
+7  dorothy asked     dorothy asked    &lt;NA&gt;      3       3
+8  dorothy found     dorothy found    &lt;NA&gt;      3       3
+9  dorothy looked at dorothy looked   at        3       3
+10 dorothy picked    dorothy picked   &lt;NA&gt;      3       3
+11 dorothy sat       dorothy sat      &lt;NA&gt;      3       3
+12 dorothy thought   dorothy thought  &lt;NA&gt;      3       3
+13 dorothy put       dorothy put      &lt;NA&gt;      3       2
+14 dorothy stood     dorothy stood    &lt;NA&gt;      3       2
+15 dorothy answered  dorothy answered &lt;NA&gt;      2       2
+16 dorothy ate       dorothy ate      &lt;NA&gt;      2       2
+17 dorothy awoke     dorothy awoke    &lt;NA&gt;      2       2
+18 dorothy awoke the dorothy awoke    the       2       2
+19 dorothy can       dorothy can      &lt;NA&gt;      2       2
+20 dorothy carried   dorothy carried  &lt;NA&gt;      2       2
+⋮  (270 rows total)</code></pre>
 </div>
 </div>
 <div id="searching-for-terms" class="section level2">
@@ -954,7 +963,7 @@ before &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text
 after &lt;-<span class="st"> </span><span class="kw"><a href="../reference/text_locate.html">text_detect</a></span>(<span class="kw"><a href="../reference/text_sub.html">text_sub</a></span>(loc<span class="op">$</span>after, <span class="dv">1</span>, <span class="dv">25</span>), <span class="st">"woodman"</span>)
 <span class="kw">summary</span>(before <span class="op">|</span><span class="st"> </span>after)</code></pre></div>
 <pre><code>   Mode   FALSE    TRUE 
-logical      22      45 </code></pre>
+logical      16      51 </code></pre>
 <p>“Woodman” appears within 25 tokens of “heart” in in 45 of the 67 contexts where the latter word appears.</p>
 <p>The decision of whether to include or exclude “heart” is a difficult judgment call. Most of the time it appears, it describes an object, not an emotion. Still, that object does have an emotional association. I’m deciding to include “heart”, but this is not a clear-cut decision.</p>
 <p>We can also inspect the first token after each appearance of “yellow”:</p>

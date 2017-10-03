@@ -89,6 +89,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -102,7 +105,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -118,15 +126,13 @@
     </div>
 
     
-    <p>Segment text into tokens, each of which is an instance of
-   a particular &#8216;type&#8217;.</p>
+    <p>Segment text into tokens, each of which is an instance of a particular
+&#8216;type&#8217;.</p>
     
 
     <pre class="usage"><span class='fu'>text_tokens</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
-<span class='fu'>text_ntoken</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
-
-<span class='fu'>text_length</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>text_ntoken</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -149,104 +155,74 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>text_tokens</code> splits texts into token sequences. Each token is an
-    instance of a particular type. This operation proceeds in a series
-    of stages, controlled by the <code>filter</code> argument:</p>
-<p></p><ol>
-<li><p>First, we segment the text into words using the boundaries
-            defined by
-            <a href='http://unicode.org/reports/tr29/#Word_Boundaries'>Unicode
-                Standard Annex #29, Section 4</a>. We categorize each word as
-            <code>"letter"</code>, <code>"number"</code>, <code>"punct"</code>, or
-            <code>"symbol"</code> according to the first character in the word.
-            For words with two or more characters that start with extenders
-            like underscore (<code>_</code>), we use the second character in
-            the word to categorize it, treating a second extender as a
-            letter.</p></li>
-<li><p>Next, we normalize the remaining words by applying the
-            character mappings indicated by the <code>map_case</code>,
-            <code>map_quote</code>, and <code>remove_ignorable</code>.
-            At the end of the second stage, we have segmented
-            the text into a sequence of normalized words, in Unicode composed
-            normal form (NFC).</p></li>
-<li><p>In the third stage, if the <code>stemmer</code> property is
-            non-<code>NULL</code>, we apply the indicated stemming algorithm to
-            each word that does not match one of the elements of the
-            <code>stem_except</code> character vector. See the
-            &#8216;Stemming&#8217; section below for more information.</p></li>
-<li><p>Next, if the <code>combine</code> property is non-<code>NULL</code>,
-            we scan the word sequence from left to right, searching for
-            the longest possible match in the <code>combine</code> list. If
-            a match exists, we replace the word sequence with a single token
-            for that type; otherwise, we create a single-word token. See the
-            &#8216;Combining words&#8217; section below for more details.  After
-            this stage, the sequence elements are &#8216;tokens&#8217;, not
-            &#8216;words&#8217;.</p></li>
-<li><p>If any of <code>drop_letter</code>, <code>drop_number</code>,
-            <code>drop_punct</code>, or <code>drop_symbol</code> are <code>TRUE</code>,
-            then we replace the tokens with values in the corresponding
-            categories by <code>NA</code>.  (For multi-word types created by the
-            <code>combine</code> step, we take the category of the first word in
-            the phrase.) Then, if the <code>drop</code> property is
-            non-<code>NULL</code>, we replace tokens that match elements of this
-            character vector with <code>NA</code>. We can add exceptions to the
-            drop rules by specifying a non-<code>NULL</code> value for the
-            <code>drop_except</code> property: <code>drop_except</code> is a character
-            vector, then we we restore tokens that match elements of
-            vector to their values prior to dropping.</p></li>
-</ol>
-    <p>When <code>filter = NULL</code>, we treat all logical properties as
-    <code>FALSE</code> and all other properties as <code>NA</code> or <code>NULL</code>.</p>
-<p>Terms specified by the <code>stem_except</code>, <code>combine</code>,
-    <code>drop</code>, and <code>drop_except</code> need to be stemmed (unless
-    <code>stemmer</code> is not <code>NA</code>), but they do not need to be
-    normalized. We normalize the argument values in the manner specified
-    by <code>map_case</code>, <code>map_quote</code>, and <code>remove_ignorable</code>.
-    Thus, for example, if <code>map_case = TRUE</code>, then a token filter with
-    <code>combine = "Mx."</code> produces the same results as a token filter
-    with <code>combine = "mx."</code>.</p>
-    
-    <h2 class="hasAnchor" id="stemming"><a class="anchor" href="#stemming"></a>Stemming</h2>
-
-    <p>We use the stemming algorithms provided by the Snowball library. These
-    algorithms are also available in the <code>SnowballC</code> R package. Unlike
-    that package, we provide the ability to exempt certain words from stemming,
-    using the <code>stem_except</code> argument; see the examples below.
-    If you do not specify the <code>stem_except</code> argument, then we set its
-    value equal to the <code>drop</code> argument.</p>
-<p>We also exempt from stemming any case that would turn internal
-    punctuation like the full stop in <code>"u.s"</code> into boundary punctuation
-    like at the end of <code>"u."</code>; otherwise, in examples like this, the
-    stemming procedure would turn single-word tokens into multi-word
-    tokens (compare <code>text_tokens("u.s")</code> with <code>text_tokens("u.")</code>).
-    For English, this likely only affects words ending in <code>".s"</code>.</p>
+instance of a particular type. This operation proceeds in a series
+of stages, controlled by the <code>filter</code> argument:</p><ol>
+<li><p>First, we segment the text into words and spaces using the boundaries
+    defined by
+    <a href='http://unicode.org/reports/tr29/#Word_Boundaries'>Unicode Standard Annex #29, Section 4</a>,
+    with special handling for @mentions, #hashtags, and URLs.</p></li>
+<li><p>Next, we normalize the words by applying the character mappings
+    indicated by the <code>map_case</code>, <code>map_quote</code>, and
+    <code>remove_ignorable</code> properties. We replace sequences of spaces
+    by a space (U+0020). At the end of the second stage,
+    we have segmented the text into a sequence of normalized words and
+    spaces, in Unicode composed normal form (NFC).</p></li>
+<li><p>In the third stage, if the <code>combine</code> property is non-<code>NULL</code>,
+    we scan the word sequence from left to right, searching for the longest
+    possible match in the <code>combine</code> list. If a match exists, we
+    replace the word sequence with a single token for that term;
+    otherwise, we leave the word as-is. We drop spaces at this point, unless
+    they are part of a multi-word term.  See the &#8216;Combining words&#8217;
+    section below for more details.</p></li>
+<li><p>Next, if the <code>stemmer</code> property is non-<code>NULL</code>, we apply
+    the indicated stemming algorithm to each word that does not match
+    one of the elements of the <code>stem_except</code> character vector. Terms
+    that stem to <code>NA</code> get dropped from the sequence.</p></li>
+<li><p>After stemming, we categorize each remaining token as
+    <code>"letter"</code>, <code>"number"</code>, <code>"punct"</code>, or <code>"symbol"</code>
+    according to the first character in the word. For words that start with
+    extenders like underscore (<code>_</code>), use the first non-extender to
+    classify it.</p></li>
+<li><p>If any of <code>drop_letter</code>, <code>drop_number</code>, <code>drop_punct</code>,
+    or <code>drop_symbol</code> are <code>TRUE</code>, then we drop the tokens in the
+    corresponding categories. We also drop any terms that match an element
+    of the <code>drop</code> character vector.  We can add exceptions to the
+    drop rules by specifying a non-<code>NULL</code> value for the
+    <code>drop_except</code> property: <code>drop_except</code> is a character
+    vector, then we we restore tokens that match elements of vector to
+    their values prior to dropping.</p></li>
+<li><p>Finally, we replace sequences of white-space in the terms with
+    the specified <code>connector</code>, which defaults to a low line character
+    (<code>_</code>, U+005F).</p></li>
+</ol><p>Multi-word terms specified by the <code>combine</code> property can be specified as
+tokens, prior to normalization.  Terms specified by the <code>stem_except</code>,
+<code>drop</code>, and <code>drop_except</code> need to be normalized and stemmed (if
+<code>stemmer</code> is non-<code>NULL</code>).  Thus, for example, if
+<code>map_case = TRUE</code>, then a token filter with <code>combine = "Mx."</code>
+produces the same results as a token filter with <code>combine = "mx."</code>.
+However, <code>drop = "Mx."</code> behaves different from <code>drop = "mx."</code>.</p>
     
     <h2 class="hasAnchor" id="combining-words"><a class="anchor" href="#combining-words"></a>Combining words</h2>
 
     <p>The <code>combine</code> property of a <code>text_filter</code> enables
-    transformations that combine two or more words into a single token. For
-    example, specifying <code>combine = "new york"</code> will
-    cause consecutive instances of the words <code>new</code> and <code>york</code>
-    to get replaced by a single token, <code>new york</code>.</p>
-<p>By default, we set <code>combine = abbreviations_en</code>, so
-    that abbreviations like <code>"Ms."</code> get treated as single tokens;
-    with <code>combine = NULL</code>, trailing punctuation gets split off, and
-    <code>"Ms."</code> gets tokenized into two tokens, for "Ms" and ".".</p>
+transformations that combine two or more words into a single token. For
+example, specifying <code>combine = "new york"</code> will
+cause consecutive instances of the words <code>new</code> and <code>york</code>
+to get replaced by a single token, <code>new york</code>.</p>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p><code>text_tokens</code> returns a list of the same length as <code>x</code>, with
-    the same names. Each list item is a character vector with the tokens
-    for the corresponding element of <code>x</code>.</p>
-<p><code>text_ntoken</code> returns a numeric vector the same length as <code>x</code>,
-    with each element giving the number of non-dropped tokens in the
-    corresponding text. <code>text_length</code> is similar, but includes dropped
-    tokens in the result.</p>
+the same names. Each list item is a character vector with the tokens
+for the corresponding element of <code>x</code>.
+
+<code>text_ntoken</code> returns a numeric vector the same length as <code>x</code>,
+with each element giving the number of tokens in the corresponding text.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='text_split.html'>text_split</a></code>, <code><a href='text_types.html'>text_types</a></code>,
-    <code><a href='abbreviations.html'>abbreviations</a></code>, <code><a href='stopwords.html'>stopwords</a></code>,
-    <code><a href='term_matrix.html'>term_matrix</a></code>.</p>
+    <p><code><a href='stopwords.html'>stopwords</a></code>, <code><a href='text_filter.html'>text_filter</a></code>,
+<code><a href='text_types.html'>text_types</a></code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -254,10 +230,8 @@
 #&gt;  [1] "the"   "quick" "("     "'"     "brown" "'"     ")"     "fox"   "can't"
 #&gt; [10] "jump"  "32.3"  "feet"  ","     "right" "?"    
 #&gt; </div><div class='input'>
-<span class='co'># count non-dropped tokens:</span>
+<span class='co'># count tokens:</span>
 <span class='fu'>text_ntoken</span>(<span class='st'>"The quick ('brown') fox can't jump 32.3 feet, right?"</span>)</div><div class='output co'>#&gt; [1] 15</div><div class='input'>
-<span class='co'># count dropped and non-dropped tokens:</span>
-<span class='fu'>text_length</span>(<span class='st'>"The quick ('brown') fox can't jump 32.3 feet, right?"</span>)</div><div class='output co'>#&gt; [1] 15</div><div class='input'>
 <span class='co'># don't change case or quotes:</span>
 <span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>map_quote</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 <span class='fu'>text_tokens</span>(<span class='st'>"The quick ('brown') fox can't jump 32.3 feet, right?"</span>, <span class='no'>f</span>)</div><div class='output co'>#&gt; [[1]]
@@ -267,13 +241,13 @@
 <span class='co'># drop common function words ('stop' words):</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"Able was I ere I saw Elba."</span>,
             <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop</span> <span class='kw'>=</span> <span class='no'>stopwords_en</span>))</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] "able" NA     NA     "ere"  NA     "saw"  "elba" "."   
+#&gt; [1] "able" "ere"  "saw"  "elba" "."   
 #&gt; </div><div class='input'>
 <span class='co'># drop numbers, with some exceptions:"</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"0, 1, 2, 3, 4, 5"</span>,
             <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_number</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
                         <span class='kw'>drop_except</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"0"</span>, <span class='st'>"2"</span>, <span class='st'>"4"</span>)))</div><div class='output co'>#&gt; [[1]]
-#&gt;  [1] "0" "," NA  "," "2" "," NA  "," "4" "," NA 
+#&gt; [1] "0" "," "," "2" "," "," "4" ","
 #&gt; </div><div class='input'>
 <span class='co'># apply stemming...</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"Mary is running"</span>, <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='st'>"english"</span>))</div><div class='output co'>#&gt; [[1]]
@@ -284,20 +258,20 @@
             <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='st'>"english"</span>, <span class='kw'>stem_except</span> <span class='kw'>=</span> <span class='st'>"mary"</span>))</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "mary" "is"   "run" 
 #&gt; </div><div class='input'>
-<span class='co'># combine abbreviations by default</span>
+<span class='co'># default tokenization</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"Ms. Jones"</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] "ms."   "jones"
-#&gt; </div><div class='input'>
-<span class='co'># disable default combinations</span>
-<span class='fu'>text_tokens</span>(<span class='st'>"Ms. Jones"</span>, <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>combine</span> <span class='kw'>=</span> <span class='kw'>NULL</span>))</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "ms"    "."     "jones"
 #&gt; </div><div class='input'>
-<span class='co'># add new combinations</span>
+<span class='co'># combine abbreviations</span>
+<span class='fu'>text_tokens</span>(<span class='st'>"Ms. Jones"</span>, <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>combine</span> <span class='kw'>=</span> <span class='no'>abbreviations_en</span>))</div><div class='output co'>#&gt; [[1]]
+#&gt; [1] "ms."   "jones"
+#&gt; </div><div class='input'>
+<span class='co'># add custom combinations</span>
 <span class='fu'>text_tokens</span>(<span class='st'>"Ms. Jones is from New York City, New York."</span>,
             <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>combine</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='no'>abbreviations_en</span>,
                                     <span class='st'>"new york"</span>, <span class='st'>"new york city"</span>)))</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "ms."           "jones"         "is"            "from"         
-#&gt; [5] "new york city" ","             "new york"      "."            
+#&gt; [5] "new_york_city" ","             "new_york"      "."            
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -306,8 +280,6 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
-
-      <li><a href="#stemming">Stemming</a></li>
 
       <li><a href="#combining-words">Combining words</a></li>
 

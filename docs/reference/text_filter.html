@@ -89,6 +89,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -102,7 +105,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -135,12 +143,13 @@
 <span class='fu'>text_filter</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>,
             <span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>map_quote</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
             <span class='kw'>remove_ignorable</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+            <span class='kw'>combine</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
             <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stem_dropped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>stem_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>combine</span> <span class='kw'>=</span> <span class='kw pkg'>corpus</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/corpus/topics/abbreviations'>abbreviations_en</a></span>,
             <span class='kw'>drop_letter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_number</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>drop</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>drop_except</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>connector</span> <span class='kw'>=</span> <span class='st'>"_"</span>,
             <span class='kw'>sent_crlf</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
             <span class='kw'>sent_suppress</span> <span class='kw'>=</span> <span class='kw pkg'>corpus</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/corpus/topics/abbreviations'>abbreviations_en</a></span>)</pre>
     
@@ -168,8 +177,8 @@
     <tr>
       <th>map_quote</th>
       <td><p>a logical value indicating whether to replace curly
-        single quotes and double quotes with straight single quotes
-        and double quotes.</p></td>
+        single quotes and other Unicode apostrophe characters with
+        ASCII apostrophe (U+0027).</p></td>
     </tr>
     <tr>
       <th>remove_ignorable</th>
@@ -178,30 +187,15 @@
         and soft hyphens.</p></td>
     </tr>
     <tr>
+      <th>combine</th>
+      <td><p>a character vector of multi-word phrases to combine, or
+        <code>NULL</code>; see &#8216;Combining words&#8217;.</p></td>
+    </tr>
+    <tr>
       <th>stemmer</th>
-      <td><p>a character value giving the name of the stemming
-        algorithm, or <code>NULL</code> to leave words unchanged. The stemming
-        algorithms are provided by the
-        <a href='http://snowballstem.org/algorithms/'>Snowball stemming library</a>;
-        the following stemming algorithms are available:
-            <code>"ar"</code> (<code>"arabic"</code>),
-            <code>"da"</code> (<code>"danish"</code>),
-	        <code>"de"</code> (<code>"german"</code>),
-            <code>"en"</code> (<code>"english"</code>),
-            <code>"es"</code> (<code>"spanish"</code>),
-            <code>"fi"</code> (<code>"finnish"</code>),
-            <code>"fr"</code> (<code>"french"</code>),
-            <code>"hu"</code> (<code>"hungarian"</code>),
-            <code>"it"</code> (<code>"italian"</code>),
-            <code>"nl"</code> (<code>"dutch"</code>),
-            <code>"no"</code> (<code>"norwegian"</code>),
-            <code>"pt"</code> (<code>"portuguese"</code>),
-	        <code>"ro"</code> (<code>"romanian"</code>),
-            <code>"ru"</code> (<code>"russian"</code>),
-            <code>"sv"</code> (<code>"swedish"</code>),
-            <code>"ta"</code> (<code>"tamil"</code>),
-            <code>"tr"</code> (<code>"turkish"</code>),
-            and <code>"porter"</code>.</p></td>
+      <td><p>a character value giving the name of a Snowball stemming
+        algorithm (see <code><a href='stem_snowball.html'>stem_snowball</a></code> for choices), a custom
+        stemming function, or <code>NULL</code> to leave words unchanged.</p></td>
     </tr>
     <tr>
       <th>stem_dropped</th>
@@ -213,11 +207,6 @@
       <td><p>a character vector of exception words to exempt from
         stemming, or <code>NULL</code>. If left unspecified, <code>stem_except</code>
         is set equal to the <code>drop</code> argument.</p></td>
-    </tr>
-    <tr>
-      <th>combine</th>
-      <td><p>a character vector of multi-word phrases to combine, or
-        <code>NULL</code>; see &#8216;Combining words&#8217;.</p></td>
     </tr>
     <tr>
       <th>drop_letter</th>
@@ -253,6 +242,11 @@
         rules specified by the <code>drop_letter</code>, <code>drop_number</code>,
         <code>drop_punct</code>, <code>drop_symbol</code>, and <code>drop</code>
         arguments, or <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>connector</th>
+      <td><p>a character to use as a connector in lieu of
+        white space for types that stem to multi-word phrases.</p></td>
     </tr>
     <tr>
       <th>sent_crlf</th>
@@ -292,21 +286,22 @@
     <pre class="examples"><div class='input'><span class='co'># text filter with default options set</span>
 <span class='fu'>text_filter</span>()</div><div class='output co'>#&gt; Text filter with the following options:
 #&gt; 
-#&gt; 	map_case: TRUE
-#&gt; 	map_quote: TRUE
-#&gt; 	remove_ignorable: TRUE
-#&gt; 	stemmer: NULL
-#&gt; 	stem_dropped: FALSE
-#&gt; 	stem_except: NULL
-#&gt; 	combine:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." "AB." ...
-#&gt; 	drop_letter: FALSE
-#&gt; 	drop_number: FALSE
-#&gt; 	drop_punct: FALSE
-#&gt; 	drop_symbol: FALSE
-#&gt; 	drop: NULL
-#&gt; 	drop_except: NULL
-#&gt; 	sent_crlf: FALSE
-#&gt; 	sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...</div><div class='input'>
+#&gt;     map_case: TRUE
+#&gt;     map_quote: TRUE
+#&gt;     remove_ignorable: TRUE
+#&gt;     combine: NULL
+#&gt;     stemmer: NULL
+#&gt;     stem_dropped: FALSE
+#&gt;     stem_except: NULL
+#&gt;     drop_letter: FALSE
+#&gt;     drop_number: FALSE
+#&gt;     drop_punct: FALSE
+#&gt;     drop_symbol: FALSE
+#&gt;     drop: NULL
+#&gt;     drop_except: NULL
+#&gt;     connector: _
+#&gt;     sent_crlf: FALSE
+#&gt;     sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...</div><div class='input'>
 <span class='co'># specify some options but leave others unchanged</span>
 <span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='no'>stopwords_en</span>)
 
@@ -314,8 +309,7 @@
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='corpus_text.html'>as_corpus_text</a></span>(<span class='fu'>c</span>(<span class='st'>"Marnie the Dog is #1 on the internet."</span>))
 <span class='fu'>text_filter</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>f</span>
 <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>) <span class='co'># by default, uses x's text_filter to tokenize</span></div><div class='output co'>#&gt; [[1]]
-#&gt;  [1] "Marnie"   NA         "Dog"      NA         "#"        "1"       
-#&gt;  [7] NA         NA         "internet" "."       
+#&gt; [1] "Marnie"   "Dog"      "#"        "1"        "internet" "."       
 #&gt; </div><div class='input'>
 <span class='co'># change a filter property</span>
 <span class='no'>f2</span> <span class='kw'>&lt;-</span> <span class='fu'>text_filter</span>(<span class='no'>x</span>, <span class='kw'>map_case</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
@@ -324,16 +318,14 @@
 <span class='co'># f2$map_case &lt;- TRUE</span>
 
 <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>x</span>, <span class='no'>f2</span>) <span class='co'># override text_filter(x)</span></div><div class='output co'>#&gt; [[1]]
-#&gt;  [1] "marnie"   NA         "dog"      NA         "#"        "1"       
-#&gt;  [7] NA         NA         "internet" "."       
+#&gt; [1] "marnie"   "dog"      "#"        "1"        "internet" "."       
 #&gt; </div><div class='input'>
 <span class='co'># setting text_filter on a data frame is allowed if it has a</span>
 <span class='co'># column names "text" of type "corpus_text"</span>
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='no'>x</span>)
 <span class='fu'>text_filter</span>(<span class='no'>d</span>) <span class='kw'>&lt;-</span> <span class='no'>f2</span>
 <span class='fu'><a href='text_tokens.html'>text_tokens</a></span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt;  [1] "marnie"   NA         "dog"      NA         "#"        "1"       
-#&gt;  [7] NA         NA         "internet" "."       
+#&gt; [1] "marnie"   "dog"      "#"        "1"        "internet" "."       
 #&gt; </div><div class='input'>
 <span class='co'># but you can't set text filters on character objects</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='st'>"hello world"</span></div><span class='co'># NOT RUN {</span>

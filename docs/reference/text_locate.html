@@ -89,6 +89,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -102,7 +105,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -121,7 +129,7 @@
     <p>Look for instances of one or more terms in a set of texts.</p>
     
 
-    <pre class="usage"><span class='fu'>text_locate</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>random</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>text_locate</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
 <span class='fu'>text_count</span>(<span class='no'>x</span>, <span class='no'>terms</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
@@ -152,10 +160,6 @@
     <tr>
       <th>size</th>
       <td><p>the maximum number of results to return, or <code>NULL</code>.</p></td>
-    </tr>
-    <tr>
-      <th>random</th>
-      <td><p>deprecated.</p></td>
     </tr>
     <tr>
       <th>&#8230;</th>

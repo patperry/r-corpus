@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Text Objects — corpus_text • corpus</title>
+<title>Stemmer Construction — new_stemmer • corpus</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -122,100 +122,85 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Text Objects</h1>
+    <h1>Stemmer Construction</h1>
     </div>
 
     
-    <p>Create or test for text objects.</p>
+    <p>Make a stemmer from a set of (term, stem) pairs.</p>
     
 
-    <pre class="usage"><span class='fu'>as_corpus_text</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>is_corpus_text</span>(<span class='no'>x</span>)</pre>
+    <pre class="usage"><span class='fu'>new_stemmer</span>(<span class='no'>term</span>, <span class='no'>stem</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>duplicates</span> <span class='kw'>=</span> <span class='st'>"first"</span>,
+            <span class='kw'>vectorize</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>object to be coerced or tested.</p></td>
+      <th>term</th>
+      <td><p>character vector of terms to stem.</p></td>
     </tr>
     <tr>
-      <th>filter</th>
-      <td><p>if non-<code>NULL</code>, a text filter for the converted result.</p></td>
+      <th>stem</th>
+      <td><p>character vector the same length as <code>term</code> with entries
+   giving the corresponding stems.</p></td>
     </tr>
     <tr>
-      <th>&#8230;</th>
-      <td><p>text filter properties to set on the result.</p></td>
+      <th>default</th>
+      <td><p>if non-<code>NULL</code>, a default value to use for terms
+    that do not have a stem; <code>NULL</code> specifies that such terms
+    should be left unchanged.</p></td>
     </tr>
     <tr>
-      <th>names</th>
-      <td><p>if non-<code>NULL</code> character vector of names for
-    the converted result.</p></td>
+      <th>duplicates</th>
+      <td><p>action to take for duplicates in the <code>term</code> list. See
+    &#8216;Details&#8217;</p></td>
+    </tr>
+    <tr>
+      <th>vectorize</th>
+      <td><p>whether to produce a vectorized stemmer that accepts and
+    returns vector arguments.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The <code>corpus_text</code> type is a new data type provided by the <code>corpus</code>
-package suitable for processing international (Unicode) text. Text vectors
-behave like character vectors (and can be converted to them with the
-<code>as.character</code> function). They can be created using the
-<code><a href='read_ndjson.html'>read_ndjson</a></code> function or by converting another object using the
-<code>as_corpus_text</code> function.</p>
-<p>All text objects have a <code><a href='text_filter.html'>text_filter</a></code> property specify how to
-transform the text into tokens or segment it into sentences.</p>
-<p>The default behavior for <code>as_corpus_text</code> is to proceed as follows:</p><ol>
-<li><p>If <code>x</code> is a <code>character</code> vector, then we create
-    a new <code>text</code> vector from <code>x</code>.</p></li>
-<li><p>If <code>x</code> is a data frame, then we call <code>as_corpus_text</code>
-     on <code>x$text</code> if a column named <code>"text"</code> exists in
-     the data frame.  If the data frame does not have a column
-     named <code>"text"</code>, then we fail with an error message.</p></li>
-<li><p>If <code>x</code> is a <code>corpus_text</code> object, then we drop all
-     attributes and we set the class to <code>"corpus_text"</code>.</p></li>
-<li><p>The default behavior for when none of the above conditions
-     are true is to call <code>as.character</code> on the object first,
-     preserving the names, and then and call <code>as_corpus_text</code> on
-     the returned character object.</p></li>
-</ol>
-    <p>In all cases, when the <code>names</code> is <code>NULL</code>, we set the result
-names to <code>names(x)</code> (or <code>rownames(x)</code> for a data frame
-argument). When <code>names</code> is a character vector, we set the result names
-to this vector of names</p>
-<p>Similarly, when <code>filter</code> is <code>NULL</code>, we set the result text
-filter to <code><a href='text_filter.html'>text_filter(x)</a></code>. When <code>filter</code> is non-<code>NULL</code>
-missing, we set the result text filter to this value. In either case,
-if there are additional names arguments, then we override the filter
-properties specified by the names of these arguments with the new values
-given.</p>
-<p>Note that the special handling for the names of the object is different
-from the other R conversion functions (<code>as.numeric</code>,
-<code>as.character</code>, etc.), which drop the names.
-    <code>as_corpus_text</code> is generic: you can write methods to handle specific
-classes of objects.</p>
+    <p>Giving a list of terms and a corresponding list of stems, this produces a
+function that maps terms to their corresponding entry. If
+<code>default = NULL</code>, then values absent from the <code>term</code> argument
+get left as-is; otherwise, they get replaced by the <code>default</code> value.</p>
+<p>The <code>duplicates</code> argument indicates the action to take if
+there are duplicate entries in the <code>term</code> argument:</p><ul>
+<li><p><code>duplicates = "first"</code> take the first matching entry in the
+    <code>stem</code> list.</p></li>
+<li><p><code>duplicates = "last"</code> take the last matching entry in the
+    <code>stem</code> list.</p></li>
+<li><p><code>duplicates = "omit"</code> use the <code>default</code> value for
+    duplicated terms.</p></li>
+<li><p><code>duplicates = "fail"</code> raise an error if there are duplicated
+    terms.</p></li>
+</ul>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>as_corpus_text</code> attempts to coerce its argument to <code>text</code> type and
-  set its <code>names</code> and <code>text_filter</code> properties; it strips
-  all other attributes.
-
-<code>is_corpus_text</code> returns <code>TRUE</code> or <code>FALSE</code> depending on
-  whether its argument is of text type or not.</p>
+    <p>By default, with <code>vectorize = TRUE</code>, the resulting stemmer accepts a
+character vector as input and returns a character vector of the same length
+with entries giving the stems of the corresponding input entries.</p>
+<p>Setting <code>vectorize = FALSE</code> gives a function that accepts a single input
+and returns a single output. This can be more efficient when used as part of
+a <code><a href='text_filter.html'>text_filter</a></code>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='utf8.html'>as_utf8</a></code>, <code><a href='text_filter.html'>text_filter</a></code>, <code><a href='read_ndjson.html'>read_ndjson</a></code>.</p>
+    <p><code><a href='stem_snowball.html'>stem_snowball</a>, <a href='text_filter.html'>text_filter</a></code>, <code><a href='text_tokens.html'>text_tokens</a></code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>as_corpus_text</span>(<span class='st'>"hello, world!"</span>)</div><div class='output co'>#&gt; [1] "hello, world!"</div><div class='input'><span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt; a "goodnight"
-#&gt; b "moon"     </div><div class='input'>
-<span class='co'># set a filter property</span>
-<span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='st'>"english"</span>)</div><div class='output co'>#&gt; a "goodnight"
-#&gt; b "moon"     </div><div class='input'>
-<span class='fu'>is_corpus_text</span>(<span class='st'>"hello"</span>) <span class='co'># FALSE, "hello" is character, not text</span></div><div class='output co'>#&gt; [1] FALSE</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># map uppercase to lowercase, leave others unchanged</span>
+<span class='no'>stemmer</span> <span class='kw'>&lt;-</span> <span class='fu'>new_stemmer</span>(<span class='no'>LETTERS</span>, <span class='no'>letters</span>)
+<span class='fu'>stemmer</span>(<span class='fu'>c</span>(<span class='st'>"A"</span>, <span class='st'>"E"</span>, <span class='st'>"I"</span>, <span class='st'>"O"</span>, <span class='st'>"U"</span>, <span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>))</div><div class='output co'>#&gt; [1] "a" "e" "i" "o" "u" "1" "2" "3"</div><div class='input'>
+<span class='co'># map uppercase to lowercase, drop others</span>
+<span class='no'>stemmer</span> <span class='kw'>&lt;-</span> <span class='fu'>new_stemmer</span>(<span class='no'>LETTERS</span>, <span class='no'>letters</span>, <span class='kw'>default</span> <span class='kw'>=</span> <span class='fl'>NA</span>)
+<span class='fu'>stemmer</span>(<span class='fu'>c</span>(<span class='st'>"A"</span>, <span class='st'>"E"</span>, <span class='st'>"I"</span>, <span class='st'>"O"</span>, <span class='st'>"U"</span>, <span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>))</div><div class='output co'>#&gt; [1] "a" "e" "i" "o" "u" NA  NA  NA </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

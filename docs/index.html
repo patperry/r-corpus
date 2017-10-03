@@ -63,6 +63,9 @@
       <a href="articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -74,7 +77,14 @@
   <a href="news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -164,8 +174,8 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <p>Here’s how to get a term frequency matrix of all 1-, 2-, 3-, 4-, and 5-grams.</p>
 <div class="sourceCode"><pre class="sourceCode R"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw">system.time</span>(x &lt;-<span class="st"> </span><span class="kw"><a href="reference/term_matrix.html">term_matrix</a></span>(federalist, <span class="dt">ngrams =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>))
    user  system elapsed 
-  <span class="fl">7.592</span>   <span class="fl">0.140</span>   <span class="fl">7.795</span> </code></pre></div>
-<p>This computation uses only a single CPU, yet it still completes in under 10 seconds.</p>
+  <span class="fl">2.781</span>   <span class="fl">0.123</span>   <span class="fl">2.906</span></code></pre></div>
+<p>This computation uses only a single CPU, yet it still completes in under three seconds.</p>
 <p>For a more complete introduction to the package, see the <a href="http://corpustext.com/articles/corpus.html" title="Introduction to corpus">getting started guide</a> and the other articles at <a href="http://corpustext.com">corpustext.com</a>.</p>
 </div>
 <div id="citation" class="section level2">
@@ -194,7 +204,7 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <div id="acknowledgments" class="section level2">
 <h2 class="hasAnchor">
 <a href="#acknowledgments" class="anchor"></a>Acknowledgments</h2>
-<p>The API and feature set for <em>corpus</em> draw inspiration from <a href="http://quanteda.io/" title="Quanteda"><em>quanteda</em></a>, developed by Ken Benoit and collaborators; <a href="http://stringr.tidyverse.org/" title="Stringr"><em>stringr</em></a>, developed by Hadley Wickham; <a href="http://juliasilge.github.io/tidytext/" title="Tidytext"><em>tidytext</em></a>, developed by Julia Silge and David Robinson.</p>
+<p>The API and feature set for <em>corpus</em> draw inspiration from <a href="http://quanteda.io/" title="Quanteda"><em>quanteda</em></a>, developed by Ken Benoit and collaborators; <a href="http://stringr.tidyverse.org/" title="Stringr"><em>stringr</em></a>, developed by Hadley Wickham; and <a href="http://juliasilge.github.io/tidytext/" title="Tidytext"><em>tidytext</em></a>, developed by Julia Silge and David Robinson.</p>
 </div>
 
   </div>
@@ -203,6 +213,8 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
     <h2>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cran.r-project.org/package=corpus">https://​cran.r-project.org/​package=corpus</a>
+</li>
+<li>Browse source code at <br><a href="https://github.com/patperry/r-corpus">https://​github.com/​patperry/​r-corpus</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/patperry/r-corpus/issues">https://​github.com/​patperry/​r-corpus/​issues</a>
 </li>

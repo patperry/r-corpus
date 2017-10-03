@@ -89,6 +89,9 @@
       <a href="../articles/gender.html">Finding gendered words</a>
     </li>
     <li>
+      <a href="../articles/stemmer.html">Stemming Words</a>
+    </li>
+    <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
     <li>
@@ -102,7 +105,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/patperry/r-corpus">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -122,66 +130,29 @@
 <span class="pkg">corpus</span> only, and may be defunct as soon as the next release.</p>
     
 
-    <pre class="usage"><span class='fu'><a href='corpus-package.html'>corpus</a></span>(<span class='no'>...</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>as_corpus</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>as_text</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>is_corpus</span>(<span class='no'>x</span>)
-
-<span class='fu'>is_text</span>(<span class='no'>x</span>)
-
-<span class='fu'>term_frame</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-           <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>text_length</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Deprecated.</p></td>
+      <td><p>object to be tokenized.</p></td>
     </tr>
     <tr>
       <th>filter</th>
-      <td><p>Deprecated.</p></td>
-    </tr>
-    <tr>
-      <th>group</th>
-      <td><p>Deprecated.</p></td>
-    </tr>
-    <tr>
-      <th>names</th>
-      <td><p>Deprecated.</p></td>
-    </tr>
-    <tr>
-      <th>ngrams</th>
-      <td><p>Deprecated.</p></td>
-    </tr>
-    <tr>
-      <th>row.names</th>
-      <td><p>Deprecated.</p></td>
-    </tr>
-    <tr>
-      <th>select</th>
-      <td><p>Deprecated.</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>Deprecated.</p></td>
+      <td><p>if non-<code>NULL</code>, a text filter to to use instead of
+    the default text filter for <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>&#8230;</th>
-      <td><p>Deprecated.</p></td>
+      <td><p>additional properties to set on the text filter.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>These functions are deprecated; use <code><a href='corpus_frame.html'>corpus_frame</a></code>,
-<code><a href='corpus_frame.html'>as_corpus_frame</a></code>, <code><a href='corpus_text.html'>as_corpus_text</a></code>,
-<code><a href='corpus_frame.html'>is_corpus_frame</a></code>, <code><a href='corpus_text.html'>is_corpus_text</a></code>,
-or <code><a href='term_matrix.html'>term_matrix</a></code> instead.</p>
+    <p>This function is deprecated. Use <code><a href='text_tokens.html'>text_ntoken</a></code> instead.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
