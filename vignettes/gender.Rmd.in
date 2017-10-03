@@ -9,7 +9,7 @@ vignette: >
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(comment = "", fig.path = "gender-")
-options(width = 100)
+options(width = 95)
 ```
 
 Overview
