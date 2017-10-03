@@ -4,13 +4,11 @@ To Do
 Bugs
 ----
 
- * Change vignette width to 94 or 95
+ (no known bugs)
 
 
 Features
 --------
-
- * Update documentation for `text_sub()`.
 
  * Add a `text_untoken()` function to turn token sequence into text:
    insert word-joiner (U+2060) to keep multi-word phrases together;
