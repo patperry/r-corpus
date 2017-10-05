@@ -16,7 +16,7 @@ README: README.md
 	sed -e '/\*Corpus\*/,$$!d' \
 		-e 's/…../.../' \
 		-e 's/..…/.../' \
-		-e 's/⋮../.../' $< > $@
+		-e 's/⋮/./' $< > $@
 
 vignettes/%.Rmd: vignettes/%.Rmd.in
 	$(RSCRIPT) -e 'devtools::load_all("."); setwd("vignettes"); knitr::knit(basename("$<"), basename("$@"))'
