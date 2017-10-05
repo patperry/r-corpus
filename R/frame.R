@@ -203,6 +203,9 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
     trunc <- (!is.null(rows) && n > rows)
     if (trunc) {
         xsub <- x[seq_len(rows), , drop = FALSE]
+        if (!isTRUE(row.names)) {
+            row.names <- row.names[seq_len(rows)]
+        }
     } else {
         xsub <- x
     }

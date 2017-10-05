@@ -400,3 +400,15 @@ test_that("'is_corpus_frame' works correctly", {
                                             stringsAsFactors = FALSE)))
     expect_true(is_corpus_frame(data.frame(text = as_corpus_text("hello"))))
 })
+
+
+test_that("'print.corpus_frame' can omit row names", {
+    ctype <- switch_ctype("C")
+    on.exit(Sys.setlocale("LC_CTYPE", ctype))
+
+    d <- data.frame(x = letters)
+    expected <- paste0(capture_output(print(d[1:20,,drop=FALSE], row.names = FALSE)),
+                       "\n (26 rows total)")
+    actual <- capture_output(print.corpus_frame(d, row.names = FALSE))
+    expect_equal(actual, expected)
+})
