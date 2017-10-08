@@ -284,6 +284,9 @@ SEXP items_termset(SEXP termset);
 
 /* text processing */
 SEXP abbreviations(SEXP kind);
+SEXP term_stats(SEXP x, SEXP ngrams, SEXP min_count, SEXP max_count,
+		SEXP min_support, SEXP max_support, SEXP output_types);
+SEXP term_matrix(SEXP x, SEXP ngrams, SEXP select, SEXP group);
 SEXP text_count(SEXP x, SEXP terms);
 SEXP text_detect(SEXP x, SEXP terms);
 SEXP text_locate(SEXP x, SEXP terms);
@@ -296,11 +299,6 @@ SEXP text_split_tokens(SEXP x, SEXP size);
 SEXP text_sub(SEXP x, SEXP start, SEXP end);
 SEXP text_tokens(SEXP x);
 SEXP text_types(SEXP x, SEXP collapse);
-SEXP term_counts_text(SEXP x, SEXP weights, SEXP ngrams,
-		      SEXP min_count, SEXP max_count, SEXP min_support,
-		      SEXP max_support, SEXP output_types);
-SEXP term_matrix_text(SEXP x, SEXP weights, SEXP ngrams,
-		      SEXP select, SEXP group);
 SEXP stopwords(SEXP kind);
 
 /* utf8 */

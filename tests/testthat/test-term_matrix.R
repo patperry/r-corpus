@@ -34,17 +34,6 @@ test_that("'term_matrix' should handle empty texts", {
 })
 
 
-test_that("'term_maxtrix' weights works", {
-    text <- c("A rose is a rose is a rose.",
-              "A Rose is red, a violet is blue!",
-              "A rose by any other name would smell as sweet.")
-    w <- c(2, 3, 1)
-    x0 <- term_matrix(text)
-    x <- term_matrix(text, weights = w)
-    expect_equal(x, w * x0)
-})
-
-
 test_that("'term_maxtrix' group works", {
     text <- c("A rose is a rose is a rose.",
               "A Rose is red, a violet is blue!",
@@ -71,30 +60,13 @@ test_that("'term_maxtrix' group can handle NA", {
 })
 
 
-test_that("'term_matrix' weights and group works", {
-    text <- c("A rose is a rose is a rose.",
-              "A Rose is red, a violet is blue!",
-              "A rose by any other name would smell as sweet.")
-    w <- c(100, 3, 1000)
-    g <- c("B", "B", "A")
-    x0 <- term_matrix(text)
-    x <- term_matrix(text, weights = w, group = g)
-    gmat <- Matrix::sparseMatrix(i = as.integer(factor(g)),
-                                 j = seq_along(g), x = 1,
-                                 dimnames = list(levels(factor(g)), NULL))
-    expect_equal(sort(colnames(x)), sort(colnames(x0)))
-    expect_equal(x[, colnames(x0), drop = FALSE],  gmat %*% (w * x0))
-})
-
-
 test_that("'term_matrix' can transpose", {
     text <- c("A rose is a rose is a rose.",
               "A Rose is red, a violet is blue!",
               "A rose by any other name would smell as sweet.")
-    w <- c(100, 3, 1000)
     g <- c("B", "B", "A")
-    x <- term_matrix(text, weights = w, group = g, transpose = TRUE)
-    x0 <- t(Matrix::as.matrix(term_matrix(text, weights = w, group = g)))
+    x <- term_matrix(text, group = g, transpose = TRUE)
+    x0 <- t(Matrix::as.matrix(term_matrix(text, group = g)))
     expect_equal(Matrix::as.matrix(x), x0)
 })
 

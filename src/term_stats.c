@@ -176,9 +176,8 @@ out:
 }
 
 
-SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
-		      SEXP smin_count, SEXP smax_count, SEXP smin_support,
-		      SEXP smax_support, SEXP soutput_types)
+SEXP term_stats(SEXP sx, SEXP sngrams, SEXP smin_count, SEXP smax_count,
+		SEXP smin_support, SEXP smax_support, SEXP soutput_types)
 {
 	SEXP ans, sctx, sterm, scount, ssupport, stext,
 	     sclass, snames, srow_names, stype = NA_STRING;
@@ -188,8 +187,7 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 	const struct corpus_termset_term *term;
 	struct mkchar mkchar;
 	struct corpus_filter *filter;
-	const double *weights;
-	double wt, count, supp, min_count, max_count, min_support, max_support;
+	double count, supp, min_count, max_count, min_support, max_support;
 	R_xlen_t i, n, iterm, nterm;
 	int output_types;
 	int off, len, j, type_id, err = 0, nprot = 0;
@@ -201,8 +199,6 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 	if (sngrams != R_NilValue) {
 		PROTECT(sngrams = coerceVector(sngrams, INTSXP)); nprot++;
 	}
-
-	weights = as_weights(sweights, n);
 
 	min_count = smin_count == R_NilValue ? -INFINITY : REAL(smin_count)[0];
 	max_count = smax_count == R_NilValue ? INFINITY : REAL(smax_count)[0];
@@ -221,11 +217,6 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 	for (i = 0; i < n; i++) {
 		RCORPUS_CHECK_INTERRUPT(i);
 
-		wt = weights ? weights[i] : 1;
-		if (wt == 0) {
-			continue;
-		}
-
 		TRY(corpus_filter_start(filter, &text[i]));
 
 		while (corpus_filter_advance(filter)) {
@@ -238,12 +229,12 @@ SEXP term_counts_text(SEXP sx, SEXP sweights, SEXP sngrams,
 				continue;
 			}
 
-			TRY(corpus_ngram_add(&ctx->ngram, type_id, wt));
+			TRY(corpus_ngram_add(&ctx->ngram, type_id, 1));
 		}
 		TRY(filter->error);
 
 		TRY(corpus_ngram_break(&ctx->ngram));
-		context_update(ctx, wt);
+		context_update(ctx, 1);
 	}
 
 	nterm = 0;

@@ -5,8 +5,8 @@
     Tokenize a set of texts and tabulate the term occurrence statistics.
 }
 \usage{
-term_stats(x, filter = NULL, weights = NULL,
-           ngrams = NULL, min_count = NULL, max_count = NULL,
+term_stats(x, filter = NULL, ngrams = NULL,
+           min_count = NULL, max_count = NULL,
            min_support = NULL, max_support = NULL, types = FALSE,
            subset, ...)
 }
@@ -15,9 +15,6 @@ term_stats(x, filter = NULL, weights = NULL,
 
 \item{filter}{if non-\code{NULL}, a text filter to to use instead of
     the default text filter for \code{x}.}
-
-\item{weights}{a numeric vector the same length of \code{x} assigning
-    weights to each text, or \code{NULL} for unit weights.}
 
 \item{ngrams}{an integer vector of n-gram lengths to include, or
     \code{NULL} for length-1 n-grams only.}
@@ -46,13 +43,10 @@ term_stats(x, filter = NULL, weights = NULL,
     \code{term_stats} tokenizes a set of texts and computes the occurrence
     counts and supports for each term. The \sQuote{count} is the number of
     occurrences of the term across all texts; the \sQuote{support} is the
-    number of texts containing the term. If \code{weights} is
-    non-\code{NULL}, then each token in text \code{i} increments the
-    count for the corresponding term by \code{weights[i]};
-    otherwise, each appearance increments the count by one. Likewise,
-    for non-\code{NULL} weights, an appearance of a term in text \code{i}
-    increments its support by \code{weight[i]} (once, not for each occurrence
-    in the text).
+    number of texts containing the term. Each appearance of a term
+    increments its count by one. Likewise, an appearance of a term in text
+    \code{i} increments its support once, not for each occurrence
+    in the text.
 
     To include multi-type terms, specify the designed term lengths using
     the \code{ngrams} argument.
@@ -78,11 +72,6 @@ term_stats("A rose is a rose is a rose.")
 # remove punctuation and English stop words
 term_stats("A rose is a rose is a rose.",
            text_filter(drop_symbol = TRUE, drop = stopwords_en))
-
-# weight the texts
-term_stats(c("A rose is a rose is a rose.",
-             "A Rose is red, a violet is blue!"),
-           weights = c(100, 1))
 
 # unigrams, bigrams, and trigrams
 term_stats("A rose is a rose is a rose.", ngrams = 1:3)

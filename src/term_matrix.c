@@ -136,8 +136,7 @@ static void context_destroy(void *obj)
 }
 
 
-SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
-		      SEXP sgroup)
+SEXP term_matrix(SEXP sx, SEXP sngrams, SEXP sselect, SEXP sgroup)
 {
 	SEXP ans = R_NilValue, sctx, snames, si, sj, scount, stext,
 	     scol_names, srow_names, sterm;
@@ -146,10 +145,8 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 	struct corpus_filter *filter;
 	const struct termset *select;
 	const struct corpus_termset *terms;
-	const double *weights;
 	const int *type_ids;
 	const int *group;
-	double w;
 	struct corpus_ngram_iter it;
 	R_xlen_t i, n, g, ngroup, nz, off;
 	int err = 0, j, m, term_id, type_id, nprot = 0;
@@ -169,7 +166,6 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 		select = as_termset(sselect);
 	}
 
-	weights = as_weights(sweights, n);
 	if (sgroup != R_NilValue) {
 		PROTECT(srow_names = getAttrib(sgroup, R_LevelsSymbol));
 		nprot++;
@@ -197,8 +193,6 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 			g = (R_xlen_t)(group[i] - 1);
 		}
 
-		w = weights ? weights[i] : 1;
-
 		TRY(corpus_filter_start(filter, &text[i]));
 
 		while (corpus_filter_advance(filter)) {
@@ -210,7 +204,7 @@ SEXP term_matrix_text(SEXP sx, SEXP sweights, SEXP sngrams, SEXP sselect,
 				continue;
 			}
 
-			TRY(corpus_ngram_add(&ctx->ngram[g], type_id, w));
+			TRY(corpus_ngram_add(&ctx->ngram[g], type_id, 1));
 		}
 		TRY(filter->error);
 

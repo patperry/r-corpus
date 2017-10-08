@@ -21,39 +21,6 @@ test_that("'term_stats' can use a filter", {
 })
 
 
-test_that("'term_stats' can use weights", {
-    x <- c("A rose is a rose is a rose.",
-           "A Rose is red, a violet is blue!")
-    weights <- c(100, 1)
-
-    term <- c("a", "rose", "is", ".", "!", ",", "blue", "red", "violet")
-    count <- c(302, 301, 202, 100, 1, 1, 1, 1, 1)
-    support <- c(101, 101, 101, 100, 1, 1, 1, 1, 1)
-    o <- order(-support, -count, term, method = "radix")
-
-    expect_equal(term_stats(x, weights = weights),
-                 structure(data.frame(term = term[o], count = count[o],
-                                      support = support[o],
-                                      stringsAsFactors = FALSE),
-                           class = c("corpus_frame", "data.frame")))
-})
-
-
-test_that("'term_stats' can use a filter and weights", {
-    x <- c("A rose is a rose is a rose.",
-           "A Rose is red, a violet is blue!")
-    f <- text_filter(drop_punct = TRUE, drop = stopwords_en)
-    weights <- c(100, 1)
-
-    expect_equal(term_stats(x, f, weights = weights),
-                 structure(data.frame(term = c("rose", "blue", "red", "violet"),
-                                      count = c(301, 1, 1, 1),
-                                      support = c(101, 1, 1, 1),
-                                      stringsAsFactors = FALSE),
-                           class = c("corpus_frame", "data.frame")))
-})
-
-
 test_that("'term_stats' can count ngrams", {
     expect_equal(term_stats("A rose is a rose is a rose.", ngrams = 2),
                  structure(data.frame(term = c("a rose", "is a", "rose is",
@@ -123,22 +90,6 @@ test_that("'term_stats' errors for invalid 'count', 'support' arguments", {
                  "'min_count' must have length 1")
     expect_error(term_stats("hello", max_count = NA),
                  "'max_count' must be a numeric value (or NULL)", fixed = TRUE)
-})
-
-
-test_that("'term_stats' errors for invalid 'weights', argument", {
-    expect_error(term_stats(c("a", "b", "c"), weights = c(1, 2)),
-                 "'weights' argument has wrong length (2, must be 3)",
-                 fixed = TRUE)
-
-    expect_error(term_stats(c("a", "b", "c"), weights = c(1, 2, NA)),
-                 "'weights' argument contains a missing value")
-
-    expect_error(term_stats(c("a", "b", "c"), weights = c(1, 2, NaN)),
-                 "'weights' argument contains a NaN value")
-
-    expect_error(term_stats(c("a", "b", "c"), weights = c(1, 2, Inf)),
-                 "'weights' argument contains an infinite value")
 })
 
 

@@ -5,6 +5,10 @@ corpus 0.9.3.9000
 
   * Fix bug in `print.corpus_frame(,row.names = FALSE)`.
 
+### DEPRECATED AND DEFUNCT
+
+  * Remove `weights` argument from `term_stats()` and `term_matrix()`.
+
 corpus 0.9.3 (2017-10-02)
 =========================
 

@@ -6,21 +6,17 @@
 Tokenize a set of texts and compute a term frequency matrix.
 }
 \usage{
-term_matrix(x, filter = NULL, weights = NULL,
-            ngrams = NULL, select = NULL, group = NULL,
-            transpose = FALSE, ...)
+term_matrix(x, filter = NULL, ngrams = NULL, select = NULL,
+            group = NULL, transpose = FALSE, ...)
 
-term_counts(x, filter = NULL, weights = NULL,
-            ngrams = NULL, select = NULL, group = NULL, ...)
+term_counts(x, filter = NULL, ngrams = NULL, select = NULL,
+            group = NULL, ...)
 }
 \arguments{
 \item{x}{a text vector to tokenize.}
 
 \item{filter}{if non-\code{NULL}, a text filter to to use instead of
     the default text filter for \code{x}.}
-
-\item{weights}{a numeric vector the same length of \code{x} assigning
-    weights to each text, or \code{NULL} for unit weights.}
 
 \item{ngrams}{an integer vector of n-gram lengths to include, or
     \code{NULL} to use the \code{select} argument to determine the
@@ -42,10 +38,7 @@ term_counts(x, filter = NULL, weights = NULL,
 \code{term_matrix} tokenizes a set of texts and computes the occurrence
 counts for each term, returning the result as a sparse matrix
 (texts-by-terms). \code{term_counts} returns the same information, but
-in a data frame. If \code{weights} is non-\code{NULL}, then each
-token in text \code{i} increments the count for the corresponding terms
-by \code{weights[i]}; otherwise, each appearance increments the count
-by one.
+in a data frame.
 
 If \code{ngrams} is non-\code{NULL}, then multi-type n-grams are
 included in the output for all lengths appearing in the \code{ngrams}
@@ -98,10 +91,6 @@ term_matrix(text, select = c("rose", "red", "violet", "sweet"))
 
 # specify a grouping factor
 term_matrix(text, group = c("Good", "Bad", "Good"))
-
-# weight the texts
-term_matrix(text, weights = c(1, 2, 10),
-            group = c("Good", "Bad", "Good"))
 
 # include higher-order n-grams
 term_matrix(text, ngrams = 1:3)

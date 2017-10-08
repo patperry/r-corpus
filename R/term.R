@@ -13,14 +13,13 @@
 #  limitations under the License.
 
 
-term_stats <- function(x, filter = NULL, weights = NULL,
-                       ngrams = NULL, min_count = NULL, max_count = NULL,
-                       min_support = NULL, max_support = NULL, types = FALSE,
-                       subset, ...)
+term_stats <- function(x, filter = NULL, ngrams = NULL,
+                       min_count = NULL, max_count = NULL,
+                       min_support = NULL, max_support = NULL,
+                       types = FALSE, subset, ...)
 {
     with_rethrow({
         x <- as_corpus_text(x, filter, ...)
-        weights <- as_weights(weights, length(x))
         ngrams <- as_ngrams(ngrams)
         min_count <- as_double_scalar("min_count", min_count, TRUE)
         max_count <- as_double_scalar("max_count", max_count, TRUE)
@@ -29,8 +28,8 @@ term_stats <- function(x, filter = NULL, weights = NULL,
         types <- as_option("types", types)
     })
 
-    ans <- .Call(C_term_counts_text, x, weights, ngrams,
-                 min_count, max_count, min_support, max_support, types)
+    ans <- .Call(C_term_stats, x, ngrams, min_count, max_count,
+                 min_support, max_support, types)
 
     # order by descending support, then descending count, then ascending term
     o <- order(ans$support, ans$count, ans$term,
@@ -54,11 +53,10 @@ term_stats <- function(x, filter = NULL, weights = NULL,
 }
 
 
-term_matrix_raw <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
-                            select = NULL, group = NULL, ...)
+term_matrix_raw <- function(x, filter = NULL, ngrams = NULL, select = NULL,
+                            group = NULL, ...)
 {
     x <- as_corpus_text(x, filter, ...)
-    weights <- as_weights(weights, length(x))
     ngrams <- as_ngrams(ngrams)
     select <- as_character_vector("select", select)
     group <- as_group(group, length(x))
@@ -69,7 +67,7 @@ term_matrix_raw <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
         n <- nlevels(group)
     }
 
-    mat <- .Call(C_term_matrix_text, x, weights, ngrams, select, group)
+    mat <- .Call(C_term_matrix, x, ngrams, select, group)
 
     if (is.null(select)) {
         # put the terms in lexicographic order
@@ -86,11 +84,11 @@ term_matrix_raw <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
 }
 
 
-term_counts <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
-                        select = NULL, group = NULL, ...)
+term_counts <- function(x, filter = NULL, ngrams = NULL, select = NULL,
+                        group = NULL, ...)
 {
     with_rethrow({
-        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group, ...)
+        mat <- term_matrix_raw(x, filter, ngrams, select, group, ...)
     })
 
     row_names <- mat$row_names
@@ -119,11 +117,11 @@ term_counts <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
 }
 
 
-term_matrix <- function(x, filter = NULL, weights = NULL, ngrams = NULL,
-                        select = NULL, group = NULL, transpose = FALSE, ...)
+term_matrix <- function(x, filter = NULL, ngrams = NULL, select = NULL,
+                        group = NULL, transpose = FALSE, ...)
 {
     with_rethrow({
-        mat <- term_matrix_raw(x, filter, weights, ngrams, select, group, ...)
+        mat <- term_matrix_raw(x, filter, ngrams, select, group, ...)
         transpose <- as_option("transpose", transpose)
     })
 
