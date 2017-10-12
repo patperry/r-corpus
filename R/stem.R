@@ -102,7 +102,7 @@ new_stemmer<- function(term, stem, default = NULL, duplicates = "first",
             sep = '\n')
         assign("stem_term", stem_term, env)
         stem_term <- eval(parse(text = vsrc, keep.source = TRUE), env)
-    } else {
-        stem_term
     }
+
+    stem_term
 }
