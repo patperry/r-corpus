@@ -103,8 +103,8 @@ utf8_width(x, encode = TRUE, quote = FALSE)
 \details{
     \code{as_utf8} converts a character object from its declared encoding
     to a valid UTF-8 character object, or throws an error if no conversion
-    is possible. If \code{normalize = TRUE} (the default), then the text
-    gets transformed to Unicode composed normal form (NFC) after conversion
+    is possible. If \code{normalize = TRUE}, then the text gets
+    transformed to Unicode composed normal form (NFC) after conversion
     to UTF-8.
 
     \code{utf8_valid} tests whether the elements of a character object
