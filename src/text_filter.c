@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "corpus/src/unicode.h"
+#include "corpus/lib/utf8lite/src/utf8lite.h"
 #include "rcorpus.h"
 
 
@@ -79,12 +79,12 @@ SEXP as_text_filter_connector(SEXP value)
 	len = LENGTH(con);
 
 	ptr = str;
-	corpus_decode_utf8(&ptr, &ch);
+	utf8lite_decode_utf8(&ptr, &ch);
 	if (ptr != str + len) {
 		error("'connector' must be a single-character string");
 	}
 
-	if (corpus_unicode_isspace(ch)) {
+	if (utf8lite_isspace(ch)) {
 		error("'connector' cannot be a white space character");
 	}
 
@@ -109,7 +109,7 @@ static uint32_t filter_connector(SEXP filter)
 	}
 
 	str = (const uint8_t *)CHAR(con);
-	corpus_decode_utf8(&str, &connector);
+	utf8lite_decode_utf8(&str, &connector);
 	return connector;
 }
 

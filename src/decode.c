@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include "corpus/src/error.h"
 #include "corpus/src/text.h"
-#include "corpus/src/unicode.h"
 #include "corpus/src/data.h"
 #include "rcorpus.h"
 

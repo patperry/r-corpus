@@ -34,7 +34,6 @@
 #include "corpus/src/stem.h"
 #include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
-#include "corpus/src/unicode.h"
 #include "corpus/src/data.h"
 #include "corpus/src/datatype.h"
 #include "rcorpus.h"

@@ -21,8 +21,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "corpus/lib/utf8lite/src/utf8lite.h"
 #include "corpus/src/array.h"
-#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 /* Some displays will wrongly format emoji with one space instead of two.
@@ -48,11 +48,11 @@ int charsxp_width(SEXP charsxp, int quote, int utf8)
 
 	while (ptr != end) {
 		start = ptr;
-		if ((err = corpus_scan_utf8(&start, end))) {
+		if ((err = utf8lite_scan_utf8(&start, end))) {
 			return NA_INTEGER;
 		}
 
-		corpus_decode_utf8(&ptr, &code);
+		utf8lite_decode_utf8(&ptr, &code);
 		if (code < 0x80) {
 			switch (code) {
 			case '\a':
@@ -80,21 +80,21 @@ int charsxp_width(SEXP charsxp, int quote, int utf8)
 		cw = charwidth(code);
 
 		switch (cw) {
-		case CORPUS_CHARWIDTH_NONE:
-		case CORPUS_CHARWIDTH_IGNORABLE:
+		case UTF8LITE_CHARWIDTH_NONE:
+		case UTF8LITE_CHARWIDTH_IGNORABLE:
 			break;
 
-		case CORPUS_CHARWIDTH_NARROW:
-		case CORPUS_CHARWIDTH_AMBIGUOUS:
+		case UTF8LITE_CHARWIDTH_NARROW:
+		case UTF8LITE_CHARWIDTH_AMBIGUOUS:
 			width += 1;
 			break;
 
-		case CORPUS_CHARWIDTH_WIDE:
-		case CORPUS_CHARWIDTH_EMOJI:
+		case UTF8LITE_CHARWIDTH_WIDE:
+		case UTF8LITE_CHARWIDTH_EMOJI:
 			width += 2;
 			break;
 
-		default: // CORPUS_CHARWIDTH_OTHER
+		default: // UTF8LITE_CHARWIDTH_OTHER
 			return NA_INTEGER;
 		}
 	}
@@ -149,7 +149,7 @@ static int is_valid(const uint8_t *str, size_t size, size_t *errptr)
 	valid = 1;
 	while (ptr != end) {
 		start = ptr;
-		if (corpus_scan_utf8(&ptr, end)) {
+		if (utf8lite_scan_utf8(&ptr, end)) {
 			err = (size_t)(start - str);
 			valid = 0;
 			goto out;
@@ -169,10 +169,10 @@ int charwidth(uint32_t code)
 {
 #if (defined(_WIN32) || defined(_WIN64))
 	if (code > 0xFFFF) {
-		return CORPUS_CHARWIDTH_OTHER;
+		return UTF8LITE_CHARWIDTH_OTHER;
 	}
 #endif
-	return corpus_unicode_charwidth(code);
+	return utf8lite_charwidth(code);
 }
 
 
@@ -188,9 +188,9 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 	size = 0;
 	needs = 0;
 	while (ptr != end) {
-		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
+		nbyte = 1 + UTF8LITE_UTF8_TAIL_LEN(*ptr);
 		start = ptr;
-		if ((err = corpus_scan_utf8(&start, end))) {
+		if ((err = utf8lite_scan_utf8(&start, end))) {
 			// encode invalid byte as \xHH (4 bytes)
 			needs = 1;
 			nbyte = 4;
@@ -216,17 +216,17 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 				break;
 			}
 		} else {
-			corpus_decode_utf8(&ptr, &code);
+			utf8lite_decode_utf8(&ptr, &code);
 			if (utf8) {
 				cw = charwidth(code);
 				switch (cw) {
-				case CORPUS_CHARWIDTH_OTHER:
+				case UTF8LITE_CHARWIDTH_OTHER:
 					// \uXXXX or \UXXXXYYYY
 					needs = 1;
 					nbyte = ((code <= 0xFFFF) ? 6 : 10);
 					break;
 
-				case CORPUS_CHARWIDTH_IGNORABLE:
+				case UTF8LITE_CHARWIDTH_IGNORABLE:
 					if (display) {
 						// remove ignorables
 						needs = 1;
@@ -234,7 +234,7 @@ static int needs_encode_chars(const uint8_t *str, size_t size0, int display,
 					}
 					break;
 
-				case CORPUS_CHARWIDTH_EMOJI:
+				case UTF8LITE_CHARWIDTH_EMOJI:
 					if (display) {
 						// add zwsp after emoji
 						needs = 1;
@@ -277,7 +277,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 
 	while (ptr != end) {
 		start = ptr;
-		if ((err = corpus_scan_utf8(&start, end))) {
+		if ((err = utf8lite_scan_utf8(&start, end))) {
 			sprintf((char *)dst, "\\x%02x", (unsigned)*ptr);
 			dst += 4;
 			ptr++;
@@ -285,7 +285,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 		}
 
 		start = ptr;
-		nbyte = 1 + CORPUS_UTF8_TAIL_LEN(*ptr);
+		nbyte = 1 + UTF8LITE_UTF8_TAIL_LEN(*ptr);
 
 		if (nbyte == 1) { // code < 0x80
 			code = *ptr++;
@@ -331,10 +331,10 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 			continue;
 		}
 
-		corpus_decode_utf8(&ptr, &code);
+		utf8lite_decode_utf8(&ptr, &code);
 		cw = charwidth(code);
 
-		if (cw == CORPUS_CHARWIDTH_OTHER || !utf8) {
+		if (cw == UTF8LITE_CHARWIDTH_OTHER || !utf8) {
 			if (code <= 0xFFFF) {
 				sprintf((char *)dst, "\\u%04x",
 					(unsigned)code);
@@ -347,7 +347,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 			continue;
 		}
 
-		if (cw == CORPUS_CHARWIDTH_IGNORABLE && display) {
+		if (cw == UTF8LITE_CHARWIDTH_IGNORABLE && display) {
 			continue;
 		}
 
@@ -355,7 +355,7 @@ static void encode_chars(uint8_t *dst, const uint8_t *str, size_t size,
 			*dst++ = *start++;
 		}
 
-		if (cw == CORPUS_CHARWIDTH_EMOJI && display) {
+		if (cw == UTF8LITE_CHARWIDTH_EMOJI && display) {
 			memcpy(dst, ZWSP, ZWSP_NBYTE);
 			dst += ZWSP_NBYTE;
 		}

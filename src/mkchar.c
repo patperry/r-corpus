@@ -15,9 +15,9 @@
  */
 
 #include <limits.h>
+#include "corpus/lib/utf8lite/src/utf8lite.h"
 #include "corpus/src/array.h"
 #include "corpus/src/text.h"
-#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 
@@ -51,7 +51,7 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 			corpus_text_iter_make(&it, text);
 			ptr = mk->buf;
 			while (corpus_text_iter_advance(&it)) {
-				corpus_encode_utf8(it.current, &ptr);
+				utf8lite_encode_utf8(it.current, &ptr);
 			}
 			len = (size_t)(ptr - mk->buf);
 			ptr = mk->buf;

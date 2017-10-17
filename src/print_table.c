@@ -22,7 +22,6 @@
 #include <R_ext/Riconv.h>
 
 #include "corpus/src/array.h"
-#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 #if (defined(_WIN32) || defined(_WIN64))

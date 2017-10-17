@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <Rdefines.h>
 #include "corpus/src/text.h"
-#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 

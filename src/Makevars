@@ -25,6 +25,7 @@ STEMMER_O = $(SNOWBALL)/src_c/stem_UTF_8_arabic.o \
 			$(SNOWBALL)/libstemmer/libstemmer_utf8.o
 
 LIBCORPUS = corpus/lib/strntod.o corpus/lib/strntoimax.o \
+        corpus/lib/utf8lite/src/utf8lite.o \
 	corpus/src/array.o corpus/src/census.o corpus/src/data.o \
 	corpus/src/datatype.o corpus/src/error.o corpus/src/filebuf.o \
 	corpus/src/filter.o corpus/src/intset.o corpus/src/memory.o \
@@ -32,7 +33,7 @@ LIBCORPUS = corpus/lib/strntod.o corpus/lib/strntoimax.o \
 	corpus/src/sentfilter.o corpus/src/sentscan.o corpus/src/stem.o \
 	corpus/src/symtab.o corpus/src/table.o corpus/src/termset.o \
 	corpus/src/text.o corpus/src/textset.o corpus/src/tree.o \
-	corpus/src/typemap.o corpus/src/unicode.o corpus/src/wordscan.o \
+	corpus/src/typemap.o corpus/src/wordscan.o \
 	$(STEMMER_O)
 
 $(SHLIB): libccorpus.a

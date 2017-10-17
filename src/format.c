@@ -20,8 +20,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include "corpus/lib/utf8lite/src/utf8lite.h"
 #include "corpus/src/array.h"
-#include "corpus/src/unicode.h"
 #include "rcorpus.h"
 
 
@@ -177,10 +177,10 @@ static int text_iter_advance(struct text_iter *iter)
 		if (ce == CE_BYTES) {
 			code = *ptr++;
 			iter->current = (code < 0x80) ? (int)code : -(int)code;
-		} else if ((err = corpus_scan_utf8(&start, end))) {
+		} else if ((err = utf8lite_scan_utf8(&start, end))) {
 			iter->current = -(int)*ptr++;
 		} else {
-			corpus_decode_utf8(&ptr, &code);
+			utf8lite_decode_utf8(&ptr, &code);
 			iter->current = (int)code;
 		}
 		iter->data.raw.ptr = ptr;
@@ -218,7 +218,7 @@ static int text_iter_retreat(struct text_iter *iter)
 			ptr--; // invalid byte
 		} else {
 			code = (uint32_t)iter->current;
-			ptr -= CORPUS_UTF8_ENCODE_LEN(code);
+			ptr -= UTF8LITE_UTF8_ENCODE_LEN(code);
 		}
 	}
 
@@ -244,7 +244,7 @@ static int text_iter_retreat(struct text_iter *iter)
 		if (start < begin) {
 			break;
 		}
-		if (!(err = corpus_scan_utf8(&start, ptr))) {
+		if (!(err = utf8lite_scan_utf8(&start, ptr))) {
 			break;
 		}
 	}
@@ -254,7 +254,7 @@ static int text_iter_retreat(struct text_iter *iter)
 		iter->current = -(int)ptr[-1];
 	} else {
 		start = ptr - nbyte;
-		corpus_decode_utf8(&start, &code);
+		utf8lite_decode_utf8(&start, &code);
 		iter->current = (int)code;
 	}
 
@@ -287,16 +287,16 @@ static int char_width(int code, int type, int quote, int utf8)
 
 	if (utf8) {
 		switch (type) {
-		case CORPUS_CHARWIDTH_NONE:
-		case CORPUS_CHARWIDTH_IGNORABLE:
+		case UTF8LITE_CHARWIDTH_NONE:
+		case UTF8LITE_CHARWIDTH_IGNORABLE:
 			return 0;
 
-		case CORPUS_CHARWIDTH_NARROW:
-		case CORPUS_CHARWIDTH_AMBIGUOUS:
+		case UTF8LITE_CHARWIDTH_NARROW:
+		case UTF8LITE_CHARWIDTH_AMBIGUOUS:
 			return 1;
 
-		case CORPUS_CHARWIDTH_WIDE:
-		case CORPUS_CHARWIDTH_EMOJI:
+		case UTF8LITE_CHARWIDTH_WIDE:
+		case UTF8LITE_CHARWIDTH_EMOJI:
 			return 2;
 
 		default:
@@ -437,12 +437,12 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 			trunc = 1;
 		}
 
-		nbyte = code < 0 ? 1 : CORPUS_UTF8_ENCODE_LEN(code);
+		nbyte = code < 0 ? 1 : UTF8LITE_UTF8_ENCODE_LEN(code);
 		ENSURE(nbyte);
 
 		if (trunc) {
 			if (utf8) {
-				corpus_encode_utf8(ELLIPSIS, &dst);
+				utf8lite_encode_utf8(ELLIPSIS, &dst);
 			} else {
 				*dst++ = '.';
 				*dst++ = '.';
@@ -455,7 +455,7 @@ static SEXP format_left(const struct text *text, int trim, int chars,
 			*dst++ = '\\';
 			*dst++ = '"';
 		} else {
-			corpus_encode_utf8(code, &dst);
+			utf8lite_encode_utf8(code, &dst);
 		}
 		width += w;
 	}
@@ -527,12 +527,12 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 			trunc = 1;
 		}
 
-		nbyte = code < 0 ? 1 : CORPUS_UTF8_ENCODE_LEN(code);
+		nbyte = code < 0 ? 1 : UTF8LITE_UTF8_ENCODE_LEN(code);
 		ENSURE(nbyte);
 
 		if (trunc) {
 			if (utf8) {
-				corpus_rencode_utf8(ELLIPSIS, &dst);
+				utf8lite_rencode_utf8(ELLIPSIS, &dst);
 			} else {
 				// nbyte(ELLIPSIS) == 3 so no need to reserve
 				*--dst = '.';
@@ -546,7 +546,7 @@ static SEXP format_right(const struct text *text, int trim, int chars,
 			*--dst = '"';
 			*--dst = '\\';
 		} else {
-			corpus_rencode_utf8(code, &dst);
+			utf8lite_rencode_utf8(code, &dst);
 		}
 		width += w;
 	}
