@@ -246,12 +246,6 @@ test_that("invalid operations send errors", {
 
 
 test_that("text filter printing works", {
-    skip_if_not(with(R.Version(), paste(major, minor, sep = ".")) >= "3.4.0",
-                "Setting width fails on R < 3.4.0")
-    oldwidth <- options()$width
-    options(width = 80)
-    on.exit(options(width = oldwidth), add = TRUE)
-
     f <- text_filter()
 expected <- c(
 'Text filter with the following options:',
@@ -273,6 +267,6 @@ expected <- c(
 '    sent_crlf: FALSE',
 '    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
 
-    actual <- strsplit(capture_output(print(f)), "\n")[[1]]
+    actual <- strsplit(capture_output(print(f), width = 80), "\n")[[1]]
     expect_equal(actual, expected)
 })

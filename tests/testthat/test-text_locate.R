@@ -155,18 +155,15 @@ test_that("'text_locate' prints results correctly", {
     f <- text_filter(map_case = FALSE)
     loc <- text_locate(text, "Rose", f)
 
-    oldwidth <- getOption("width")
-    options(width = 76)
-
     ctype <- switch_ctype("C")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
-    lines <- strsplit(capture_output(print(loc)), "\n")[[1]]
+    lines <- strsplit(capture_output(print(loc), width = 76), "\n")[[1]]
+
     expect_equal(lines, c(
 "  text            before             instance             after             ",
 "1 1                                    Rose    is a rose is a rose is a r...",
 "2 3                  Snow White and    Rose    Red                          "))
-    options(width = oldwidth)
 })
 
 

@@ -49,19 +49,16 @@ test_that("'utf8_print' works with named character vectors", {
 
 
 test_that("'utf8_print' can use the 'max' argument for unnamed vectors", {
-    oldwidth <- options()$width
-    options(width = 80)
-    on.exit(options(width = oldwidth))
-
     x <- as.character(1:100)
 
-    expect_equal(capture_output(utf8_print(x, max = 0)),
+    expect_equal(capture_output(utf8_print(x, max = 0), width = 80),
                  " [ reached getOption(\"max.print\") -- omitted 100 entries ]")
 
-    expect_equal(capture_output(utf8_print(x, max = 100)),
-                 capture_output(utf8_print(x)))
+    expect_equal(capture_output(utf8_print(x, max = 100), width = 80),
+                 capture_output(utf8_print(x), width = 80))
 
-    lines <- strsplit(capture_output(utf8_print(x, max = 20)), "\n")[[1]]
+    lines <- strsplit(capture_output(utf8_print(x, max = 20), width = 80),
+                      "\n")[[1]]
     expect_equal(length(lines), 3)
     expect_equal(lines[[3]],
                  " [ reached getOption(\"max.print\") -- omitted 80 entries ]")
@@ -69,20 +66,17 @@ test_that("'utf8_print' can use the 'max' argument for unnamed vectors", {
 
 
 test_that("'utf8_print' can use the 'max' argument for named vectors", {
-    oldwidth <- options()$width
-    options(width = 80)
-    on.exit(options(width = oldwidth))
-
     x <- as.character(1:260)
     names(x) <- rep(letters, 10)
 
-    expect_equal(capture_output(utf8_print(x, max = 0)),
+    expect_equal(capture_output(utf8_print(x, max = 0), width = 80),
                  " [ reached getOption(\"max.print\") -- omitted 260 entries ]")
 
-    expect_equal(capture_output(utf8_print(x, max = 260)),
-                 capture_output(utf8_print(x)))
+    expect_equal(capture_output(utf8_print(x, max = 260), width = 80),
+                 capture_output(utf8_print(x), width = 80))
 
-    lines <- strsplit(capture_output(utf8_print(x, max = 20)), "\n")[[1]]
+    lines <- strsplit(capture_output(utf8_print(x, max = 20), width = 80),
+                      "\n")[[1]]
     expect_equal(length(lines), 5)
     expect_equal(lines[[5]],
                  " [ reached getOption(\"max.print\") -- omitted 240 entries ]")
