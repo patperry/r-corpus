@@ -30,6 +30,10 @@
 ^src/corpus/[.]travis[.]yml$
 ^src/corpus/Makefile$
 ^src/corpus/data$
+^src/corpus/lib/utf8lite/[.]git$
+^src/corpus/lib/utf8lite/[.]travis[.]yml$
+^src/corpus/lib/utf8lite/Makefile$
+^src/corpus/lib/utf8lite/data$
 ^vignettes/gender[.]Rmd
 ^vignettes/gender-.*png
 ^vignettes/.*[.]in$
