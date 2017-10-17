@@ -230,7 +230,7 @@ test_that("'format' can handle marks", {
     expect_equal(format(text, chars = 5, justify = "right"), "...")
     expect_equal(utf8_format(raw, chars = 5, justify = "right"), "...")
 
-    ctype <- switch_ctype("Unicode")
+    switch_ctype("Unicode")
 
     expect_equal(format(text, chars = 1, justify = "left"), raw)
     expect_equal(format(text, chars = 1, justify = "centre"), raw)
