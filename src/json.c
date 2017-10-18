@@ -563,8 +563,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	name_ptr = translate_utf8(sname);
 	name_len = strlen(name_ptr);
 	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8)); nprot++;
-	TRY(corpus_text_assign(&name, (uint8_t *)name_ptr, name_len,
-			       CORPUS_TEXT_NOESCAPE));
+	TRY(corpus_text_assign(&name, (uint8_t *)name_ptr, name_len, 0));
 
 	if (!corpus_symtab_has_type(&obj->schema.names, &name, &name_id)) {
 		UNPROTECT(nprot);

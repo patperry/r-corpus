@@ -399,8 +399,7 @@ SEXP as_text_character(SEXP x, SEXP filter)
 			      (uint64_t)(i + 1), (uint64_t)len, INT_MAX);
 		}
 		if ((err = corpus_text_assign(&obj->text[i], (uint8_t *)ptr,
-					      (size_t)len,
-					      CORPUS_TEXT_NOESCAPE))) {
+					      (size_t)len, 0))) {
 			error("character object at index %"PRIu64
 			      " contains invalid UTF-8", (uint64_t)(i + 1));
 		}
@@ -533,7 +532,7 @@ static void load_text(SEXP x)
 			} else {
 				ptr = (const uint8_t *)CHAR(str);
 				len = XLENGTH(str);
-				flags = CORPUS_TEXT_NOESCAPE;
+				flags = 0;
 				err = corpus_text_assign(&txt, ptr, len, flags);
 				if (err) {
 					error("character object in source %d"
@@ -547,7 +546,7 @@ static void load_text(SEXP x)
 		case SOURCE_JSON:
 			// no need to validate input (handled by json)
 			corpus_data_text(&sources[s].data.set->rows[j], &txt);
-			flags = 0;
+			flags = CORPUS_TEXT_UNESCAPE;
 			break;
 
 		default:
