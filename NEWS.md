@@ -1,9 +1,13 @@
-corpus 0.9.3.9000
-=================
+corpus 0.9.4 (2017-10-30)
+=========================
 
 ### BUG FIXES
 
   * Fix bug in `print.corpus_frame(,row.names = FALSE)`.
+
+  * Fix failing test on R-devel.
+
+  * Fix failing tests on testthat 2.0.0.
 
 ### DEPRECATED AND DEFUNCT
 
