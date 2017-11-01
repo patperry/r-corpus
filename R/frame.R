@@ -109,10 +109,22 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                       na.encode = TRUE, na.print = "NA")
         }
 
-        if (stretch) {
+        if (stretch && char) {
             cn <- names[[i]]
-            cw <- utf8_width(cols[[i]], quote = quote)
-            cw[is.na(cw)] <- if (char && !quote) 4 else 2
+            cw <- utf8_width(cols[[i]])
+
+            if (quote) {
+                # adjust for extra width for escaped quotes
+                # https://stackoverflow.com/a/12427831/6233565
+                nq <- vapply(regmatches(cols[[i]], gregexpr('"', cols[[i]])),
+                             length, 0L)
+
+                # also adjust for open and close quotes
+                cw <- cw + nq + 2
+                cw[is.na(cw)] <- 2 # NA
+            } else {
+                cw[is.na(cw)] <- 4 # <NA>
+            }
 
             w <- max(cw, utf8_width(cn))
             if (w > chars_left) {
