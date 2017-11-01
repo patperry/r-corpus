@@ -129,12 +129,11 @@
     <p>Tokenize a set of texts and compute a term frequency matrix.</p>
     
 
-    <pre class="usage"><span class='fu'>term_matrix</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>term_matrix</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
 
-<span class='fu'>term_counts</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-            <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>term_counts</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+            <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -147,11 +146,6 @@
       <th>filter</th>
       <td><p>if non-<code>NULL</code>, a text filter to to use instead of
     the default text filter for <code>x</code>.</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>a numeric vector the same length of <code>x</code> assigning
-    weights to each text, or <code>NULL</code> for unit weights.</p></td>
     </tr>
     <tr>
       <th>ngrams</th>
@@ -186,10 +180,7 @@
     <p><code>term_matrix</code> tokenizes a set of texts and computes the occurrence
 counts for each term, returning the result as a sparse matrix
 (texts-by-terms). <code>term_counts</code> returns the same information, but
-in a data frame. If <code>weights</code> is non-<code>NULL</code>, then each
-token in text <code>i</code> increments the count for the corresponding terms
-by <code>weights[i]</code>; otherwise, each appearance increments the count
-by one.</p>
+in a data frame.</p>
 <p>If <code>ngrams</code> is non-<code>NULL</code>, then multi-type n-grams are
 included in the output for all lengths appearing in the <code>ngrams</code>
 argument. If <code>ngrams</code> is <code>NULL</code> but <code>select</code> is
@@ -250,11 +241,6 @@ a factor.</p>
 <span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt; 2 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘!’, ‘,’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                       
 #&gt; Bad  1 1 . 2 . . 1 . 2 . . 1 1 . . 1 .
 #&gt; Good . . 2 4 1 1 . 1 2 1 1 . 4 1 1 . 1</div><div class='input'>
-<span class='co'># weight the texts</span>
-<span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>10</span>),
-            <span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Good"</span>, <span class='st'>"Bad"</span>, <span class='st'>"Good"</span>))</div><div class='output co'>#&gt; 2 x 17 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 17 column names ‘!’, ‘,’, ‘.’ ... ]]</span></div><div class='output co'>#&gt;                                                  
-#&gt; Bad  2 2  .  4  .  . 2  . 4  .  . 2  2  .  . 2  .
-#&gt; Good . . 11 13 10 10 . 10 2 10 10 . 13 10 10 . 10</div><div class='input'>
 <span class='co'># include higher-order n-grams</span>
 <span class='fu'>term_matrix</span>(<span class='no'>text</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt; 3 x 57 sparse Matrix of class "dgCMatrix"</div><div class='output co'>#&gt; <span class='message'>   [[ suppressing 57 column names ‘!’, ‘,’, ‘, a’ ... ]]</span></div><div class='output co'>#&gt;                                                                               
 #&gt; [1,] . . . . 1 3 3 1 . 2 . . . . . . . . . . . . . 2 2 2 . . . . . . . . . . .

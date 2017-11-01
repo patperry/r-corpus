@@ -129,8 +129,8 @@
     <p>Tokenize a set of texts and tabulate the term occurrence statistics.</p>
     
 
-    <pre class="usage"><span class='fu'>term_stats</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-           <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>min_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>term_stats</span>(<span class='no'>x</span>, <span class='kw'>filter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+           <span class='kw'>min_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_count</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
            <span class='kw'>min_support</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_support</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>types</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
            <span class='no'>subset</span>, <span class='no'>...</span>)</pre>
     
@@ -145,11 +145,6 @@
       <th>filter</th>
       <td><p>if non-<code>NULL</code>, a text filter to to use instead of
     the default text filter for <code>x</code>.</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>a numeric vector the same length of <code>x</code> assigning
-    weights to each text, or <code>NULL</code> for unit weights.</p></td>
     </tr>
     <tr>
       <th>ngrams</th>
@@ -197,13 +192,10 @@
     <p><code>term_stats</code> tokenizes a set of texts and computes the occurrence
     counts and supports for each term. The &#8216;count&#8217; is the number of
     occurrences of the term across all texts; the &#8216;support&#8217; is the
-    number of texts containing the term. If <code>weights</code> is
-    non-<code>NULL</code>, then each token in text <code>i</code> increments the
-    count for the corresponding term by <code>weights[i]</code>;
-    otherwise, each appearance increments the count by one. Likewise,
-    for non-<code>NULL</code> weights, an appearance of a term in text <code>i</code>
-    increments its support by <code>weight[i]</code> (once, not for each occurrence
-    in the text).</p>
+    number of texts containing the term. Each appearance of a term
+    increments its count by one. Likewise, an appearance of a term in text
+    <code>i</code> increments its support once, not for each occurrence
+    in the text.</p>
 <p>To include multi-type terms, specify the designed term lengths using
     the <code>ngrams</code> argument.</p>
     
@@ -235,19 +227,6 @@
            <span class='fu'><a href='text_filter.html'>text_filter</a></span>(<span class='kw'>drop_symbol</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='no'>stopwords_en</span>))</div><div class='output co'>#&gt;   term count support
 #&gt; 1 rose     3       1
 #&gt; 2 .        1       1</div><div class='input'>
-<span class='co'># weight the texts</span>
-<span class='fu'>term_stats</span>(<span class='fu'>c</span>(<span class='st'>"A rose is a rose is a rose."</span>,
-             <span class='st'>"A Rose is red, a violet is blue!"</span>),
-           <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>100</span>, <span class='fl'>1</span>))</div><div class='output co'>#&gt;   term   count support
-#&gt; 1 a        302     101
-#&gt; 2 rose     301     101
-#&gt; 3 is       202     101
-#&gt; 4 .        100     100
-#&gt; 5 !          1       1
-#&gt; 6 ,          1       1
-#&gt; 7 blue       1       1
-#&gt; 8 red        1       1
-#&gt; 9 violet     1       1</div><div class='input'>
 <span class='co'># unigrams, bigrams, and trigrams</span>
 <span class='fu'>term_stats</span>(<span class='st'>"A rose is a rose is a rose."</span>, <span class='kw'>ngrams</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt;    term      count support
 #&gt; 1  a             3       1
