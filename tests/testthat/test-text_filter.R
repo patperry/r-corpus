@@ -267,6 +267,9 @@ expected <- c(
 '    sent_crlf: FALSE',
 '    sent_suppress:  chr [1:155] "A." "A.D." "a.m." "A.M." "A.S." "AA." ...')
 
+    skip_if_not(with(R.Version(), paste(major, minor, sep = "."))
+                >= "3.4.0", "str output changed on R 3.4.0")
+
     actual <- strsplit(capture_output(print(f), width = 80), "\n")[[1]]
     expect_equal(actual, expected)
 })
