@@ -33,4 +33,4 @@ warnings_are_errors: true
 after_success:
   - export LC_ALL="C"
   - export TEST_WEB_RESOURCES="true"
-  - if [[ "${R_CODECOV}" ]]; then Rscript -e 'covr::codecov(line_exclusions = c("R/deprecated.R", "R/wordlist.R", "src/wordlist.c", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
+  - if [[ "${R_CODECOV}" ]]; then Rscript -e 'covr::codecov(line_exclusions = c("R/deprecated.R", "R/wordlist.R", "src/wordlist.c", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'; fi
