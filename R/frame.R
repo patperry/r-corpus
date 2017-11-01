@@ -109,11 +109,11 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                       na.encode = TRUE, na.print = "NA")
         }
 
-        if (stretch && char) {
+        if (stretch) {
             cn <- names[[i]]
             cw <- utf8_width(cols[[i]])
 
-            if (quote) {
+            if (char && quote) {
                 # adjust for extra width for escaped quotes
                 # https://stackoverflow.com/a/12427831/6233565
                 nq <- vapply(regmatches(cols[[i]], gregexpr('"', cols[[i]])),
@@ -123,7 +123,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                 cw <- cw + nq + 2
                 cw[is.na(cw)] <- 2 # NA
             } else {
-                cw[is.na(cw)] <- 4 # <NA>
+                cw[is.na(cw)] <- if (char && !quote) 4 else 2 # <NA> or NA
             }
 
             w <- max(cw, utf8_width(cn))
