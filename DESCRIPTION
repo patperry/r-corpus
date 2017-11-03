@@ -19,9 +19,9 @@ Authors@R: c(
          comment = "Unicode Character Database"))
 Depends:
   R (>= 3.3),
-  utf8
 Imports:
-  stats
+  stats,
+  utf8
 Suggests:
   knitr,
   Matrix,
