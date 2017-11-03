@@ -100,27 +100,33 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
             char <- is_corpus_text(elt)
         }
 
+        cn <- names[[i]]
+        if (is.na(cn)) {
+            cn <- "NA"
+        }
+        cw <- max(0L, utf8_width(cols[[i]], quote = quote), na.rm = TRUE)
+        if (anyNA(cols[[i]])) {
+            naw <- if (char && !quote) 4 else 2 # <NA> or NA
+            cw <- max(cw, naw)
+        }
+        w <- max(cw, utf8_width(cn))
+
         if (char) {
             # use same justification for column and name
             names[[i]] <- utf8_format(names[[i]],
                                       chars = .Machine$integer.max,
                                       justify = justify,
-                                      width = max(0, utf8_width(cols[[i]])),
+                                      width = w,
                                       na.encode = TRUE, na.print = "NA")
         } else {
             names[[i]] <- utf8_format(names[[i]],
                                       chars = .Machine$integer.max,
                                       justify = "right",
-                                      width = max(0, utf8_width(cols[[i]])),
+                                      width = w,
                                       na.encode = TRUE, na.print = "NA")
         }
 
         if (stretch) {
-            cn <- names[[i]]
-            cw <- utf8_width(cols[[i]], quote = quote)
-            cw[is.na(cw)] <- if (char && !quote) 4 else 2 # <NA> or NA
-
-            w <- max(cw, utf8_width(cn))
             if (w > chars_left) {
                 # wrapped to next line
                 chars_left <- chars_max - gap - w

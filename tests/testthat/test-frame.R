@@ -20,8 +20,8 @@ test_that("'print.corpus_frame' produces the same results on ASCII", {
     dr$ch <- paste0(d$ch, " ")
 
     dq <- d
-    dq$f <- paste0('"', d$f, '"')
-    dq$ch <- paste0('"', d$ch, '"')
+    #dq$f <- paste0('"', d$f, '"')
+    #dq$ch <- paste0('"', d$ch, '"')
     names(dq) <- c("x", "f  ", "ch ")
 
     expect_equal(capture_output(print.corpus_frame(d)),
@@ -29,7 +29,7 @@ test_that("'print.corpus_frame' produces the same results on ASCII", {
     expect_equal(
         capture_output(print.corpus_frame(d, quote = TRUE,
                                           row.names = FALSE)),
-        capture_output(print(dq, row.names = FALSE)))
+        capture_output(print(dq, quote = TRUE, row.names = FALSE)))
 })
 
 
@@ -41,8 +41,8 @@ test_that("'print.corpus_frame' handles row names", {
     dr$ch <- paste0(d$ch, " ")
 
     dq <- d
-    dq$f <- paste0('"', d$f, '"')
-    dq$ch <- paste0('"', d$ch, '"')
+    #dq$f <- paste0('"', d$f, '"')
+    #dq$ch <- paste0('"', d$ch, '"')
     names(dq) <- c("x", "f  ", "ch ")
 
     expect_equal(capture_output(print.corpus_frame(d)),
@@ -51,7 +51,7 @@ test_that("'print.corpus_frame' handles row names", {
     expect_equal(
         capture_output(print.corpus_frame(d, quote = TRUE,
                                           row.names = FALSE)),
-        capture_output(print(dq, row.names = FALSE)))
+        capture_output(print(dq, quote = TRUE, row.names = FALSE)))
 })
 
 
@@ -127,7 +127,7 @@ test_that("'print.corpus_frame' handles NA elements", {
                  capture_output(print(dr)))
 
     expect_equal(capture_output(print.corpus_frame(d, quote = TRUE)),
-                 capture_output(print(dq, na.print = "NA")))
+                 capture_output(print(dq, quote = TRUE)))
 
     expect_equal(capture_output(print.corpus_frame(d, na.print = "foo")),
                  capture_output(print(dfoo, na.print = "foo")))
