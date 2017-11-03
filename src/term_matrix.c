@@ -20,32 +20,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "corpus/src/error.h"
-#include "corpus/src/memory.h"
-#include "corpus/src/render.h"
-#include "corpus/src/table.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/termset.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/symtab.h"
-#include "corpus/src/wordscan.h"
-#include "corpus/src/filter.h"
-#include "corpus/src/ngram.h"
 #include "rcorpus.h"
 
 
-// the R 'error' is a #define (to Rf_error) that clashes with the 'error'
-// member of struct corpus_filter
-#ifdef error
-#  undef error
-#endif
-
-
 struct context {
-	struct corpus_render render;
+	struct utf8lite_render render;
 	struct corpus_termset termset;
 	struct corpus_ngram *ngram;
 	int *buffer;
@@ -63,7 +42,7 @@ static void context_init(struct context *ctx, SEXP sngrams,
 	int ngram_max;
 	int err = 0;
 
-	TRY(corpus_render_init(&ctx->render, CORPUS_ESCAPE_NONE));
+	TRY(utf8lite_render_init(&ctx->render, UTF8LITE_ESCAPE_NONE));
 	ctx->has_render = 1;
 
 	if (sngrams != R_NilValue) {
@@ -121,7 +100,7 @@ static void context_destroy(void *obj)
 	struct context *ctx = obj;
 
 	if (ctx->has_render) {
-		corpus_render_destroy(&ctx->render);
+		utf8lite_render_destroy(&ctx->render);
 	}
 
 	if (ctx->has_termset) {
@@ -141,7 +120,7 @@ SEXP term_matrix(SEXP sx, SEXP sngrams, SEXP sselect, SEXP sgroup)
 	SEXP ans = R_NilValue, sctx, snames, si, sj, scount, stext,
 	     scol_names, srow_names, sterm;
 	struct context *ctx;
-	const struct corpus_text *text, *type;
+	const struct utf8lite_text *text, *type;
 	struct corpus_filter *filter;
 	const struct termset *select;
 	const struct corpus_termset *terms;
@@ -278,15 +257,15 @@ SEXP term_matrix(SEXP sx, SEXP sngrams, SEXP sselect, SEXP sgroup)
 		for (j = 0; j < m; j++) {
 			type = &filter->symtab.types[type_ids[j]].text;
 			if (j > 0) {
-				corpus_render_char(&ctx->render, ' ');
+				utf8lite_render_char(&ctx->render, ' ');
 			}
-			corpus_render_text(&ctx->render, type);
+			utf8lite_render_text(&ctx->render, type);
 		}
 		TRY(ctx->render.error);
 
 		sterm = mkCharLenCE(ctx->render.string, ctx->render.length,
 				    CE_UTF8);
-		corpus_render_clear(&ctx->render);
+		utf8lite_render_clear(&ctx->render);
 
 		SET_STRING_ELT(scol_names, i, sterm);
 	}

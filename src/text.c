@@ -212,7 +212,7 @@ SEXP text_valid(SEXP x)
 }
 
 
-struct corpus_text *as_text(SEXP stext, R_xlen_t *lenptr)
+struct utf8lite_text *as_text(SEXP stext, R_xlen_t *lenptr)
 {
 	SEXP handle;
 	struct rcorpus_text *obj;
@@ -287,14 +287,16 @@ SEXP as_text_json(SEXP sdata, SEXP filter)
 			INTEGER(start)[i] = NA_INTEGER;
 			INTEGER(stop)[i] = NA_INTEGER;
 		} else {
-			if (CORPUS_TEXT_SIZE(&obj->text[i]) > INT_MAX) {
+			if (UTF8LITE_TEXT_SIZE(&obj->text[i]) > INT_MAX) {
 				error("text size (%"PRIu64 "bytes)"
 				      "exceeds maximum (%d bytes)",
-				      (uint64_t)CORPUS_TEXT_SIZE(&obj->text[i]),
+				      (uint64_t)
+				      	UTF8LITE_TEXT_SIZE(&obj->text[i]),
 				      INT_MAX);
 			}
 			INTEGER(start)[i] = 1;
-			INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&obj->text[i]);
+			INTEGER(stop)[i] = (int)UTF8LITE_TEXT_SIZE(
+							&obj->text[i]);
 		}
 	}
 
@@ -309,6 +311,7 @@ SEXP as_text_character(SEXP x, SEXP filter)
 {
 	SEXP ans, handle, sources, source, row, start, stop, names, str;
 	struct rcorpus_text *obj;
+	struct utf8lite_message msg;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
 	int duped = 0;
@@ -372,7 +375,7 @@ SEXP as_text_character(SEXP x, SEXP filter)
 		}
 
 		// convert to UTF-8
-		ptr = translate_utf8(str);
+		ptr = rutf8_translate_utf8(str);
 		if (ptr != CHAR(str)) {
 			if (!duped) {
 				SET_VECTOR_ELT(sources, 0, (x = duplicate(x)));
@@ -385,12 +388,12 @@ SEXP as_text_character(SEXP x, SEXP filter)
 
 		// convert to char to text
 		len = XLENGTH(str);
-		if ((uint64_t)len > (uint64_t)CORPUS_TEXT_SIZE_MAX) {
+		if ((uint64_t)len > (uint64_t)UTF8LITE_TEXT_SIZE_MAX) {
 			error("size of character object at index %"PRIu64
 			      " (%"PRIu64" bytes)"
 			      " exceeds maximum (%"PRIu64" bytes)",
 			      (uint64_t)(i + 1), (uint64_t)len,
-			      (uint64_t)CORPUS_TEXT_SIZE_MAX);
+			      (uint64_t)UTF8LITE_TEXT_SIZE_MAX);
 		}
 		if (len > INT_MAX) {
 			error("size of character object at index %"PRIu64
@@ -398,14 +401,15 @@ SEXP as_text_character(SEXP x, SEXP filter)
 			      " exceeds maximum (%d bytes)",
 			      (uint64_t)(i + 1), (uint64_t)len, INT_MAX);
 		}
-		if ((err = corpus_text_assign(&obj->text[i], (uint8_t *)ptr,
-					      (size_t)len, 0))) {
+		if ((err = utf8lite_text_assign(&obj->text[i], (uint8_t *)ptr,
+					        (size_t)len, 0, &msg))) {
 			error("character object at index %"PRIu64
-			      " contains invalid UTF-8", (uint64_t)(i + 1));
+			      " contains malformed UTF-8: %s",
+			      (uint64_t)(i + 1), msg.string);
 		}
 
 		INTEGER(start)[i] = 1;
-		INTEGER(stop)[i] = (int)CORPUS_TEXT_SIZE(&obj->text[i]);
+		INTEGER(stop)[i] = (int)UTF8LITE_TEXT_SIZE(&obj->text[i]);
 	}
 
 out:
@@ -438,7 +442,8 @@ static void load_text(SEXP x)
 	const double *row;
 	const int *source, *start, *stop;
 	struct rcorpus_text *obj;
-	struct corpus_text txt;
+	struct utf8lite_text txt;
+	struct utf8lite_message msg;
 	struct source *sources;
 	const uint8_t *ptr;
 	double r;
@@ -533,12 +538,14 @@ static void load_text(SEXP x)
 				ptr = (const uint8_t *)CHAR(str);
 				len = XLENGTH(str);
 				flags = 0;
-				err = corpus_text_assign(&txt, ptr, len, flags);
+				err = utf8lite_text_assign(&txt, ptr, len,
+							   flags, &msg);
 				if (err) {
 					error("character object in source %d"
 					      " at index %"PRIu64
-					      " contains invalid UTF-8",
-					      s + 1, (uint64_t)(j + 1));
+					      " contains malformed UTF-8: %s",
+					      s + 1, (uint64_t)(j + 1),
+					      msg.string);
 				}
 			}
 			break;
@@ -546,7 +553,7 @@ static void load_text(SEXP x)
 		case SOURCE_JSON:
 			// no need to validate input (handled by json)
 			corpus_data_text(&sources[s].data.set->rows[j], &txt);
-			flags = CORPUS_TEXT_UNESCAPE;
+			flags = UTF8LITE_TEXT_UNESCAPE;
 			break;
 
 		default:
@@ -558,14 +565,14 @@ static void load_text(SEXP x)
 
 		begin = (start[i] < 1) ? 0 : (start[i] - 1);
 		end = stop[i] < start[i] ? begin : stop[i];
-		if ((size_t)end > CORPUS_TEXT_SIZE(&txt)) {
-			end = (int)CORPUS_TEXT_SIZE(&txt);
+		if ((size_t)end > UTF8LITE_TEXT_SIZE(&txt)) {
+			end = (int)UTF8LITE_TEXT_SIZE(&txt);
 		}
 
 		// this could be made more efficient; add a
 		// 'can_break?' function to corpus/text.h
-		err = corpus_text_assign(&obj->text[i], txt.ptr + begin,
-					 end - begin, flags);
+		err = utf8lite_text_assign(&obj->text[i], txt.ptr + begin,
+					   end - begin, flags, NULL);
 		if (err) {
 			error("text span in row[[%"PRIu64"]]"
 			      " starts or ends in the middle"
@@ -580,7 +587,7 @@ out:
 SEXP as_character_text(SEXP x)
 {
 	SEXP ans, str, sources, table, source, row, start, stop, src;
-	struct corpus_text *text;
+	struct utf8lite_text *text;
 	struct mkchar mk;
 	R_xlen_t i, n, r;
 	int *is_char;

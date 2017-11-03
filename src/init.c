@@ -22,6 +22,9 @@
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
+SEXP (*rutf8_as_utf8)(SEXP);
+char *(*rutf8_translate_utf8)(SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(abbreviations, 1),
 	CALLDEF(alloc_text_handle, 0),
@@ -36,7 +39,6 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(as_text_filter_connector, 1),
 	CALLDEF(as_text_json, 2),
 	CALLDEF(dim_json, 1),
-	CALLDEF(format_text, 9),
 	CALLDEF(is_na_text, 1),
 	CALLDEF(length_json, 1),
 	CALLDEF(length_text, 1),
@@ -45,7 +47,6 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(mmap_ndjson, 2),
 	CALLDEF(names_json, 1),
 	CALLDEF(names_text, 1),
-	CALLDEF(print_table, 6),
 	CALLDEF(print_json, 1),
 	CALLDEF(read_ndjson, 2),
 	CALLDEF(simplify_json, 1),
@@ -69,12 +70,6 @@ static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(text_tokens, 1),
 	CALLDEF(text_types, 2),
 	CALLDEF(text_valid, 1),
-	CALLDEF(utf8_coerce, 1),
-	CALLDEF(utf8_encode, 3),
-	CALLDEF(utf8_format, 9),
-	CALLDEF(utf8_normalize, 5),
-	CALLDEF(utf8_valid, 1),
-	CALLDEF(utf8_width, 3),
         {NULL, NULL, 0}
 };
 
@@ -82,6 +77,9 @@ static const R_CallMethodDef CallEntries[] = {
 void R_init_corpus(DllInfo *dll)
 {
 	R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+	rutf8_as_utf8 = (SEXP (*)(SEXP))R_GetCCallable("utf8", "as_utf8");
+	rutf8_translate_utf8 = ((char * (*) (SEXP))
+				R_GetCCallable("utf8", "translate_utf8"));
 	R_useDynamicSymbols(dll, FALSE);
 	R_forceSymbols(dll, TRUE);
 }

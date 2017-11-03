@@ -15,24 +15,13 @@
  */
 
 #include <stddef.h>
-#include "corpus/src/array.h"
-#include "corpus/src/memory.h"
-#include "corpus/src/table.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/text.h"
-#include "corpus/src/termset.h"
-#include "corpus/src/search.h"
 #include "rcorpus.h"
-
-#ifdef error
-#  undef error
-#endif
 
 
 struct locate_item {
 	int text_id;
 	int term_id;
-	struct corpus_text instance;
+	struct utf8lite_text instance;
 };
 
 
@@ -45,10 +34,11 @@ struct locate {
 
 static void locate_init(struct locate *loc);
 static void locate_add(struct locate *loc, int text_id, int term_id,
-		       const struct corpus_text *instance);
+		       const struct utf8lite_text *instance);
 static void locate_grow(struct locate *loc, int nadd);
 SEXP make_matches(struct locate *loc, SEXP terms);
-SEXP make_instances(struct locate *loc, SEXP sx, const struct corpus_text *text);
+SEXP make_instances(struct locate *loc, SEXP sx,
+		    const struct utf8lite_text *text);
 
 
 void locate_init(struct locate *loc)
@@ -60,7 +50,7 @@ void locate_init(struct locate *loc)
 
 
 void locate_add(struct locate *loc, int text_id, int term_id,
-		const struct corpus_text *instance)
+		const struct utf8lite_text *instance)
 {
 	int id;
 
@@ -105,7 +95,7 @@ out:
 SEXP text_count(SEXP sx, SEXP sterms)
 {
 	SEXP ans, ssearch;
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	struct corpus_filter *filter;
 	struct corpus_search *search;
 	R_xlen_t i, n;
@@ -154,7 +144,7 @@ out:
 SEXP text_detect(SEXP sx, SEXP sterms)
 {
 	SEXP ans, ssearch;
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	struct corpus_filter *filter;
 	struct corpus_search *search;
 	R_xlen_t i, n;
@@ -202,7 +192,7 @@ out:
 SEXP text_match(SEXP sx, SEXP sterms)
 {
 	SEXP ans, sitems, ssearch;
-	const struct corpus_text *text, *token;
+	const struct utf8lite_text *text, *token;
 	struct corpus_filter *filter;
 	struct corpus_search *search;
 	struct locate loc;
@@ -251,7 +241,7 @@ out:
 SEXP text_locate(SEXP sx, SEXP sterms)
 {
 	SEXP ans, ssearch;
-	const struct corpus_text *text, *token;
+	const struct utf8lite_text *text, *token;
 	struct corpus_filter *filter;
 	struct corpus_search *search;
 	struct locate loc;
@@ -344,7 +334,8 @@ SEXP make_matches(struct locate *loc, SEXP levels)
 }
 
 
-SEXP make_instances(struct locate *loc, SEXP sx, const struct corpus_text *text)
+SEXP make_instances(struct locate *loc, SEXP sx,
+		    const struct utf8lite_text *text)
 {
 	SEXP ans, names, filter, row_names, sclass, sources,
 	     ptable, psource, prow, pstart, pstop,
@@ -399,7 +390,7 @@ SEXP make_instances(struct locate *loc, SEXP sx, const struct corpus_text *text)
 		stop = INTEGER(pstop)[text_id];
 
 		off = (int)(loc->items[i].instance.ptr - text[text_id].ptr);
-		len = (int)CORPUS_TEXT_SIZE(&loc->items[i].instance);
+		len = (int)UTF8LITE_TEXT_SIZE(&loc->items[i].instance);
 
 		INTEGER(bsource)[i] = source;
 		REAL(brow)[i] = row;

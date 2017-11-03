@@ -20,28 +20,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-#include "corpus/src/error.h"
-#include "corpus/src/memory.h"
-#include "corpus/src/render.h"
-#include "corpus/src/table.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/termset.h"
-#include "corpus/src/ngram.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/symtab.h"
-#include "corpus/src/wordscan.h"
-#include "corpus/src/filter.h"
 #include "rcorpus.h"
 
-
-// the R 'error' is a #define (to Rf_error) that clashes with the 'error'
-// member of struct corpus_filter
-#ifdef error
-#  undef error
-#endif
 
 struct context {
 	int ngram_max;
@@ -49,7 +29,7 @@ struct context {
 	int *ngram_set;
 	double *support;
 	double *count;
-	struct corpus_render render;
+	struct utf8lite_render render;
 	struct corpus_ngram ngram;
 	struct corpus_termset termset;
 	int has_render;
@@ -93,7 +73,7 @@ static void context_init(struct context *ctx, SEXP sngrams)
 	ctx->ngram_set = ngram_set;
 	ctx->buffer = (void *)R_alloc(ngram_max, sizeof(*ctx->buffer));
 
-	TRY(corpus_render_init(&ctx->render, CORPUS_ESCAPE_NONE));
+	TRY(utf8lite_render_init(&ctx->render, UTF8LITE_ESCAPE_NONE));
 	ctx->has_render = 1;
 
 	TRY(corpus_ngram_init(&ctx->ngram, ngram_max));
@@ -120,7 +100,7 @@ static void context_destroy(void *obj)
 		corpus_ngram_destroy(&ctx->ngram);
 	}
 	if (ctx->has_render) {
-		corpus_render_destroy(&ctx->render);
+		utf8lite_render_destroy(&ctx->render);
 	}
 }
 
@@ -183,7 +163,7 @@ SEXP term_stats(SEXP sx, SEXP sngrams, SEXP smin_count, SEXP smax_count,
 	     sclass, snames, srow_names, stype = NA_STRING;
 	SEXP *stypes;
 	struct context *ctx;
-	const struct corpus_text *text, *type = NULL;
+	const struct utf8lite_text *text, *type = NULL;
 	const struct corpus_termset_term *term;
 	struct mkchar mkchar;
 	struct corpus_filter *filter;
@@ -309,11 +289,11 @@ SEXP term_stats(SEXP sx, SEXP sngrams, SEXP smin_count, SEXP smax_count,
 			}
 
 			if (j > 0) {
-				corpus_render_char(&ctx->render, ' ');
+				utf8lite_render_char(&ctx->render, ' ');
 			}
 
 			if (term->length > 1) {
-				corpus_render_text(&ctx->render, type);
+				utf8lite_render_text(&ctx->render, type);
 			}
 		}
 
@@ -328,7 +308,7 @@ SEXP term_stats(SEXP sx, SEXP sngrams, SEXP smin_count, SEXP smax_count,
 				       mkCharLenCE(ctx->render.string,
 					           ctx->render.length,
 						   CE_UTF8));
-			corpus_render_clear(&ctx->render);
+			utf8lite_render_clear(&ctx->render);
 		}
 
 		REAL(scount)[iterm] = count;
@@ -350,10 +330,10 @@ SEXP term_stats(SEXP sx, SEXP sngrams, SEXP smin_count, SEXP smax_count,
 		for (j = 0; j < ctx->ngram_max; j++) {
 			SET_VECTOR_ELT(ans, off, stypes[j]);
 
-			corpus_render_printf(&ctx->render, "type%d", j + 1);
+			utf8lite_render_printf(&ctx->render, "type%d", j + 1);
 			TRY(ctx->render.error);
 			SET_STRING_ELT(snames, off, mkChar(ctx->render.string));
-			corpus_render_clear(&ctx->render);
+			utf8lite_render_clear(&ctx->render);
 
 			off++;
 		}

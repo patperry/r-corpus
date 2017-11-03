@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include "corpus/lib/utf8lite/src/utf8lite.h"
 #include "rcorpus.h"
 
 
@@ -37,22 +36,22 @@ static int filter_type_kind(SEXP filter)
 	kind = 0;
 
 	if (filter == R_NilValue) {
-		kind |= CORPUS_TYPE_MAPCASE;
-		kind |= CORPUS_TYPE_MAPQUOTE;
-		kind |= CORPUS_TYPE_RMDI;
+		kind |= UTF8LITE_TEXTMAP_CASE;
+		kind |= UTF8LITE_TEXTMAP_QUOTE;
+		kind |= UTF8LITE_TEXTMAP_RMDI;
 		return kind;
 	}
 
 	if (filter_logical(filter, "map_case", 0)) {
-		kind |= CORPUS_TYPE_MAPCASE;
+		kind |= UTF8LITE_TEXTMAP_CASE;
 	}
 
 	if (filter_logical(filter, "map_quote", 0)) {
-		kind |= CORPUS_TYPE_MAPQUOTE;
+		kind |= UTF8LITE_TEXTMAP_QUOTE;
 	}
 
 	if (filter_logical(filter, "remove_ignorable", 0)) {
-		kind |= CORPUS_TYPE_RMDI;
+		kind |= UTF8LITE_TEXTMAP_RMDI;
 	}
 
 	return kind;
@@ -63,7 +62,7 @@ SEXP as_text_filter_connector(SEXP value)
 {
 	SEXP con;
 	const uint8_t *ptr, *str;
-	uint32_t ch;
+	int32_t ch;
 	int len;
 
 	if (value == R_NilValue) {
@@ -92,11 +91,11 @@ SEXP as_text_filter_connector(SEXP value)
 }
 
 
-static uint32_t filter_connector(SEXP filter)
+static int32_t filter_connector(SEXP filter)
 {
 	SEXP value, con;
 	const uint8_t *str;
-	uint32_t connector = '_';
+	int32_t connector = '_';
 
 	value = getListElement(filter, "connector");
 	if (value == R_NilValue) {
@@ -147,10 +146,10 @@ static int filter_flags(SEXP filter)
 }
 
 
-static void add_terms(int (*add_term)(void *, const struct corpus_text *),
+static void add_terms(int (*add_term)(void *, const struct utf8lite_text *),
 		      void *f, SEXP sterms)
 {
-	const struct corpus_text *terms;
+	const struct utf8lite_text *terms;
 	R_xlen_t i, n;
 	int err = 0;
 
@@ -174,28 +173,28 @@ out:
 }
 
 
-static int add_stem_except(void *obj, const struct corpus_text *x)
+static int add_stem_except(void *obj, const struct utf8lite_text *x)
 {
 	struct corpus_filter *f = obj;
 	return corpus_filter_stem_except(f, x);
 }
 
 
-static int add_drop(void *obj, const struct corpus_text *x)
+static int add_drop(void *obj, const struct utf8lite_text *x)
 {
 	struct corpus_filter *f = obj;
 	return corpus_filter_drop(f, x);
 }
 
 
-static int add_drop_except(void *obj, const struct corpus_text *x)
+static int add_drop_except(void *obj, const struct utf8lite_text *x)
 {
 	struct corpus_filter *f = obj;
 	return corpus_filter_drop_except(f, x);
 }
 
 
-static int add_combine(void *obj, const struct corpus_text *x)
+static int add_combine(void *obj, const struct utf8lite_text *x)
 {
 	struct corpus_filter *f = obj;
 	return corpus_filter_combine(f, x);
@@ -207,7 +206,7 @@ struct corpus_filter *text_filter(SEXP x)
 	SEXP handle, filter, combine, stemmer;
 	struct rcorpus_text *obj;
 	const char *snowball;
-	uint32_t connector;
+	int32_t connector;
 	int err = 0, nprot = 0, type_kind, flags, stem_dropped;
 
 	handle = getListElement(x, "handle");
@@ -302,7 +301,7 @@ static int sentfilter_flags(SEXP filter)
 }
 
 
-static int add_suppress(void *obj, const struct corpus_text *x)
+static int add_suppress(void *obj, const struct utf8lite_text *x)
 {
 	struct corpus_sentfilter *f = obj;
 	return corpus_sentfilter_suppress(f, x);

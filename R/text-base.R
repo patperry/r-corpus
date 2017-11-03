@@ -150,8 +150,10 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         chars <- max(chars, 12)
     }
 
-    fmt <- .Call(C_format_text, x, trim, chars, justify, width, na.encode,
-                 quote, na.print, utf8)
+    x <- structure(as.character(x), names = names(x))
+    fmt <- utf8_format(x, trim = trim, chars = chars,, justify = justify,
+                       width = width, na.encode = na.encode, quote = quote,
+                       na.print = na.print, print.gap = print.gap)
     names(fmt) <- names(x)
     fmt
 }
@@ -209,7 +211,7 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
 
     fmt <- format.corpus_text(xsub, chars = chars, quote = quote,
                               na.print = na.print, print.gap = print.gap)
-    fmt <- utf8_encode(fmt, display)
+    fmt <- utf8_encode(fmt, display = display)
 
     mat <- cbind(fmt)
     if (is.null(rownames(mat))) {

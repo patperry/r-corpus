@@ -19,8 +19,6 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <Rdefines.h>
-#include "corpus/src/text.h"
 #include "rcorpus.h"
 
 
@@ -53,7 +51,7 @@ SEXP length_text(SEXP stext)
 SEXP is_na_text(SEXP stext)
 {
 	SEXP ans;
-	struct corpus_text *text;
+	struct utf8lite_text *text;
 	R_xlen_t i, n;
 	int *isna;
 
@@ -78,7 +76,7 @@ SEXP is_na_text(SEXP stext)
 
 SEXP anyNA_text(SEXP stext)
 {
-	struct corpus_text *text;
+	struct utf8lite_text *text;
 	R_xlen_t i, n;
 	int anyNA;
 

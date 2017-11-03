@@ -15,9 +15,6 @@
  */
 
 #include <limits.h>
-#include "corpus/lib/utf8lite/src/utf8lite.h"
-#include "corpus/src/array.h"
-#include "corpus/src/text.h"
 #include "rcorpus.h"
 
 
@@ -31,12 +28,12 @@ void mkchar_init(struct mkchar *mk)
 }
 
 
-SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
+SEXP mkchar_get(struct mkchar *mk, const struct utf8lite_text *text)
 {
 	SEXP ans;
 	uint8_t *ptr;
-	size_t len = CORPUS_TEXT_SIZE(text);
-	struct corpus_text_iter it;
+	size_t len = UTF8LITE_TEXT_SIZE(text);
+	struct utf8lite_text_iter it;
 
 	if (len > INT_MAX) {
 		error("character string length exceeds maximum (%d)", INT_MAX);
@@ -45,12 +42,12 @@ SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text)
 	if (text->ptr == NULL) {
 		ans = NA_STRING;
 	} else {
-		if (CORPUS_TEXT_HAS_ESC(text)) {
+		if (UTF8LITE_TEXT_HAS_ESC(text)) {
 			mkchar_ensure(mk, (int)len);
 
-			corpus_text_iter_make(&it, text);
+			utf8lite_text_iter_make(&it, text);
 			ptr = mk->buf;
-			while (corpus_text_iter_advance(&it)) {
+			while (utf8lite_text_iter_advance(&it)) {
 				utf8lite_encode_utf8(it.current, &ptr);
 			}
 			len = (size_t)(ptr - mk->buf);

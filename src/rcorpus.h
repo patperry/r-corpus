@@ -22,16 +22,17 @@
 
 #include <Rdefines.h>
 
+#include "corpus/lib/utf8lite/src/utf8lite.h"
+#include "corpus/src/array.h"
 #include "corpus/src/error.h"
+#include "corpus/src/filebuf.h"
 #include "corpus/src/memory.h"
+#include "corpus/src/stopword.h"
 #include "corpus/src/table.h"
 #include "corpus/src/tree.h"
 #include "corpus/src/termset.h"
-#include "corpus/src/text.h"
 #include "corpus/src/textset.h"
-#include "corpus/src/render.h"
 #include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
 #include "corpus/src/symtab.h"
 #include "corpus/src/datatype.h"
 #include "corpus/src/data.h"
@@ -39,6 +40,8 @@
 #include "corpus/src/sentscan.h"
 #include "corpus/src/filter.h"
 #include "corpus/src/sentfilter.h"
+#include "corpus/src/search.h"
+#include "corpus/src/ngram.h"
 
 
 #define RCORPUS_CHECK_EVERY 1000
@@ -155,7 +158,7 @@ struct stemmer {
 };
 
 struct rcorpus_text {
-	struct corpus_text *text;
+	struct utf8lite_text *text;
 	struct corpus_filter filter;
 	struct corpus_sentfilter sentfilter;
 	struct stemmer stemmer;
@@ -169,11 +172,15 @@ struct rcorpus_text {
 
 struct termset {
 	struct corpus_termset set;
-	struct corpus_text *items;
+	struct utf8lite_text *items;
 	int has_set;
 	int max_length;
 	int nitem;
 };
+
+/* functions from the 'utf8' R package */
+extern SEXP (*rutf8_as_utf8)(SEXP x);
+extern char *(*rutf8_translate_utf8)(SEXP x);
 
 /* context */
 SEXP alloc_context(size_t size, void (*destroy_func)(void *));
@@ -183,7 +190,7 @@ int is_context(SEXP x);
 
 /* converting text to CHARSXP */
 void mkchar_init(struct mkchar *mk);
-SEXP mkchar_get(struct mkchar *mk, const struct corpus_text *text);
+SEXP mkchar_get(struct mkchar *mk, const struct utf8lite_text *text);
 
 /* converting data to R values */
 void decode_init(struct decode *d);
@@ -240,23 +247,17 @@ SEXP alloc_filebuf(SEXP file);
 int is_filebuf(SEXP sbuf);
 struct corpus_filebuf *as_filebuf(SEXP sbuf);
 
-/* printing */
-SEXP print_table(SEXP x, SEXP print_gap, SEXP right, SEXP max, SEXP width,
-		 SEXP is_stdout);
-
 /* text (core) */
 SEXP alloc_text(SEXP sources, SEXP source, SEXP row, SEXP start, SEXP stop,
 		SEXP names, SEXP filter);
 int is_text(SEXP text);
-struct corpus_text *as_text(SEXP text, R_xlen_t *lenptr);
+struct utf8lite_text *as_text(SEXP text, R_xlen_t *lenptr);
 struct corpus_filter *text_filter(SEXP x);
 struct corpus_sentfilter *text_sentfilter(SEXP x);
 SEXP as_text_character(SEXP text, SEXP filter);
 
 SEXP alloc_text_handle(void);
 SEXP coerce_text(SEXP x);
-SEXP format_text(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
-		 SEXP na_encode, SEXP quote, SEXP na_print, SEXP utf8);
 SEXP length_text(SEXP text);
 SEXP names_text(SEXP text);
 SEXP filter_text(SEXP text);
@@ -301,27 +302,14 @@ SEXP text_tokens(SEXP x);
 SEXP text_types(SEXP x, SEXP collapse);
 SEXP stopwords(SEXP kind);
 
-/* utf8 */
-SEXP utf8_coerce(SEXP x);
-SEXP utf8_encode(SEXP x, SEXP display, SEXP utf8);
-SEXP utf8_format(SEXP x, SEXP trim, SEXP chars, SEXP justify, SEXP width,
-		 SEXP na_encode, SEXP quote, SEXP na_print, SEXP utf8);
-SEXP utf8_normalize(SEXP x, SEXP map_case, SEXP map_compat, SEXP map_quote,
-		    SEXP remove_ignorable);
-SEXP utf8_valid(SEXP x);
-SEXP utf8_width(SEXP x, SEXP quote, SEXP utf8);
-
 /* json values */
 SEXP mmap_ndjson(SEXP file, SEXP text);
 SEXP read_ndjson(SEXP buffer, SEXP text);
 
 /* internal utility functions */
 double *as_weights(SEXP sweights, R_xlen_t n);
-int charwidth(uint32_t code);
-int charsxp_width(SEXP charsxp, int quote, int utf8);
 int encodes_utf8(cetype_t ce);
 int findListElement(SEXP list, const char *str);
 SEXP getListElement(SEXP list, const char *str);
-const char *translate_utf8(SEXP x);
 
 #endif /* RCORPUS_H */

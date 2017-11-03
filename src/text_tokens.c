@@ -38,7 +38,7 @@ static void tokens_init(struct tokens *ctx, struct corpus_filter *filter);
 static void tokens_clear_tokens(struct tokens *ctx);
 static void tokens_add_token(struct tokens *ctx, int type_id);
 static SEXP tokens_add_type(struct tokens *ctx, int type_id);
-static SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text);
+static SEXP tokens_scan(struct tokens *ctx, const struct utf8lite_text *text);
 
 
 void tokens_init(struct tokens *ctx, struct corpus_filter *filter)
@@ -91,7 +91,7 @@ out:
 SEXP tokens_add_type(struct tokens *ctx, int type_id)
 {
 	SEXP ans;
-	const struct corpus_text *type;
+	const struct utf8lite_text *type;
 	int count = ctx->ntype;
 	int size = ctx->ntype_max;
 	int err = 0;
@@ -111,7 +111,7 @@ SEXP tokens_add_type(struct tokens *ctx, int type_id)
 	}
 
 	type = &ctx->filter->symtab.types[type_id].text;
-	ans = mkCharLenCE((char *)type->ptr, CORPUS_TEXT_SIZE(type), CE_UTF8);
+	ans = mkCharLenCE((char *)type->ptr, UTF8LITE_TEXT_SIZE(type), CE_UTF8);
 	ctx->types[count] = ans;
 	ctx->ntype = count + 1;
 
@@ -121,7 +121,7 @@ out:
 }
 
 
-SEXP tokens_scan(struct tokens *ctx, const struct corpus_text *text)
+SEXP tokens_scan(struct tokens *ctx, const struct utf8lite_text *text)
 {
 	SEXP ans;
 	int nprot, type_id, ntype;
@@ -170,7 +170,7 @@ out:
 SEXP text_tokens(SEXP sx)
 {
 	SEXP ans, names;
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	struct corpus_filter *filter;
 	struct tokens ctx;
 	R_xlen_t i, n;

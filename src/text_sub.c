@@ -17,7 +17,7 @@
 #include "rcorpus.h"
 
 
-static int text_len(const struct corpus_text *text,
+static int text_len(const struct utf8lite_text *text,
 		    struct corpus_filter *filter)
 {
 	int err = 0, len = 0;
@@ -39,7 +39,7 @@ out:
 SEXP text_sub(SEXP sx, SEXP sstart, SEXP send)
 {
 	SEXP ans, sources, table, tsource, trow, tstart, tstop, names, sfilter;
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	const uint8_t *base, *ptr;
 	struct corpus_filter *filter;
 	const int *start, *end;

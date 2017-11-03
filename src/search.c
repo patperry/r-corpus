@@ -15,15 +15,7 @@
  */
 
 #include <stddef.h>
-#include "corpus/src/error.h"
-#include "corpus/src/memory.h"
-#include "corpus/src/table.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/termset.h"
-#include "corpus/src/text.h"
-#include "corpus/src/search.h"
 #include "rcorpus.h"
-
 
 #define SEARCH_TAG install("corpus::search")
 

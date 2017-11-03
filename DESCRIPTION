@@ -17,7 +17,9 @@ Authors@R: c(
   person("Unicode, Inc.",
          role = c("cph", "dtc"),
          comment = "Unicode Character Database"))
-Depends: R (>= 3.3)
+Depends:
+  R (>= 3.3),
+  utf8
 Imports:
   stats
 Suggests:

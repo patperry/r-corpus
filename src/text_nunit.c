@@ -24,7 +24,7 @@ SEXP text_nsentence(SEXP sx)
 {
 	SEXP ans, names;
 	struct corpus_sentfilter *filter;
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	double *count;
 	R_xlen_t i, n, nunit;
 	int nprot, err = 0;
@@ -49,7 +49,7 @@ SEXP text_nsentence(SEXP sx)
 			continue;
 		}
 
-		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
+		if (UTF8LITE_TEXT_SIZE(&text[i]) == 0) { // empty text
 			count[i] = 0;
 			continue;
 		}
@@ -76,7 +76,7 @@ SEXP text_ntoken(SEXP sx)
 {
 	SEXP ans, names;
 	struct corpus_filter *filter;
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	double *count;
 	R_xlen_t i, n, nunit;
 	int nprot, err = 0;

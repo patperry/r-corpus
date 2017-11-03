@@ -17,12 +17,11 @@
 #include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "corpus/src/array.h"
 #include "rcorpus.h"
 
 
 struct context {
-	struct corpus_text *block;
+	struct utf8lite_text *block;
 	R_xlen_t *parent;
 	R_xlen_t nblock;
 	R_xlen_t nblock_max;
@@ -39,7 +38,7 @@ static void context_destroy(void *obj)
 
 static void context_grow(struct context *ctx, size_t nadd)
 {
-	struct corpus_text *block;
+	struct utf8lite_text *block;
 	R_xlen_t *parent;
 	size_t count, size, width;
 	int err = 0;
@@ -68,7 +67,7 @@ out:
 }
 
 
-static void context_add(struct context *ctx, const struct corpus_text *block,
+static void context_add(struct context *ctx, const struct utf8lite_text *block,
 			R_xlen_t parent)
 {
 	R_xlen_t nblock = ctx->nblock;
@@ -85,7 +84,7 @@ static void context_add(struct context *ctx, const struct corpus_text *block,
 
 static void context_trim(struct context *ctx)
 {
-	struct corpus_text *block;
+	struct utf8lite_text *block;
 	R_xlen_t *parent;
 	size_t size = (size_t)ctx->nblock;
 
@@ -156,7 +155,7 @@ static SEXP context_make(struct context *ctx, SEXP sx)
 			r = REAL(prow)[i];
 			off = INTEGER(pstart)[i];
 		}
-		len = (int)CORPUS_TEXT_SIZE(&ctx->block[iblock]);
+		len = (int)UTF8LITE_TEXT_SIZE(&ctx->block[iblock]);
 
 		INTEGER(source)[iblock] = src;
 		REAL(row)[iblock] = r;
@@ -218,8 +217,8 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 	SEXP ans, sctx, snsent;
 	struct context *ctx;
 	struct corpus_sentfilter *filter;
-	const struct corpus_text *text;
-	struct corpus_text current;
+	const struct utf8lite_text *text;
+	struct utf8lite_text current;
 	R_xlen_t i, n;
 	size_t attr, size;
 	double s, block_size, nsent, nbin, min_size, extra, target;
@@ -257,7 +256,7 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 			continue;
 		}
 
-		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
+		if (UTF8LITE_TEXT_SIZE(&text[i]) == 0) { // empty text
 			context_add(ctx, &text[i], i);
 			continue;
 		}
@@ -285,8 +284,8 @@ SEXP text_split_sentences(SEXP sx, SEXP ssize)
 				size = 0;
 			}
 
-			size += CORPUS_TEXT_SIZE(&filter->current);
-			attr |= CORPUS_TEXT_BITS(&filter->current);
+			size += UTF8LITE_TEXT_SIZE(&filter->current);
+			attr |= UTF8LITE_TEXT_BITS(&filter->current);
 			s++;
 
 			if (s < target) {
@@ -327,8 +326,8 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 	SEXP ans, sctx, sntok;
 	struct context *ctx;
 	struct corpus_filter *filter;
-	const struct corpus_text *text;
-	struct corpus_text current;
+	const struct utf8lite_text *text;
+	struct utf8lite_text current;
 	R_xlen_t i, n;
 	size_t attr, size;
 	double s, block_size, ntok, nbin, min_size, extra, target;
@@ -366,7 +365,7 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 			continue;
 		}
 
-		if (CORPUS_TEXT_SIZE(&text[i]) == 0) { // empty text
+		if (UTF8LITE_TEXT_SIZE(&text[i]) == 0) { // empty text
 			context_add(ctx, &text[i], i);
 			continue;
 		}
@@ -414,8 +413,8 @@ SEXP text_split_tokens(SEXP sx, SEXP ssize)
 			}
 
 			// update the block size and attributes
-			size += CORPUS_TEXT_SIZE(&filter->current);
-			attr |= CORPUS_TEXT_BITS(&filter->current);
+			size += UTF8LITE_TEXT_SIZE(&filter->current);
+			attr |= UTF8LITE_TEXT_BITS(&filter->current);
 
 			// possibly update the non-dropped token count
 			if (filter->type_id >= 0) {

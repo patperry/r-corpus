@@ -16,9 +16,6 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include "corpus/src/error.h"
-#include "corpus/src/text.h"
-#include "corpus/src/data.h"
 #include "rcorpus.h"
 
 static int logical_data(const struct corpus_data *d);
@@ -225,7 +222,7 @@ double real_data(const struct corpus_data *d, int *overflowptr,
 
 SEXP charsxp_data(const struct corpus_data *d, struct mkchar *mk)
 {
-	struct corpus_text text;
+	struct utf8lite_text text;
 	int err;
 
 	err = corpus_data_text(d, &text);
@@ -329,7 +326,7 @@ SEXP decode_record(struct decode *d, const struct corpus_data *val,
 		   const struct corpus_schema *s)
 {
 	SEXP ans, names;
-	const struct corpus_text *name;
+	const struct utf8lite_text *name;
 	struct corpus_data_fields it;
 	int err, i, n;
 

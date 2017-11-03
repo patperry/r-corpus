@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include "rcorpus.h"
 
-
 #define TERMSET_TAG install("corpus::termset")
 
 
@@ -104,7 +103,7 @@ struct termset *as_termset(SEXP stermset)
 		corpus_free(buf); \
 		buf = NULL; \
 		if (has_render) { \
-			corpus_render_destroy(&render); \
+			utf8lite_render_destroy(&render); \
 			has_render = 0; \
 		} \
 	} while (0)
@@ -115,9 +114,9 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 {
 	SEXP ans;
 	struct corpus_wordscan scan;
-	struct corpus_render render;
-	const struct corpus_text *terms;
-	struct corpus_text type;
+	struct utf8lite_render render;
+	const struct utf8lite_text *terms;
+	struct utf8lite_text type;
 	struct termset *obj;
 	const uint8_t *ptr;
 	size_t attr, size;
@@ -154,7 +153,7 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 	nbuf = 32;
 	TRY_ALLOC(buf = corpus_malloc(nbuf * sizeof(*buf)));
 
-	TRY(corpus_render_init(&render, CORPUS_ESCAPE_CONTROL));
+	TRY(utf8lite_render_init(&render, UTF8LITE_ESCAPE_CONTROL));
 	has_render = 1;
 
 	for (i = 0; i < n; i++) {
@@ -169,14 +168,14 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 
 			// found a non-space word
 			ptr = scan.current.ptr;
-			attr = CORPUS_TEXT_BITS(&scan.current);
+			attr = UTF8LITE_TEXT_BITS(&scan.current);
 
 			// skip until we find a space
 			while (corpus_wordscan_advance(&scan)) {
 				if (scan.type == CORPUS_WORD_NONE) {
 					break;
 				}
-				attr |= CORPUS_TEXT_BITS(&scan.current);
+				attr |= UTF8LITE_TEXT_BITS(&scan.current);
 			}
 
 			size = (size_t)(scan.current.ptr - ptr);
@@ -209,12 +208,13 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 		}
 
 		if (length == 0) {
-			corpus_render_printf(&render,
+			utf8lite_render_printf(&render,
 				"%s term in position %"PRIu64" (\"",
 				name, (uint64_t)(i+1));
-			corpus_render_text(&render, &terms[i]);
-			corpus_render_string(&render, "\") ");
-			corpus_render_string(&render, "has empty type (\"\")");
+			utf8lite_render_text(&render, &terms[i]);
+			utf8lite_render_string(&render, "\") ");
+			utf8lite_render_string(&render,
+					       "has empty type (\"\")");
 			rendered_error = 1;
 			goto out;
 		}
@@ -225,37 +225,39 @@ SEXP alloc_termset(SEXP sterms, const char *name,
 				continue;
 			}
 
-			corpus_render_printf(&render,
+			utf8lite_render_printf(&render,
 				"%s term in position %"PRIu64" (\"",
 				name, (uint64_t)(i+1));
-			corpus_render_text(&render, &terms[i]);
-			corpus_render_string(&render, "\") ");
-			corpus_render_string(&render,
+			utf8lite_render_text(&render, &terms[i]);
+			utf8lite_render_string(&render, "\") ");
+			utf8lite_render_string(&render,
 				"contains a dropped type (\"");
-			corpus_render_text(&render,
+			utf8lite_render_text(&render,
 				&filter->symtab.types[type_id].text);
-			corpus_render_string(&render, "\")");
+			utf8lite_render_string(&render, "\")");
 			rendered_error = 1;
 			goto out;
 		}
 
 		if (!allow_dup
 			&& corpus_termset_has(&obj->set, buf, length, &id)) {
-			corpus_render_printf(&render,
+			utf8lite_render_printf(&render,
 				"%s terms in positions %"PRIu64
 				" and %"PRIu64" (\"", name,
 				(uint64_t)(id + 1), (uint64_t)(i + 1));
-			corpus_render_text(&render, &terms[id]);
-			corpus_render_string(&render, "\" and \"");
-			corpus_render_text(&render, &terms[i]);
-			corpus_render_string(&render, "\") have the same type");
+			utf8lite_render_text(&render, &terms[id]);
+			utf8lite_render_string(&render, "\" and \"");
+			utf8lite_render_text(&render, &terms[i]);
+			utf8lite_render_string(&render,
+					       "\") have the same type");
 			rendered_error = 1;
 			goto out;
 		}
 
 		TRY(corpus_termset_add(&obj->set, buf, length, &id));
 		if (id == obj->nitem) {
-			TRY(corpus_text_init_copy(&obj->items[id], &terms[i]));
+			TRY(utf8lite_text_init_copy(&obj->items[id],
+						    &terms[i]));
 			obj->nitem = id + 1;
 		}
 	}
@@ -287,7 +289,7 @@ out:
 static void set_items_termset(SEXP stermset)
 {
 	SEXP items, str;
-	const struct corpus_text *item;
+	const struct utf8lite_text *item;
 	int i, n;
 	struct termset *obj;
 
@@ -298,7 +300,7 @@ static void set_items_termset(SEXP stermset)
 	for (i = 0; i < n; i++) {
 		item = &obj->items[i];
 		str = mkCharLenCE((char *)item->ptr,
-				  (int)CORPUS_TEXT_SIZE(item),
+				  (int)UTF8LITE_TEXT_SIZE(item),
 				  CE_UTF8);
 		SET_STRING_ELT(items, i, str);
 	}

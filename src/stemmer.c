@@ -152,7 +152,7 @@ static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
 	}
 
 	// convert to UTF-8
-	PROTECT(ans = utf8_coerce(ans)); nprot++;
+	PROTECT(ans = rutf8_as_utf8(ans)); nprot++;
 
 	outchr = STRING_ELT(ans, 0);
 	if (outchr != NA_STRING) {

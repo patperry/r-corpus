@@ -107,24 +107,18 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
                                       justify = justify,
                                       width = max(0, utf8_width(cols[[i]])),
                                       na.encode = TRUE, na.print = "NA")
+        } else {
+            names[[i]] <- utf8_format(names[[i]],
+                                      chars = .Machine$integer.max,
+                                      justify = "right",
+                                      width = max(0, utf8_width(cols[[i]])),
+                                      na.encode = TRUE, na.print = "NA")
         }
 
         if (stretch) {
             cn <- names[[i]]
-            cw <- utf8_width(cols[[i]])
-
-            if (char && quote) {
-                # adjust for extra width for escaped quotes
-                # https://stackoverflow.com/a/12427831/6233565
-                nq <- vapply(regmatches(cols[[i]], gregexpr('"', cols[[i]])),
-                             length, 0L)
-
-                # also adjust for open and close quotes
-                cw <- cw + nq + 2
-                cw[is.na(cw)] <- 2 # NA
-            } else {
-                cw[is.na(cw)] <- if (char && !quote) 4 else 2 # <NA> or NA
-            }
+            cw <- utf8_width(cols[[i]], quote = quote)
+            cw[is.na(cw)] <- if (char && !quote) 4 else 2 # <NA> or NA
 
             w <- max(cw, utf8_width(cn))
             if (w > chars_left) {
@@ -224,9 +218,9 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
 
     justify <- if (right) "right" else "left"
 
-    fmt <- format.corpus_frame(xsub, chars = chars, digits = digits,
-                               na.encode = TRUE, quote = quote,
-                               na.print = na.print, justify = justify)
+    fmt <- format.corpus_frame(xsub, chars = chars,
+                               digits = digits, na.encode = FALSE,
+                               quote = quote, justify = justify)
     m <- as.matrix(fmt)
     storage.mode(m) <- "character"
 
@@ -234,9 +228,9 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
         rownames(m) <- row.names
     }
 
-    utf8_print(m, chars = .Machine$integer.max, quote = FALSE,
-               print.gap = print.gap, right = TRUE, max = max,
-               display = display)
+    utf8_print(m, chars = .Machine$integer.max, quote = quote,
+               na.print = na.print, print.gap = print.gap,
+               right = right, max = max, display = display)
 
     if (n == 0) {
         cat("(0 rows)\n")

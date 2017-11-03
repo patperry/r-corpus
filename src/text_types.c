@@ -35,7 +35,7 @@ struct types_context {
 static void types_context_init(struct types_context *ctx, SEXP sx,
 			       SEXP scollapse)
 {
-	const struct corpus_text *text;
+	const struct utf8lite_text *text;
 	R_xlen_t i, n, g, ngroup;
 	int err = 0;
 
@@ -137,7 +137,7 @@ SEXP text_ntype(SEXP sx, SEXP scollapse)
 SEXP text_types(SEXP sx, SEXP scollapse)
 {
 	SEXP ans, sctx, set;
-	const struct corpus_text *type;
+	const struct utf8lite_text *type;
 	struct types_context *ctx;
 	const struct corpus_intset *types;
 	struct mkchar mkchar;

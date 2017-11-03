@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-#include "corpus/src/table.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/tree.h"
-#include "corpus/src/sentscan.h"
-#include "corpus/src/sentfilter.h"
 #include "rcorpus.h"
 
 
@@ -43,7 +35,7 @@ static SEXP wordlist(const uint8_t **(*callback)(const char *, int *),
 		return R_NilValue;
 	}
 
-	kind = translate_utf8(STRING_ELT(skind, 0));
+	kind = rutf8_translate_utf8(STRING_ELT(skind, 0));
 	strs = (const char **)callback(kind, &n);
 
 	if (!strs) {

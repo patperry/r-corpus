@@ -22,20 +22,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Rdefines.h>
-#include "corpus/src/array.h"
-#include "corpus/src/error.h"
-#include "corpus/src/filebuf.h"
-#include "corpus/src/memory.h"
-#include "corpus/src/render.h"
-#include "corpus/src/table.h"
-#include "corpus/src/text.h"
-#include "corpus/src/textset.h"
-#include "corpus/src/stem.h"
-#include "corpus/src/typemap.h"
-#include "corpus/src/symtab.h"
-#include "corpus/src/data.h"
-#include "corpus/src/datatype.h"
 #include "rcorpus.h"
 
 #define JSON_TAG install("corpus::json")
@@ -380,7 +366,7 @@ SEXP names_json(SEXP sdata)
 	const struct json *d = as_json(sdata);
 	const struct corpus_datatype *t;
 	const struct corpus_datatype_record *r;
-	const struct corpus_text *name;
+	const struct utf8lite_text *name;
 	int i;
 
 	if (d->kind != CORPUS_DATATYPE_RECORD) {
@@ -395,8 +381,8 @@ SEXP names_json(SEXP sdata)
 		RCORPUS_CHECK_INTERRUPT(i);
 
 		name = &d->schema.names.types[r->name_ids[i]].text;
-		str = mkCharLenCE((char *)name->ptr, CORPUS_TEXT_SIZE(name),
-				  CE_UTF8);
+		str = mkCharLenCE((char *)name->ptr,
+				  UTF8LITE_TEXT_SIZE(name), CE_UTF8);
 		SET_STRING_ELT(names, i, str);
 	}
 
@@ -408,10 +394,10 @@ SEXP names_json(SEXP sdata)
 SEXP print_json(SEXP sdata)
 {
 	const struct json *d = as_json(sdata);
-	struct corpus_render r;
+	struct utf8lite_render r;
 	int err = 0, has_render = 0;
 
-	TRY(corpus_render_init(&r, CORPUS_ESCAPE_CONTROL));
+	TRY(utf8lite_render_init(&r, UTF8LITE_ESCAPE_CONTROL));
 	has_render = 1;
 
 	corpus_render_datatype(&r, &d->schema, d->type_id);
@@ -427,7 +413,7 @@ SEXP print_json(SEXP sdata)
 	}
 out:
 	if (has_render) {
-		corpus_render_destroy(&r);
+		utf8lite_render_destroy(&r);
 	}
 	CHECK_ERROR(err);
 
@@ -442,7 +428,7 @@ SEXP subscript_json(SEXP sdata, SEXP si)
 	const struct corpus_schema *s = &d->schema;
 	const struct corpus_datatype *t;
 	const struct corpus_datatype_record *r;
-	const struct corpus_text *name;
+	const struct utf8lite_text *name;
 	double i;
 	int name_id;
 
@@ -464,7 +450,7 @@ SEXP subscript_json(SEXP sdata, SEXP si)
 		name = &s->names.types[name_id].text;
 
 		PROTECT(sname = mkCharLenCE((const char *)name->ptr,
-					    (int)CORPUS_TEXT_SIZE(name),
+					    (int)UTF8LITE_TEXT_SIZE(name),
 					    CE_UTF8));
 		PROTECT(ans = subfield_json(sdata, sname));
 		UNPROTECT(2);
@@ -547,7 +533,7 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 {
 	SEXP ans, sbuffer, sfield, sfield2, shandle, srows, stext;
 	const struct json *obj = as_json(sdata);
-	struct corpus_text name;
+	struct utf8lite_text name;
 	struct corpus_data field;
 	const char *name_ptr;
 	size_t name_len;
@@ -560,10 +546,11 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	}
 	TRY(TYPEOF(sname) != CHARSXP ? CORPUS_ERROR_INTERNAL : 0);
 
-	name_ptr = translate_utf8(sname);
+	name_ptr = rutf8_translate_utf8(sname);
 	name_len = strlen(name_ptr);
 	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8)); nprot++;
-	TRY(corpus_text_assign(&name, (uint8_t *)name_ptr, name_len, 0));
+	TRY(utf8lite_text_assign(&name, (uint8_t *)name_ptr, name_len, 0,
+				 NULL));
 
 	if (!corpus_symtab_has_type(&obj->schema.names, &name, &name_id)) {
 		UNPROTECT(nprot);
@@ -773,7 +760,7 @@ SEXP as_character_json(SEXP sdata)
 	SEXP ans;
 	const struct json *d = as_json(sdata);
 	struct mkchar mkchar;
-	struct corpus_text text;
+	struct utf8lite_text text;
 	R_xlen_t i, n = d->nrow;
 	int err;
 
@@ -811,14 +798,14 @@ static int in_string_set(SEXP strs, SEXP item)
 		return 0;
 	}
 
-	s2 = translate_utf8(item);
+	s2 = rutf8_translate_utf8(item);
 
 	for (i = 0; i < n; i++) {
 		if (STRING_ELT(strs, i) == NA_STRING) {
 			continue;
 		}
 
-		s1 = translate_utf8(STRING_ELT(strs, i));
+		s1 = rutf8_translate_utf8(STRING_ELT(strs, i));
 		if (strcmp(s1, s2) == 0) {
 			return 1;
 		}
