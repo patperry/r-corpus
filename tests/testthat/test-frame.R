@@ -134,7 +134,7 @@ test_that("'print.corpus_frame' handles NA elements", {
 
     expect_equal(capture_output(print.corpus_frame(d, na.print = "foo",
                                                    quote = TRUE)),
-                 capture_output(print(dfoo, na.print = "foo")))
+                 capture_output(print(dfoo, na.print = "foo", quote = TRUE)))
 })
 
 

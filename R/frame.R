@@ -33,6 +33,10 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
         print.gap <- as_print_gap("print.gap", print.gap)
     })
 
+    if (is.null(na.print)) {
+        na.print <- if (quote) "NA" else "<NA>"
+    }
+
     if ((stretch <- is.null(chars))) {
         width <- getOption("width")
         rn <- rownames(x)
@@ -106,7 +110,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
         }
         cw <- max(0L, utf8_width(cols[[i]], quote = quote), na.rm = TRUE)
         if (anyNA(cols[[i]])) {
-            naw <- if (char && !quote) 4 else 2 # <NA> or NA
+            naw <- if (char) utf8_width(na.print) else 2 # <NA> or NA
             cw <- max(cw, naw)
         }
         w <- max(cw, utf8_width(cn))
@@ -157,6 +161,27 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
 
     structure(cols, class = c("corpus_frame", "data.frame"),
               row.names = row.names)
+}
+
+
+alignment <- function(x, quote = FALSE, na.print = NULL, right = FALSE)
+{
+    if (is.null(na.print)) {
+        na.print <- "NA"
+    }
+
+    width <- utf8_width(x, quote = quote)
+    width[is.na(width)] <- utf8_width(na.print)
+    len <- nchar(x)
+    len[is.na(len)] <- nchar(na.print)
+
+    width_max <- max(0L, width)
+    if (right) {
+        l <- substr(x, 1, 1) == " "
+        r <- ifelse(width < width_max, TRUE, substr(x, len, len) == " ")
+    } else {
+        l <- ifelse(width < width_max, TRUE, substr(x, 1, 1) == " ")
+    }
 }
 
 
@@ -226,7 +251,8 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
 
     fmt <- format.corpus_frame(xsub, chars = chars,
                                digits = digits, na.encode = FALSE,
-                               quote = quote, justify = justify)
+                               na.print = na.print, quote = quote,
+                               justify = justify)
     m <- as.matrix(fmt)
     storage.mode(m) <- "character"
 
