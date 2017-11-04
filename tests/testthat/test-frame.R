@@ -145,7 +145,7 @@ test_that("'print.corpus_frame' handles NA row or column names", {
     x <- list(1)
     names(x) <- NA
     d2 <- structure(x, row.names="foo", class = "data.frame")
-    expect_equal(capture_output(print.corpus_frame(d2)), "    NA\nfoo  1")
+    expect_equal(capture_output(print.corpus_frame(d2)), "   <NA>\nfoo   1")
 })
 
 
