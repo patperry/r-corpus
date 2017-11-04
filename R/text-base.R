@@ -125,35 +125,11 @@ format.corpus_text <- function(x, chars = NULL, justify = "left",
         print.gap <- as_print_gap("print.gap", print.gap)
     })
 
-    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
-
-    if (is.null(chars)) {
-        linewidth <- getOption("width")
-        ellipsis <- if (utf8) 1 else 3
-        quotes <- if (quote) 2 else 0
-
-        names <- names(x)
-        if (is.null(names)) {
-            gap <- if (is.null(print.gap)) 1 else print.gap
-            n <- length(x)
-            if (n == 0) {
-                namewidth <- 0
-            } else {
-                namewidth <- (floor(log10(n)) + 1) + 2 # digits + len("[]")
-            }
-        } else {
-            gap <- 0
-            namewidth <- 0
-        }
-        chars <- (linewidth - ellipsis - quotes - gap - namewidth)
-        chars <- max(chars, 24)
-    }
-
     # TODO: text_trunc instead
     x <- structure(as.character(x), names = names(x))
     fmt <- utf8_format(x, chars = chars, justify = justify,
                        width = width, na.encode = na.encode, quote = quote,
-                       na.print = na.print)
+                       na.print = na.print, print.gap = print.gap)
     names(fmt) <- names(x)
     fmt
 }
@@ -190,16 +166,35 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
         rows <- .Machine$integer.max
     }
 
-    if (is.null(print.gap)) {
-        print.gap <- 1L
-    }
-
     if (is.null(max)) {
         max <- getOption("max.print")
     }
 
+    if (is.null(print.gap)) {
+        print.gap <- 1L
+    }
+
     width <- getOption("width")
-    stdout <- as.integer(stdout()) == 1
+    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+
+    if (is.null(chars)) {
+        ellipsis <- if (utf8) 1 else 3
+        quotes <- if (quote) 2 else 0
+        names <- names(x)
+        if (is.null(names)) {
+            gap <- print.gap
+            n <- length(x)
+            if (n == 0) {
+                namewidth <- 0
+            } else {
+                namewidth <- (floor(log10(n)) + 1) + 2 # digits + len("[]")
+            }
+        } else {
+            gap <- 0
+            namewidth <- 0
+        }
+        chars <- max(24L, width - ellipsis - quotes - gap - namewidth)
+    }
 
     if (length(x) <= rows) {
         xsub <- x
@@ -222,16 +217,13 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
             cat(sprintf("(%d entries total)\n", length(x)))
         } else if (is.null(names(fmt))) {
             # [XX]
-            namewidth <- 1 + floor(log10(length(fmt))) + 2
-            ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...",
-                               "\u22ee")
+            ellipsis <- ifelse(utf8, "\u22ee", "...")
             ellipsis <- format(substr(ellipsis, 1, namewidth - 1),
                                width = namewidth - 1, justify = "right")
             space <- format(ellipsis, width = namewidth + print.gap)
             cat(sprintf("%s(%d entries total)\n", space, length(x)))
         } else {
-            ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...",
-                               "\u2026")
+            ellipsis <- ifelse(utf8, "\u2026", "...")
             cat(sprintf("%s (%d entries total)\n", ellipsis, length(x)))
         }
     }
