@@ -109,15 +109,13 @@ cbind.corpus_text <- function(..., deparse.level = 1)
 }
 
 
-format.corpus_text <- function(x, trim = FALSE, chars = NULL,
-                               justify = "left", width = NULL,
-                               na.encode = TRUE, quote = FALSE,
-                               na.print = NULL, print.gap = NULL,
-                               ...)
+format.corpus_text <- function(x, chars = NULL, justify = "left",
+                               width = NULL, na.encode = TRUE,
+                               quote = FALSE, na.print = NULL,
+                               print.gap = NULL, ...)
 {
     with_rethrow({
         x <- as_corpus_text(x)
-        trim <- as_option("trim", trim)
         chars <- as_chars("chars", chars)
         justify <- as_justify("justify", justify)
         width <- as_integer_scalar("width", width)
@@ -153,9 +151,9 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
 
     # TODO: text_trunc instead
     x <- structure(as.character(x), names = names(x))
-    fmt <- utf8_format(x, trim = trim, chars = chars,, justify = justify,
+    fmt <- utf8_format(x, chars = chars, justify = justify,
                        width = width, na.encode = na.encode, quote = quote,
-                       na.print = na.print, print.gap = print.gap)
+                       na.print = na.print)
     names(fmt) <- names(x)
     fmt
 }

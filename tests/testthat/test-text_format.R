@@ -226,8 +226,6 @@ test_that("'format' error for invalid justify", {
 
 test_that("'format' error for invalid logicals", {
     text <- as_corpus_text("")
-    expect_error(format(text, trim = NA), "'trim' must be TRUE or FALSE",
-                 fixed = TRUE)
     expect_error(format(text, na.encode = NA),
                  "'na.encode' must be TRUE or FALSE", fixed = TRUE)
 })
