@@ -10,9 +10,8 @@ Printing and formatting corpus data frames.
       quote = FALSE, na.print = NULL, print.gap = NULL,right = FALSE,
       row.names = TRUE, max = NULL, display = TRUE, ...)
 
-\method{format}{corpus_frame}(x, chars = NULL, justify = "left",
-       na.encode = TRUE, quote = FALSE, na.print = NULL,
-       print.gap = NULL, ...)
+\method{format}{corpus_frame}(x, chars = NULL, na.encode = TRUE, quote = FALSE,
+       na.print = NULL, print.gap = NULL, ..., justify = "none")
 }
 \arguments{
     \item{x}{data frame object to print or format.}
