@@ -150,6 +150,7 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         chars <- max(chars, 12)
     }
 
+    # TODO: text_trunc instead
     x <- structure(as.character(x), names = names(x))
     fmt <- utf8_format(x, trim = trim, chars = chars,, justify = justify,
                        width = width, na.encode = na.encode, quote = quote,
@@ -211,24 +212,29 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
 
     fmt <- format.corpus_text(xsub, chars = chars, quote = quote,
                               na.print = na.print, print.gap = print.gap)
-    fmt <- utf8_encode(fmt, display = display)
-
-    mat <- cbind(fmt)
-    if (is.null(rownames(mat))) {
-        rownames(mat) <- format(paste0("[", seq_len(nrow(mat)), "]"),
-                                justify = "right")
+    if (length(fmt) > 0) {
+        utf8_print(fmt, chars = .Machine$integer.max, quote = quote,
+                   na.print = na.print, print.gap = print.gap, max = max,
+                   display = display)
     }
-    colnames(mat) <- NULL
-    .Call(C_print_table, mat, print.gap, FALSE, max, width, stdout)
 
     if (nextra > 0) {
-        name_width <- max(0, utf8_width(rownames(mat)))
-
-        ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...", "\u22ee")
-        ellipsis <- substr(ellipsis, 1, name_width)
-
-        space <- format(ellipsis, width = name_width + print.gap)
-        cat(sprintf("%s(%d entries total)\n", space, length(x)))
+        if (length(fmt) == 0) {
+            cat(sprintf("(%d entries total)\n", length(x)))
+        } else if (is.null(names(fmt))) {
+            # [XX]
+            namewidth <- 1 + floor(log10(length(fmt))) + 2
+            ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...",
+                               "\u22ee")
+            ellipsis <- format(substr(ellipsis, 1, namewidth - 1),
+                               width = namewidth - 1, justify = "right")
+            space <- format(ellipsis, width = namewidth + print.gap)
+            cat(sprintf("%s(%d entries total)\n", space, length(x)))
+        } else {
+            ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", "...",
+                               "\u2026")
+            cat(sprintf("%s (%d entries total)\n", ellipsis, length(x)))
+        }
     }
 
     invisible(x)

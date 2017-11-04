@@ -59,7 +59,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
     nr <- .row_names_info(x, 2L)
     nc <- ncol(x)
     names <- names(x)
-    names[is.na(names)] <- "NA"
+    names[is.na(names)] <- "<NA>"
 
     cols <- vector("list", nc)
 
@@ -97,6 +97,7 @@ format.corpus_frame <- function(x, chars = NULL, justify = "left",
             char <- TRUE
 
         } else {
+            #w <- utf8_width(names[[i]])
             cols[[i]] <- format(elt, chars = chars, justify = justify,
                                 na.encode = na.encode, quote = quote,
                                 na.print = na.print,

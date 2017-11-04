@@ -5,10 +5,14 @@ test_that("'print.text' works without names", {
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     x <- as_corpus_text(LETTERS)
-    expect_equal(strsplit(capture_output(print(x)), "\n")[[1]],
-                 c(paste0(format(paste0("[", 1:20, "]"), justify = "right"),
-                          " \"", LETTERS[1:20], "\""),
-                   "...  (26 entries total)"))
+    expected <- c(
+' [1] "A" "B" "C" "D" "E" "F" "G" "H" "I"',
+'[10] "J" "K" "L" "M" "N" "O" "P" "Q" "R"',
+'[19] "S" "T"',
+'...  (26 entries total)')
+
+    expect_equal(strsplit(capture_output(print(x), width = 40), "\n")[[1]],
+                 expected)
 })
 
 
@@ -17,10 +21,17 @@ test_that("'print.text' works with names", {
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     x <- as_corpus_text(LETTERS, names = paste0("foo", 1:26))
-    expect_equal(strsplit(capture_output(print(x)), "\n")[[1]],
-                 c(paste0(format(names(x)[1:20], justify = "left"),
-                          " \"", LETTERS[1:20], "\""),
-                   "...   (26 entries total)"))
+    expected <- c(
+'foo1  foo2  foo3  foo4  foo5  foo6  foo7  foo8 ',
+'"A"   "B"   "C"   "D"   "E"   "F"   "G"   "H"  ',
+'foo9  foo10 foo11 foo12 foo13 foo14 foo15 foo16',
+'"I"   "J"   "K"   "L"   "M"   "N"   "O"   "P"  ',
+'foo17 foo18 foo19 foo20',
+'"Q"   "R"   "S"   "T"  ',
+'... (26 entries total)')
+
+    expect_equal(strsplit(capture_output(print(x), width = 50), "\n")[[1]],
+                 expected)
 })
 
 
@@ -43,9 +54,8 @@ test_that("'print.text' errors for invalid", {
 
 test_that("'print.text' with negative rows prints entire object", {
     x <- as_corpus_text(LETTERS)
-    expect_equal(strsplit(capture_output(print(x, -1)), "\n")[[1]],
-                 paste0(format(paste0("[", 1:26, "]"), justify = "right"),
-                        " \"", LETTERS, "\""))
+    expect_equal(capture_output(print(x, -1)),
+                 capture_output(print(as.character(x))))
 })
 
 
