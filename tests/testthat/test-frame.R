@@ -107,7 +107,7 @@ test_that("'print.corpus_frame' handles NA in column names", {
     names(dr) <- c("x", "<NA>", "ch")
 
     expect_equal(capture_output(print.corpus_frame(d)),
-                 capture_output(print(dr)))
+                 capture_output(print.corpus_frame(dr)))
 })
 
 
@@ -138,14 +138,14 @@ test_that("'print.corpus_frame' handles NA elements", {
 })
 
 
-test_that("'print.corpus_frame' handles NA row or column names", {
-    d1 <- structure(list(x=1), row.names=NA_character_, class = "data.frame")
-    expect_equal(capture_output(print.corpus_frame(d1)), "     x\n<NA> 1")
-
+test_that("'print.corpus_frame' handles NA column names", {
     x <- list(1)
     names(x) <- NA
-    d2 <- structure(x, row.names="foo", class = "data.frame")
-    expect_equal(capture_output(print.corpus_frame(d2)), "   <NA>\nfoo   1")
+    d <- structure(x, row.names="foo", class = "data.frame")
+    d2 <- d
+    names(d2) <- "<NA>"
+    expect_equal(capture_output(print.corpus_frame(d)),
+                 capture_output(print.corpus_frame(d2)))
 })
 
 

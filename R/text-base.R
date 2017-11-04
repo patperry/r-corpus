@@ -133,10 +133,10 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         linewidth <- getOption("width")
         ellipsis <- if (utf8) 1 else 3
         quotes <- if (quote) 2 else 0
-        gap <- if (is.null(print.gap)) 1 else print.gap
 
         names <- names(x)
         if (is.null(names)) {
+            gap <- if (is.null(print.gap)) 1 else print.gap
             n <- length(x)
             if (n == 0) {
                 namewidth <- 0
@@ -144,10 +144,11 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
                 namewidth <- (floor(log10(n)) + 1) + 2 # digits + len("[]")
             }
         } else {
-            namewidth <- max(0, utf8_width(names))
+            gap <- 0
+            namewidth <- 0
         }
         chars <- (linewidth - ellipsis - quotes - gap - namewidth)
-        chars <- max(chars, 12)
+        chars <- max(chars, 24)
     }
 
     # TODO: text_trunc instead
