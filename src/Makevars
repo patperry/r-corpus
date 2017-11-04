@@ -24,7 +24,7 @@ STEMMER_O = $(SNOWBALL)/src_c/stem_UTF_8_arabic.o \
 			$(SNOWBALL)/runtime/utilities.o \
 			$(SNOWBALL)/libstemmer/libstemmer_utf8.o
 
-UTF8LITE = corpus/lib/utf8lite/
+UTF8LITE = corpus/lib/utf8lite
 UTF8LITE_O = $(UTF8LITE)/src/array.o \
              $(UTF8LITE)/src/char.o \
              $(UTF8LITE)/src/encode.o \
