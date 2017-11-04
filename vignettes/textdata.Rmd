@@ -129,7 +129,7 @@ as_corpus_text(x) ## fails
 ```
 
 ```
-Error in as_corpus_text.character(x): argument entry 1 is marked as "UTF-8" but contains an invalid byte in position 3 (\xe7)
+Error in as_corpus_text.character(x): argument entry 1 is incorrectly marked as "UTF-8": leading byte 0xE7 followed by invalid continuation byte (0x69) at position 4
 ```
 
 ```r
@@ -217,7 +217,7 @@ unclass(data$text)
 
 ```
 $handle
-<pointer: 0x7fdb34633d20>
+<pointer: 0x7fba65dd4ba0>
 
 $sources
 $sources[[1]]
@@ -278,7 +278,7 @@ unclass(chunks$text) # inspect text internals
 
 ```
 $handle
-<pointer: 0x7fdb38109760>
+<pointer: 0x7fba65fa0fb0>
 
 $sources
 $sources[[1]]
@@ -338,8 +338,10 @@ print(text)
 ```
 
 ```
-para1 "Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy,…"
-para2 "'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or dow…"
+para1                                                                                          
+"Once upon a time there were four little Rabbits,\nand their names were: Flopsy, Mopsy, Cotto…"
+para2                                                                                          
+"'Now, my dears,' said old Mrs. Rabbit one morning,\n'you may go into the fields or down the …"
 ```
 
 If you'd like to print the entire contents, you can convert the text to
@@ -445,15 +447,24 @@ print(as_corpus_text(uk2010immigCorpus))
 ```
 
 ```
-BNP          "IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- At curr…"
-Coalition    "IMMIGRATION. \n\nThe Government believes that immigration has enriched our cult…"
-Conservative "Attract the brightest and best to our country.\n\nImmigration has enriched our …"
-Greens       "Immigration.\n\nMigration is a fact of life.  People have always moved from one…"
-Labour       "Crime and immigration\n\nThe challenge for Britain\n\nWe will control immigrati…"
-LibDem       "firm but fair immigration system\n\nBritain has always been an open, welcoming …"
-PC           "As a welcoming nation, Plaid Cymru recognises the invaluable contribution that …"
-SNP          "And we will argue for Scotland to take responsibility for immigration so that w…"
-UKIP         "Immigration & Asylum.\n\nAs a member of the EU, Britain has lost control of her…"
+BNP                                                                                            
+"IMMIGRATION: AN UNPARALLELED CRISIS WHICH ONLY THE BNP CAN SOLVE. \n\n- At current immigrati…"
+Coalition                                                                                      
+"IMMIGRATION. \n\nThe Government believes that immigration has enriched our culture and stren…"
+Conservative                                                                                   
+"Attract the brightest and best to our country.\n\nImmigration has enriched our nation over t…"
+Greens                                                                                         
+"Immigration.\n\nMigration is a fact of life.  People have always moved from one country to a…"
+Labour                                                                                         
+"Crime and immigration\n\nThe challenge for Britain\n\nWe will control immigration with our n…"
+LibDem                                                                                         
+"firm but fair immigration system\n\nBritain has always been an open, welcoming country, and …"
+PC                                                                                             
+"As a welcoming nation, Plaid Cymru recognises the invaluable contribution that migrants have…"
+SNP                                                                                            
+"And we will argue for Scotland to take responsibility for immigration so that we can develop…"
+UKIP                                                                                           
+"Immigration & Asylum.\n\nAs a member of the EU, Britain has lost control of her borders. Som…"
 ```
 
 ```r
@@ -522,26 +533,46 @@ print(as_corpus_text(crude))
 ```
 
 ```
-127 "Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crud…"
-144 "OPEC may be forced to meet before a\nscheduled June session to readdress its production …"
-191 "Texaco Canada said it lowered the\ncontract price it will pay for crude oil 64 Canadian …"
-194 "Marathon Petroleum Co said it reduced\nthe contract price it will pay for all grades of …"
-211 "Houston Oil Trust said that independent\npetroleum engineers completed an annual study t…"
-236 "Kuwait\"s Oil Minister, in remarks\npublished today, said there were no plans for an eme…"
-237 "Indonesia appears to be nearing a\npolitical crossroads over measures to deregulate its …"
-242 "Saudi riyal interbank deposits were\nsteady at yesterday's higher levels in a quiet mark…"
-246 "The Gulf oil state of Qatar, recovering\nslightly from last year's decline in world oil …"
-248 "Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last Dec…"
-273 "Saudi crude oil output last month fell\nto an average of 3.5 mln barrels per day (bpd) f…"
-349 "Deputy oil ministers from six Gulf\nArab states will meet in Bahrain today to discuss co…"
-352 "Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last Dec…"
-353 "Kuwait's oil minister said in a newspaper\ninterview that there were no plans for an eme…"
-368 "The port of Philadelphia was closed\nwhen a Cypriot oil tanker, Seapride II, ran aground…"
-489 "A study group said the United States\nshould increase its strategic petroleum reserve to…"
-502 "A study group said the United States\nshould increase its strategic petroleum reserve to…"
-543 "Unocal Corp's Union Oil Co said it\nlowered its posted prices for crude oil one to 1.50 …"
-704 "The New York Mercantile Exchange set\nApril one for the debut of a new procedure in the …"
-708 "Argentine crude oil production was\ndown 10.8 pct in January 1987 to 12.32 mln barrels, …"
+127                                                                                            
+"Diamond Shamrock Corp said that\neffective today it had cut its contract prices for crude oi…"
+144                                                                                            
+"OPEC may be forced to meet before a\nscheduled June session to readdress its production cutt…"
+191                                                                                            
+"Texaco Canada said it lowered the\ncontract price it will pay for crude oil 64 Canadian cts …"
+194                                                                                            
+"Marathon Petroleum Co said it reduced\nthe contract price it will pay for all grades of crud…"
+211                                                                                            
+"Houston Oil Trust said that independent\npetroleum engineers completed an annual study that …"
+236                                                                                            
+"Kuwait\"s Oil Minister, in remarks\npublished today, said there were no plans for an emergen…"
+237                                                                                            
+"Indonesia appears to be nearing a\npolitical crossroads over measures to deregulate its prot…"
+242                                                                                            
+"Saudi riyal interbank deposits were\nsteady at yesterday's higher levels in a quiet market.…" 
+246                                                                                            
+"The Gulf oil state of Qatar, recovering\nslightly from last year's decline in world oil pric…"
+248                                                                                            
+"Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last Decembe…"
+273                                                                                            
+"Saudi crude oil output last month fell\nto an average of 3.5 mln barrels per day (bpd) from …"
+349                                                                                            
+"Deputy oil ministers from six Gulf\nArab states will meet in Bahrain today to discuss coordi…"
+352                                                                                            
+"Saudi Arabian Oil Minister Hisham Nazer\nreiterated the kingdom's commitment to last Decembe…"
+353                                                                                            
+"Kuwait's oil minister said in a newspaper\ninterview that there were no plans for an emergen…"
+368                                                                                            
+"The port of Philadelphia was closed\nwhen a Cypriot oil tanker, Seapride II, ran aground aft…"
+489                                                                                            
+"A study group said the United States\nshould increase its strategic petroleum reserve to one…"
+502                                                                                            
+"A study group said the United States\nshould increase its strategic petroleum reserve to one…"
+543                                                                                            
+"Unocal Corp's Union Oil Co said it\nlowered its posted prices for crude oil one to 1.50 dlrs…"
+704                                                                                            
+"The New York Mercantile Exchange set\nApril one for the debut of a new procedure in the ener…"
+708                                                                                            
+"Argentine crude oil production was\ndown 10.8 pct in January 1987 to 12.32 mln barrels, from…"
 ```
 
 ```r

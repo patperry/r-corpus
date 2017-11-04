@@ -306,7 +306,7 @@ system.time(stats <- term_stats(corpus))
 
 ```
    user  system elapsed 
-  0.088   0.002   0.091 
+  0.103   0.003   0.107 
 ```
 
 Here's how many times the stemmer got called:
@@ -329,7 +329,7 @@ system.time(stats2 <- term_stats(corpus))
 
 ```
    user  system elapsed 
-   0.04    0.00    0.04 
+  0.042   0.000   0.043 
 ```
 
 It took us half the time. How many additional calls to the stemmer were there?
