@@ -14,7 +14,7 @@
 
 is_ansi <- function()
 {
-    if (.Platform$OS.type == "windows" || !isatty(stdout())) {
+    if (!isatty(stdout())) {
         if (is.na(as.numeric(Sys.getenv("RSTUDIO_CONSOLE_COLOR")))
             || sink.number() != 0) {
             return(FALSE)
