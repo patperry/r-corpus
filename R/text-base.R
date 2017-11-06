@@ -126,8 +126,10 @@ format.corpus_text <- function(x, trim = FALSE, chars = NULL,
         print.gap <- as_print_gap("print.gap", print.gap)
     })
 
-    # TODO: text_trunc instead
-    x <- structure(as.character(x), names = names(x))
+    trunc <- if (is.null(chars)) getOption("width") else chars
+    right <- (justify == "right")
+    x <- .Call(C_text_trunc, x, trunc, right)
+
     fmt <- utf8_format(x, trim = trim, chars = chars, justify = justify,
                        width = width, na.encode = na.encode, quote = quote,
                        na.print = na.print, print.gap = print.gap)

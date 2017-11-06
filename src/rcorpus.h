@@ -265,6 +265,7 @@ SEXP as_character_text(SEXP text);
 SEXP is_na_text(SEXP text);
 SEXP anyNA_text(SEXP text);
 SEXP text_c(SEXP args, SEXP names, SEXP filter);
+SEXP text_trunc(SEXP x, SEXP chars, SEXP right);
 SEXP text_valid(SEXP x);
 
 /* text filter */
