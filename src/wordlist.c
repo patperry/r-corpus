@@ -35,7 +35,8 @@ static SEXP wordlist(const uint8_t **(*callback)(const char *, int *),
 		return R_NilValue;
 	}
 
-	kind = rutf8_translate_utf8(STRING_ELT(skind, 0));
+	// assume utf8 encoding
+	kind = CHAR(STRING_ELT(skind, 0));
 	strs = (const char **)callback(kind, &n);
 
 	if (!strs) {
