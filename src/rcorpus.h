@@ -180,7 +180,6 @@ struct termset {
 
 /* functions from the 'utf8' R package */
 extern SEXP (*rutf8_as_utf8)(SEXP x);
-extern char *(*rutf8_translate_utf8)(SEXP x);
 
 /* context */
 SEXP alloc_context(size_t size, void (*destroy_func)(void *));

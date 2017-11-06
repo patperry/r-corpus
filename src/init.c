@@ -23,7 +23,6 @@
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 SEXP (*rutf8_as_utf8)(SEXP);
-char *(*rutf8_translate_utf8)(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
 	CALLDEF(abbreviations, 1),
@@ -79,8 +78,6 @@ void R_init_corpus(DllInfo *dll)
 {
 	R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
 	rutf8_as_utf8 = (SEXP (*)(SEXP))R_GetCCallable("utf8", "as_utf8");
-	rutf8_translate_utf8 = ((char * (*) (SEXP))
-				R_GetCCallable("utf8", "translate_utf8"));
 	R_useDynamicSymbols(dll, FALSE);
 	R_forceSymbols(dll, TRUE);
 }
