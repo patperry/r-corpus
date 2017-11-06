@@ -311,10 +311,8 @@ SEXP as_text_character(SEXP x, SEXP filter)
 {
 	SEXP ans, handle, sources, source, row, start, stop, names, str;
 	struct rcorpus_text *obj;
-	struct utf8lite_message msg;
 	const char *ptr;
 	R_xlen_t i, nrow, len;
-	int duped = 0;
 	int err = 0, nprot = 0;
 
 	if (x == R_NilValue || TYPEOF(x) != STRSXP) {
@@ -374,17 +372,8 @@ SEXP as_text_character(SEXP x, SEXP filter)
 			continue;
 		}
 
-		// convert to UTF-8
-		ptr = rutf8_translate_utf8(str);
-		if (ptr != CHAR(str)) {
-			if (!duped) {
-				SET_VECTOR_ELT(sources, 0, (x = duplicate(x)));
-				duped = 1;
-			}
-			str = mkCharCE(ptr, CE_UTF8);
-			SET_STRING_ELT(x, i, str);
-			ptr = CHAR(str);
-		}
+		// assume input is already UTF-8
+		ptr = CHAR(str);
 
 		// convert to char to text
 		len = XLENGTH(str);
@@ -395,18 +384,9 @@ SEXP as_text_character(SEXP x, SEXP filter)
 			      (uint64_t)(i + 1), (uint64_t)len,
 			      (uint64_t)UTF8LITE_TEXT_SIZE_MAX);
 		}
-		if (len > INT_MAX) {
-			error("size of character object at index %"PRIu64
-			      " (%"PRIu64" bytes)"
-			      " exceeds maximum (%d bytes)",
-			      (uint64_t)(i + 1), (uint64_t)len, INT_MAX);
-		}
-		if ((err = utf8lite_text_assign(&obj->text[i], (uint8_t *)ptr,
-					        (size_t)len, 0, &msg))) {
-			error("character object at index %"PRIu64
-			      " contains malformed UTF-8: %s",
-			      (uint64_t)(i + 1), msg.string);
-		}
+
+		TRY(utf8lite_text_assign(&obj->text[i], (uint8_t *)ptr,
+					 (size_t)len, 0, NULL));
 
 		INTEGER(start)[i] = 1;
 		INTEGER(stop)[i] = (int)UTF8LITE_TEXT_SIZE(&obj->text[i]);
