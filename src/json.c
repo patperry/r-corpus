@@ -546,7 +546,8 @@ SEXP subfield_json(SEXP sdata, SEXP sname)
 	}
 	TRY(TYPEOF(sname) != CHARSXP ? CORPUS_ERROR_INTERNAL : 0);
 
-	name_ptr = rutf8_translate_utf8(sname);
+	// name must be in utf8 encoding (or 'native' on non-Windows)
+	name_ptr = CHAR(sname);
 	name_len = strlen(name_ptr);
 	PROTECT(sname = mkCharLenCE(name_ptr, name_len, CE_UTF8)); nprot++;
 	TRY(utf8lite_text_assign(&name, (uint8_t *)name_ptr, name_len, 0,
@@ -798,14 +799,15 @@ static int in_string_set(SEXP strs, SEXP item)
 		return 0;
 	}
 
-	s2 = rutf8_translate_utf8(item);
+	// assume items, strs in same encoding (UTF-8)
+	s2 = CHAR(item);
 
 	for (i = 0; i < n; i++) {
 		if (STRING_ELT(strs, i) == NA_STRING) {
 			continue;
 		}
 
-		s1 = rutf8_translate_utf8(STRING_ELT(strs, i));
+		s1 = CHAR(STRING_ELT(strs, i));
 		if (strcmp(s1, s2) == 0) {
 			return 1;
 		}

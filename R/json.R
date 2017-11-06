@@ -133,6 +133,11 @@ print.corpus_json <- function(x, ...)
     } else if (length(i) > 1) {
         stop("subscript of length >1 is not allowed")
     }
+    if (is.character(i)) {
+        with_rethrow({
+            i <- as_utf8(i)
+        })
+    }
 
     # For scalar json objects, i is the index.
     #
@@ -179,6 +184,8 @@ print.corpus_json <- function(x, ...)
         i <- NULL
     } else if (is.null(i)) {
         i <- numeric()
+    } else if (is.character(i)) {
+        i <- as_utf8(i)
     }
 
     if (missing(j)) {
@@ -190,6 +197,8 @@ print.corpus_json <- function(x, ...)
         ni <- 2
         if (is.null(j)) {
             j <- integer()
+        } else if (is.character(j)) {
+            j <- as_utf8(j)
         }
     }
 
