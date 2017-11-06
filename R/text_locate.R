@@ -233,7 +233,10 @@ print.corpus_text_locate <- function(x, rows = 20L, print.gap = NULL,
         gap <- if (is.null(print.gap)) 1 else print.gap
 
         space <- format(ellipsis, width = name_width + gap)
-        cat(sprintf("%s(%d rows total)\n", space, n))
+        if (is_ansi()) {
+            space <- paste0("\x1b[2m", space, "\x1b[0m")
+        }
+        cat(space, sprintf("(%d rows total)\n", n), sep = "")
     }
 
     invisible(x)

@@ -211,7 +211,7 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
     if (length(fmt) > 0) {
         utf8_print(fmt, chars = .Machine$integer.max, quote = quote,
                    na.print = na.print, print.gap = print.gap, max = max,
-                   display = display)
+                   names = "1", rownames = "2", display = display)
     }
 
     if (nextra > 0) {
@@ -223,9 +223,15 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
             ellipsis <- format(substr(ellipsis, 1, namewidth - 1),
                                width = namewidth - 1, justify = "right")
             space <- format(ellipsis, width = namewidth + print.gap)
-            cat(sprintf("%s(%d entries total)\n", space, length(x)))
+            if (is_ansi()) {
+                space <- paste0("\x1b[2m", space, "\x1b[0m")
+            }
+            cat(space, sprintf("(%d entries total)\n", length(x)), sep = "")
         } else {
             ellipsis <- ifelse(utf8, "\u2026", "...")
+            if (is_ansi()) {
+                ellipsis <- paste0("\x1b[1m", ellipsis, "\x1b[0m")
+            }
             cat(sprintf("%s (%d entries total)\n", ellipsis, length(x)))
         }
     }
