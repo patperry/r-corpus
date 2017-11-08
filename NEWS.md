@@ -1,6 +1,10 @@
 corpus 0.9.4.9000
 =================
 
+### DEPRECATED AND DEFUNCT
+
+  * Remove `text_length()`. Use `text_ntoken()` instead.
+
 
 corpus 0.9.4 (2017-10-31)
 =========================
