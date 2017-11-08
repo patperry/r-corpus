@@ -216,10 +216,11 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
         rownames(m) <- row.names
     }
 
+    # names: #CC6666; rownames: #666666
     utf8_print(m, chars = .Machine$integer.max, quote = quote,
                na.print = na.print, print.gap = print.gap,
-               right = right, max = max, names = "1", rownames = "2",
-               display = display)
+               right = right, max = max, names = "38;5;174",
+               rownames = "38;5;246", display = display)
 
     if (n == 0) {
         cat("(0 rows)\n")
