@@ -10,8 +10,6 @@ init:
 install:
   - ps: Bootstrap
   - git submodule update --init --recursive
-  - git clone --recursive https://github.com/patperry/r-utf8.git dist
-  - Rscript -e 'devtools::install("dist/r-utf8")'
 
 cache:
   - C:\RLibrary
@@ -20,6 +18,8 @@ cache:
 
 build_script:
   - travis-tool.sh install_deps
+  - git clone --recursive https://github.com/patperry/r-utf8.git dist
+  - Rscript -e 'devtools::install("dist/r-utf8")'
 
 test_script:
   - travis-tool.sh run_tests
