@@ -101,6 +101,9 @@ static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
 	SEXP str, inchr, outchr, fcall, ans;
 	struct stemmer *stemmer = context;
 	const uint8_t *stem;
+	struct utf8lite_message msg;
+	struct utf8lite_text text;
+	cetype_t ce;
 	int err = 0, nprot = 0, stemlen;
 
 	assert(!stemmer->error);
@@ -151,13 +154,36 @@ static int stem_rfunc(const uint8_t *ptr, int len, const uint8_t **stemptr,
 		      translateChar(inchr));
 	}
 
-	// convert to UTF-8
-	PROTECT(ans = rutf8_as_utf8(ans)); nprot++;
-
-	outchr = STRING_ELT(ans, 0);
+	PROTECT(outchr = STRING_ELT(ans, 0)); nprot++;
 	if (outchr != NA_STRING) {
 		stem = (const uint8_t *)CHAR(outchr);
 		stemlen = LENGTH(outchr);
+		ce = getCharCE(outchr);
+
+		switch (ce) {
+		case CE_ANY:
+		case CE_UTF8:
+			break;
+
+		case CE_NATIVE:
+#if defined(_WIN32) || defined(_WIN64)
+			stem = (const uint8_t *)translateCharUTF8(outchr);
+			stemlen = (int)strlen(stem);
+#endif
+			break;
+
+		default:
+			error("'stemmer' returned a without"
+			      " \"UTF-8\" or native encoding for input \"%s\"",
+			      translateChar(inchr));
+			break;
+		}
+
+		if (utf8lite_text_assign(&text, stem, stemlen, 0, &msg)) {
+			error("'stemmer' returned an invalid UTF-8 string"
+			      " for input \"%s\": %s", translateChar(inchr),
+			      msg.string);
+		}
 	}
 out:
 	if (stemptr) {
