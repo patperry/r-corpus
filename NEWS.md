@@ -5,6 +5,10 @@ corpus 0.9.4.9000
 
   * Remove `text_length()`. Use `text_ntoken()` instead.
 
+  * Remove `as_utf8()`, `utf8_valid()`, `utf8_normalize()`,
+    `utf8_encode()`, `utf8_format()`, `utf8_print()`, and `utf8_width()`;
+    these functions are in the *utf8* package now.
+
 
 corpus 0.9.4 (2017-10-31)
 =========================
