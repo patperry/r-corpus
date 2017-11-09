@@ -13,9 +13,11 @@
 #  limitations under the License.
 
 
-# RStudio doesn't support ANSI faint, use #666666 instead
-style_faint <- "38;5;246"
+# RStudio doesn't support ANSI faint, use gray instead
+style_faint <- "38;5;246" #666666
 
-# RStudio ANSI bold is broken, use #CC6666 instead
+# RStudio ANSI bold is broken, use color instead
 # https://github.com/rstudio/rstudio/issues/1721
-style_bold <- "38;5;174"
+style_bold <- "38;5;203" #FF3333
+#style_bold <- "36" # cyan
+#style_bold <- "38;5;63" #3333FF
