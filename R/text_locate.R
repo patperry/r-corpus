@@ -234,7 +234,7 @@ print.corpus_text_locate <- function(x, rows = 20L, print.gap = NULL,
 
         space <- format(ellipsis, width = name_width + gap)
         if (is_ansi()) {
-            space <- paste0("\x1b[2m", space, "\x1b[0m")
+            space <- paste0("\x1b[", style_faint, "m", space, "\x1b[0m")
         }
         cat(space, sprintf("(%d rows total)\n", n), sep = "")
     }

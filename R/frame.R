@@ -216,11 +216,11 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
         rownames(m) <- row.names
     }
 
-    # names: #CC6666; rownames: #666666
     utf8_print(m, chars = .Machine$integer.max, quote = quote,
                na.print = na.print, print.gap = print.gap,
-               right = right, max = max, names = "38;5;174",
-               rownames = "38;5;246", display = display)
+               right = right, max = max, names = style_bold,
+               rownames = style_faint, escapes = style_faint,
+               display = display)
 
     if (n == 0) {
         cat("(0 rows)\n")
@@ -232,7 +232,7 @@ print.corpus_frame <- function(x, rows = 20L, chars = NULL, digits = NULL,
         gap <- if (is.null(print.gap)) 1 else print.gap
         space <- format(ellipsis, width = name_width + gap)
         if (is_ansi()) {
-            space <- paste0("\x1b[2m", space, "\x1b[0m")
+            space <- paste0("\x1b[", style_faint, "m", space, "\x1b[0m")
         }
         cat(space, sprintf("(%d rows total)\n", n), sep = "")
     }
