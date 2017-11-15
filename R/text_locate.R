@@ -167,7 +167,7 @@ format.corpus_text_locate <- function(x, width = getOption("width"),
 
     extra <- width - sum(colwidths) - print.gap * (length(colwidths) - 1)
     ctxwidth <- max(12, extra / max(1, nctx))
-    ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", 3, 1)
+    ellipsis <- ifelse(output_utf8(), 1, 3)
 
     if ("before" %in% names) {
         i <- match("before", names)
@@ -228,12 +228,12 @@ print.corpus_text_locate <- function(x, rows = 20L, print.gap = NULL,
     if (trunc) {
         name_width <- max(0, utf8_width(rownames(fmt)))
 
-        ellipsis <- ifelse(Sys.getlocale("LC_CTYPE") == "C", ".", "\u22ee")
+        ellipsis <- ifelse(output_utf8(), "\u22ee", ".")
         ellipsis <- substr(ellipsis, 1, name_width)
         gap <- if (is.null(print.gap)) 1 else print.gap
 
         space <- format(ellipsis, width = name_width + gap)
-        if (is_ansi()) {
+        if (output_ansi()) {
             space <- paste0("\x1b[", style_faint, "m", space, "\x1b[0m")
         }
         cat(space, sprintf("(%d rows total)\n", n), sep = "")

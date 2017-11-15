@@ -178,7 +178,7 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
     }
 
     width <- getOption("width")
-    utf8 <- Sys.getlocale("LC_CTYPE") != "C"
+    utf8 <- output_utf8()
 
     if (is.null(chars)) {
         ellipsis <- if (utf8) 1 else 3
@@ -226,13 +226,13 @@ print.corpus_text <- function(x, rows = 20L, chars = NULL, quote = TRUE,
             ellipsis <- format(substr(ellipsis, 1, namewidth - 1),
                                width = namewidth - 1, justify = "right")
             space <- format(ellipsis, width = namewidth + print.gap)
-            if (is_ansi()) {
+            if (output_ansi()) {
                 space <- paste0("\x1b[", style_faint, "m", space, "\x1b[0m")
             }
             cat(space, sprintf("(%d entries total)\n", length(x)), sep = "")
         } else {
             ellipsis <- ifelse(utf8, "\u2026", "...")
-            if (is_ansi()) {
+            if (output_ansi()) {
                 ellipsis <- paste0("\x1b[1m", ellipsis, "\x1b[0m")
             }
             cat(sprintf("%s (%d entries total)\n", ellipsis, length(x)))

@@ -12,17 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-is_ansi <- function()
-{
-    if (!isatty(stdout())) {
-        if (is.na(as.numeric(Sys.getenv("RSTUDIO_CONSOLE_COLOR")))
-            || sink.number() != 0) {
-            return(FALSE)
-        }
-    }
-    TRUE
-}
-
 
 with_rethrow <- function(expr)
 {
