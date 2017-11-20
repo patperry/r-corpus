@@ -21,7 +21,7 @@ Depends:
   R (>= 3.3),
 Imports:
   stats,
-  utf8 (>= 1.0.0.9000)
+  utf8 (>= 1.1.0)
 Suggests:
   knitr,
   Matrix,

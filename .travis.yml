@@ -16,10 +16,13 @@ r_github_packages:
 before_install:
   - make NEWS
   - make README
-  - pushd $(mktemp -d)
-  - git clone --recursive https://github.com/patperry/r-utf8.git
-  - Rscript -e 'devtools::install("r-utf8")'
-  - popd
+
+# for devel version of 'utf8', put the following in `before_install`:
+#  - pushd $(mktemp -d)
+#  - git clone --recursive https://github.com/patperry/r-utf8.git
+#  - Rscript -e 'devtools::install("r-utf8")'
+#  - popd
+
 
 matrix:
   include:
