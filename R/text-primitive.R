@@ -340,7 +340,22 @@ length.corpus_text <- function(x)
 
 `length<-.corpus_text` <- function(x, value)
 {
-    stop("length<- is invalid for text objects")
+    if (!is_corpus_text(x)) {
+        stop("invalid text object")
+    }
+
+    with_rethrow({
+        n <- as_length("length", value)
+    })
+
+    n0 <- length(x)
+    if (n0 > n) {
+        x <- x[seq_len(n)]
+    } else if (n0 < n) {
+        x <- c(x, rep(NA_character_, n - n0))
+    }
+
+    x
 }
 
 `levels<-.corpus_text` <- function(x, value)

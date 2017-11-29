@@ -1,6 +1,10 @@
 corpus 0.9.4.9000
 =================
 
+### NEW FEATURES
+
+  * Implement `length<-` for `corpus_text` objects.
+
 ### DEPRECATED AND DEFUNCT
 
   * Remove `text_length()`. Use `text_ntoken()` instead.

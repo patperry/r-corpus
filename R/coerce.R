@@ -176,6 +176,40 @@ as_kind <- function(kind)
 }
 
 
+as_length <- function(name, value)
+{
+    if (is.null(value)) {
+        stop(sprintf("'%s' cannot be NULL", name))
+    }
+
+    if (!(is.numeric(value) || all(is.na(value)))) {
+        stop(sprintf("'%s' must be numeric", name))
+    }
+
+    if (length(value) != 1) {
+        stop(sprintf("'%s' must have length 1", name))
+    }
+
+    value <- trunc(as.numeric(value))
+
+    if (is.nan(value)) {
+        stop(sprintf("'%s' cannot be NaN", name))
+    }
+    if (is.na(value)) {
+        stop(sprintf("'%s' cannot be NA", name))
+    }
+    if (value < 0) {
+        stop(sprintf("'%s' cannot be negative", name))
+    }
+    if (value > 2^(.Machine$double.digits)) {
+        stop(sprintf("'%s' cannot be above 2^%d", name,
+                     .Machine$double.digits))
+    }
+
+    value
+}
+
+
 as_na_print <- function(name, value)
 {
     if (is.null(value)) {
