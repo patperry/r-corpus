@@ -38,7 +38,7 @@ test_that("'format' can handle long text in Unicode locale", {
     names(short) <- names(text)
     names(rshort) <- names(text)
 
-    ctype <- switch_ctype("Unicode")
+    ctype <- switch_ctype("UTF-8")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
     skip_on_os("windows") # windows can't format \u6027
 
@@ -68,7 +68,7 @@ test_that("'format' can handle long text in UTF-8 locale, part 2", {
     names(short) <- names(text)
     names(rshort) <- names(text)
 
-    ctype <- switch_ctype("Unicode")
+    ctype <- switch_ctype("UTF-8")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
 
     expect_equal(format(text, chars = 1, justify = "none", na.encode = FALSE),
@@ -99,7 +99,7 @@ test_that("'format' can handle high code points in C locale", {
 
 
 test_that("'format' can handle high code points in Unicode locale", {
-    ctype <- switch_ctype("Unicode")
+    ctype <- switch_ctype("UTF-8")
     on.exit(Sys.setlocale("LC_CTYPE", ctype))
     skip_on_os("windows") # no Unicode above 0xFFFF on Windows
 
@@ -124,7 +124,7 @@ test_that("'format' can handle ignorable code points", {
     expect_equal(format(text, justify = "centre"), raw)
     expect_equal(format(text, justify = "right"), raw)
 
-    switch_ctype("Unicode")
+    switch_ctype("UTF-8")
 
     expect_equal(format(text, justify = "left"), raw)
     expect_equal(format(text, justify = "centre"), raw)
@@ -143,7 +143,7 @@ test_that("'format' can handle marks", {
     expect_equal(format(text, chars = 6, justify = "centre"), "...")
     expect_equal(format(text, chars = 5, justify = "right"), "...")
 
-    switch_ctype("Unicode")
+    switch_ctype("UTF-8")
 
     expect_equal(format(text, chars = 1, justify = "left"), raw)
     expect_equal(format(text, chars = 1, justify = "centre"), raw)
@@ -162,7 +162,7 @@ test_that("'format' can handle UTF-8 'Other' codes", {
     expect_equal(format(text, justify = "centre"), raw)
     expect_equal(format(text, justify = "right"), raw)
 
-    switch_ctype("Unicode")
+    switch_ctype("UTF-8")
 
     expect_equal(format(text, justify = "left"), raw)
     expect_equal(format(text, justify = "centre"), raw)
