@@ -16,6 +16,7 @@ r_github_packages:
 before_install:
   - make NEWS
   - make README
+  - make dist/table.c.unpragma
 
 # for devel version of 'utf8', put the following in `before_install`:
 #  - pushd $(mktemp -d)
