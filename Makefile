@@ -34,11 +34,13 @@ cov:
 	$(RSCRIPT) -e 'covr::package_coverage(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
 
 dist: $(BUILT_VIGNETTES) NEWS README
+	# work around CRAN's pragma check
+	# https://github.com/wch/r-source/commit/b76c8fd355a0f5b23d42aaf44a879cac0fc31fa4#diff-4882a8c8e173bda109ed98da485e1428R8622
+	mkdir -p dist
 	cp src/corpus/src/table.c dist/table.c.orig
-	sed 's/^\(#pragma GCC diagnostic .*\)/\/\/\1/g' src/corpus/src/table.c > \
-		src/corpus/src/table.c.bak
-	mv src/corpus/src/table.c.bak src/corpus/src/table.c
-	mkdir -p dist && cd dist && R CMD build ..
+	sed 's/^\(#pragma GCC diagnostic .*\)/\/\/\1/g' dist/table.c.orig > \
+		src/corpus/src/table.c
+	cd dist && R CMD build ..
 	mv dist/table.c.orig src/corpus/src/table.c
 
 distclean: clean
