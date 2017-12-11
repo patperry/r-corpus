@@ -34,7 +34,12 @@ cov:
 	$(RSCRIPT) -e 'covr::package_coverage(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
 
 dist: $(BUILT_VIGNETTES) NEWS README
+	cp src/corpus/src/table.c dist/table.c.orig
+	sed 's/^\(#pragma GCC diagnostic .*\)/\/\/\1/g' src/corpus/src/table.c > \
+		src/corpus/src/table.c.bak
+	mv src/corpus/src/table.c.bak src/corpus/src/table.c
 	mkdir -p dist && cd dist && R CMD build ..
+	mv dist/table.c.orig src/corpus/src/table.c
 
 distclean: clean
 	rm -rf $(BUILT_VIGNETTES)
