@@ -17,6 +17,8 @@ before_install:
   - make NEWS
   - make README
   - make dist/table.c.unpragma
+  - mv dist/table.c.unpragma src/corpus/src/table.c
+
 
 # for devel version of 'utf8', put the following in `before_install`:
 #  - pushd $(mktemp -d)
