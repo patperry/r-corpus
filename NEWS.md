@@ -5,6 +5,9 @@ corpus 0.9.4.9000
 
   * Implement `length<-` for `corpus_text` objects.
 
+  * Added `str()` method for `corpus_text` objects. Currently just a minimal
+    implementation; this may change in the future.
+
 ### DEPRECATED AND DEFUNCT
 
   * Remove `text_length()`. Use `text_ntoken()` instead.

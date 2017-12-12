@@ -187,6 +187,7 @@ S3method(rep, corpus_text)
 S3method(solve, corpus_text)
 S3method(summary, corpus_text)
 S3method(rep, corpus_text)
+S3method(str, corpus_text)
 S3method(t, corpus_text)
 S3method(xtfrm, corpus_text)
 
