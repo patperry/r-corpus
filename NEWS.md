@@ -1,5 +1,5 @@
-corpus 0.9.4.9000
-=================
+corpus 0.10.0
+=============
 
 ### NEW FEATURES
 
@@ -7,6 +7,8 @@ corpus 0.9.4.9000
 
   * Added `str()` method for `corpus_text` objects. Currently just a minimal
     implementation; this may change in the future.
+
+  * Add ANSI styling to `corpus_frame` objects.
 
 ### DEPRECATED AND DEFUNCT
 
