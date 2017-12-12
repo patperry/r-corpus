@@ -70,7 +70,15 @@ gutenberg_get_mirror <- function(verbose = TRUE)
 }
 
 
-# partly based on gutenbergr::gutenberg_strip, written by David Robinson
+# Partly based on gutenbergr::gutenberg_strip in that we use some of the
+# same regexes for detecting the header and footer.
+#
+# The implementation here is different, though, and in particular, unlike
+# gutenbergr, we parse the meta-data from the header and convert the character
+# encoding if one is declared in the "Character set encoding" field.
+#
+# There are no lines in common with gutenbergr::gutenberg_strip.
+#
 gutenberg_parse <- function(lines, verbose = TRUE)
 {
     # number the lines
@@ -166,7 +174,20 @@ gutenberg_parse <- function(lines, verbose = TRUE)
 }
 
 
-# partly based on gutenbergr::gutenberg_download, written by David Robinson
+# Partly based on gutenbergr::gutenberg_download but we use a different
+# algorithm to form the URL and download the file.
+#
+# The gutenbergr version attempts to download the ".zip", version of the file,
+# and if that fails, attempts to download the "-8.zip" and then the "-0.zip"
+# version.  We instead list the available zip files, and then pick one to
+# download, preferring, in order "-0.zip", "-8.zip", and ".zip".
+#
+# The only lines in common between the two implementations are the following:
+#
+# if (is.null(mirror)) {
+#     mirror <- gutenberg_get_mirror(verbose = verbose)
+# }
+#
 gutenberg_download <- function(id, mirror = NULL, verbose = TRUE)
 {
     id <- as.integer(id)[[1]]
