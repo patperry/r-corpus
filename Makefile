@@ -33,11 +33,8 @@ clean:
 cov:
 	$(RSCRIPT) -e 'covr::package_coverage(line_exclusions = c("R/deprecated.R", list.files("src/corpus", recursive = TRUE, full.names = TRUE)))'
 
-dist: $(BUILT_VIGNETTES) NEWS README dist/table.c.unpragma
-	mv src/corpus/src/table.c dist/table.c.orig
-	mv dist/table.c.unpragma src/corpus/src/table.c
-	cd dist && R CMD build ..
-	mv dist/table.c.orig src/corpus/src/table.c
+dist: $(BUILT_VIGNETTES) NEWS README
+	mkdir -p dist && cd dist && R CMD build ..
 
 distclean: clean
 	rm -rf $(BUILT_VIGNETTES)
@@ -46,13 +43,6 @@ doc: $(BUILT_VIGNETTES) NEWS README
 
 install: $(CORPUS_LIB)
 	$(RSCRIPT) -e 'devtools::install(".")'
-
-# work around CRAN's pragma check
-# https://github.com/wch/r-source/commit/b76c8fd355a0f5b23d42aaf44a879cac0fc31fa4#diff-4882a8c8e173bda109ed98da485e1428R8622
-dist/table.c.unpragma:
-	mkdir -p dist
-	sed 's/^\(#pragma GCC diagnostic .*\)/\/\/\1/g' src/corpus/src/table.c > \
-		dist/table.c.unpragma
 
 site: $(BUILT_VIGNETTES)
 	$(RSCRIPT) -e 'pkgdown::build_site(".")'
