@@ -94,9 +94,6 @@
     <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
-    <li>
-      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
-    </li>
   </ul>
 </li>
 <li>
@@ -183,17 +180,11 @@
                     <span class='kw'>drop_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># entire text</span>
-<span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "A man, a plan."
-#&gt; [2] "A \"canal\"?"  
-#&gt; [3] "Panama!"       </div><div class='input'>
+<span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "A man, a plan." "A \"canal\"?"   "Panama!"       </div><div class='input'>
 <span class='co'># first three elements</span>
-<span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; [1] "A man, a "   
-#&gt; [2] "A \"canal\"?"
-#&gt; [3] "Panama!"     </div><div class='input'>
+<span class='fu'>text_sub</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; [1] "A man, a "    "A \"canal\"?" "Panama!"     </div><div class='input'>
 <span class='co'># last two elements</span>
-<span class='fu'>text_sub</span>(<span class='no'>x</span>, -<span class='fl'>2</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "a plan."     
-#&gt; [2] "A \"canal\"?"
-#&gt; [3] "Panama!"     </div></pre>
+<span class='fu'>text_sub</span>(<span class='no'>x</span>, -<span class='fl'>2</span>, -<span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] "a plan."      "A \"canal\"?" "Panama!"     </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

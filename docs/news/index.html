@@ -94,9 +94,6 @@
     <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
-    <li>
-      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
-    </li>
   </ul>
 </li>
 <li>
@@ -127,6 +124,27 @@
     </div>
 
     <div class="contents">
+    <div id="corpus-0-10-0-2017-12-12" class="section level1">
+<h1 class="hasAnchor">
+<a href="#corpus-0-10-0-2017-12-12" class="anchor"></a>corpus 0.10.0 (2017-12-12)</h1>
+<div id="new-features" class="section level3">
+<h3 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>NEW FEATURES</h3>
+<ul>
+<li><p>Implement <code>length&lt;-</code> for <code>corpus_text</code> objects.</p></li>
+<li><p>Added <code>str()</code> method for <code>corpus_text</code> objects. Currently just a minimal implementation; this may change in the future.</p></li>
+<li><p>Add ANSI styling to <code>corpus_frame</code> objects.</p></li>
+</ul>
+</div>
+<div id="deprecated-and-defunct" class="section level3">
+<h3 class="hasAnchor">
+<a href="#deprecated-and-defunct" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<ul>
+<li><p>Remove <code>text_length()</code>. Use <code><a href="../reference/text_tokens.html">text_ntoken()</a></code> instead.</p></li>
+<li><p>Remove <code>as_utf8()</code>, <code>utf8_valid()</code>, <code>utf8_normalize()</code>, <code>utf8_encode()</code>, <code>utf8_format()</code>, <code>utf8_print()</code>, and <code>utf8_width()</code>; these functions are in the <em>utf8</em> package now.</p></li>
+</ul>
+</div>
+</div>
     <div id="corpus-0-9-4-2017-10-31" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-9-4-2017-10-31" class="anchor"></a>corpus 0.9.4 (2017-10-31)</h1>
@@ -139,9 +157,9 @@
 <li><p>Fix failing tests on testthat 2.0.0.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct" class="section level3">
+<div id="deprecated-and-defunct-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-1" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Remove <code>weights</code> argument from <code><a href="../reference/term_stats.html">term_stats()</a></code> and <code><a href="../reference/term_matrix.html">term_matrix()</a></code>.</li>
 </ul>
@@ -150,9 +168,9 @@
     <div id="corpus-0-9-3-2017-10-02" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-9-3-2017-10-02" class="anchor"></a>corpus 0.9.3 (2017-10-02)</h1>
-<div id="new-features" class="section level3">
+<div id="new-features-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Allow user-supplied stemming functions in <code><a href="../reference/text_filter.html">text_filter()</a></code>.</p></li>
 <li><p>Add <code><a href="../reference/new_stemmer.html">new_stemmer()</a></code> function to make a stemming function from a set of (term, stem) pairs.</p></li>
@@ -179,11 +197,11 @@
 <li><p>Fix failing tests on R version 3.3.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-1" class="section level3">
+<div id="deprecated-and-defunct-2" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-1" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-2" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
-<li><p>Deprecate <code><a href="../reference/corpus-deprecated.html">text_length()</a></code> function in favor of <code><a href="../reference/text_tokens.html">text_ntoken()</a></code>.</p></li>
+<li><p>Deprecate <code>text_length()</code> function in favor of <code><a href="../reference/text_tokens.html">text_ntoken()</a></code>.</p></li>
 <li><p>Removed deprecated functions <code><a href="../reference/abbreviations.html">abbreviations()</a></code>, <code>as_corpus()</code>, <code>as_text()</code> <code><a href="../reference/corpus-package.html">corpus()</a></code>, <code>is_corpus()</code>, <code>is_text()</code>, <code><a href="../reference/stopwords.html">stopwords()</a></code>, <code>term_frame()</code>.</p></li>
 <li><p>Removed deprecated <code>random</code> argument from <code><a href="../reference/text_locate.html">text_locate()</a></code>.</p></li>
 </ul>
@@ -192,9 +210,9 @@
     <div id="corpus-0-9-2-2017-09-20" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-9-2-2017-09-20" class="anchor"></a>corpus 0.9.2 (2017-09-20)</h1>
-<div id="new-features-1" class="section level3">
+<div id="new-features-2" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>New package website, <a href="http://corpustext.com" class="uri">http://corpustext.com</a></p></li>
 <li><p>Add support for tm <code>Corpus</code> and quanteda <code>corpus</code> objects; all functions expecting text (<code><a href="../reference/text_tokens.html">text_tokens()</a></code>, <code><a href="../reference/term_matrix.html">term_matrix()</a></code>, etc.) should work seamlessly on these objects.</p></li>
@@ -209,7 +227,7 @@
 <h3 class="hasAnchor">
 <a href="#minor-improvements-1" class="anchor"></a>MINOR IMPROVEMENTS</h3>
 <ul>
-<li><p>Switch <code><a href="../reference/utf8.html">as_utf8()</a></code> default argument to <code>normalize = FALSE</code>.</p></li>
+<li><p>Switch <code>as_utf8()</code> default argument to <code>normalize = FALSE</code>.</p></li>
 <li><p>Re-order <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> and <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> arguments; make both accept <code>...</code> arguments to override individual text filter properities.</p></li>
 <li><p>Add missing single-letter initials to English abbreviation list.</p></li>
 <li><p>Adaptively increase buffer size for <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> so that large files can be read quickly.</p></li>
@@ -221,15 +239,15 @@
 <h3 class="hasAnchor">
 <a href="#bug-fixes-2" class="anchor"></a>BUG FIXES</h3>
 <ul>
-<li><p>Fix bug in <code><a href="../reference/utf8.html">utf8_normalize()</a></code> when the input contains a backslash (<code>\</code>).</p></li>
+<li><p>Fix bug in <code>utf8_normalize()</code> when the input contains a backslash (<code>\</code>).</p></li>
 <li><p>Fix bug in <code><a href="../reference/term_matrix.html">term_matrix()</a></code> column names (non-ASCII names were getting replaced by Unicode escapes).</p></li>
 <li><p>Work around R Windows bug in converting native to UTF-8; described at <a href="https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329" class="uri">https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17329</a> .</p></li>
 <li><p>Make comparison operations on text vectors keep names if arguments have them.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-2" class="section level3">
+<div id="deprecated-and-defunct-3" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-2" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-3" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Renamed <code><a href="../reference/corpus-package.html">corpus()</a></code>, <code>as_corpus()</code> and <code>is_corpus()</code> to <code><a href="../reference/corpus_frame.html">corpus_frame()</a></code>, <code><a href="../reference/corpus_frame.html">as_corpus_frame()</a></code> and <code><a href="../reference/corpus_frame.html">is_corpus_frame()</a></code> to avoid name clashes with other packages.</p></li>
 <li><p>Renamed <code>as_text()</code> and <code>is_text()</code> to <code><a href="../reference/corpus_text.html">as_corpus_text()</a></code> and <code><a href="../reference/corpus_text.html">is_corpus_text()</a></code> to avoid name clashes with other packages.</p></li>
@@ -253,9 +271,9 @@
 <li><p>Fix memory leak in <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-3" class="section level3">
+<div id="deprecated-and-defunct-4" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-3" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-4" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Rename <code>wnaffect</code> to <code>affect_wordnet</code>.</li>
 </ul>
@@ -264,18 +282,18 @@
     <div id="corpus-0-9-0-2017-08-19" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-9-0-2017-08-19" class="anchor"></a>corpus 0.9.0 (2017-08-19)</h1>
-<div id="new-features-2" class="section level3">
+<div id="new-features-3" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-3" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Add <code><a href="../reference/corpus-package.html">corpus()</a></code>, <code>as_corpus()</code>, <code>is_corpus()</code> functions.</p></li>
 <li><p>Make <code><a href="../reference/text_split.html">text_split()</a></code> split into evenly-sized blocks, with the ‘size’ argument specifying the maximum block size.</p></li>
 <li><p>Added <code><a href="../reference/text_stats.html">text_stats()</a></code> function.</p></li>
 <li><p>Added <code><a href="../reference/text_locate.html">text_match()</a></code> function to return matching terms as a factor.</p></li>
 <li><p>Implemented text subset assignment operators <code>[&lt;-</code> and <code>[[&lt;-</code>.</p></li>
-<li><p>Added <code><a href="../reference/utf8.html">utf8_normalize()</a></code> function for translating to NFC normal form, applying case and compatibility maps.</p></li>
+<li><p>Added <code>utf8_normalize()</code> function for translating to NFC normal form, applying case and compatibility maps.</p></li>
 <li><p>Added <code><a href="../reference/text_sub.html">text_sub()</a></code> for getting token sub-sequences.</p></li>
-<li><p>Added <code><a href="../reference/corpus-deprecated.html">text_length()</a></code> for text length, including <code>NA</code> tokens.</p></li>
+<li><p>Added <code>text_length()</code> for text length, including <code>NA</code> tokens.</p></li>
 </ul>
 </div>
 <div id="minor-improvements-2" class="section level3">
@@ -302,34 +320,34 @@
 <ul>
 <li><p>Added checks for underflow in <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> double deserialization.</p></li>
 <li><p>Fixed bug in <code>text_filter&lt;-</code> where assignment did not make a deep copy of the object.</p></li>
-<li><p>Fixed bug in <code><a href="../reference/utf8.html">utf8_format()</a></code>, <code><a href="../reference/utf8.html">utf8_print()</a></code>, <code><a href="../reference/utf8.html">utf8_width()</a></code> where internal double quotes were not escaped.</p></li>
+<li><p>Fixed bug in <code>utf8_format()</code>, <code>utf8_print()</code>, <code>utf8_width()</code> where internal double quotes were not escaped.</p></li>
 <li><p>Fixed rchk, UBSAN warnings.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-4" class="section level3">
+<div id="deprecated-and-defunct-5" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-4" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-5" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Renamed <code><a href="../reference/term_matrix.html">term_counts()</a></code> to <code><a href="../reference/term_stats.html">term_stats()</a></code>.</p></li>
 <li><p>Removed deprecated functions <code>token_filter()</code> and <code>sentence_filter()</code>.</p></li>
 <li><p>Removed <code>term</code> column from <code><a href="../reference/text_locate.html">text_locate()</a></code> output.</p></li>
-<li><p>Removed <code>map_compat</code> option from <code>ext_filter()</code>; use <code><a href="../reference/utf8.html">utf8_normalize()</a></code> instead if you need to apply compatibility maps.</p></li>
+<li><p>Removed <code>map_compat</code> option from <code>ext_filter()</code>; use <code>utf8_normalize()</code> instead if you need to apply compatibility maps.</p></li>
 </ul>
 </div>
 </div>
     <div id="corpus-0-8-0-2017-07-18" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-8-0-2017-07-18" class="anchor"></a>corpus 0.8.0 (2017-07-18)</h1>
-<div id="new-features-3" class="section level3">
+<div id="new-features-4" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-3" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-4" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Added <code><a href="../reference/text_filter.html">text_filter()</a></code> generic.</p></li>
 <li><p>Added <code>text_filter()&lt;-</code> setter for text vectors.</p></li>
 <li><p>Use a text’s <code><a href="../reference/text_filter.html">text_filter()</a></code> attribute as a default in all <code>text_*</code> functions expecting a filter argument.</p></li>
 <li><p>Added the <em>Federalist Papers</em> dataset (<code>federalist</code>).</p></li>
-<li><p>Added functions for validating and converting to UTF-8: <code><a href="../reference/utf8.html">as_utf8()</a></code>, <code><a href="../reference/utf8.html">utf8_valid()</a></code>.</p></li>
-<li><p>Added functions for formatting and printing utf8 text: <code><a href="../reference/utf8.html">utf8_encode()</a></code>, <code><a href="../reference/utf8.html">utf8_format()</a></code>, <code><a href="../reference/utf8.html">utf8_print()</a></code>, <code><a href="../reference/utf8.html">utf8_valid()</a></code>, and <code><a href="../reference/utf8.html">utf8_width()</a></code>.</p></li>
+<li><p>Added functions for validating and converting to UTF-8: <code>as_utf8()</code>, <code>utf8_valid()</code>.</p></li>
+<li><p>Added functions for formatting and printing utf8 text: <code>utf8_encode()</code>, <code>utf8_format()</code>, <code>utf8_print()</code>, <code>utf8_valid()</code>, and <code>utf8_width()</code>.</p></li>
 </ul>
 </div>
 <div id="minor-improvements-3" class="section level3">
@@ -347,9 +365,9 @@
 <li><p>Allow user interrupts (control-C) in all long-running C computations.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-5" class="section level3">
+<div id="deprecated-and-defunct-6" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-5" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-6" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Deprecate <code>token_filter()</code> and <code>sentence_filter()</code>.</li>
 </ul>
@@ -365,9 +383,9 @@
     <div id="corpus-0-7-0-2017-06-22" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-7-0-2017-06-22" class="anchor"></a>corpus 0.7.0 (2017-06-22)</h1>
-<div id="new-features-4" class="section level3">
+<div id="new-features-5" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-4" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-5" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Add <code><a href="../reference/text_locate.html">text_locate()</a></code>, for searching for specific terms in text, reporting the contexts of the occurrences (“Key words in context”).</p></li>
 <li><p>Add <code><a href="../reference/text_locate.html">text_count()</a></code> and <code><a href="../reference/text_locate.html">text_detect()</a></code> for counting term occurrences or checking for a term’s existence in a text.</p></li>
@@ -386,9 +404,9 @@
 <li><p>Set <code>combine = abbreviations("english")</code> by default.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-6" class="section level3">
+<div id="deprecated-and-defunct-7" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-6" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-7" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>tokens()</code> to <code><a href="../reference/text_tokens.html">text_tokens()</a></code> for consistency; add <code><a href="../reference/text_tokens.html">text_ntoken()</a></code>.</p></li>
 <li><p>Rename <code><a href="../reference/term_matrix.html">term_counts()</a></code> <code>min</code> and <code>max</code> arguments to <code>min_count</code> and <code>max_count</code>.</p></li>
@@ -405,9 +423,9 @@
     <div id="corpus-0-6-0-2017-06-06" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-6-0-2017-06-06" class="anchor"></a>corpus 0.6.0 (2017-06-06)</h1>
-<div id="new-features-5" class="section level3">
+<div id="new-features-6" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-5" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-6" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Add <code>ngrams</code> options for <code><a href="../reference/term_matrix.html">term_counts()</a></code> and <code><a href="../reference/term_matrix.html">term_matrix()</a></code>.</p></li>
 <li><p>Add sentence break suppressions (special handling for abbreviations); the default behavior for <code><a href="../reference/text_split.html">text_split(, "sentences")</a></code> is to use a set of English abbreviations as suppressions.</p></li>
@@ -425,9 +443,9 @@
 <li><p>Add more refined control over <code>token_filter()</code> drop cateogries: merged <code>"kana"</code>, and <code>"ideo"</code> into <code>"letter"</code>; split off <code>"punct"</code>, <code>"mark"</code>, and <code>"other"</code> from <code>"symbol"</code>.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-7" class="section level3">
+<div id="deprecated-and-defunct-8" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-7" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-8" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code><a href="../reference/text_filter.html">text_filter()</a></code> to <code>token_filter()</code>.</p></li>
 <li><p>Remove <code>select</code> argument from <code>token_filter()</code>, but add <code>select</code> to <code><a href="../reference/term_matrix.html">term_matrix()</a></code> arguments.</p></li>
@@ -440,9 +458,9 @@
     <div id="corpus-0-5-1-2017-05-25" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-5-1-2017-05-25" class="anchor"></a>corpus 0.5.1 (2017-05-25)</h1>
-<div id="deprecated-and-defunct-8" class="section level3">
+<div id="deprecated-and-defunct-9" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-8" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-9" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>"text"</code> class to <code>"corpus_text"</code> to avoid name classes with grid. Thanks to Jeroen Ooms for reporting: <a href="https://github.com/patperry/corpus/issues/1" class="uri">https://github.com/patperry/corpus/issues/1</a></p></li>
 <li><p>Rename <code>"jsondata"</code> to <code>"corpus_json"</code> for consistency.</p></li>
@@ -459,9 +477,9 @@
     <div id="corpus-0-5-0-2017-05-23" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-5-0-2017-05-23" class="anchor"></a>corpus 0.5.0 (2017-05-23)</h1>
-<div id="new-features-6" class="section level3">
+<div id="new-features-7" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-6" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-7" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Add <code><a href="../reference/term_matrix.html">term_counts()</a></code> function to tabulate term frequencies.</p></li>
 <li><p>Add <code><a href="../reference/term_matrix.html">term_matrix()</a></code> function to compute a term frequency matrix.</p></li>
@@ -479,9 +497,9 @@
 <li><p>Make <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> decode JSON strings as character or factor (according to whether <code>stringsAsFactors</code> is <code>TRUE</code>) except for fields named <code>"text"</code>, which get decoded as text objects.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-9" class="section level3">
+<div id="deprecated-and-defunct-10" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-9" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-10" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Rename <code><a href="../reference/text_filter.html">text_filter()</a></code> options <code>fold_case</code>, <code>fold_dash</code>, <code>fold_quote</code> to <code>map_case</code>, <code>map_dash</code>, <code>map_quote</code>.</li>
 </ul>
@@ -490,9 +508,9 @@
     <div id="corpus-0-4-0-2017-05-16" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-4-0-2017-05-16" class="anchor"></a>corpus 0.4.0 (2017-05-16)</h1>
-<div id="new-features-7" class="section level3">
+<div id="new-features-8" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-7" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-8" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li>Allow <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> to read from connections, not just files, by reading the file contents into memory first. Use this by default instead of memory mapping.</li>
 </ul>
@@ -511,9 +529,9 @@
 <li>Fix internal function namespace clashes on Linux and other similar platforms.</li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-10" class="section level3">
+<div id="deprecated-and-defunct-11" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-10" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-11" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li>Rename <code><a href="../reference/text_filter.html">text_filter()</a></code> option <code>drop_empty</code> to <code>ignore_empty</code>.</li>
 </ul>
@@ -522,9 +540,9 @@
     <div id="corpus-0-3-0-2017-05-04" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-3-0-2017-05-04" class="anchor"></a>corpus 0.3.0 (2017-05-04)</h1>
-<div id="new-features-8" class="section level3">
+<div id="new-features-9" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-8" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-9" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>Support for serializing dataset and text objects via <code>readRDS()</code> and other native routines. Unfortunately, this support doesn’t come for free, and the objects take a little bit more memory.</p></li>
 <li><p>Add support for stemming via the Snowball library.</p></li>
@@ -538,9 +556,9 @@
 <li><p>Make <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> return a data frame by default, not a <code>"jsondata"</code> object.</p></li>
 </ul>
 </div>
-<div id="deprecated-and-defunct-11" class="section level3">
+<div id="deprecated-and-defunct-12" class="section level3">
 <h3 class="hasAnchor">
-<a href="#deprecated-and-defunct-11" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
+<a href="#deprecated-and-defunct-12" class="anchor"></a>DEPRECATED AND DEFUNCT</h3>
 <ul>
 <li><p>Rename <code>as.text()</code>/<code>is.text()</code> to <code>as_text()</code>/<code>is_text()</code>; make <code>as_text()</code> retain names, work on S3 objects.</p></li>
 <li><p>Rename <code>read_json()</code> to <code><a href="../reference/read_ndjson.html">read_ndjson()</a></code> to not clash with jsonlite.</p></li>
@@ -551,9 +569,9 @@
     <div id="corpus-0-2-0-2017-04-15" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-2-0-2017-04-15" class="anchor"></a>corpus 0.2.0 (2017-04-15)</h1>
-<div id="new-features-9" class="section level3">
+<div id="new-features-10" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-9" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-10" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li><p>First CRAN release.</p></li>
 <li><p>Added Windows support.</p></li>
@@ -565,9 +583,9 @@
     <div id="corpus-0-1-0-2017-04-11" class="section level1">
 <h1 class="hasAnchor">
 <a href="#corpus-0-1-0-2017-04-11" class="anchor"></a>corpus 0.1.0 (2017-04-11)</h1>
-<div id="new-features-10" class="section level3">
+<div id="new-features-11" class="section level3">
 <h3 class="hasAnchor">
-<a href="#new-features-10" class="anchor"></a>NEW FEATURES</h3>
+<a href="#new-features-11" class="anchor"></a>NEW FEATURES</h3>
 <ul>
 <li>First milestone, with support for JSON decoding, text segmentation, and text normalization.</li>
 </ul>
@@ -580,6 +598,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#corpus-0-10-0-2017-12-12">0.10.0</a></li>
         <li><a href="#corpus-0-9-4-2017-10-31">0.9.4</a></li>
         <li><a href="#corpus-0-9-3-2017-10-02">0.9.3</a></li>
         <li><a href="#corpus-0-9-2-2017-09-20">0.9.2</a></li>

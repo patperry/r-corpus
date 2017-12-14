@@ -94,9 +94,6 @@
     <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
-    <li>
-      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
-    </li>
   </ul>
 </li>
 <li>
@@ -135,9 +132,8 @@
       <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>max</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>display</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for corpus_frame</span>
-<span class='fu'>format</span>(<span class='no'>x</span>, <span class='kw'>chars</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>justify</span> <span class='kw'>=</span> <span class='st'>"left"</span>,
-       <span class='kw'>na.encode</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>quote</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>na.print</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-       <span class='kw'>print.gap</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>format</span>(<span class='no'>x</span>, <span class='kw'>chars</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>na.encode</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>quote</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+       <span class='kw'>na.print</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print.gap</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>justify</span> <span class='kw'>=</span> <span class='st'>"none"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -155,7 +151,7 @@
     <tr>
       <th>chars</th>
       <td><p>maximum number of character units to display; see
-        <code><a href='utf8.html'>utf8_format</a></code>.</p></td>
+        <code>utf8_format</code>.</p></td>
     </tr>
     <tr>
       <th>digits</th>
@@ -229,7 +225,7 @@
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p><code><a href='corpus_frame.html'>corpus_frame</a></code>, <code>print.data.frame</code>,
-<code><a href='utf8.html'>utf8_print</a></code></p>
+<code>utf8_print</code></p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

@@ -94,9 +94,6 @@
     <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
-    <li>
-      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
-    </li>
   </ul>
 </li>
 <li>
@@ -206,15 +203,15 @@ classes of objects.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='utf8.html'>as_utf8</a></code>, <code><a href='text_filter.html'>text_filter</a></code>, <code><a href='read_ndjson.html'>read_ndjson</a></code>.</p>
+    <p><code>as_utf8</code>, <code><a href='text_filter.html'>text_filter</a></code>, <code><a href='read_ndjson.html'>read_ndjson</a></code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>as_corpus_text</span>(<span class='st'>"hello, world!"</span>)</div><div class='output co'>#&gt; [1] "hello, world!"</div><div class='input'><span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt; a "goodnight"
-#&gt; b "moon"     </div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fu'>as_corpus_text</span>(<span class='st'>"hello, world!"</span>)</div><div class='output co'>#&gt; [1] "hello, world!"</div><div class='input'><span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt; a           b          
+#&gt; "goodnight" "moon"     </div><div class='input'>
 <span class='co'># set a filter property</span>
-<span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='st'>"english"</span>)</div><div class='output co'>#&gt; a "goodnight"
-#&gt; b "moon"     </div><div class='input'>
+<span class='fu'>as_corpus_text</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>), <span class='kw'>stemmer</span> <span class='kw'>=</span> <span class='st'>"english"</span>)</div><div class='output co'>#&gt; a           b          
+#&gt; "goodnight" "moon"     </div><div class='input'>
 <span class='fu'>is_corpus_text</span>(<span class='st'>"hello"</span>) <span class='co'># FALSE, "hello" is character, not text</span></div><div class='output co'>#&gt; [1] FALSE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

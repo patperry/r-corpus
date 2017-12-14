@@ -94,9 +94,6 @@
     <li>
       <a href="../articles/textdata.html">Text data in Corpus and other packages</a>
     </li>
-    <li>
-      <a href="../articles/unicode.html">Unicode: Emoji, accents, and international text</a>
-    </li>
   </ul>
 </li>
 <li>
@@ -198,49 +195,49 @@
 <span class='no'>emoji</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>sapply</span>(<span class='fl'>0x1f600</span> + <span class='fl'>1</span>:<span class='fl'>30</span>, <span class='no'>intToUtf8</span>),
                     <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 <span class='fu'>as_corpus_frame</span>(<span class='no'>emoji</span>)</div><div class='output co'>#&gt;    text
-#&gt; 1    😁​
-#&gt; 2    😂​
-#&gt; 3    😃​
-#&gt; 4    😄​
-#&gt; 5    😅​
-#&gt; 6    😆​
-#&gt; 7    😇​
-#&gt; 8    😈​
-#&gt; 9    😉​
-#&gt; 10   😊​
-#&gt; 11   😋​
-#&gt; 12   😌​
-#&gt; 13   😍​
-#&gt; 14   😎​
-#&gt; 15   😏​
-#&gt; 16   😐​
-#&gt; 17   😑​
-#&gt; 18   😒​
-#&gt; 19   😓​
-#&gt; 20   😔​
+#&gt; 1  😁​  
+#&gt; 2  😂​  
+#&gt; 3  😃​  
+#&gt; 4  😄​  
+#&gt; 5  😅​  
+#&gt; 6  😆​  
+#&gt; 7  😇​  
+#&gt; 8  😈​  
+#&gt; 9  😉​  
+#&gt; 10 😊​  
+#&gt; 11 😋​  
+#&gt; 12 😌​  
+#&gt; 13 😍​  
+#&gt; 14 😎​  
+#&gt; 15 😏​  
+#&gt; 16 😐​  
+#&gt; 17 😑​  
+#&gt; 18 😒​  
+#&gt; 19 😓​  
+#&gt; 20 😔​  
 #&gt; ⋮  (30 rows total)</div><div class='input'>
 <span class='co'># construct directly (no need for stringsAsFactors = FALSE):</span>
 <span class='fu'>corpus_frame</span>(<span class='kw'>text</span> <span class='kw'>=</span> <span class='fu'>sapply</span>(<span class='fl'>0x1f600</span> + <span class='fl'>1</span>:<span class='fl'>30</span>, <span class='no'>intToUtf8</span>))</div><div class='output co'>#&gt;    text
-#&gt; 1    😁​
-#&gt; 2    😂​
-#&gt; 3    😃​
-#&gt; 4    😄​
-#&gt; 5    😅​
-#&gt; 6    😆​
-#&gt; 7    😇​
-#&gt; 8    😈​
-#&gt; 9    😉​
-#&gt; 10   😊​
-#&gt; 11   😋​
-#&gt; 12   😌​
-#&gt; 13   😍​
-#&gt; 14   😎​
-#&gt; 15   😏​
-#&gt; 16   😐​
-#&gt; 17   😑​
-#&gt; 18   😒​
-#&gt; 19   😓​
-#&gt; 20   😔​
+#&gt; 1  😁​  
+#&gt; 2  😂​  
+#&gt; 3  😃​  
+#&gt; 4  😄​  
+#&gt; 5  😅​  
+#&gt; 6  😆​  
+#&gt; 7  😇​  
+#&gt; 8  😈​  
+#&gt; 9  😉​  
+#&gt; 10 😊​  
+#&gt; 11 😋​  
+#&gt; 12 😌​  
+#&gt; 13 😍​  
+#&gt; 14 😎​  
+#&gt; 15 😏​  
+#&gt; 16 😐​  
+#&gt; 17 😑​  
+#&gt; 18 😒​  
+#&gt; 19 😓​  
+#&gt; 20 😔​  
 #&gt; ⋮  (30 rows total)</div><div class='input'>
 <span class='co'># convert a character vector:</span>
 <span class='fu'>as_corpus_frame</span>(<span class='fu'>c</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"goodnight"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='st'>"moon"</span>)) <span class='co'># keeps names</span></div><div class='output co'>#&gt;   text     
