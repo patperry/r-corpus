@@ -123,7 +123,7 @@ Cite *corpus* with the following BibTeX entry:
         title = {corpus: Text Corpus Analysis},
         author = {Patrick O. Perry},
         year = {2017},
-        note = {R package version 0.9.4},
+        note = {R package version 0.10.0},
         url = {http://corpustext.com},
     }
 
