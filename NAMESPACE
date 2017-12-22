@@ -67,7 +67,6 @@ export(text_sub)
 export(text_subset)
 export(text_tokens)
 export(text_types)
-export(text_types)
 
 
 ## Deprecated
